@@ -1,9 +1,7 @@
 #summary About QSculpt.
-#labels Featured
 
 = Introduction =
 
 QSculpt is a project for 3D modeling. Its main focus is in modeling using sculpting tools. 
-
 
 
