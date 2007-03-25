@@ -1,0 +1,296 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>TransformWidget</class>
+ <widget class="QWidget" name="TransformWidget" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>213</width>
+    <height>698</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Transform</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>6</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="m_positionLabel" >
+     <property name="text" >
+      <string>Position:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item row="2" column="0" >
+      <widget class="QLabel" name="m_posZLabel" >
+       <property name="text" >
+        <string>Z:</string>
+       </property>
+       <property name="buddy" >
+        <cstring>m_posZ</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" >
+      <widget class="QDoubleSpinBox" name="m_posY" >
+       <property name="decimals" >
+        <number>3</number>
+       </property>
+       <property name="maximum" >
+        <double>100000</double>
+       </property>
+       <property name="minimum" >
+        <double>-100000</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.1</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" >
+      <widget class="QLabel" name="m_posXLabel" >
+       <property name="text" >
+        <string>X:</string>
+       </property>
+       <property name="buddy" >
+        <cstring>m_posX</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" >
+      <widget class="QLabel" name="m_posYLabel" >
+       <property name="text" >
+        <string>Y:</string>
+       </property>
+       <property name="buddy" >
+        <cstring>m_posY</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="QDoubleSpinBox" name="m_posX" >
+       <property name="decimals" >
+        <number>3</number>
+       </property>
+       <property name="maximum" >
+        <double>100000</double>
+       </property>
+       <property name="minimum" >
+        <double>-100000</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.1</double>
+       </property>
+       <property name="value" >
+        <double>0</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" >
+      <widget class="QDoubleSpinBox" name="m_posZ" >
+       <property name="decimals" >
+        <number>3</number>
+       </property>
+       <property name="maximum" >
+        <double>100000</double>
+       </property>
+       <property name="minimum" >
+        <double>-100000</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.1</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="m_rotationLabel" >
+     <property name="text" >
+      <string>Orientation:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item row="2" column="1" >
+      <widget class="QDoubleSpinBox" name="m_rotZ" >
+       <property name="suffix" >
+        <string/>
+       </property>
+       <property name="maximum" >
+        <double>359.99</double>
+       </property>
+       <property name="minimum" >
+        <double>-359.99</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.5</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="QDoubleSpinBox" name="m_rotX" >
+       <property name="suffix" >
+        <string/>
+       </property>
+       <property name="maximum" >
+        <double>359.99</double>
+       </property>
+       <property name="minimum" >
+        <double>-359.99</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.5</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" >
+      <widget class="QLabel" name="m_rotZLabel" >
+       <property name="text" >
+        <string>Z:</string>
+       </property>
+       <property name="buddy" >
+        <cstring>m_rotZ</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" >
+      <widget class="QLabel" name="m_rotYLabel" >
+       <property name="text" >
+        <string>Y:</string>
+       </property>
+       <property name="buddy" >
+        <cstring>m_rotY</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" >
+      <widget class="QDoubleSpinBox" name="m_rotY" >
+       <property name="suffix" >
+        <string/>
+       </property>
+       <property name="maximum" >
+        <double>359.99</double>
+       </property>
+       <property name="minimum" >
+        <double>-359.99</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.5</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" >
+      <widget class="QLabel" name="m_rotXLabel" >
+       <property name="text" >
+        <string>X:</string>
+       </property>
+       <property name="buddy" >
+        <cstring>m_rotX</cstring>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_2" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_cancel" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="text" >
+        <string>Cancel</string>
+       </property>
+       <property name="flat" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_apply" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="text" >
+        <string>Apply</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer>
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" >
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources/>
+ <connections/>
+</ui>

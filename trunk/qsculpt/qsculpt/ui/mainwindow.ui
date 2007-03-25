@@ -1,0 +1,185 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>562</width>
+    <height>596</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget" />
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>562</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <addaction name="m_new" />
+    <addaction name="separator" />
+    <addaction name="m_open" />
+    <addaction name="m_save" />
+    <addaction name="m_saveAs" />
+    <addaction name="separator" />
+    <addaction name="m_quit" />
+   </widget>
+   <widget class="QMenu" name="menuObjects" >
+    <property name="title" >
+     <string>&amp;Objects</string>
+    </property>
+    <widget class="QMenu" name="menu_Add" >
+     <property name="title" >
+      <string>&amp;Add</string>
+     </property>
+     <addaction name="m_addBox" />
+     <addaction name="m_addSphere" />
+    </widget>
+    <addaction name="menu_Add" />
+   </widget>
+   <widget class="QMenu" name="menuTools" >
+    <property name="title" >
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="m_select" />
+    <addaction name="m_transform" />
+    <addaction name="m_brush" />
+    <addaction name="m_subdivide" />
+   </widget>
+   <widget class="QMenu" name="menu_View" >
+    <property name="title" >
+     <string>&amp;View</string>
+    </property>
+    <addaction name="m_showGrid" />
+    <addaction name="m_showNormals" />
+   </widget>
+   <addaction name="menu_File" />
+   <addaction name="menu_View" />
+   <addaction name="menuObjects" />
+   <addaction name="menuTools" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>574</y>
+     <width>562</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <action name="m_new" >
+   <property name="text" >
+    <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="m_open" >
+   <property name="text" >
+    <string>&amp;Open...</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="m_save" >
+   <property name="text" >
+    <string>&amp;Save</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="m_saveAs" >
+   <property name="text" >
+    <string>Save &amp;as ...</string>
+   </property>
+  </action>
+  <action name="m_quit" >
+   <property name="text" >
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="m_showGrid" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show &amp;grid</string>
+   </property>
+  </action>
+  <action name="m_addBox" >
+   <property name="text" >
+    <string>&amp;Box</string>
+   </property>
+  </action>
+  <action name="m_addSphere" >
+   <property name="text" >
+    <string>&amp;Sphere</string>
+   </property>
+  </action>
+  <action name="m_select" >
+   <property name="text" >
+    <string>&amp;Select</string>
+   </property>
+  </action>
+  <action name="m_transform" >
+   <property name="text" >
+    <string>&amp;Transform</string>
+   </property>
+  </action>
+  <action name="m_brush" >
+   <property name="text" >
+    <string>&amp;Brush</string>
+   </property>
+  </action>
+  <action name="m_subdivide" >
+   <property name="text" >
+    <string>Sub&amp;divide</string>
+   </property>
+  </action>
+  <action name="m_showNormals" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show normals</string>
+   </property>
+  </action>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_quit</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

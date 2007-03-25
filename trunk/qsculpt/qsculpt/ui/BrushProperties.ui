@@ -1,0 +1,102 @@
+<ui version="4.0" >
+ <class>BrushProperties</class>
+ <widget class="QWidget" name="BrushProperties" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>205</width>
+    <height>459</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Properties</string>
+  </property>
+  <layout class="QGridLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item row="3" column="1" >
+    <spacer>
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" >
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="0" colspan="2" >
+    <widget class="QGroupBox" name="grpMode" >
+     <property name="title" >
+      <string>Brush Mode</string>
+     </property>
+     <layout class="QVBoxLayout" >
+      <property name="margin" >
+       <number>9</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QRadioButton" name="radPush" >
+        <property name="text" >
+         <string>Push</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radPull" >
+        <property name="text" >
+         <string>Pull</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0" >
+    <widget class="QLabel" name="radiusLabel" >
+     <property name="text" >
+      <string>Radius:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <widget class="QLabel" name="labelStrength" >
+     <property name="text" >
+      <string>Strength:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" >
+    <widget class="QDoubleSpinBox" name="spinRadius" >
+     <property name="maximum" >
+      <double>100.000000000000000</double>
+     </property>
+     <property name="singleStep" >
+      <double>0.100000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" >
+    <widget class="QDoubleSpinBox" name="spinStrength" >
+     <property name="maximum" >
+      <double>100.000000000000000</double>
+     </property>
+     <property name="singleStep" >
+      <double>0.100000000000000</double>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

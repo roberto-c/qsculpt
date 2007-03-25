@@ -1,0 +1,60 @@
+/***************************************************************************
+ *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   roberto.cabral@gmail.com   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef QSCULPTAPP_H
+#define QSCULPTAPP_H
+
+#include <QApplication>
+
+#define SPAPP ((QSculptApp*)QSculptApp::instance())
+
+class QSculptWindow;
+
+/**
+ * Contains methods or variables that are used in all the application.
+ * 
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+*/
+class QSculptApp : public QApplication
+{
+public:
+    /**
+     * Application's constructor that receives arguments. Constructs an instance of
+     * the main window.
+     */
+    QSculptApp(int argc, char** argv);
+    
+    /**
+     * Default detructor of the application
+     */
+    virtual ~QSculptApp();
+
+    /**
+     * Get the main widget of the application. The main widget generally is the
+     * main window (class SolidPaint3D)
+     * 
+     * @return a pointer to the main widget
+     */
+    QSculptWindow* getMainWindow();
+    
+private:
+    QSculptWindow* m_mainWindow; /**< main widget of the application. */
+};
+
+#endif

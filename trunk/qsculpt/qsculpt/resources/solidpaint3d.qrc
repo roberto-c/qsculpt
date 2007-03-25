@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource>
+        <file alias="open.xpm">../../images/fileopen.xpm</file>
+        <file alias="save.xpm">../../images/filesave.xpm</file>
+        <file alias="print.xpm">../../images/fileprint.xpm</file>
+    </qresource>
+    </RCC>
