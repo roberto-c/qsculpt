@@ -25,7 +25,7 @@
 #include <QMutex>
 #include "iobject3d.h"
 #include "point3d.h"
-#include "octree.h"
+//#include "octree.h"
 
 class Scene;
 struct Face;
@@ -84,10 +84,10 @@ public:
 	virtual QVector<int> getPointsInRadius(const Point3D &p, float radius) const;
     virtual void adjustPointNormal(int index);
     virtual const QVector<Normal>& getNormalList() const;
-    virtual const Octree<Point>& getPointList() const;
+    virtual const QVector<Point>& getPointList() const;
     virtual const QVector<Face>& getFaceList() const;
 	virtual QVector<Normal>& getNormalList();
-    virtual Octree<Point>& getPointList();
+    virtual QVector<Point>& getPointList();
     virtual QVector<Face>& getFaceList();
 	virtual void lock();
 	virtual void unlock();
@@ -173,7 +173,7 @@ protected:
 private:
     void updateBoundingBox();
     
-    Octree<Point>	m_pointList;
+    QVector<Point>	m_pointList;
     QVector<Normal>	m_normalList;
     QVector<Face>	m_faceList;
 	QMutex			m_mutex;
