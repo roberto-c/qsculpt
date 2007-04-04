@@ -83,6 +83,7 @@ void QSculptWindow::createWidgets()
     v.setValue((QObject*)(cmd = new TransformCommand));
     m_transform->setData( v );
     m_transform->setCheckable(true);
+	m_transform->setEnabled(false);
     connect(m_transform, SIGNAL(activated()), this, SLOT(activateCommand()));
     
     v.setValue((QObject*)(cmd = new BrushCommand));

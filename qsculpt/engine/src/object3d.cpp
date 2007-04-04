@@ -20,7 +20,7 @@
 #include "stdafx.h"
 #include "object3d.h"
 
-#include <qcolor.h>
+#include <QColor>
 #include <QtOpenGL>
 #include <QVector>
 #include <math.h>
@@ -28,7 +28,7 @@
 #include "box.h"
 #include "point3d.h"
 #include "scene.h"
-#include "octree.h"
+//#include "octree.h"
 
 
 #ifndef MIN
@@ -380,7 +380,7 @@ int Object3D::addPoint(Point3D point)
 	m_maxY = MAX(y , m_maxY);
 	m_maxZ = MAX(z , m_maxZ);
 	
-    m_pointList.add(point);
+    m_pointList.append(point);
     m_normalList.append(Normal());
     return m_pointList.size();
 }
@@ -615,9 +615,7 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
 }
 
 int Object3D::getClosestPointAtPoint(const Point3D &p) const
-{
-	return m_pointList.findClosest(p);
-	
+{	
     int pointCount = m_pointList.size();
     int indexOf = -1;
 	float distance = 0.0, minDistance = 0.0;
@@ -730,7 +728,7 @@ const QVector<Normal>& Object3D::getNormalList() const
     return m_normalList;
 }
     
-const Octree<Point>& Object3D::getPointList() const
+const QVector<Point>& Object3D::getPointList() const
 {
     return m_pointList;
 }
@@ -745,7 +743,7 @@ QVector<Normal>& Object3D::getNormalList()
     return m_normalList;
 }
 
-Octree<Point>& Object3D::getPointList()
+QVector<Point>& Object3D::getPointList()
 {
     return m_pointList;
 }

@@ -295,7 +295,7 @@ public:
 	/**
 	 *
 	 */
-    virtual const Octree<Point>& getPointList() const = 0;
+    virtual const QVector<Point>& getPointList() const = 0;
     
 	/**
 	 *
@@ -310,7 +310,7 @@ public:
 	/**
 	 *
 	 */
-    virtual Octree<Point>& getPointList()  = 0;
+    virtual QVector<Point>& getPointList()  = 0;
     
 	/**
 	 *

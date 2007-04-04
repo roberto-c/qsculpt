@@ -65,7 +65,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
 {
 	Q_ASSERT(obj);
 	
-	Octree<Point>& pointList = obj->getPointList();
+	QVector<Point>& pointList = obj->getPointList();
 	QVector<Face>& faceList = obj->getFaceList();
 	
 	int progressValue = 0;
@@ -171,14 +171,14 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
         adjustPointNormal(obj, i);
     }
     qDebug("Num Vertex: %d Num Faces: %d", pointList.size(), faceList.size());
-	qDebug("Octree dump: \n %s", qPrintable(pointList.toString()));
+	//qDebug("Octree dump: \n %s", qPrintable(pointList.toString()));
 }
 
 void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index)
 {
 	Q_ASSERT(obj);
 	
-	Octree<Point>& pointList = obj->getPointList();
+	QVector<Point>& pointList = obj->getPointList();
 	QVector<Face>& faceList = obj->getFaceList();
 	
 	Normal res;
@@ -223,7 +223,7 @@ Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, 
 {
 	Q_ASSERT(obj);
 	
-	const Octree<Point>& pointList = obj->getPointList();
+	const QVector<Point>& pointList = obj->getPointList();
 	
     int lastPoint = face.point.size() - 1;
     Point3D v1 = pointList[face.point[1]].vertex - pointList[face.point[0]].vertex;
