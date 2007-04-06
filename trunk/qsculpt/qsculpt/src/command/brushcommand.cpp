@@ -30,20 +30,19 @@
 #include "camera.h"
 #include "brushproperties.h"
 
-//using namespace Command::Ui;
 
 BrushCommand::BrushCommand()
     : CommandBase(),
     m_object(NULL),
     m_radius(0.5),
     m_depth( 0.1),
-	m_action(Push),
-	m_propertiesWindow(NULL)
+    m_action(Push),
+    m_propertiesWindow(NULL)
 {
-	m_propertiesWindow = new BrushProperties(NULL);
-	m_propertiesWindow->setBrushRadius(m_radius);
-	m_propertiesWindow->setBrushStrength(m_depth);
-	m_propertiesWindow->setBrushAction(Push);
+    m_propertiesWindow = new BrushProperties(NULL);
+    m_propertiesWindow->setBrushRadius(m_radius);
+    m_propertiesWindow->setBrushStrength(m_depth);
+    m_propertiesWindow->setBrushAction(Push);
 }
 
 
@@ -54,77 +53,78 @@ BrushCommand::~BrushCommand()
 
 void BrushCommand::activate(bool active)
 {
-	CommandBase::activate(active);
+    CommandBase::activate(active);
 
-	if (active)
-	{
-		if (m_propertiesWindow)
-			SPAPP->getMainWindow()->setOptionsWidget(m_propertiesWindow);
-		else
-			qDebug("Properties window is null");
-	}
-	else
-	{
-		if (m_propertiesWindow)
-			SPAPP->getMainWindow()->setOptionsWidget(NULL);
-	}
+    if (active)
+    {
+        if (m_propertiesWindow)
+            SPAPP->getMainWindow()->setOptionsWidget(m_propertiesWindow);
+        else
+            qDebug("Properties window is null");
+    }
+    else
+    {
+        if (m_propertiesWindow)
+            SPAPP->getMainWindow()->setOptionsWidget(NULL);
+    }
 }
 
 void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 {
-	
+    
     if (m_record.size() > 0)
     {
-	    GLdouble x = 0.0,
-	        y = 0.0,
-	        z = 0.0;
-	    GLfloat wz = 0.0f;
-	    
-	    //glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-	    // Use the same z depth to move in the plane parallel to the screen.
-	    wz = m_currentWinPoint.getZ();
-	    gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
-	    
-	    Point3D currPoint = Point3D(x, y, z);
-		Point3D currWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
-	
-		// Set the direccion of the displacement
-		int direction = m_action == Push ? -1 : 1;
-		
-		if (m_vertexSelected.size() > 0)
-		{
+        GLdouble x = 0.0,
+            y = 0.0,
+            z = 0.0;
+        GLfloat wz = 0.0f;
+        
+        //glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
+        // Use the same z depth to move in the plane parallel to the screen.
+        wz = m_currentWinPoint.getZ();
+        gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, 
+            m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
+        
+        Point3D currPoint = Point3D(x, y, z);
+        Point3D currWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
+    
+        // Set the direccion of the displacement
+        int direction = m_action == Push ? -1 : 1;
+        
+        if (m_vertexSelected.size() > 0)
+        {
             Normal& n = m_object->getNormalAtPoint(m_vertexSelected[0]);
-			Point3D newPos = currPoint - m_currentPoint;
-			for (int i = 0; i < m_vertexSelected.size(); i++)
-			{
-				
-				Vertex& v = m_object->getVertex(m_vertexSelected[i]);
-				if ( n != Normal::null())
-				{
-					float factor = (m_radius - (m_currentPoint - v).length()) / m_radius;
+            Point3D newPos = currPoint - m_currentPoint;
+            for (int i = 0; i < m_vertexSelected.size(); i++)
+            {
+                
+                Vertex& v = m_object->getVertex(m_vertexSelected[i]);
+                if ( n != Normal::null())
+                {
+                    float factor = (m_radius - (m_currentPoint - v).length()) / m_radius;
                     factor = factor * m_depth * direction;
-					Vertex disp = n * factor;
-					v = v + disp;
-					m_object->adjustPointNormal(m_vertexSelected[i]);
-				}
-			}
-		}
-		
-	    m_currentPoint = currPoint;
-		m_currentWinPoint = currWinPoint;
-		
-		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
-		m_record.clear();
-		m_record = view->getPickRecords( e->pos().x(), e->pos().y());
-	    if (m_record.size() > 0)
-	    {
-	    	m_vertexSelected.clear();
-	        selectObject();
-	    }
+                    Vertex disp = n * factor;
+                    v = v + disp;
+                    m_object->adjustPointNormal(m_vertexSelected[i]);
+                }
+            }
+        }
+        
+        m_currentPoint = currPoint;
+        m_currentWinPoint = currWinPoint;
+        
+        DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+        m_record.clear();
+        m_record = view->getPickRecords( e->pos().x(), e->pos().y());
+        if (m_record.size() > 0)
+        {
+            m_vertexSelected.clear();
+            selectObject();
+        }
     }
     else
     {
-    	//CommandBase::mouseMoveEvent(e);
+        CommandBase::mouseMoveEvent(e);
     }
 }
 
@@ -132,53 +132,54 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
 {   
     DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
     
-	m_radius = m_propertiesWindow->getBrushRadius();
-	m_action = m_propertiesWindow->getBrushAction();
-	m_depth = m_propertiesWindow->getBrushStrength();
-	
+    m_radius = m_propertiesWindow->getBrushRadius();
+    m_action = m_propertiesWindow->getBrushAction();
+    m_depth = m_propertiesWindow->getBrushStrength();
+    
     m_record = view->getPickRecords( e->pos().x(), e->pos().y());
     
     if (m_record.size() > 0)
     {
         selectObject();
-	
-	    GLdouble x, y, z;
-	    GLfloat wz = 0.0f;
-	
-	    glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
-	    glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
-	    glGetIntegerv(GL_VIEWPORT, m_viewPort);
-	
-		glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-	    gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
-	
-		m_initialWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
-		m_currentWinPoint = m_initialWinPoint;
-	    m_intialPoint = Point3D(x, y, z);
-	    m_currentPoint = m_intialPoint;
-	    
+    
+        GLdouble x, y, z;
+        GLfloat wz = 0.0f;
+    
         glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
-	    glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
-	    glGetIntegerv(GL_VIEWPORT, m_viewPort);
+        glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
+        glGetIntegerv(GL_VIEWPORT, m_viewPort);
+    
+        glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
+        gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, 
+            m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
+    
+        m_initialWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
+        m_currentWinPoint = m_initialWinPoint;
+        m_intialPoint = Point3D(x, y, z);
+        m_currentPoint = m_intialPoint;
+        
+        glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
+        glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
+        glGetIntegerv(GL_VIEWPORT, m_viewPort);
     }
     else
     {
-    	//CommandBase::mousePressEvent(e);
+        CommandBase::mousePressEvent(e);
     }
 }
 
-void BrushCommand::mouseReleaseEvent(QMouseEvent*)
+void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 {
-	m_vertexSelected.clear();
-	if (m_record.size() > 0)
-	{
-		m_record.clear();
-	    emit executed();
-	}
-	else
-	{
-    	//CommandBase::mouseReleaseEvent(e);
-	}
+    m_vertexSelected.clear();
+    if (m_record.size() > 0)
+    {
+        m_record.clear();
+        emit executed();
+    }
+    else
+    {
+        CommandBase::mouseReleaseEvent(e);
+    }
 }
 
 void BrushCommand::selectObject()
@@ -199,12 +200,7 @@ void BrushCommand::selectObject()
             {
                 SPAPP->getMainWindow()->getCurrentView()->set3DCursorShape(GlDisplay::Cross);
                 SPAPP->getMainWindow()->getCurrentView()->setCursorPosition(m_intialPoint);
-                //m_vertexSelected = m_object->sInRadius(m_currentPoint, m_radius);
-				m_vertexSelected.clear();
-				int index = m_object->getClosestPointAtPoint(m_currentPoint);
-				if (index >= 0 );
-					m_vertexSelected.append(index);
-                qDebug("Point Selected: %d", index);
+                m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
             }
         }
     }

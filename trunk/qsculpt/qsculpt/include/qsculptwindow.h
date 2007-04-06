@@ -23,7 +23,7 @@
 #define QSCULPTWINDOW_H
 
 #include <QMainWindow>
-#include "ui/ui_mainwindow.h"
+#include "ui_mainwindow.h"
 #include "idocument.h"
 
 class QTextEdit;
