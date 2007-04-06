@@ -86,7 +86,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
             midFaceVertex = midFaceVertex + pointList.at(face.point.at(j)).vertex;
         }
         midFaceVertex = midFaceVertex / (float)numVertex;
-        obj->addPoint(midFaceVertex);
+        obj->addVertex(midFaceVertex);
         int midFaceIndex = pointList.size() - 1;
         
         for (int j = 1; j <= numVertex; ++j)
@@ -99,7 +99,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
                 point = pointList[edge1.point1].vertex
 				+ (pointList[edge1.point2].vertex
 				   - pointList[edge1.point1].vertex) / 2.0f;
-                obj->addPoint(point);
+                obj->addVertex(point);
                 edge1.midPoint = pointList.size() - 1;
                 edgeList.append(edge1);
             }
@@ -116,7 +116,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
                 point = pointList[edge2.point1].vertex
 				+ (pointList[edge2.point2].vertex
 				   - pointList[edge2.point1].vertex) / 2.0f;
-                obj->addPoint(point);
+                obj->addVertex(point);
                 edge2.midPoint = pointList.size() - 1;
                 edgeList.append(edge2);
             }

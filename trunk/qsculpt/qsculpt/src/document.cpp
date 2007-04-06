@@ -24,7 +24,6 @@
 #include "iobject3d.h"
 #include "box.h"
 #include "sphere.h"
-#include "voxelbox.h"
 
 Document::Document() {
     
@@ -64,7 +63,7 @@ void Document::loadFile(QString fileName)
             {
                 double x, y, z;
                 lineStream >> x >> y >> z;
-                obj->addPoint( Vertex(x, y, z) );
+                obj->addVertex( Vertex(x, y, z) );
             }
             else if (token == "f")
             {

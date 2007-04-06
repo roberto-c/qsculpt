@@ -53,17 +53,17 @@ public:
 		return m_rootNode->contains(v);
 	}
 	
-	inline void add(const T& v) {
+	inline void append(const T& v) {
 		qDebug("Octree::add");
 		if (!m_rootNode->add(v))
 			qDebug("Octree::add : failed: P: %s", qPrintable(v.vertex.toString()));
 	}
 	
-	void remove(const T& v) {
+	inline void remove(const T& v) {
 		Q_UNUSED(v);
 	}
 	
-	void remove(int index) {
+	inline void remove(int index) {
 		Q_UNUSED(index);
 	}
 
@@ -84,16 +84,15 @@ public:
 		return -1;
 	}
 	
-	QString toString() {
+	inline QString toString() {
 		return m_rootNode->toString();
 	}
 	
-//protected:
-	inline QVector<T>& getData() {
+	inline QVector<T> toQVector() {
 		return m_data;
 	}
 	
-	inline const QVector<T>& getData() const {
+	inline const QVector<T> toQVector() const {
 		return m_data;
 	}
 	
@@ -243,7 +242,7 @@ bool Octree<T>::OctreeNode<D>::findClosest(const Vertex& v, D* data) {
 		qDebug("OctreeNode: dataSize = %d", dataSize);
 		D tmp;
 		do {
-			tmp = m_octree->getData().at(m_dataIndices[i]);
+			tmp = m_octree->toQVector().at(m_dataIndices[i]);
 			distance = (v - tmp).length();
 			if (distance <= minDistance || minDistance < 0.0) {
 				minDistance = distance;
@@ -251,7 +250,7 @@ bool Octree<T>::OctreeNode<D>::findClosest(const Vertex& v, D* data) {
 			}
 			++i;
 		} while(i < dataSize);
-		*data = m_octree->getData().at(indexOf);
+		*data = m_octree->toQVector().at(indexOf);
 		return true;
 	}
 	return false;
@@ -317,8 +316,8 @@ bool Octree<T>::OctreeNode<D>::add(const D& data) {
 	}
 	else {
 		if ( m_dataIndices.size() < MaxVertex || m_depth >= 50 ) {
-			m_octree->getData().append(data);
-			int index = m_octree->getData().size() - 1;
+			m_octree->toQVector().append(data);
+			int index = m_octree->toQVector().size() - 1;
 			m_dataIndices.append(index);
 			//qDebug("minCoords: %s, maxCoords: %s", 
 			//	   qPrintable( m_minimumCoords.toString() ),
@@ -469,7 +468,7 @@ QString Octree<T>::OctreeNode<D>::toString()
 		foreach(i, m_dataIndices)
 		{
 			res = indent + "point[" + QString::number(i)
-				+ "]:" + m_octree->getData()[i].vertex.toString();
+				+ "]:" + m_octree->toQVector()[i].vertex.toString();
 			qDebug("%s", qPrintable(res));
 		}
 	}

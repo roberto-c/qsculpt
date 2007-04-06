@@ -20,12 +20,11 @@
 #ifndef OBJECT3D_H
 #define OBJECT3D_H
 
-#include <qcolor.h>
-#include <QVector>
+#include <QColor>
 #include <QMutex>
 #include "iobject3d.h"
 #include "point3d.h"
-//#include "octree.h"
+
 
 class Scene;
 struct Face;
@@ -52,11 +51,11 @@ public:
     virtual void setScene(Scene* scene) ;
     virtual Scene* getScene() const;
     virtual Point3D getPosition() const;
-    virtual void displace(Point3D delta);
+    virtual void displace(const Point3D& delta);
     virtual void getPosition(float *x, float *y, float *z) const;
     virtual void rotate(float rotX, float rotY, float rotZ);
     virtual void setPosition(float x, float y, float z);
-    virtual void setPosition(Point3D position);
+    virtual void setPosition(const Point3D& position);
     virtual void draw();
     virtual float getDepth();
     virtual float getHeight();
@@ -65,29 +64,28 @@ public:
     virtual void setHeight(float value);
     virtual void setWidth(float value);
     virtual void setDrawingMode(DrawingMode mode);
-    virtual void setColor(QColor color);
+    virtual void setColor(const QColor& color);
     virtual const QColor getColor();
     virtual void showBoundingBox(bool val);
     virtual bool getShowBoundingBox();
-    virtual void setBoundingBoxColor(QColor color);
+    virtual void setBoundingBoxColor(const QColor& color);
     virtual QColor getBoundingBoxColor();
-    virtual int addPoint(Point3D point);
-    virtual void removePoint(int id);
-    virtual Point3D& getPoint(int index);
+    virtual int addVertex(const Vertex& point);
+    virtual void removeVertex(int id);
+    virtual Vertex& getVertex(int index);
     virtual Normal& getNormalAtPoint(int index);
     virtual const Normal& getNormalAtPoint(int index) const;
     virtual int addFace(const QVector<int>& vertexIndexList);
     virtual void removeFace( int id);
-    //virtual void subdivide();
 	virtual int getFaceIndexAtPoint(const Point3D& p) const;
 	virtual int getClosestPointAtPoint(const Point3D &p) const;
 	virtual QVector<int> getPointsInRadius(const Point3D &p, float radius) const;
     virtual void adjustPointNormal(int index);
     virtual const QVector<Normal>& getNormalList() const;
-    virtual const QVector<Point>& getPointList() const;
+    virtual const PointContainer& getPointList() const;
     virtual const QVector<Face>& getFaceList() const;
 	virtual QVector<Normal>& getNormalList();
-    virtual QVector<Point>& getPointList();
+    virtual PointContainer& getPointList();
     virtual QVector<Face>& getFaceList();
 	virtual void lock();
 	virtual void unlock();
@@ -173,7 +171,7 @@ protected:
 private:
     void updateBoundingBox();
     
-    QVector<Point>	m_pointList;
+    PointContainer	m_pointList;
     QVector<Normal>	m_normalList;
     QVector<Face>	m_faceList;
 	QMutex			m_mutex;
