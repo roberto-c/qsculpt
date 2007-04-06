@@ -98,7 +98,7 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 			for (int i = 0; i < m_vertexSelected.size(); i++)
 			{
 				
-				Vertex& v = m_object->getPoint(m_vertexSelected[i]);
+				Vertex& v = m_object->getVertex(m_vertexSelected[i]);
 				if ( n != Normal::null())
 				{
 					float factor = (m_radius - (m_currentPoint - v).length()) / m_radius;
@@ -199,7 +199,7 @@ void BrushCommand::selectObject()
             {
                 SPAPP->getMainWindow()->getCurrentView()->set3DCursorShape(GlDisplay::Cross);
                 SPAPP->getMainWindow()->getCurrentView()->setCursorPosition(m_intialPoint);
-                //m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
+                //m_vertexSelected = m_object->sInRadius(m_currentPoint, m_radius);
 				m_vertexSelected.clear();
 				int index = m_object->getClosestPointAtPoint(m_currentPoint);
 				if (index >= 0 );

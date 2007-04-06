@@ -32,9 +32,9 @@ HEADERS += include/box.h \
            include/spenums.h \
            include/sphere.h \
            include/stdafx.h \
-           include/triangle.h \
-           include/voxelbox.h \
-           include/voxelobject.h
+           include/triangle.h 
+           #include/voxelbox.h \
+           #include/voxelobject.h
 SOURCES += src/box.cpp \
            src/camera.cpp \
            src/mesh.cpp \
@@ -43,6 +43,6 @@ SOURCES += src/box.cpp \
            src/scene.cpp \
            src/spenums.cpp \
            src/sphere.cpp \
-           src/stdafx.cpp \
-           src/voxelbox.cpp \
-           src/voxelobject.cpp
+           src/stdafx.cpp 
+           #src/voxelbox.cpp \
+           #src/voxelobject.cpp

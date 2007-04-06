@@ -23,7 +23,7 @@
 #include <QVector>
 #include "point3d.h"
 #include "spenums.h"
-#include "octree.h"
+
 
 /*
  * Class forward declaration
@@ -33,6 +33,8 @@ class Scene;
 struct Face;
 struct Edge;
 struct Point;
+
+typedef QVector<Point> PointContainer;
 
 /**
 Interface that every 3D object should implement.
@@ -73,7 +75,7 @@ public:
      *
      * @param position Object position.
      */
-    virtual void setPosition (Point3D position) = 0;
+    virtual void setPosition (const Point3D& position) = 0;
 
     /**
      * Get the object's position.
@@ -99,7 +101,7 @@ public:
      *
      * @param delta Point that contains the amount of displacement for each axis.
      */
-    virtual void displace (Point3D delta) = 0;
+    virtual void displace (const Point3D& delta) = 0;
 
     /**
      * Rotate the object. This rotation is applied over the local object axis.
@@ -169,7 +171,7 @@ public:
     * @param color color of the object.
     *
     */
-    virtual void setColor(QColor color) = 0;
+    virtual void setColor(const QColor& color) = 0;
 
     /**
     * Gets the object base color. Used as vertex color, line color, shading
@@ -200,7 +202,7 @@ public:
      *
      * @param color color of bounding box.
      */
-    virtual void setBoundingBoxColor(QColor color) = 0;
+    virtual void setBoundingBoxColor(const QColor& color) = 0;
     
     /**
      * Get the color of the bounding box.
@@ -217,7 +219,7 @@ public:
      * 
      * @return ID of the new point.
      */
-    virtual int addPoint(Point3D point) = 0;
+    virtual int addVertex(const Point3D& point) = 0;
     
     /**
      * Remove a point from the object. If the point form part of a
@@ -225,12 +227,12 @@ public:
      *
      * @param id ID of the point to delete.
      */
-    virtual void removePoint( int id) = 0;
+    virtual void removeVertex( int id) = 0;
     
     /**
      * 
      */
-    virtual Point3D& getPoint(int index) = 0;
+    virtual Vertex& getVertex(int index) = 0;
     
     virtual Normal& getNormalAtPoint(int index) = 0;
     
@@ -295,7 +297,7 @@ public:
 	/**
 	 *
 	 */
-    virtual const QVector<Point>& getPointList() const = 0;
+    virtual const PointContainer& getPointList() const = 0;
     
 	/**
 	 *
@@ -310,7 +312,7 @@ public:
 	/**
 	 *
 	 */
-    virtual QVector<Point>& getPointList()  = 0;
+    virtual PointContainer& getPointList()  = 0;
     
 	/**
 	 *
@@ -496,6 +498,5 @@ struct Face
         return true;
     }
 };
-
 
 #endif

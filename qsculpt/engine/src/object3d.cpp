@@ -28,7 +28,6 @@
 #include "box.h"
 #include "point3d.h"
 #include "scene.h"
-//#include "octree.h"
 
 
 #ifndef MIN
@@ -111,7 +110,7 @@ Point3D Object3D::getPosition() const
   return m_position;
 }
 
-void Object3D::displace(Point3D delta)
+void Object3D::displace(const Point3D& delta)
 {
   m_position = m_position + delta;
 }
@@ -137,7 +136,7 @@ void Object3D::setPosition(float x, float y, float z)
   m_position.setZ(z);
 }
 
-void Object3D::setPosition(Point3D position)
+void Object3D::setPosition(const Point3D& position)
 {
   m_position = position;
 }
@@ -233,8 +232,8 @@ void Object3D::drawWire()
         int size = f.point.size();
         for (int j = 0; j < size; ++j)
         {
-            glVertex3fv(m_pointList[f.point[j]].vertex.getPoint());
-            glVertex3fv(m_pointList[f.point[(j + 1) % size]].vertex.getPoint());
+            glVertex3fv(m_pointList.at(f.point[j]).vertex.getPoint());
+            glVertex3fv(m_pointList.at(f.point[(j + 1) % size]).vertex.getPoint());
         }
     }
     glEnd();
@@ -253,8 +252,8 @@ void Object3D::drawFlat()
         Face& f = m_faceList[i];
         for (int j = 0; j < f.point.size(); ++j)
         {
-            glNormal3fv(m_normalList[f.normal[j]].getPoint());
-            glVertex3fv(m_pointList[f.point[j]].vertex.getPoint());
+            glNormal3fv(m_normalList.at(f.normal[j]).getPoint());
+            glVertex3fv(m_pointList.at(f.point[j]).vertex.getPoint());
         }
         glEnd();
     }
@@ -295,8 +294,8 @@ void Object3D::drawSmooth()
         Face& f = m_faceList[i];
         for (int j = 0; j < f.point.size(); ++j)
         {
-            glNormal3fv(m_normalList[f.normal[j]].getPoint());
-            glVertex3fv(m_pointList[f.point[j]].vertex.getPoint());
+            glNormal3fv(m_normalList.at(f.normal[j]).getPoint());
+            glVertex3fv(m_pointList.at(f.point[j]).vertex.getPoint());
         }
         glEnd();
     }
@@ -309,7 +308,7 @@ void Object3D::drawPoints()
     glBegin(GL_POINTS);
     for ( int i = 0; i < size; i++)
     {
-        glVertex3fv(m_pointList[i].vertex.getPoint());
+        glVertex3fv(m_pointList.at(i).vertex.getPoint());
     }
     glEnd();
 }
@@ -328,15 +327,15 @@ void Object3D::drawVertexNormals()
         int size = f.point.size();
         for (int j = 0; j < size; ++j)
         {
-            glVertex3fv(m_pointList[f.point[j]].vertex.getPoint());
-            normalLine = m_normalList[f.normal[j]] + m_pointList[f.point[j]].vertex;
+            glVertex3fv(m_pointList.at(f.point[j]).vertex.getPoint());
+            normalLine = m_normalList.at(f.normal[j]) + m_pointList.at(f.point[j]).vertex;
             glVertex3fv(normalLine.getPoint());
         }
     }
     glEnd();
 }
 
-void Object3D::setColor( QColor color)
+void Object3D::setColor(const QColor& color)
 {
     m_color = color;
 }
@@ -356,7 +355,7 @@ bool Object3D::getShowBoundingBox()
     return m_showBoundingBox;
 }
 
-void Object3D::setBoundingBoxColor(QColor color)
+void Object3D::setBoundingBoxColor(const QColor& color)
 {
     m_boundingBoxColor = color;
 }
@@ -366,7 +365,7 @@ QColor Object3D::getBoundingBoxColor()
     return m_boundingBoxColor;
 }
 
-int Object3D::addPoint(Point3D point)
+int Object3D::addVertex(const Vertex& point)
 {
 	float x = point.getX();
 	float y = point.getY();
@@ -385,20 +384,20 @@ int Object3D::addPoint(Point3D point)
     return m_pointList.size();
 }
 
-void Object3D::removePoint(int id)
+void Object3D::removeVertex(int id)
 {
     if (id >=0 )
         m_pointList.remove(id);
 }
 
-Point3D& Object3D::getPoint(int index)
+Vertex& Object3D::getVertex(int index)
 {
 	return m_pointList[index].vertex;
 }
 
 Normal& Object3D::getNormalAtPoint(int index)
 {	
-	const Point p = m_pointList[index];
+	const Point p = m_pointList.at(index);
 	
     //qDebug("size: %d", p.faceRef.size());
 	if ( !p.faceRef.isEmpty() )
@@ -428,7 +427,7 @@ Normal& Object3D::getNormalAtPoint(int index)
 
 const Normal& Object3D::getNormalAtPoint(int index) const
 {
-	const Point& p = m_pointList[index];
+	const Point& p = m_pointList.at(index);
 	
 	if ( !p.faceRef.isEmpty() )
 	{
@@ -437,7 +436,7 @@ const Normal& Object3D::getNormalAtPoint(int index) const
     	for (int i = 0; i < numPoints; i++)
     	{
     		if (t.point[i] == index)
-    			return m_normalList[t.normal[i]];
+    			return m_normalList.at(t.normal[i]);
     	}
 	}
     qDebug("Normal not found!!!");
@@ -481,7 +480,7 @@ void Object3D::removeFace( int id)
     int pointCount = f.point.size();
     for (int i = 0; i < pointCount; ++i)
     {
-        int index = m_pointList[f.point[i]].faceRef.indexOf(id);
+        int index = m_pointList.at(f.point[i]).faceRef.indexOf(id);
         if (index >= 0)
             m_pointList[f.point[i]].faceRef.remove(index);
     }
@@ -562,7 +561,7 @@ void Object3D::scale(float xfactor, float yfactor, float zfactor)
     float x, y, z;
     for (int i = 0; i < size; i++)
     {
-        m_pointList[i].vertex.getPoint(x, y, z);
+        m_pointList.at(i).vertex.getPoint(x, y, z);
         x = (xfactor == 1.0) ? x : x * xfactor;
         y = (yfactor == 1.0) ? y : y * yfactor;
         z = (zfactor == 1.0) ? z : z * zfactor;
@@ -586,7 +585,7 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
 		
 		for (int j = 0; j < face.point.size(); ++j)
         {
-            point = m_pointList[face.point[j]].vertex;
+            point = m_pointList.at(face.point[j]).vertex;
             distance += fabs((p - point).length());
         }
 		minDistance = distance;
@@ -597,7 +596,7 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
 			face = m_faceList[m_pointList.at(closesPointIndex).faceRef[i]];
 			for (int j = 0; j < face.point.size(); ++j)
             {
-                point = m_pointList[face.point[j]].vertex;
+                point = m_pointList.at(face.point[j]).vertex;
                 distance += fabs((p - point).length());
             }
 
@@ -623,14 +622,14 @@ int Object3D::getClosestPointAtPoint(const Point3D &p) const
 	if (pointCount > 0 )
 	{
 		indexOf = 0;
-		Point3D point = m_pointList[0].vertex;
+		Point3D point = m_pointList.at(0).vertex;
 		
         distance = fabs((p - point).length());
 		minDistance = distance;
         //qDebug(" %f ", distance);
 		for (int i = 1; i < pointCount; i ++)
 		{
-			point = m_pointList[i].vertex;
+			point = m_pointList.at(i).vertex;
             distance = fabs((p - point).length());
 			if ( distance < minDistance )
 			{
@@ -656,7 +655,7 @@ QVector<int> Object3D::getPointsInRadius(const Point3D &p, float radius) const
 	{
 		for (int i = 0; i < pointCount; i ++)
 		{
-			const Point3D& point = m_pointList[i].vertex;
+			const Point3D& point = m_pointList.at(i).vertex;
             distance = fabs((p - point).length());
 			if ( distance < radius )
 			{
@@ -678,8 +677,10 @@ Point3D Object3D::computeFaceNormal(int index)
 Point3D Object3D::computeFaceNormal(Face &face)
 {
     int lastPoint = face.point.size() - 1;
-    Point3D v1 = m_pointList[face.point[1]].vertex - m_pointList[face.point[0]].vertex;
-    Point3D v2 = m_pointList[face.point[lastPoint]].vertex - m_pointList[face.point[0]].vertex;
+    Point3D v1 = m_pointList.at(face.point[1]).vertex
+		- m_pointList.at(face.point[0]).vertex;
+    Point3D v2 = m_pointList.at(face.point[lastPoint]).vertex 
+		- m_pointList.at(face.point[0]).vertex;
     
     Point3D res = v1.crossProduct( v2);
     res.normalize();
@@ -691,7 +692,7 @@ void Object3D::adjustPointNormal(int index)
 {
 	Normal res;
 	
-	Point& p = m_pointList[index];
+	const Point& p = m_pointList.at(index);
 	int numFaces = p.faceRef.size();
 	for (int i = 0; i < numFaces; i++)
 	{
@@ -728,7 +729,7 @@ const QVector<Normal>& Object3D::getNormalList() const
     return m_normalList;
 }
     
-const QVector<Point>& Object3D::getPointList() const
+const PointContainer& Object3D::getPointList() const
 {
     return m_pointList;
 }
@@ -743,7 +744,7 @@ QVector<Normal>& Object3D::getNormalList()
     return m_normalList;
 }
 
-QVector<Point>& Object3D::getPointList()
+PointContainer& Object3D::getPointList()
 {
     return m_pointList;
 }

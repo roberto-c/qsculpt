@@ -342,9 +342,9 @@ const QVector<Normal>& VoxelObject::getNormalList() const
 	return n;
 }
 
-const QVector<Point>& VoxelObject::getPointList() const
+const PointContainer& VoxelObject::getPointList() const
 {
-	static QVector<Point> p;
+	static Octree<Point> p;
 	
 	return p;
 }
@@ -363,9 +363,9 @@ QVector<Normal>& VoxelObject::getNormalList()
 	return n;
 }
 
-QVector<Point>& VoxelObject::getPointList()
+PointContainer& VoxelObject::getPointList()
 {
-	static QVector<Point> p;
+	static Octree<Point> p;
 	
 	return p;
 }

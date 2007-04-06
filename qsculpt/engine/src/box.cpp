@@ -39,15 +39,15 @@ void Box::initPoints()
     double hh = 2.5;
     double hd = 2.5;
     
-    addPoint(Vertex(-hw, hh,-hd));
-    addPoint(Vertex( hw, hh,-hd));
-    addPoint(Vertex( hw,-hh,-hd));
-    addPoint(Vertex(-hw,-hh,-hd));
+    addVertex(Vertex(-hw, hh,-hd));
+    addVertex(Vertex( hw, hh,-hd));
+    addVertex(Vertex( hw,-hh,-hd));
+    addVertex(Vertex(-hw,-hh,-hd));
     
-    addPoint(Vertex(-hw, hh, hd));
-    addPoint(Vertex( hw, hh, hd));
-    addPoint(Vertex( hw,-hh, hd));
-    addPoint(Vertex(-hw,-hh, hd));
+    addVertex(Vertex(-hw, hh, hd));
+    addVertex(Vertex( hw, hh, hd));
+    addVertex(Vertex( hw,-hh, hd));
+    addVertex(Vertex(-hw,-hh, hd));
 }
 
 void Box::initTriangles()

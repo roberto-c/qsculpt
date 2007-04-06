@@ -140,7 +140,7 @@ public:
      * @param y return the y component in this param. 
      * @param z return the z component in this param. 
      */
-    void getPoint(T &x, T &y, T &z) {
+    void getPoint(T &x, T &y, T &z) const{
         x = m_data[0];
         y = m_data[1];
         z = m_data[2];

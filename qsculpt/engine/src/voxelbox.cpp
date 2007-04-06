@@ -38,11 +38,11 @@ void VoxelBox::initPoints()
 	for (int i = -50; i < 50; ++i)
 		for (int j = -50; j < 50; ++j)
 		{
-			addPoint(Vertex(  i,   j,  49));
-			addPoint(Vertex(  i,   j, -50));
-			addPoint(Vertex(  i,  49,   j));
-			addPoint(Vertex(  i, -50,   j));
-			addPoint(Vertex( 49,   i,   j));
-			addPoint(Vertex(-50,   i,   j));
+			addVertex(Vertex(  i,   j,  49));
+			addVertex(Vertex(  i,   j, -50));
+			addVertex(Vertex(  i,  49,   j));
+			addVertex(Vertex(  i, -50,   j));
+			addVertex(Vertex( 49,   i,   j));
+			addVertex(Vertex(-50,   i,   j));
 		}
 }
