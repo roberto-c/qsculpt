@@ -199,3 +199,4 @@ QList<IObject3D*> Document::getSelectedObjects() const
     }
     return selectedObjectList;
 }
+

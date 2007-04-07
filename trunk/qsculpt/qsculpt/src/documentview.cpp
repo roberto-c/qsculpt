@@ -34,8 +34,6 @@
 #include "icommand.h"
 #include "gldisplay.h"
 
-//namespace SolidPaint3d {
-
 DocumentView::DocumentView( QWidget *parent )
         : QWidget( parent ),
         m_document(NULL),
@@ -66,12 +64,12 @@ void DocumentView::createWidgets()
     
     layout->addWidget(label, 1, 2);
     layout->addWidget(m_drawingMode, 1, 3);
-	layout->addItem(new QSpacerItem(100, 0), 1, 4);
-	layout->setColumnStretch(0,0);
-	layout->setColumnStretch(1,0);
-	layout->setColumnStretch(2,0);
-	layout->setColumnStretch(3,0);
-	layout->setColumnStretch(4,4);
+    layout->addItem(new QSpacerItem(100, 0), 1, 4);
+    layout->setColumnStretch(0,0);
+    layout->setColumnStretch(1,0);
+    layout->setColumnStretch(2,0);
+    layout->setColumnStretch(3,0);
+    layout->setColumnStretch(4,4);
     
     m_viewPerspective->addItem("Front", GlDisplay::Front);
     m_viewPerspective->addItem("Back", GlDisplay::Back);
@@ -133,4 +131,3 @@ void DocumentView::setNormalsVisible(bool value)
     m_display->setNormalsVisible(value);
 }
 
-//}

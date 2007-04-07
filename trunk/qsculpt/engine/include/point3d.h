@@ -33,16 +33,16 @@
 template<class T>
 class Point3D_t{
 public:
-	/**
-	 * Returns a invalid Point3D_t. Serves for the purpose of comparations.
-	 */
+    /**
+     * Returns a invalid Point3D_t. Serves for the purpose of comparations.
+     */
     static const Point3D_t<T>& null()
-	{
-		static Point3D_t<T> null = Point3D_t<T>(std::numeric_limits<T>::quiet_NaN(),
-											std::numeric_limits<T>::quiet_NaN(),
-											std::numeric_limits<T>::quiet_NaN());
-		return null;
-	}
+    {
+        static Point3D_t<T> null = Point3D_t<T>(std::numeric_limits<T>::quiet_NaN(),
+                                            std::numeric_limits<T>::quiet_NaN(),
+                                            std::numeric_limits<T>::quiet_NaN());
+        return null;
+    }
 
     /**
      * Default contructor. Initializes all components to 0.
@@ -103,35 +103,45 @@ public:
      *
      * @return x component of the point.
      */
-    T getX() const { return m_data[0]; };
+    T getX() const { 
+        return m_data[0]; 
+    };
     
     /**
      * Set the y component value.
      *
      * @param value y component value
      */
-    void setY(T value) { m_data[1] = value;};
+    void setY(T value) { 
+        m_data[1] = value;
+    };
     
     /**
      * Get the y component.
      *
      * @return y component of the point.
      */
-    T getY() const { return m_data[1]; };
+    T getY() const { 
+        return m_data[1]; 
+    };
     
     /**
      * Set the z component value.
      *
      * @param value z component value
      */
-    void setZ(T value) { m_data[2] = value;};
+    void setZ(T value) { 
+        m_data[2] = value;
+    };
     
     /**
      * Get the z component.
      *
      * @return z component of the point.
      */
-    T getZ() const { return m_data[2]; };
+    T getZ() const { 
+        return m_data[2]; 
+    };
     
     /**
      * Get each componet of the point.
@@ -279,13 +289,13 @@ private:
 };
 
 template<class T>
-        inline T Point3D_t<T>::dotProduct(const Point3D_t<T> &v)
+inline T Point3D_t<T>::dotProduct(const Point3D_t<T> &v)
 {
     return m_data[0]*v.m_data[0] + m_data[1]*v.m_data[1] + m_data[2]*v.m_data[2];
 }
 
 template<class T>
-        inline Point3D_t<T> Point3D_t<T>::crossProduct(const Point3D_t<T> &v)
+inline Point3D_t<T> Point3D_t<T>::crossProduct(const Point3D_t<T> &v)
 {
     return Point3D_t<T>( m_data[1]*v.m_data[2] - m_data[2]*v.m_data[1],
                      m_data[2]*v.m_data[0] - m_data[0]*v.m_data[2],
@@ -293,7 +303,7 @@ template<class T>
 }
 
 template<class F>
-        inline const Point3D_t<F> operator*( const Point3D_t<F> &val, F c)
+inline const Point3D_t<F> operator*( const Point3D_t<F> &val, F c)
 {
     return Point3D_t<F>(val.m_data[0] * c,
                    val.m_data[1] * c,
@@ -301,7 +311,7 @@ template<class F>
 }
 
 template<class F>
-        inline const Point3D_t<F> operator*( F c, const Point3D_t<F> &val)
+inline const Point3D_t<F> operator*( F c, const Point3D_t<F> &val)
 {
     return Point3D_t<F>(val.m_data[0] * c,
                    val.m_data[1] * c,
@@ -309,7 +319,7 @@ template<class F>
 }
 
 template<class F>
-        inline const Point3D_t<F> operator/( const Point3D_t<F> &val, F c)
+inline const Point3D_t<F> operator/( const Point3D_t<F> &val, F c)
 { 
     return Point3D_t<F>(val.m_data[0] / c,
                    val.m_data[1] / c,
@@ -317,7 +327,7 @@ template<class F>
 }
 
 template<class F>
-        inline const Point3D_t<F> operator/( F c, const Point3D_t<F> &val)
+inline const Point3D_t<F> operator/( F c, const Point3D_t<F> &val)
 {
     return Point3D_t<F>(val.m_data[0] / c,
                    val.m_data[1] / c,
@@ -331,3 +341,4 @@ typedef Point3D_t<float> Normal;
 Q_DECLARE_METATYPE(Point3D)
 
 #endif
+

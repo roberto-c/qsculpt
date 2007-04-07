@@ -83,3 +83,4 @@ void ConfigContainer::setPoint3D(QString key, const Point3D &v)
 {
     m_container[key] = QVariant::fromValue(v);
 }
+

@@ -21,7 +21,7 @@
 #include "mesh.h"
 
 Mesh::Mesh()
- : Object3D()
+    : Object3D()
 {
 }
 

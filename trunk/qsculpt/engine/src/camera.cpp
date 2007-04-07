@@ -23,9 +23,9 @@
 #include <math.h>
 
 Camera::Camera()
- :	ICamera(),
-	m_colatitude(0.0),
-	m_longitude(0.0)
+ :  ICamera(),
+    m_colatitude(0.0),
+    m_longitude(0.0)
 {
 }
 
@@ -39,10 +39,10 @@ void Camera::setPosition(const Point3D& p)
 {
     m_position = p;
 
-	Point3D v = m_position - m_target;
-	m_distanceFromTarget = v.length();
-	m_colatitude = acos(v.getZ()/m_distanceFromTarget);
-	m_longitude = acos(v.getX()/(m_distanceFromTarget * sin(m_colatitude)));
+    Point3D v = m_position - m_target;
+    m_distanceFromTarget = v.length();
+    m_colatitude = acos(v.getZ()/m_distanceFromTarget);
+    m_longitude = acos(v.getX()/(m_distanceFromTarget * sin(m_colatitude)));
 }
 
 Point3D Camera::getPosition()
@@ -54,10 +54,10 @@ void Camera::setTargetPoint(const Point3D & target)
 {
     m_target = target;
 
-	Point3D v = m_position - m_target;
-	m_distanceFromTarget = v.length();
-	m_colatitude = acos(v.getZ()/m_distanceFromTarget);
-	m_longitude = acos(v.getX()/(m_distanceFromTarget * sin(m_colatitude)));
+    Point3D v = m_position - m_target;
+    m_distanceFromTarget = v.length();
+    m_colatitude = acos(v.getZ()/m_distanceFromTarget);
+    m_longitude = acos(v.getX()/(m_distanceFromTarget * sin(m_colatitude)));
 }
 
 Point3D Camera::getTargetPoint()
@@ -77,50 +77,50 @@ Point3D Camera::getOrientationVector()
 
 void Camera::setLongitude(double longitude)
 {
-	m_longitude = longitude;
+    m_longitude = longitude;
 
-	double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-	double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-	double z = m_distanceFromTarget * cos(m_colatitude);
+    double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
+    double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
+    double z = m_distanceFromTarget * cos(m_colatitude);
 
-	m_position = m_target + Point3D(x, y, z);
+    m_position = m_target + Point3D(x, y, z);
 }
 
 double Camera::getLongitude()
 {
-	return m_longitude;
+    return m_longitude;
 }
 
 void Camera::setColatitude(double colatitude)
 {
-	m_colatitude = colatitude;
+    m_colatitude = colatitude;
 
-	double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-	double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-	double z = m_distanceFromTarget * cos(m_colatitude);
+    double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
+    double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
+    double z = m_distanceFromTarget * cos(m_colatitude);
 
-	m_position = m_target + Point3D(x, y, z);
+    m_position = m_target + Point3D(x, y, z);
 }
 
 double Camera::getColatitude()
 {
-	return m_colatitude;
+    return m_colatitude;
 }
 
 double Camera::getDistanceFromTarget()
 {
-	return m_distanceFromTarget;
+    return m_distanceFromTarget;
 }
 
 void Camera::setDistanceFromTarget(double distance)
 {
-	m_distanceFromTarget = distance;
+    m_distanceFromTarget = distance;
 
-	double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-	double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-	double z = m_distanceFromTarget * cos(m_colatitude);
+    double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
+    double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
+    double z = m_distanceFromTarget * cos(m_colatitude);
 
-	m_position = m_target + Point3D(x, y, z);
+    m_position = m_target + Point3D(x, y, z);
 }
 
 QString Camera::toString()
@@ -132,3 +132,4 @@ QString Camera::toString()
     
     return str;
 }
+

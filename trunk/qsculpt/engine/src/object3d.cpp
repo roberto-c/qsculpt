@@ -39,23 +39,23 @@
 #endif
 
 Object3D::Object3D()
-	: IObject3D(),
+    : IObject3D(),
     m_scene(NULL),
-	m_drawingMode(Wireframe),
-	m_color(Qt::white),
-	m_boundingBoxColor(Qt::red),
-	m_minX(0.0),
-	m_maxX(0.0),
-	m_minY(0.0),
-	m_maxY(0.0),
-	m_minZ(0.0),
-	m_maxZ(0.0),
-	m_rotX(0.0),
-	m_rotY(0.0),
-	m_rotZ(0.0),
-	m_showBoundingBox(false),
-	m_callListId(0),
-	m_genereateCallList(true)
+    m_drawingMode(Wireframe),
+    m_color(Qt::white),
+    m_boundingBoxColor(Qt::red),
+    m_minX(0.0),
+    m_maxX(0.0),
+    m_minY(0.0),
+    m_maxY(0.0),
+    m_minZ(0.0),
+    m_maxZ(0.0),
+    m_rotX(0.0),
+    m_rotY(0.0),
+    m_rotZ(0.0),
+    m_showBoundingBox(false),
+    m_callListId(0),
+    m_genereateCallList(true)
 {    
     initPoints();
     updateBoundingBox();
@@ -67,18 +67,18 @@ Object3D::Object3D(const Object3D& cpy)
     m_drawingMode(cpy.m_drawingMode),
     m_color(cpy.m_color),
     m_boundingBoxColor(cpy.m_boundingBoxColor),
-	m_minX(cpy.m_minX),
-	m_maxX(cpy.m_maxX),
-	m_minY(cpy.m_minY),
-	m_maxY(cpy.m_maxY),
-	m_minZ(cpy.m_minZ),
-	m_maxZ(cpy.m_maxZ),
+    m_minX(cpy.m_minX),
+    m_maxX(cpy.m_maxX),
+    m_minY(cpy.m_minY),
+    m_maxY(cpy.m_maxY),
+    m_minZ(cpy.m_minZ),
+    m_maxZ(cpy.m_maxZ),
     m_rotX(cpy.m_rotX),
     m_rotY(cpy.m_rotY),
     m_rotZ(cpy.m_rotZ),
     m_showBoundingBox(cpy.m_showBoundingBox),
-	m_callListId(0),
-	m_genereateCallList(true),
+    m_callListId(0),
+    m_genereateCallList(true),
     //m_pointList(cpy.m_pointList),
     m_normalList(cpy.m_normalList),
     m_faceList(cpy.m_faceList)
@@ -117,9 +117,9 @@ void Object3D::displace(const Point3D& delta)
 
 void Object3D::getPosition(float *x, float *y, float *z) const
 {
-	if (x) *x = m_position.getX();
-	if (y) *y = m_position.getY();
-	if (z) *z = m_position.getZ();
+    if (x) *x = m_position.getX();
+    if (y) *y = m_position.getY();
+    if (z) *z = m_position.getZ();
 }
 
 void Object3D::rotate(float rotX, float rotY, float rotZ)
@@ -161,7 +161,7 @@ void Object3D::setDepth(float value)
     //scale(1.0, 1.0, value / m_depth);
     //m_depth = value;
     //updateBoundingBox();
-	Q_UNUSED(value);
+    Q_UNUSED(value);
 }
 
 void Object3D::setHeight(float value)
@@ -169,7 +169,7 @@ void Object3D::setHeight(float value)
     //scale(1.0, value / m_height, 1.0);
     //m_height = value;
     //updateBoundingBox();
-	Q_UNUSED(value);
+    Q_UNUSED(value);
 }
 
 void Object3D::setWidth(float value)
@@ -177,7 +177,7 @@ void Object3D::setWidth(float value)
     //scale(value / m_width, 1.0, 1.0);   
     //m_width = value;
     //updateBoundingBox();
-	Q_UNUSED(value);
+    Q_UNUSED(value);
 }
 
 void Object3D::setDrawingMode(DrawingMode mode)
@@ -209,8 +209,8 @@ void Object3D::draw()
             drawFlat();
             break;
         case Points:
-        	drawPoints();
-        	break;
+            drawPoints();
+            break;
         case Smooth:
             drawSmooth();
             break;
@@ -258,7 +258,7 @@ void Object3D::drawFlat()
         glEnd();
     }
     
-	/*
+    /*
     glDepthFunc(GL_LEQUAL);
     glColor3d(0.0, 0.0, 0.0);
     
@@ -303,8 +303,8 @@ void Object3D::drawSmooth()
 
 void Object3D::drawPoints()
 {
-	int size = m_pointList.size();
-	
+    int size = m_pointList.size();
+    
     glBegin(GL_POINTS);
     for ( int i = 0; i < size; i++)
     {
@@ -367,18 +367,18 @@ QColor Object3D::getBoundingBoxColor()
 
 int Object3D::addVertex(const Vertex& point)
 {
-	float x = point.getX();
-	float y = point.getY();
-	float z = point.getZ();
-	
-	m_minX = MIN(x , m_minX);
-	m_minY = MIN(y , m_minY);
-	m_minZ = MIN(z , m_minZ);
-	
-	m_maxX = MAX(x , m_maxX);
-	m_maxY = MAX(y , m_maxY);
-	m_maxZ = MAX(z , m_maxZ);
-	
+    float x = point.getX();
+    float y = point.getY();
+    float z = point.getZ();
+    
+    m_minX = MIN(x , m_minX);
+    m_minY = MIN(y , m_minY);
+    m_minZ = MIN(z , m_minZ);
+    
+    m_maxX = MAX(x , m_maxX);
+    m_maxY = MAX(y , m_maxY);
+    m_maxZ = MAX(z , m_maxZ);
+    
     m_pointList.append(point);
     m_normalList.append(Normal());
     return m_pointList.size();
@@ -392,23 +392,23 @@ void Object3D::removeVertex(int id)
 
 Vertex& Object3D::getVertex(int index)
 {
-	return m_pointList[index].vertex;
+    return m_pointList[index].vertex;
 }
 
 Normal& Object3D::getNormalAtPoint(int index)
-{	
-	const Point p = m_pointList.at(index);
-	
+{   
+    const Point p = m_pointList.at(index);
+    
     //qDebug("size: %d", p.faceRef.size());
-	if ( !p.faceRef.isEmpty() )
-	{
-		const Face& t = m_faceList[p.faceRef[0]];
+    if ( !p.faceRef.isEmpty() )
+    {
+        const Face& t = m_faceList[p.faceRef[0]];
         int numPoints = t.point.size();
-    	for (int i = 0; i < numPoints; i++)
-    	{
-    		if (t.point[i] == index)
-    			return m_normalList[t.normal[i]];
-    	}
+        for (int i = 0; i < numPoints; i++)
+        {
+            if (t.point[i] == index)
+                return m_normalList[t.normal[i]];
+        }
         
         qDebug("Normal not found!!!");
         qDebug("Index: %d", index);
@@ -418,34 +418,34 @@ Normal& Object3D::getNormalAtPoint(int index)
             qDebug() << " " << t.point[i];
         }
         qDebug() << endl;
-	}
+    }
     else
         qDebug("faceReference Empty!!!");
-	
+    
     return const_cast<Normal&>(Normal::null());
 }
 
 const Normal& Object3D::getNormalAtPoint(int index) const
 {
-	const Point& p = m_pointList.at(index);
-	
-	if ( !p.faceRef.isEmpty() )
-	{
-		const Face& t = m_faceList[p.faceRef[0]];
+    const Point& p = m_pointList.at(index);
+    
+    if ( !p.faceRef.isEmpty() )
+    {
+        const Face& t = m_faceList[p.faceRef[0]];
         int numPoints = t.point.size();
-    	for (int i = 0; i < numPoints; i++)
-    	{
-    		if (t.point[i] == index)
-    			return m_normalList.at(t.normal[i]);
-    	}
-	}
+        for (int i = 0; i < numPoints; i++)
+        {
+            if (t.point[i] == index)
+                return m_normalList.at(t.normal[i]);
+        }
+    }
     qDebug("Normal not found!!!");
     return Normal::null();
 }
 
 int Object3D::addFace(const QVector<int>& vertexIndexList)
 {
-	qDebug("addFace");
+    qDebug("addFace");
     Face t(vertexIndexList);
 
     if (t.isValid())
@@ -498,41 +498,41 @@ void Object3D::drawBoundingBox()
     
     glColor3f(0.0, 1.0, 0.0);
     
-	float minX = m_minX - 0.1;
-	float maxX = m_maxX + 0.1;
-	float minY = m_minY - 0.1;
-	float maxY = m_maxY + 0.1;
-	float minZ = m_minZ - 0.1;
-	float maxZ = m_maxZ + 0.1;
-	
+    float minX = m_minX - 0.1;
+    float maxX = m_maxX + 0.1;
+    float minY = m_minY - 0.1;
+    float maxY = m_maxY + 0.1;
+    float minZ = m_minZ - 0.1;
+    float maxZ = m_maxZ + 0.1;
+    
     glColor3f(0.0, 1.0, 0.0);
     
     glBegin(GL_LINE_LOOP);
     glVertex3f(minX, minY, minZ);
     glVertex3f(maxX, minY, minZ);
     glVertex3f(maxX, maxY, minZ);
-	glVertex3f(minX, maxY, minZ);
+    glVertex3f(minX, maxY, minZ);
     glEnd();
-	glBegin(GL_LINE_LOOP);
+    glBegin(GL_LINE_LOOP);
     glVertex3f(minX, minY, maxZ);
     glVertex3f(maxX, minY, maxZ);
     glVertex3f(maxX, maxY, maxZ);
-	glVertex3f(minX, maxY, maxZ);
+    glVertex3f(minX, maxY, maxZ);
     glEnd();
-	
-	glBegin(GL_LINES);
+    
+    glBegin(GL_LINES);
     glVertex3f(minX, minY, minZ);
-	glVertex3f(minX, minY, maxZ);
-	
-	glVertex3f(maxX, minY, minZ);
+    glVertex3f(minX, minY, maxZ);
+    
+    glVertex3f(maxX, minY, minZ);
     glVertex3f(maxX, minY, maxZ);
-	
-	glVertex3f(maxX, maxY, minZ);
+    
+    glVertex3f(maxX, maxY, minZ);
     glVertex3f(maxX, maxY, maxZ);
-	
-	glVertex3f(minX, maxY, minZ);
-	glVertex3f(minX, maxY, maxZ);
-    glEnd();	
+    
+    glVertex3f(minX, maxY, minZ);
+    glVertex3f(minX, maxY, maxZ);
+    glEnd();    
         
     if (lightEnabled == GL_TRUE)
         glEnable(GL_LIGHTING);
@@ -572,101 +572,101 @@ void Object3D::scale(float xfactor, float yfactor, float zfactor)
 int Object3D::getFaceIndexAtPoint(const Point3D& p) const
 {
     int closesPointIndex = getClosestPointAtPoint(p);
-	Face face;
+    Face face;
     Point3D point;
     int faceCount = m_pointList.at(closesPointIndex).faceRef.size();
     int indexOf = -1;
-	float distance = 0.0, minDistance = 0.0;
+    float distance = 0.0, minDistance = 0.0;
     
-	if (faceCount > 0 )
-	{
-		indexOf = 0;
-		face = m_faceList[0];
-		
-		for (int j = 0; j < face.point.size(); ++j)
+    if (faceCount > 0 )
+    {
+        indexOf = 0;
+        face = m_faceList[0];
+        
+        for (int j = 0; j < face.point.size(); ++j)
         {
             point = m_pointList.at(face.point[j]).vertex;
             distance += fabs((p - point).length());
         }
-		minDistance = distance;
+        minDistance = distance;
         //qDebug(" %f ", distance);
-		for (int i = 1; i < faceCount; i ++)
-		{
+        for (int i = 1; i < faceCount; i ++)
+        {
             distance = 0.0;
-			face = m_faceList[m_pointList.at(closesPointIndex).faceRef[i]];
-			for (int j = 0; j < face.point.size(); ++j)
+            face = m_faceList[m_pointList.at(closesPointIndex).faceRef[i]];
+            for (int j = 0; j < face.point.size(); ++j)
             {
                 point = m_pointList.at(face.point[j]).vertex;
                 distance += fabs((p - point).length());
             }
 
-			if ( distance < minDistance )
-			{
-				minDistance = distance;
-				indexOf = i;
+            if ( distance < minDistance )
+            {
+                minDistance = distance;
+                indexOf = i;
                 //qDebug(" %f ", distance);
-			}
+            }
             //qDebug("%f", distance);
-		}
-	}
+        }
+    }
     
-	return indexOf;
+    return indexOf;
 }
 
 int Object3D::getClosestPointAtPoint(const Point3D &p) const
-{	
+{   
     int pointCount = m_pointList.size();
     int indexOf = -1;
-	float distance = 0.0, minDistance = 0.0;
+    float distance = 0.0, minDistance = 0.0;
 
-	if (pointCount > 0 )
-	{
-		indexOf = 0;
-		Point3D point = m_pointList.at(0).vertex;
-		
+    if (pointCount > 0 )
+    {
+        indexOf = 0;
+        Point3D point = m_pointList.at(0).vertex;
+        
         distance = fabs((p - point).length());
-		minDistance = distance;
+        minDistance = distance;
         //qDebug(" %f ", distance);
-		for (int i = 1; i < pointCount; i ++)
-		{
-			point = m_pointList.at(i).vertex;
+        for (int i = 1; i < pointCount; i ++)
+        {
+            point = m_pointList.at(i).vertex;
             distance = fabs((p - point).length());
-			if ( distance < minDistance )
-			{
-				minDistance = distance;
-				indexOf = i;
+            if ( distance < minDistance )
+            {
+                minDistance = distance;
+                indexOf = i;
                 //qDebug(" %f ", distance);
-			}
+            }
             //qDebug("%f", distance);
-		}
-	}
+        }
+    }
     
-	return indexOf;
+    return indexOf;
 }
 
 QVector<int> Object3D::getPointsInRadius(const Point3D &p, float radius) const
 {
-	QVector<int> results;
-	
-	int pointCount = m_pointList.size();
-	float distance = 0.0;
+    QVector<int> results;
+    
+    int pointCount = m_pointList.size();
+    float distance = 0.0;
 
-	if (pointCount > 0 )
-	{
-		for (int i = 0; i < pointCount; i ++)
-		{
-			const Point3D& point = m_pointList.at(i).vertex;
+    if (pointCount > 0 )
+    {
+        for (int i = 0; i < pointCount; i ++)
+        {
+            const Point3D& point = m_pointList.at(i).vertex;
             distance = fabs((p - point).length());
-			if ( distance < radius )
-			{
-				results.append(i);
+            if ( distance < radius )
+            {
+                results.append(i);
                 //qDebug(" %f ", distance);
-			}
+            }
             //qDebug("%f", distance);
-		}
-	}
-	
-	return results;
+        }
+    }
+    
+    return results;
 }
 
 Point3D Object3D::computeFaceNormal(int index)
@@ -678,9 +678,9 @@ Point3D Object3D::computeFaceNormal(Face &face)
 {
     int lastPoint = face.point.size() - 1;
     Point3D v1 = m_pointList.at(face.point[1]).vertex
-		- m_pointList.at(face.point[0]).vertex;
+        - m_pointList.at(face.point[0]).vertex;
     Point3D v2 = m_pointList.at(face.point[lastPoint]).vertex 
-		- m_pointList.at(face.point[0]).vertex;
+        - m_pointList.at(face.point[0]).vertex;
     
     Point3D res = v1.crossProduct( v2);
     res.normalize();
@@ -690,14 +690,14 @@ Point3D Object3D::computeFaceNormal(Face &face)
 
 void Object3D::adjustPointNormal(int index)
 {
-	Normal res;
-	
-	const Point& p = m_pointList.at(index);
-	int numFaces = p.faceRef.size();
-	for (int i = 0; i < numFaces; i++)
-	{
-    	res = res + computeFaceNormal(p.faceRef[i]);
-	}
+    Normal res;
+    
+    const Point& p = m_pointList.at(index);
+    int numFaces = p.faceRef.size();
+    for (int i = 0; i < numFaces; i++)
+    {
+        res = res + computeFaceNormal(p.faceRef[i]);
+    }
     
     res = res / (float)numFaces;
     res.normalize();
@@ -706,22 +706,22 @@ void Object3D::adjustPointNormal(int index)
         qDebug("Firsr point: res: %s numFaces: %d", qPrintable(res.toString()), numFaces);
     
     for (int i = 0; i < numFaces; i++)
-	{
+    {
         Face& t = m_faceList[p.faceRef[i]];
         int numFacePoints = t.point.size();
-		for (int j = 0; j < numFacePoints; ++j)
-		{
-    		if (index == t.point[j])
-    		{
-    			m_normalList[t.normal[j]] = res;
-    		}
-		}
-	}
+        for (int j = 0; j < numFacePoints; ++j)
+        {
+            if (index == t.point[j])
+            {
+                m_normalList[t.normal[j]] = res;
+            }
+        }
+    }
 }
 
 void Object3D::computeAllNormals()
 {
-	qDebug("computeAllNormals: Not Implemented");
+    qDebug("computeAllNormals: Not Implemented");
 }
 
 const QVector<Normal>& Object3D::getNormalList() const
@@ -756,10 +756,11 @@ QVector<Face>& Object3D::getFaceList()
 
 void Object3D::lock()
 {
-	m_mutex.lock();
+    m_mutex.lock();
 }
 
 void Object3D::unlock() 
 {
-	m_mutex.unlock();
+    m_mutex.unlock();
 }
+

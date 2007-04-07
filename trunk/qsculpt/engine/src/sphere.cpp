@@ -23,8 +23,8 @@
 #include <math.h>
 
 Sphere::Sphere()
-	: Object3D(),
-	m_pquadratic(0)
+    : Object3D(),
+    m_pquadratic(0)
 {
     initPoints();
 }
@@ -44,12 +44,12 @@ void Sphere::draw()
 void Sphere::initPoints()
 {
 /*    
-	double x, y, z;
+    double x, y, z;
     
     double hw = m_width / 2;
     double hh = m_height / 2;
     double hd = m_depth / 2;
-	
+    
     m_pointList.append(Point( 0, 0, hd));
     m_pointList.append(Point( 0, 0,-hd));
     

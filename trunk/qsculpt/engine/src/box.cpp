@@ -22,7 +22,7 @@
 #include "box.h"
 
 Box::Box()
- : Object3D()
+    : Object3D()
 {
     initPoints();
     initTriangles();

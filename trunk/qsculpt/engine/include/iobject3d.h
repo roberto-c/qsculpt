@@ -259,10 +259,10 @@ public:
      */
     virtual void removeFace( int id) =0;
     
-	/**
-	 *
-	 */
-	virtual int getFaceIndexAtPoint(const Point3D& p) const = 0;
+    /**
+     *
+     */
+    virtual int getFaceIndexAtPoint(const Point3D& p) const = 0;
     
     /**
      * 
@@ -289,75 +289,75 @@ public:
      */
     virtual void adjustPointNormal(int index) = 0;
     
-	/**
-	 *
-	 */
+    /**
+     *
+     */
     virtual const QVector<Normal>& getNormalList() const = 0;
     
-	/**
-	 *
-	 */
+    /**
+     *
+     */
     virtual const PointContainer& getPointList() const = 0;
     
-	/**
-	 *
-	 */
+    /**
+     *
+     */
     virtual const QVector<Face>& getFaceList() const = 0;
-	
-	/**
-	 *
-	 */
-	virtual QVector<Normal>& getNormalList() = 0;
     
-	/**
-	 *
-	 */
+    /**
+     *
+     */
+    virtual QVector<Normal>& getNormalList() = 0;
+    
+    /**
+     *
+     */
     virtual PointContainer& getPointList()  = 0;
     
-	/**
-	 *
-	 */
+    /**
+     *
+     */
     virtual QVector<Face>& getFaceList()  = 0;
-	
-	/**
-	 *
-	 */
-	virtual void lock() = 0;
-	
-	/**
-	 *
-	 */
-	virtual void unlock() = 0;
+    
+    /**
+     *
+     */
+    virtual void lock() = 0;
+    
+    /**
+     *
+     */
+    virtual void unlock() = 0;
 };
 
 struct Point
 {
-	Vertex vertex;
-	QVector<int> faceRef;
-	
-	Point() {}
-	Point(float x, float y, float z) : vertex(x, y, z){}
-	Point(const Vertex& v) : vertex(v) {}
-	
-	operator Vertex() {
-		return vertex;
-	}
-	
-	operator Vertex() const {
-		return vertex;
-	}
-	
-	bool operator==(const Vertex& v) const {
-		return vertex == v;
-	}
-	
-	bool operator==(const Point& p) const {
-		return vertex == p.vertex;
-	}
+    Vertex vertex;
+    QVector<int> faceRef;
+    
+    Point() {}
+    Point(float x, float y, float z) : vertex(x, y, z){}
+    Point(const Vertex& v) : vertex(v) {}
+    
+    operator Vertex() {
+        return vertex;
+    }
+    
+    operator Vertex() const {
+        return vertex;
+    }
+    
+    bool operator==(const Vertex& v) const {
+        return vertex == v;
+    }
+    
+    bool operator==(const Point& p) const {
+        return vertex == p.vertex;
+    }
 };
 
 /**
-* Used for the subdivision process. Used to store the different lines used
+ * Used for the subdivision process. Used to store the different lines used
  * by each triangle to make sure that not duplicate points are contructed
  * when doing the process.
  */
@@ -366,11 +366,11 @@ struct Edge
     int point1;
     int point2;
     int midPoint;
-	
+    
     QVector<int> faceRef;
     
     /**
-		* Default constructor, initializes the values on 0
+     * Default constructor, initializes the values on 0
      */
     Edge()
         : point1(-1),
@@ -378,34 +378,34 @@ struct Edge
         midPoint(-1)
     {
     }
-	
+    
     /**
-		* Initializes the values on according to the parameters passed.
+     * Initializes the values on according to the parameters passed.
      * 
      * @param p1 index of the first point.
      * @param p2 index of the second point.
      */
     Edge(int p1, int p2)
         :   point1(p1),
-		point2(p2),
-		midPoint(-1)
+        point2(p2),
+        midPoint(-1)
     {
     }
     
     bool operator==(const Edge& val)
     {
         return (point1 == val.point1 && point2 == val.point2)
-		|| (point2 == val.point1 && point1 == val.point2);
+        || (point2 == val.point1 && point1 == val.point2);
     }
 };
 
 /**
-* Face class. This class conatains references to points that should
+ * Face class. This class conatains references to points that should
  * form a triangle.
  *
  * The points are indices of the Object3D point list. So, this class It's
  * only meant to be used with the Object3D class (its not a generic triangle
-												  * class).
+                                                  * class).
  *
  * A triangle its only valid if theirs three points are different. Using the
  * default constructor makes a non valid triangle.
@@ -418,17 +418,17 @@ struct Face
     bool isMarked;
     
     /**
-		* Default constructor. Initiliazes all point to index 0.
+     * Default constructor. Initiliazes all point to index 0.
      */
     Face()
         :   point(),
-		normal(),
-		isMarked(false)
-	{
-	}
-	
+        normal(),
+        isMarked(false)
+    {
+    }
+    
     /**
-		* Construct a new triangle. The triangle is composed by the passed
+     * Construct a new triangle. The triangle is composed by the passed
      * points ids or references.
      *
      * @param p1 first point that form the triangle.
@@ -437,13 +437,13 @@ struct Face
      */
     Face(const QVector<int>& vertexIndexList)
         :   point(vertexIndexList),
-		isMarked(false)
+        isMarked(false)
     {
-			normal.fill(-1, point.size());
+            normal.fill(-1, point.size());
     }
-	
+    
     /**
-		* Checks if the triangle data is valid. Triangle is valid only if
+     * Checks if the triangle data is valid. Triangle is valid only if
      * the three point that compound it are different.
      *
      * @return true if triangle is valid. False, otherwise.
@@ -451,9 +451,9 @@ struct Face
     bool isValid() { 
         return !point.isEmpty();
     }
-	
+    
     /**
-		* Sets the first point index reference.
+     * Sets the first point index reference.
      *
      * @param p1 index of the first point.
      * @param p2 index of the second point.
@@ -463,11 +463,11 @@ struct Face
         point = vertexIndexList;
         normal.resize(point.size());
     }
-	
+    
     bool hasEdge(const Edge& e) const {
         return hasEdge(e.point1, e.point2);
     }
-	
+    
     bool hasEdge(int v1, int v2) const {
         bool res = false;
         if (int index = point.indexOf(v1) != -1)

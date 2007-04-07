@@ -23,10 +23,10 @@
 #include "point3d.h"
 
 /**
-Camera class. Control the postion and orientation of the camera.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ * Camera class. Control the postion and orientation of the camera.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class ICamera{
 public:
     ICamera() {}
@@ -45,17 +45,17 @@ public:
     
     virtual Point3D getOrientationVector() = 0;
 
-	virtual void setLongitude(double longitude) = 0;
+    virtual void setLongitude(double longitude) = 0;
 
-	virtual double getLongitude() = 0;
+    virtual double getLongitude() = 0;
 
-	virtual void setColatitude(double colatitude) = 0;
+    virtual void setColatitude(double colatitude) = 0;
 
-	virtual double getColatitude() = 0;
+    virtual double getColatitude() = 0;
 
-	virtual void setDistanceFromTarget(double distance) = 0;
+    virtual void setDistanceFromTarget(double distance) = 0;
 
-	virtual double getDistanceFromTarget() = 0;
+    virtual double getDistanceFromTarget() = 0;
 };
 
 #endif

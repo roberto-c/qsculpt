@@ -23,7 +23,7 @@
 #include "object3d.h"
 
 /**
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
 class Mesh : public Object3D
 {
@@ -35,3 +35,4 @@ public:
 };
 
 #endif
+

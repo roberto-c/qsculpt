@@ -71,14 +71,14 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
     glGetIntegerv(GL_VIEWPORT, m_viewPort);
 
-	glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
+    glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
     gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
 
-	m_initialWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
-	m_currentWinPoint = m_initialWinPoint;
+    m_initialWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
+    m_currentWinPoint = m_initialWinPoint;
     m_intialPoint = Point3D(x, y, z);
     m_currentPoint = m_intialPoint;
-	qDebug("wz: %f %s", wz, qPrintable(m_intialPoint.toString()));
+    qDebug("wz: %f %s", wz, qPrintable(m_intialPoint.toString()));
 
     m_currentCamera = view->getViewCamera();
     *m_intialCameraState = *m_currentCamera;
@@ -105,7 +105,7 @@ void CommandBase::mouseReleaseEvent(QMouseEvent* /*e*/)
 
 void CommandBase::mouseMoveEvent(QMouseEvent* e)
 {
-	GLdouble x = 0.0,
+    GLdouble x = 0.0,
         y = 0.0,
         z = 0.0;
     GLfloat wz = 0.0f;
@@ -115,7 +115,7 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
     
     
     Point3D currPoint = Point3D(x, y, z);
-	Point3D currWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
+    Point3D currWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
     if (m_panViewMode)
     {
         Point3D newPos = m_currentPoint - currPoint;
@@ -125,16 +125,17 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
     }
     else if (m_rotateViewMode)
     {
-		float longitude, colatitude;
+        float longitude, colatitude;
         Point3D newPos = m_currentWinPoint - currWinPoint;
 
-		longitude = newPos.getX() / 500.0f; // m_currentCamera->getDistanceFromTarget();
-		colatitude = newPos.getY() / 500.0f; //m_currentCamera->getDistanceFromTarget();
-		m_currentCamera->setLongitude(longitude + m_currentCamera->getLongitude());
-		m_currentCamera->setColatitude(colatitude + m_currentCamera->getColatitude());
+        longitude = newPos.getX() / 500.0f; // m_currentCamera->getDistanceFromTarget();
+        colatitude = newPos.getY() / 500.0f; //m_currentCamera->getDistanceFromTarget();
+        m_currentCamera->setLongitude(longitude + m_currentCamera->getLongitude());
+        m_currentCamera->setColatitude(colatitude + m_currentCamera->getColatitude());
 
-		//qDebug("Longitude: %f Latitude: %f", m_currentCamera->getLongitude(), m_currentCamera->getColatitude());
+        //qDebug("Longitude: %f Latitude: %f", m_currentCamera->getLongitude(), m_currentCamera->getColatitude());
     }
     m_currentPoint = currPoint;
-	m_currentWinPoint = currWinPoint;
+    m_currentWinPoint = currWinPoint;
 }
+

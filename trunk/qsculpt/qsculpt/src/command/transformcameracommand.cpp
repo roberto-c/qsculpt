@@ -56,3 +56,4 @@ void TransformCameraCommand::undo()
 {
     CommandBase::undo();
 }
+

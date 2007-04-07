@@ -24,10 +24,10 @@
 #include "point3d.h"
 
 /**
-Moves and chage aim of camera.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ * Moves and chage aim of camera.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class TransformCameraCommand : public CommandBase
 {
 public:
@@ -49,3 +49,4 @@ private:
 };
 
 #endif
+
