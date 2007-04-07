@@ -34,9 +34,9 @@ enum DrawingMode
 };
 
 /**
-Contains global enums and constants.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ * Contains global enums and constants.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
 class SPEnums{
 private:
@@ -45,3 +45,4 @@ private:
 };
 
 #endif
+

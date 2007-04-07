@@ -43,8 +43,8 @@ SelectCommand::~SelectCommand()
 
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {
-	if (m_record.isEmpty())
-    	CommandBase::mouseMoveEvent(e);
+    if (m_record.isEmpty())
+        CommandBase::mouseMoveEvent(e);
 }
 
 void SelectCommand::mousePressEvent(QMouseEvent* e)
@@ -65,10 +65,10 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 
 void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 {   
-   	if (m_record.size() > 0)
-		emit executed();
-	else
-		CommandBase::mouseReleaseEvent(e);
+    if (m_record.size() > 0)
+        emit executed();
+    else
+        CommandBase::mouseReleaseEvent(e);
 }
 
 void SelectCommand::selectObject()
@@ -92,3 +92,4 @@ void SelectCommand::selectObject()
         }
     }
 }
+

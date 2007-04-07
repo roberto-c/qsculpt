@@ -27,14 +27,14 @@ class IObject3D;
 struct Face;
 
 /**
-Subdivision command. Subdvide the selected object.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ * Subdivision command. Subdvide the selected object.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class SubdivideCommand : public CommandBase
 {
-	Q_OBJECT
-	
+    Q_OBJECT
+    
 public:
     SubdivideCommand();
 
@@ -43,29 +43,30 @@ public:
     virtual void execute();
 
 private:
-	class WorkerThread;
-	
-	WorkerThread* m_workerThread;
+    class WorkerThread;
+    
+    WorkerThread* m_workerThread;
 };
 
 class SubdivideCommand::WorkerThread : public QThread
 {
-	Q_OBJECT
-	
+    Q_OBJECT
+    
 public:
-	virtual void run();
-	
+    virtual void run();
+    
 private:
-	void subdivide(IObject3D* obj);
-	
-	void adjustPointNormal(IObject3D* obj, int index);
-	
-	Point3D computeFaceNormal(const IObject3D* obj, int index);
-	
-	Point3D computeFaceNormal(const IObject3D* obj, const Face &face);
+    void subdivide(IObject3D* obj);
+    
+    void adjustPointNormal(IObject3D* obj, int index);
+    
+    Point3D computeFaceNormal(const IObject3D* obj, int index);
+    
+    Point3D computeFaceNormal(const IObject3D* obj, const Face &face);
 signals:
-	void progress(int value);
+    void progress(int value);
 };
 
 
 #endif
+

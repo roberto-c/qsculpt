@@ -35,3 +35,4 @@ QSculptWindow* QSculptApp::getMainWindow()
 {
     return m_mainWindow;
 }
+

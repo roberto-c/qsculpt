@@ -205,3 +205,4 @@ void BrushCommand::selectObject()
         }
     }
 }
+

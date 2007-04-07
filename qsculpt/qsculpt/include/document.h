@@ -26,9 +26,9 @@
 class IObject3D;
 
 /**
-Holds all the document data.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ * Holds all the document data.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
 class Document : public IDocument
 {
@@ -55,3 +55,4 @@ private:
 };
 
 #endif
+

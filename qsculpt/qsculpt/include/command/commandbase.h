@@ -53,22 +53,24 @@ public:
     virtual void undo() {}
 
 protected:
-    IConfigContainer* m_configContainer;
-    bool m_isActive;
-    Point3D m_intialPoint;
-    Point3D m_currentPoint;
-    Point3D m_finalPoint;
-	Point3D m_initialWinPoint;
-	Point3D m_currentWinPoint;
-	Point3D m_finalWinPoint;
-	double m_modelMatrix[16], m_projMatrix[16];
-    GLint m_viewPort[4];
-    bool m_rotationRadius;
+    IConfigContainer*   m_configContainer;
+    bool                m_isActive;
+    Point3D             m_intialPoint;
+    Point3D             m_currentPoint;
+    Point3D             m_finalPoint;
+    Point3D             m_initialWinPoint;
+    Point3D             m_currentWinPoint;
+    Point3D             m_finalWinPoint;
+    double              m_modelMatrix[16];
+    double              m_projMatrix[16];
+    GLint               m_viewPort[4];
+    bool                m_rotationRadius;
 private:
-	Camera* m_currentCamera;
-    Camera* m_intialCameraState;
-    bool m_panViewMode;
-    bool m_rotateViewMode;
+    Camera*             m_currentCamera;
+    Camera*             m_intialCameraState;
+    bool                m_panViewMode;
+    bool                m_rotateViewMode;
 };
 
 #endif
+

@@ -29,9 +29,7 @@
 class QTextEdit;
 class QDockWidget;
 class DocumentView;
-//class IDocument;
 class ICommand;
-//enum IDocument::ChangeType;
 
 /**
  * SolidPaint3D main window.
@@ -42,7 +40,7 @@ class QSculptWindow : public QMainWindow, private Ui::MainWindow
 
 public:
     QSculptWindow();
-    ~QSculptWindow();
+    virtual ~QSculptWindow();
     
     /**
      * Gets the current document. This document is the one that all commands
@@ -64,11 +62,11 @@ public:
      * Get the current view of the document.
      */
     DocumentView* getCurrentView() const;
-	
-	/**
-	 * Set the options configuration widget for the current command.
-	 */
-	void setOptionsWidget( QWidget* widget);
+    
+    /**
+     * Set the options configuration widget for the current command.
+     */
+    void setOptionsWidget( QWidget* widget);
     
 protected:
     void closeEvent(QCloseEvent *event);
@@ -127,15 +125,16 @@ private:
     void setCurrentFile(const QString &fileName);
     QString strippedName(const QString &fullFileName);
 
-    DocumentView *m_glWidget;
-    QString curFile;
-    IDocument* m_document;
-    ICommand* m_currentCommand;
+    DocumentView*   m_glWidget;
+    QString         m_curFile;
+    IDocument*      m_document;
+    ICommand*       m_currentCommand;
     
-    QActionGroup* m_toolActionGroup;
-    QDockWidget* m_dockCommandOptions;
-    QToolBar* m_toolsToolbar;
+    QActionGroup*   m_toolActionGroup;
+    QDockWidget*    m_dockCommandOptions;
+    QToolBar*       m_toolsToolbar;
 };
 
 
 #endif
+

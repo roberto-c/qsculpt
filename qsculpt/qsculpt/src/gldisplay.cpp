@@ -42,7 +42,7 @@ GlDisplay::GlDisplay(DocumentView* parent)
     m_aspectRatio(1.0),
     m_viewType(Front),
     m_drawingMode(Points),
-	m_cursorShape(None),
+    m_cursorShape(None),
     m_zoomFactor(1.0)
 {
     m_selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
@@ -136,7 +136,7 @@ void GlDisplay::initializeGL()
     glClearColor( 0.4, 0.4, 0.4, 1.0 );
     glClearDepth(1.0f);
     glEnable( GL_DEPTH_TEST);
-	glEnable( GL_LINE_SMOOTH);
+    glEnable( GL_LINE_SMOOTH);
     glShadeModel(GL_SMOOTH);
     //glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, 1.0);
     //glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
@@ -146,11 +146,11 @@ void GlDisplay::initializeGL()
     glSelectBuffer(SELECT_BUFFER_SIZE, m_selectBuffer);
 
     if (glIsEnabled(GL_DEPTH_TEST) == GL_FALSE)
-		qDebug("Depth buffer not enabled.");
-	else
-	{
-		qDebug("Depth buffer enabled. Precision: %d", format().depthBufferSize());
-	}
+        qDebug("Depth buffer not enabled.");
+    else
+    {
+        qDebug("Depth buffer enabled. Precision: %d", format().depthBufferSize());
+    }
 }
 
 void GlDisplay::resizeGL( int w, int h )
@@ -168,14 +168,14 @@ void GlDisplay::resizeGL( int w, int h )
               DEFAULT_HEIGHT / 2 * m_zoomFactor,
              -1000.0,
               1000.0 );
-	/*
-	glOrtho( (w % 2) == 0 ? -w/2 * m_zoomFactor: -(w+1)/2* m_zoomFactor,
-			 (w % 2) == 0 ? w/2 * m_zoomFactor: (w+1)/2 * m_zoomFactor,
+    /*
+    glOrtho( (w % 2) == 0 ? -w/2 * m_zoomFactor: -(w+1)/2* m_zoomFactor,
+             (w % 2) == 0 ? w/2 * m_zoomFactor: (w+1)/2 * m_zoomFactor,
              (h % 2) == 0 ? -h/2 * m_zoomFactor: -(h+1)/2* m_zoomFactor,
-			 (h % 2) == 0 ? h/2 * m_zoomFactor: (h+1)/2 * m_zoomFactor,
+             (h % 2) == 0 ? h/2 * m_zoomFactor: (h+1)/2 * m_zoomFactor,
              -100.0,
-			 100.0 );
-	 */
+             100.0 );
+     */
     //glFrustum(-5.0 * m_aspectRatio, 5.0 * m_aspectRatio, -5.0, 5.0, 0.5, 500.0);
     glMatrixMode( GL_MODELVIEW );
     
@@ -200,7 +200,7 @@ void GlDisplay::paintGL()
         //qDebug(qPrintable(camera->toString()));
     }
     
-	//glTranslatef(-100, -100, 0);
+    //glTranslatef(-100, -100, 0);
     glDisable(GL_LIGHTING);
     
     if (m_isGridVisible)
@@ -222,21 +222,21 @@ void GlDisplay::paintGL()
     
     drawCursor();
 
-	switch(m_drawingMode)
-	{
-		case Smooth:
-			glEnable(GL_LIGHTING);
-			glShadeModel(GL_SMOOTH);
-			break;
-		case Flat:
-			glEnable(GL_LIGHTING);
-			glShadeModel(GL_FLAT);
-			break;
-		case Wireframe:
-		case Texture:
-		case Points:
-			break;
-	}
+    switch(m_drawingMode)
+    {
+        case Smooth:
+            glEnable(GL_LIGHTING);
+            glShadeModel(GL_SMOOTH);
+            break;
+        case Flat:
+            glEnable(GL_LIGHTING);
+            glShadeModel(GL_FLAT);
+            break;
+        case Wireframe:
+        case Texture:
+        case Points:
+            break;
+    }
     drawObjects();
     
     //drawOrientationAxis();
@@ -292,32 +292,32 @@ void GlDisplay::drawGrid()
 void GlDisplay::drawCursor()
 {
     m_cursorShape = Cross;
-	if (m_cursorShape == None)
-		return;
+    if (m_cursorShape == None)
+        return;
 
     m_cursorPosition.setX(0.0);
     m_cursorPosition.setY(0.0);
     m_cursorPosition.setZ(2.0);
 
-	switch(m_cursorShape)
-	{
-	case Cross:
-		glBegin(GL_LINES);
-		glVertex3f( m_cursorPosition.getX() - 0.1, m_cursorPosition.getY(),m_cursorPosition.getZ());
+    switch(m_cursorShape)
+    {
+    case Cross:
+        glBegin(GL_LINES);
+        glVertex3f( m_cursorPosition.getX() - 0.1, m_cursorPosition.getY(),m_cursorPosition.getZ());
         glVertex3f( m_cursorPosition.getX() + 0.1, m_cursorPosition.getY(),m_cursorPosition.getZ());
         
         glVertex3f( m_cursorPosition.getX(), m_cursorPosition.getY() - 0.1, m_cursorPosition.getZ());
         glVertex3f( m_cursorPosition.getX(), m_cursorPosition.getY() + 0.1, m_cursorPosition.getZ());
-		glEnd();
-		break;
-		
-	case Circle:
+        glEnd();
+        break;
+        
+    case Circle:
 
-		break;
+        break;
         
     default:
         break;
-	}
+    }
 }
 
 void GlDisplay::drawOrientationAxis()
@@ -434,23 +434,23 @@ QVector<HitRecord> GlDisplay::getPickRecords(int x, int y)
     glGetIntegerv(GL_VIEWPORT, viewport);
     gluPickMatrix((GLdouble) x, (GLdouble) (viewport[3] - y), 1.0f, 1.0f, viewport);
     
-	glOrtho( -DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
+    glOrtho( -DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
               DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
              -DEFAULT_HEIGHT / 2 * m_zoomFactor,
               DEFAULT_HEIGHT / 2 * m_zoomFactor,
              -1000.0,
               1000.0 );
 
-	/*
-	int w = width();
-	int h = height();
-	glOrtho( (w % 2) == 0 ? -w/2 * m_zoomFactor: -(w+1)/2* m_zoomFactor,
-			 (w % 2) == 0 ? w/2 * m_zoomFactor: (w+1)/2 * m_zoomFactor,
+    /*
+    int w = width();
+    int h = height();
+    glOrtho( (w % 2) == 0 ? -w/2 * m_zoomFactor: -(w+1)/2* m_zoomFactor,
+             (w % 2) == 0 ? w/2 * m_zoomFactor: (w+1)/2 * m_zoomFactor,
              (h % 2) == 0 ? -h/2 * m_zoomFactor: -(h+1)/2* m_zoomFactor,
-			 (h % 2) == 0 ? h/2 * m_zoomFactor: (h+1)/2 * m_zoomFactor,
+             (h % 2) == 0 ? h/2 * m_zoomFactor: (h+1)/2 * m_zoomFactor,
              -100.0,
-			 100.0 );
-	 */
+             100.0 );
+     */
     glMatrixMode(GL_MODELVIEW);
     
     drawObjects();
@@ -487,3 +487,4 @@ Camera* GlDisplay::getViewCamera()
     }
     return m_cameraList[m_viewType];
 }
+

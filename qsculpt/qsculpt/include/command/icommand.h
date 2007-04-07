@@ -38,9 +38,9 @@ class ICommand : public QObject
     Q_OBJECT
 
 private:
-	ICommand(const ICommand&);
-	ICommand& operator=(const ICommand&);
-	
+    ICommand(const ICommand&);
+    ICommand& operator=(const ICommand&);
+    
 public:
     /**
      * Default contructor.
@@ -118,3 +118,4 @@ signals:
 };
 
 #endif
+

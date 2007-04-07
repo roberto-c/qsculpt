@@ -26,10 +26,10 @@
 #include "point3d.h"
 
 /**
-Implements a simple object selection command.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ * Implements a simple object selection command.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class SelectCommand : public CommandBase
 {
 public:
@@ -50,3 +50,4 @@ private:
 };
 
 #endif
+

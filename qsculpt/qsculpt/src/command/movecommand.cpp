@@ -149,7 +149,7 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
     
     m_final = Point3D(x, y, z);
     Point3D delta = m_final - m_initial;
-	qDebug("Delta: %s", qPrintable(delta.toString()));
+    qDebug("Delta: %s", qPrintable(delta.toString()));
     dx = delta.getX();
     dy = delta.getY();
     

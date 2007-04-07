@@ -26,9 +26,9 @@
 class IObject3D;
 
 /**
-Contains all the scene data. All 3D objects reference data from the scene.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ * Contains all the scene data. All 3D objects reference data from the scene.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
 class Scene{
 public:
@@ -52,3 +52,4 @@ private:
 };
 
 #endif
+

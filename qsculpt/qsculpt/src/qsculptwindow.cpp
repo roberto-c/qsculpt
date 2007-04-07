@@ -61,11 +61,11 @@ void QSculptWindow::createWidgets()
     m_dockCommandOptions = new QDockWidget("Options", this);
     m_dockCommandOptions->setAllowedAreas(Qt::NoDockWidgetArea /*Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea*/);
     //addDockWidget(Qt::NoDockWidgetArea, m_dockCommandOptions);
-	m_dockCommandOptions->setFloating(true);
-	m_dockCommandOptions->move(20, 50);
+    m_dockCommandOptions->setFloating(true);
+    m_dockCommandOptions->move(20, 50);
 
-	//m_dockCommandOptions->setWindowOpacity(0.85);
-	
+    //m_dockCommandOptions->setWindowOpacity(0.85);
+    
     connect(m_showGrid, SIGNAL(toggled(bool)), m_glWidget, SLOT(setGridVisible(bool)));
     connect(m_showNormals, SIGNAL(toggled(bool)), m_glWidget, SLOT(setNormalsVisible(bool)));
     connect(m_document, SIGNAL(changed(IDocument::ChangeType, IObject3D*)), this, SLOT(documentChanged(IDocument::ChangeType)));
@@ -83,7 +83,7 @@ void QSculptWindow::createWidgets()
     v.setValue((QObject*)(cmd = new TransformCommand));
     m_transform->setData( v );
     m_transform->setCheckable(true);
-	m_transform->setEnabled(false);
+    m_transform->setEnabled(false);
     connect(m_transform, SIGNAL(activated()), this, SLOT(activateCommand()));
     
     v.setValue((QObject*)(cmd = new BrushCommand));
@@ -156,10 +156,10 @@ void QSculptWindow::open()
 
 bool QSculptWindow::save()
 {
-    if (curFile.isEmpty()) {
+    if (m_curFile.isEmpty()) {
         return saveAs();
     } else {
-        return saveFile(curFile);
+        return saveFile(m_curFile);
     }
 }
 
@@ -248,15 +248,15 @@ bool QSculptWindow::saveFile(const QString &fileName)
 
 void QSculptWindow::setCurrentFile(const QString &fileName)
 {
-    curFile = fileName;
+    m_curFile = fileName;
     //textEdit->document()->setModified(false);
     setWindowModified(false);
 
     QString shownName;
-    if (curFile.isEmpty())
+    if (m_curFile.isEmpty())
         shownName = "untitled.txt";
     else
-        shownName = strippedName(curFile);
+        shownName = strippedName(m_curFile);
 
     setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("Application")));
 }
@@ -307,12 +307,12 @@ void QSculptWindow::activateCommand()
             cmd = static_cast<ICommand*>( value.value<QObject*>() );
             if (cmd)
             {
-				if (m_currentCommand)
-					m_currentCommand->activate(false);
-				
+                if (m_currentCommand)
+                    m_currentCommand->activate(false);
+                
                 m_currentCommand = (ICommand*) cmd;
-				
-				m_currentCommand->activate(true);
+                
+                m_currentCommand->activate(true);
             }
         }
     }
@@ -343,6 +343,7 @@ void QSculptWindow::executeCommand()
 
 void QSculptWindow::setOptionsWidget(QWidget* widget)
 {
-	m_dockCommandOptions->setWidget(widget);
-	m_dockCommandOptions->show();
+    m_dockCommandOptions->setWidget(widget);
+    m_dockCommandOptions->show();
 }
+

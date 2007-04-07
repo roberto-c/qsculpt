@@ -32,10 +32,10 @@ struct Edge;
 struct Point;
 
 /**
-Base class for all 3D objects.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ * Base class for all 3D objects.
+ *
+ *  @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class Object3D : public IObject3D
 {
 public:
@@ -77,18 +77,18 @@ public:
     virtual const Normal& getNormalAtPoint(int index) const;
     virtual int addFace(const QVector<int>& vertexIndexList);
     virtual void removeFace( int id);
-	virtual int getFaceIndexAtPoint(const Point3D& p) const;
-	virtual int getClosestPointAtPoint(const Point3D &p) const;
-	virtual QVector<int> getPointsInRadius(const Point3D &p, float radius) const;
+    virtual int getFaceIndexAtPoint(const Point3D& p) const;
+    virtual int getClosestPointAtPoint(const Point3D &p) const;
+    virtual QVector<int> getPointsInRadius(const Point3D &p, float radius) const;
     virtual void adjustPointNormal(int index);
     virtual const QVector<Normal>& getNormalList() const;
     virtual const PointContainer& getPointList() const;
     virtual const QVector<Face>& getFaceList() const;
-	virtual QVector<Normal>& getNormalList();
+    virtual QVector<Normal>& getNormalList();
     virtual PointContainer& getPointList();
     virtual QVector<Face>& getFaceList();
-	virtual void lock();
-	virtual void unlock();
+    virtual void lock();
+    virtual void unlock();
 // End IObject3D interface
 
     const Object3D& operator=(const Object3D& obj);
@@ -151,30 +151,30 @@ protected:
     
     void drawVertexNormals();
     
-    Scene*			m_scene;
-    Point3D			m_position;
-    DrawingMode		m_drawingMode;
-    QColor			m_color,
-					m_boundingBoxColor;
-    Point3D			m_boundingBoxVert[8];
-	float			m_minX,
-					m_maxX,
-					m_minY,
-					m_maxY,
-					m_minZ,
-					m_maxZ;
-    float			m_rotX, m_rotY, m_rotZ;
-    bool			m_showBoundingBox;
-    int				m_callListId;
-	bool			m_genereateCallList;
-	
+    Scene*          m_scene;
+    Point3D         m_position;
+    DrawingMode     m_drawingMode;
+    QColor          m_color,
+                    m_boundingBoxColor;
+    Point3D         m_boundingBoxVert[8];
+    float           m_minX,
+                    m_maxX,
+                    m_minY,
+                    m_maxY,
+                    m_minZ,
+                    m_maxZ;
+    float           m_rotX, m_rotY, m_rotZ;
+    bool            m_showBoundingBox;
+    int             m_callListId;
+    bool            m_genereateCallList;
+    
 private:
     void updateBoundingBox();
     
-    PointContainer	m_pointList;
-    QVector<Normal>	m_normalList;
-    QVector<Face>	m_faceList;
-	QMutex			m_mutex;
+    PointContainer  m_pointList;
+    QVector<Normal> m_normalList;
+    QVector<Face>   m_faceList;
+    QMutex          m_mutex;
 };
 
 #endif

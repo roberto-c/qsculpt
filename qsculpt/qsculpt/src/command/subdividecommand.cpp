@@ -29,7 +29,7 @@
 
 SubdivideCommand::SubdivideCommand()
  : CommandBase(),
-	m_workerThread(new WorkerThread)
+    m_workerThread(new WorkerThread)
 {
 }
 
@@ -42,34 +42,34 @@ SubdivideCommand::~SubdivideCommand()
 void SubdivideCommand::execute()
 {
     qDebug("execute SubdivideCommand()");
-	QProgressDialog dlg("Subdividing the selected object...", 0, 0, 100, SPAPP->getMainWindow());
-	dlg.setWindowModality(Qt::WindowModal);
-	dlg.setAutoReset(true);
-	dlg.setAutoClose(true);
-	dlg.setValue(0);
-	
-	QThread::connect(m_workerThread, SIGNAL(progress(int)), &dlg, SLOT(setValue(int)));
-	
-	dlg.show();
+    QProgressDialog dlg("Subdividing the selected object...", 0, 0, 100, SPAPP->getMainWindow());
+    dlg.setWindowModality(Qt::WindowModal);
+    dlg.setAutoReset(true);
+    dlg.setAutoClose(true);
+    dlg.setValue(0);
+    
+    QThread::connect(m_workerThread, SIGNAL(progress(int)), &dlg, SLOT(setValue(int)));
+    
+    dlg.show();
     m_workerThread->start();
-	while(m_workerThread->isRunning())
-	{
-		SPAPP->processEvents();
-		usleep(100 * 1000); // 100 ms
-	}
-	dlg.setValue(100);
-	SPAPP->getMainWindow()->getCurrentView()->updateView();
+    while(m_workerThread->isRunning())
+    {
+        SPAPP->processEvents();
+        usleep(100 * 1000); // 100 ms
+    }
+    dlg.setValue(100);
+    SPAPP->getMainWindow()->getCurrentView()->updateView();
 }
 
 void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
 {
-	Q_ASSERT(obj);
-	
-	QVector<Point>& pointList = obj->getPointList();
-	QVector<Face>& faceList = obj->getFaceList();
-	
-	int progressValue = 0;
-	QVector<Edge> edgeList;
+    Q_ASSERT(obj);
+    
+    QVector<Point>& pointList = obj->getPointList();
+    QVector<Face>& faceList = obj->getFaceList();
+    
+    int progressValue = 0;
+    QVector<Edge> edgeList;
     Edge edge1, edge2;
     Point3D point;
     QVector<int> vertexIndex(4);
@@ -97,8 +97,8 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
             if (indexOf == -1)
             {
                 point = pointList[edge1.point1].vertex
-				+ (pointList[edge1.point2].vertex
-				   - pointList[edge1.point1].vertex) / 2.0f;
+                + (pointList[edge1.point2].vertex
+                   - pointList[edge1.point1].vertex) / 2.0f;
                 obj->addVertex(point);
                 edge1.midPoint = pointList.size() - 1;
                 edgeList.append(edge1);
@@ -114,8 +114,8 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
             if (indexOf == -1)
             {
                 point = pointList[edge2.point1].vertex
-				+ (pointList[edge2.point2].vertex
-				   - pointList[edge2.point1].vertex) / 2.0f;
+                + (pointList[edge2.point2].vertex
+                   - pointList[edge2.point1].vertex) / 2.0f;
                 obj->addVertex(point);
                 edge2.midPoint = pointList.size() - 1;
                 edgeList.append(edge2);
@@ -158,10 +158,10 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
             else
                 obj->addFace(vertexIndex);
         }
-		int prog = (faceCount - i) * 100 / faceCount;
-		if (prog != progressValue)
-			emit progress(prog);
-		progressValue = prog;
+        int prog = (faceCount - i) * 100 / faceCount;
+        if (prog != progressValue)
+            emit progress(prog);
+        progressValue = prog;
     }
     
     // adjust points normals
@@ -171,24 +171,24 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
         adjustPointNormal(obj, i);
     }
     qDebug("Num Vertex: %d Num Faces: %d", pointList.size(), faceList.size());
-	//qDebug("Octree dump: \n %s", qPrintable(pointList.toString()));
+    //qDebug("Octree dump: \n %s", qPrintable(pointList.toString()));
 }
 
 void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index)
 {
-	Q_ASSERT(obj);
-	
-	QVector<Point>& pointList = obj->getPointList();
-	QVector<Face>& faceList = obj->getFaceList();
-	
-	Normal res;
-	
-	Point& p = pointList[index];
-	int numFaces = p.faceRef.size();
-	for (int i = 0; i < numFaces; i++)
-	{
-    	res = res + computeFaceNormal(obj, p.faceRef[i]);
-	}
+    Q_ASSERT(obj);
+    
+    QVector<Point>& pointList = obj->getPointList();
+    QVector<Face>& faceList = obj->getFaceList();
+    
+    Normal res;
+    
+    Point& p = pointList[index];
+    int numFaces = p.faceRef.size();
+    for (int i = 0; i < numFaces; i++)
+    {
+        res = res + computeFaceNormal(obj, p.faceRef[i]);
+    }
     
     res = res / (float)numFaces;
     res.normalize();
@@ -197,63 +197,64 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
         qDebug("Firsr point: res: %s numFaces: %d", qPrintable(res.toString()), numFaces);
     
     for (int i = 0; i < numFaces; i++)
-	{
+    {
         Face& t = faceList[p.faceRef[i]];
         int numFacePoints = t.point.size();
-		for (int j = 0; j < numFacePoints; ++j)
-		{
-    		if (index == t.point[j])
-    		{
-    			obj->getNormalList()[t.normal[j]] = res;
-    		}
-		}
-	}
+        for (int j = 0; j < numFacePoints; ++j)
+        {
+            if (index == t.point[j])
+            {
+                obj->getNormalList()[t.normal[j]] = res;
+            }
+        }
+    }
 }
 
 Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, int index)
 {
-	Q_ASSERT(obj);
-	
-	const QVector<Face>& faceList = obj->getFaceList();
-	
+    Q_ASSERT(obj);
+    
+    const QVector<Face>& faceList = obj->getFaceList();
+    
     return faceList.size() > index ? computeFaceNormal(obj, faceList[index]) : Point3D();
 }
 
 Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, const Face &face)
 {
-	Q_ASSERT(obj);
-	
-	const QVector<Point>& pointList = obj->getPointList();
-	
+    Q_ASSERT(obj);
+    
+    const QVector<Point>& pointList = obj->getPointList();
+    
     int lastPoint = face.point.size() - 1;
     Point3D v1 = pointList[face.point[1]].vertex - pointList[face.point[0]].vertex;
     Point3D v2 = pointList[face.point[lastPoint]].vertex - pointList[face.point[0]].vertex;
     
     Point3D res = v1.crossProduct( v2);
     res.normalize();
-	
+    
     return res;
 }
 
 void SubdivideCommand::WorkerThread::run() {
-	qDebug("Running...");
-	const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
-	
-	if (!doc)
-		return;
-	
-	const QList<IObject3D*> selectedObjects = doc->getSelectedObjects();
-	int objectCount = selectedObjects.size();
-	
-	for (int i = 0; i < objectCount; ++i)
-	{
-		IObject3D* obj = selectedObjects.at(i);
-		if (obj)
-		{
-			obj->lock();
-			subdivide(obj);
-			obj->unlock();
-		}
-	}
-	qDebug("Ending thread");
+    qDebug("Running...");
+    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
+    
+    if (!doc)
+        return;
+    
+    const QList<IObject3D*> selectedObjects = doc->getSelectedObjects();
+    int objectCount = selectedObjects.size();
+    
+    for (int i = 0; i < objectCount; ++i)
+    {
+        IObject3D* obj = selectedObjects.at(i);
+        if (obj)
+        {
+            obj->lock();
+            subdivide(obj);
+            obj->unlock();
+        }
+    }
+    qDebug("Ending thread");
 }
+

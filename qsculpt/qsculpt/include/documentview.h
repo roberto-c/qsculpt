@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SOLIDPAINT3DGLDRAWERWIDGET_H
-#define SOLIDPAINT3DGLDRAWERWIDGET_H
+#ifndef DOCUMENTVIEW_H
+#define DOCUMENTVIEW_H
 
 #include <QWidget>
 #include <QList>
@@ -26,7 +26,6 @@
 #include "point3d.h"
 #include "gldisplay.h"
 
-//namespace SolidPaint3d {
 class IObject3D;
 class IDocument;
 class QComboBox;
@@ -64,14 +63,18 @@ public:
      *
      * @param doc document from which to get objects to draw.
      */
-    void setDocument(IDocument* doc) { m_document = doc; }
+    void setDocument(IDocument* doc) { 
+        m_document = doc; 
+    };
     
     /**
      * Get the view's document source. 
      *
      * @return source document for this view.
      */
-    IDocument* getDocument() {return m_document; }
+    IDocument* getDocument() {
+        return m_document; 
+    };
     
     /**
      * Return the state of the visibility of the grid.
@@ -96,29 +99,47 @@ public:
      * 
      * @return a HitRecord vector with the results of the test.
      */
-    QVector<HitRecord> getPickRecords(int x, int y) { return m_display->getPickRecords(x, y); }
+    QVector<HitRecord> getPickRecords(int x, int y) { 
+        return m_display->getPickRecords(x, y);
+    };
     
     /**
      * getViewType
      */
-    GlDisplay::PerspectiveType getPerspectiveViewType() { return m_display->getPerspectiveView(); }
+    GlDisplay::PerspectiveType getPerspectiveViewType() { 
+        return m_display->getPerspectiveView();
+    };
     
     /**
      * 
      */
-    Camera* getViewCamera() { return m_display->getViewCamera(); }
+    Camera* getViewCamera() { 
+        return m_display->getViewCamera();
+    };
     
-	void set3DCursorShape(GlDisplay::CursorShapeType shape) {m_display->set3DCursorShape(shape);}
+    void set3DCursorShape(GlDisplay::CursorShapeType shape) {
+        m_display->set3DCursorShape(shape);
+    };
 
-	GlDisplay::CursorShapeType getCursorShape() { return m_display->getCursorShape(); }
+    GlDisplay::CursorShapeType getCursorShape() {
+        return m_display->getCursorShape();
+    };
     
-	void setCursorPosition(Point3D p) { m_display->setCursorPosition(p); }
+    void setCursorPosition(Point3D p) { 
+        m_display->setCursorPosition(p); 
+    };
 
-	Point3D getCursorPosition() { return m_display->getCursorPosition(); }
+    Point3D getCursorPosition() {
+        return m_display->getCursorPosition();
+    };
 
-	void setCursorOrientation(Point3D n) { m_display->setCursorOrientation(n); }
+    void setCursorOrientation(Point3D n) {
+        m_display->setCursorOrientation(n);
+    };
 
-	Point3D getCursorOrientation() { return m_display->getCursorOrientation(); }
+    Point3D getCursorOrientation() {
+        return m_display->getCursorOrientation();
+    };
 
 public slots:
     /**
@@ -150,6 +171,5 @@ protected:
     QComboBox* m_drawingMode;
 };
 
-//}
-
 #endif
+

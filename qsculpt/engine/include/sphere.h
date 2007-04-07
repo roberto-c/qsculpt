@@ -23,10 +23,10 @@
 #include "object3d.h"
 struct GLUquadric;
 /**
-Class that implement a sphere object.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ * Class that implement a sphere object.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class Sphere : public Object3D
 {
 public:
@@ -44,3 +44,4 @@ protected:
 };
 
 #endif
+

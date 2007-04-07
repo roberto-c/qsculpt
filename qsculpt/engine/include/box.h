@@ -23,9 +23,9 @@
 #include "object3d.h"
 
 /**
-Draw a 3D box.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ * Draw a 3D box.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
 class Box : public Object3D
 {

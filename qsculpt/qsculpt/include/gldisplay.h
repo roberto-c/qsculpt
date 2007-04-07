@@ -52,6 +52,8 @@ class GlDisplay : public QGLWidget
 {
     Q_OBJECT
 public:
+    typedef QMap<int, Camera*> CameraContainer;
+    
     enum PerspectiveType {
         Front = 0,
         Back,
@@ -62,11 +64,11 @@ public:
         Perspective
     };
     
-	enum CursorShapeType {
-		None,
-		Cross,
-		Circle
-	};
+    enum CursorShapeType {
+        None,
+        Cross,
+        Circle
+    };
 
     /**
      * Widget constructor. Initializes default parameters. This widget only can
@@ -112,19 +114,33 @@ public:
     
     /**
      */
-    PerspectiveType getPerspectiveView() { return m_viewType;}
+    PerspectiveType getPerspectiveView() {
+        return m_viewType;
+    };
 
-	void set3DCursorShape(CursorShapeType shape) {m_cursorShape = shape;}
+    void set3DCursorShape(CursorShapeType shape) {
+        m_cursorShape = shape;
+    };
 
-	CursorShapeType getCursorShape() { return m_cursorShape; }
+    CursorShapeType getCursorShape() {
+        return m_cursorShape;
+    };
     
-	void setCursorPosition(Point3D p) { m_cursorPosition = p; }
+    void setCursorPosition(Point3D p) {
+        m_cursorPosition = p;
+    };
 
-	Point3D getCursorPosition() { return m_cursorPosition; }
+    Point3D getCursorPosition() { 
+        return m_cursorPosition; 
+    };
 
-	void setCursorOrientation(Point3D n) { m_cursorOrientation = n; }
+    void setCursorOrientation(Point3D n) {
+        m_cursorOrientation = n; 
+    };
 
-	Point3D getCursorOrientation() { return m_cursorOrientation; }
+    Point3D getCursorOrientation() {
+        return m_cursorOrientation;
+    };
 
 public slots:
     /**
@@ -132,14 +148,18 @@ public slots:
      * 
      * @param mode New drawing mode to display.
      */
-    void setDrawingMode(DrawingMode mode){m_drawingMode = mode;}
+    void setDrawingMode(DrawingMode mode){
+        m_drawingMode = mode;
+    };
     
     /**
      * Change the view perspective to one of the predefined type.
      * 
      * @param type new view to use
      */
-    void setPerspectiveView(PerspectiveType type) {m_viewType = type;}
+    void setPerspectiveView(PerspectiveType type) {
+        m_viewType = type;
+    };
     
     /**
      * Turn the visibility of the grid on/off.
@@ -170,25 +190,27 @@ private:
      * Draws the grid of the widget.
      */
     void drawGrid();
-    
+        
     void drawObjects();
 
-	void drawCursor();
+    void drawCursor();
     
     void drawOrientationAxis();
 
-    bool            m_isGridVisible;    /**< Grid visibility flag */
-    bool            m_areNormalsVisible; /**< Normals visibility flag */
-    GLuint*   m_selectBuffer;     /**< Selection buffer */
+    bool            m_isGridVisible;        /**< Grid visibility flag */
+    bool            m_areNormalsVisible;    /**< Normals visibility flag */
+    GLuint*         m_selectBuffer;         /**< Selection buffer */
     double          m_aspectRatio;
-    PerspectiveType m_viewType;         /**< Kind of view to display */
-    DrawingMode     m_drawingMode;      /**< Object drawing mode */
-    QMap<int, Camera*>  m_cameraList;       /**< Cameras for the differents view types */
-	CursorShapeType m_cursorShape;
-	Point3D			m_cursorPosition;
-	Point3D			m_cursorOrientation;
-    GLint           m_viewport[4];
-    GLfloat         m_zoomFactor;
+    PerspectiveType m_viewType;             /**< Kind of view to display */
+    DrawingMode     m_drawingMode;          /**< Object drawing mode */
+    CameraContainer m_cameraList;           /**< Cameras for the differents view types */
+    
+    CursorShapeType     m_cursorShape;
+    Point3D             m_cursorPosition;
+    Point3D             m_cursorOrientation;
+    GLint               m_viewport[4];
+    GLfloat             m_zoomFactor;
 };
 
 #endif
+

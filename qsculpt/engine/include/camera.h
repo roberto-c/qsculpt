@@ -23,10 +23,10 @@
 #include "icamera.h"
 
 /**
-Implements the ICamera interface
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ * Implements the ICamera interface
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class Camera : public ICamera
 {
 public:
@@ -46,17 +46,17 @@ public:
     
     virtual Point3D getOrientationVector();
 
-	virtual void setLongitude(double longitude);
+    virtual void setLongitude(double longitude);
 
-	virtual double getLongitude();
+    virtual double getLongitude();
 
-	virtual void setColatitude(double colatitude);
+    virtual void setColatitude(double colatitude);
 
-	virtual double getColatitude();
+    virtual double getColatitude();
 
-	virtual void setDistanceFromTarget(double distance);
+    virtual void setDistanceFromTarget(double distance);
 
-	virtual double getDistanceFromTarget();
+    virtual double getDistanceFromTarget();
 
     QString toString();
 
@@ -65,9 +65,9 @@ private:
     Point3D m_target;
     Point3D m_orientation;
 
-	double m_colatitude;
-	double m_longitude;
-	double m_distanceFromTarget;
+    double m_colatitude;
+    double m_longitude;
+    double m_distanceFromTarget;
 };
 
 #endif

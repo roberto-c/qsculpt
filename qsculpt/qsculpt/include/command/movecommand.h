@@ -117,19 +117,15 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent* e);
 
 private:
-    bool m_actionFinished;          /**< Flag to indicate that the command 
-                                     * is modifying the object. */
-    
-    Point3D m_initial;              /**< Initial position of the object. */
-    
-    Point3D m_delta;                /**< Change of position between mouse
-                                     * movements */
-    
-    Point3D m_final;                /**< Final postion of the object. */
-    
-    QPoint m_mousePosition;         /**< Initial mouse position */
-    
-    QList<IObject3D*> m_objects;    /**< Object list to move */
+    bool                m_actionFinished;   /**< Flag to indicate that the command 
+                                             * is modifying the object. */
+    Point3D             m_initial;          /**< Initial position of the object. */
+    Point3D             m_delta;            /**< Change of position between mouse
+                                             * movements */
+    Point3D             m_final;            /**< Final postion of the object. */
+    QPoint              m_mousePosition;    /**< Initial mouse position */
+    QList<IObject3D*>   m_objects;          /**< Object list to move */
 };
 
 #endif
+

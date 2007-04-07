@@ -63,3 +63,4 @@ void TransformWidget::applyTransform()
     
     SPAPP->getMainWindow()->getCurrentView()->updateView();
 }
+

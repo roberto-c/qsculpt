@@ -25,29 +25,27 @@
 #include "documentview.h"
 #include "point3d.h"
 
-//namespace Command { namespace Ui { 
-	class BrushProperties;
-//} }
+class BrushProperties;
 
 /**
-Implements a simple object selection command.
-
-	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ * Implements a simple object selection command.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class BrushCommand : public CommandBase
 {
 public:
-	enum BrushAction {
-		Push,
-		Pull
-	};
-	
+    enum BrushAction {
+        Push,
+        Pull
+    };
+    
     BrushCommand();
 
     virtual ~BrushCommand();
 
-	virtual void activate(bool active);
-	
+    virtual void activate(bool active);
+    
     virtual void mouseMoveEvent(QMouseEvent* e);
     
     virtual void mousePressEvent(QMouseEvent* e);
@@ -55,16 +53,16 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent* e);
 
 private:
-    QVector<HitRecord> m_record;
-    
     void selectObject();
     
-    IObject3D* m_object;
-    double m_radius;
-    double m_depth;
-	BrushAction m_action;
-    QVector<int> m_vertexSelected;
-	BrushProperties* m_propertiesWindow;
+    QVector<HitRecord>  m_record;
+    IObject3D*          m_object;
+    double              m_radius;
+    double              m_depth;
+    BrushAction         m_action;
+    QVector<int>        m_vertexSelected;
+    BrushProperties*    m_propertiesWindow;
 };
 
 #endif
+
