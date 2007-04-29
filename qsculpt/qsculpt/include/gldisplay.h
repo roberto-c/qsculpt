@@ -106,7 +106,7 @@ public:
      * 
      * @return HitRecord vector
      */
-    QVector<HitRecord> getPickRecords(int x, int y);
+    QVector<HitRecord> getPickRecords(int _x, int _y);
     
     /**
      */

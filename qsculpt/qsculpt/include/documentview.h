@@ -99,8 +99,8 @@ public:
      * 
      * @return a HitRecord vector with the results of the test.
      */
-    QVector<HitRecord> getPickRecords(int x, int y) { 
-        return m_display->getPickRecords(x, y);
+    QVector<HitRecord> getPickRecords(int _x, int _y) { 
+        return m_display->getPickRecords(_x, _y);
     };
     
     /**

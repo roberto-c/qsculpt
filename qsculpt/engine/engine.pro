@@ -10,8 +10,8 @@ MOC_DIR=./moc
 RCC_DIR=./res
 VERSION=0.1.0
 
-debug:DESTDIR=../build/debug
 release:DESTDIR=../build/release
+debug:DESTDIR=../build/debug
 
 TEMPLATE = lib
 CONFIG += lib_bundle

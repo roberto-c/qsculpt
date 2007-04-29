@@ -23,7 +23,7 @@
 #include <QVector>
 #include "point3d.h"
 #include "spenums.h"
-
+#include "octree.h"
 
 /*
  * Class forward declaration
@@ -34,7 +34,7 @@ struct Face;
 struct Edge;
 struct Point;
 
-typedef QVector<Point> PointContainer;
+typedef Octree<Point> PointContainer;
 
 /**
 Interface that every 3D object should implement.

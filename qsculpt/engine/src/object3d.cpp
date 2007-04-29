@@ -445,7 +445,7 @@ const Normal& Object3D::getNormalAtPoint(int index) const
 
 int Object3D::addFace(const QVector<int>& vertexIndexList)
 {
-    qDebug("addFace");
+    //qDebug("addFace");
     Face t(vertexIndexList);
 
     if (t.isValid())
