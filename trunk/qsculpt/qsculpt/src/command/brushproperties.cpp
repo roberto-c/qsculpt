@@ -19,8 +19,8 @@
  ***************************************************************************/
 #include "brushproperties.h"
 
-BrushProperties::BrushProperties(QWidget* parent)
-: QWidget(parent)
+BrushProperties::BrushProperties(QWidget* _parent)
+: QWidget(_parent)
 {
     setupUi(this);
 }

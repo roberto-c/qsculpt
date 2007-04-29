@@ -34,8 +34,8 @@
 #include "icommand.h"
 #include "gldisplay.h"
 
-DocumentView::DocumentView( QWidget *parent )
-        : QWidget( parent ),
+DocumentView::DocumentView( QWidget *_parent )
+        : QWidget( _parent ),
         m_document(NULL),
         m_viewPerspective(NULL),
         m_drawingMode(NULL)
@@ -47,29 +47,29 @@ DocumentView::~DocumentView() {}
 
 void DocumentView::createWidgets()
 {
-    QGridLayout* layout = new QGridLayout(this);
+    QGridLayout* gridLayout = new QGridLayout(this);
     m_display = new GlDisplay(this);
     
     QLabel* label = new QLabel("View", this);    
     m_viewPerspective = new QComboBox(this);
     label->setBuddy(m_viewPerspective);
     
-    layout->addWidget(m_display, 0,0, 1, 5);
-    layout->addWidget(label, 1, 0);
-    layout->addWidget(m_viewPerspective, 1, 1);
+    gridLayout->addWidget(m_display, 0,0, 1, 5);
+    gridLayout->addWidget(label, 1, 0);
+    gridLayout->addWidget(m_viewPerspective, 1, 1);
     
     label = new QLabel("Drawing Mode", this);
     m_drawingMode = new QComboBox(this);
     label->setBuddy(m_drawingMode);
     
-    layout->addWidget(label, 1, 2);
-    layout->addWidget(m_drawingMode, 1, 3);
-    layout->addItem(new QSpacerItem(100, 0), 1, 4);
-    layout->setColumnStretch(0,0);
-    layout->setColumnStretch(1,0);
-    layout->setColumnStretch(2,0);
-    layout->setColumnStretch(3,0);
-    layout->setColumnStretch(4,4);
+    gridLayout->addWidget(label, 1, 2);
+    gridLayout->addWidget(m_drawingMode, 1, 3);
+    gridLayout->addItem(new QSpacerItem(100, 0), 1, 4);
+    gridLayout->setColumnStretch(0,0);
+    gridLayout->setColumnStretch(1,0);
+    gridLayout->setColumnStretch(2,0);
+    gridLayout->setColumnStretch(3,0);
+    gridLayout->setColumnStretch(4,4);
     
     m_viewPerspective->addItem("Front", GlDisplay::Front);
     m_viewPerspective->addItem("Back", GlDisplay::Back);

@@ -3,6 +3,6 @@
 ######################################################################
 
 TEMPLATE = subdirs
-
+CONFIG += debug
 # Directories
 SUBDIRS += engine qsculpt

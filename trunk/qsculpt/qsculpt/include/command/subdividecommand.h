@@ -55,8 +55,12 @@ class SubdivideCommand::WorkerThread : public QThread
 public:
     virtual void run();
     
+    void setRangeBegin(unsigned int value);
+    void setRangeEnd(unsigned int value);
+    void setObject3D(IObject3D* obj);
+
 private:
-    void subdivide(IObject3D* obj);
+    void subdivide(IObject3D* obj, int rbegin, int rend);
     
     void adjustPointNormal(IObject3D* obj, int index);
     
@@ -65,6 +69,11 @@ private:
     Point3D computeFaceNormal(const IObject3D* obj, const Face &face);
 signals:
     void progress(int value);
+
+private:
+    unsigned int m_rbegin;
+    unsigned int m_rend;
+    IObject3D* m_obj;
 };
 
 

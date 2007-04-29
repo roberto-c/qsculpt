@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "subdividecommand.h"
 
+#include <QtDebug>
 #include <QThread>
 #include <QProgressDialog>
 #include "idocument.h"
@@ -42,30 +43,57 @@ SubdivideCommand::~SubdivideCommand()
 void SubdivideCommand::execute()
 {
     qDebug("execute SubdivideCommand()");
-    QProgressDialog dlg("Subdividing the selected object...", 0, 0, 100, SPAPP->getMainWindow());
+    QProgressDialog dlg("Subdividing the selected object...", 0, 0, 100,
+						SPAPP->getMainWindow());
     dlg.setWindowModality(Qt::WindowModal);
     dlg.setAutoReset(true);
     dlg.setAutoClose(true);
     dlg.setValue(0);
     
-    QThread::connect(m_workerThread, SIGNAL(progress(int)), &dlg, SLOT(setValue(int)));
+    QThread::connect(m_workerThread, SIGNAL(progress(int)),
+					 &dlg, SLOT(setValue(int)));
     
     dlg.show();
-    m_workerThread->start();
-    while(m_workerThread->isRunning())
+    qDebug() << "Start time:" << QDateTime::currentDateTime();
+    
+    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
+    
+    if (!doc)
+        return;
+    
+    const QList<IObject3D*> selectedObjects = doc->getSelectedObjects();
+    int objectCount = selectedObjects.size();
+    
+    for (int i = 0; i < objectCount; ++i)
     {
-        SPAPP->processEvents();
-        usleep(100 * 1000); // 100 ms
+        IObject3D* obj = selectedObjects.at(i);
+        if (obj)
+        {
+            obj->lock();
+            PointContainer& p = obj->getPointList();
+            p.reserve(p.size()*4);
+            obj->unlock();
+            int faceCount = obj->getFaceList().size();
+            m_workerThread->setObject3D(obj);
+            m_workerThread->setRangeBegin(0);
+            m_workerThread->setRangeEnd( faceCount  - 1);
+            m_workerThread->start();
+            while(m_workerThread->isRunning())
+            {
+                SPAPP->processEvents();
+                usleep(100 * 1000); // 100 ms
+            }
+        }
     }
+    qDebug() << "End time:" << QDateTime::currentDateTime();
     dlg.setValue(100);
     SPAPP->getMainWindow()->getCurrentView()->updateView();
 }
 
-void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
+void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int rend)
 {
     Q_ASSERT(obj);
-    
-    QVector<Point>& pointList = obj->getPointList();
+    PointContainer& pointList = obj->getPointList();
     QVector<Face>& faceList = obj->getFaceList();
     
     int progressValue = 0;
@@ -73,10 +101,10 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
     Edge edge1, edge2;
     Point3D point;
     QVector<int> vertexIndex(4);
-    int faceCount = faceList.size();
     int indexOf = -1;
-    for (int i = faceCount -1; i >= 0 ; --i)
+    for (int i = rend; i >= rbegin; --i)
     {
+        obj->lock();
         const Face face = faceList.at(i);
         
         Vertex midFaceVertex;
@@ -142,6 +170,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
             // for the first vertex. For all other vertices, a new face is added.
             // This is done to be able to maintain the original face object without
             // modifying the indices of the points and faces.
+            
             if (j == numVertex)
             {
                 faceList[i].setPoints(vertexIndex);
@@ -157,8 +186,10 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
             }
             else
                 obj->addFace(vertexIndex);
+            
         }
-        int prog = (faceCount - i) * 100 / faceCount;
+        obj->unlock();
+        int prog = (rend - rbegin - i) * 100 / (rend - rbegin);
         if (prog != progressValue)
             emit progress(prog);
         progressValue = prog;
@@ -168,17 +199,18 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj)
     int pointCount = pointList.size();
     for (int i = 0; i < pointCount; ++i)
     {
+        obj->lock();
         adjustPointNormal(obj, i);
+        obj->unlock();
     }
     qDebug("Num Vertex: %d Num Faces: %d", pointList.size(), faceList.size());
-    //qDebug("Octree dump: \n %s", qPrintable(pointList.toString()));
 }
 
 void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index)
 {
     Q_ASSERT(obj);
     
-    QVector<Point>& pointList = obj->getPointList();
+    PointContainer& pointList = obj->getPointList();
     QVector<Face>& faceList = obj->getFaceList();
     
     Normal res;
@@ -192,10 +224,7 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
     
     res = res / (float)numFaces;
     res.normalize();
-    
-    if (index == 0)
-        qDebug("Firsr point: res: %s numFaces: %d", qPrintable(res.toString()), numFaces);
-    
+
     for (int i = 0; i < numFaces; i++)
     {
         Face& t = faceList[p.faceRef[i]];
@@ -223,7 +252,7 @@ Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, 
 {
     Q_ASSERT(obj);
     
-    const QVector<Point>& pointList = obj->getPointList();
+    const PointContainer& pointList = obj->getPointList();
     
     int lastPoint = face.point.size() - 1;
     Point3D v1 = pointList[face.point[1]].vertex - pointList[face.point[0]].vertex;
@@ -237,24 +266,21 @@ Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, 
 
 void SubdivideCommand::WorkerThread::run() {
     qDebug("Running...");
-    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
-    
-    if (!doc)
-        return;
-    
-    const QList<IObject3D*> selectedObjects = doc->getSelectedObjects();
-    int objectCount = selectedObjects.size();
-    
-    for (int i = 0; i < objectCount; ++i)
-    {
-        IObject3D* obj = selectedObjects.at(i);
-        if (obj)
-        {
-            obj->lock();
-            subdivide(obj);
-            obj->unlock();
-        }
-    }
+    subdivide(m_obj, m_rbegin, m_rend);
     qDebug("Ending thread");
 }
 
+void SubdivideCommand::WorkerThread::setRangeBegin(unsigned int value)
+{
+    m_rbegin = value;
+}
+
+void SubdivideCommand::WorkerThread::setRangeEnd(unsigned int value)
+{
+    m_rend = value;
+}
+
+void SubdivideCommand::WorkerThread::setObject3D(IObject3D* obj)
+{
+    m_obj = obj;
+}

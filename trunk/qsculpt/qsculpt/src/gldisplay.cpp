@@ -34,8 +34,8 @@
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
 
-GlDisplay::GlDisplay(DocumentView* parent)
- : QGLWidget(parent),
+GlDisplay::GlDisplay(DocumentView* _parent)
+ : QGLWidget(_parent),
     m_isGridVisible(false),
     m_areNormalsVisible(false),
     m_selectBuffer(NULL),
@@ -407,9 +407,9 @@ void GlDisplay::mouseReleaseEvent ( QMouseEvent * e )
     }
 }
 
-void GlDisplay::wheelEvent ( QWheelEvent * event )
+void GlDisplay::wheelEvent ( QWheelEvent * e )
 {
-    int numDegrees = event->delta() / 8;
+    int numDegrees = e->delta() / 8;
     int numSteps = numDegrees / 15;
 
     m_zoomFactor += numSteps * 0.01;
@@ -418,7 +418,7 @@ void GlDisplay::wheelEvent ( QWheelEvent * event )
     updateGL();
 }
 
-QVector<HitRecord> GlDisplay::getPickRecords(int x, int y)
+QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
 {
     QVector<HitRecord> records;
     
@@ -432,7 +432,7 @@ QVector<HitRecord> GlDisplay::getPickRecords(int x, int y)
     glLoadIdentity();
     GLint viewport[4] ={0};
     glGetIntegerv(GL_VIEWPORT, viewport);
-    gluPickMatrix((GLdouble) x, (GLdouble) (viewport[3] - y), 1.0f, 1.0f, viewport);
+    gluPickMatrix((GLdouble) _x, (GLdouble) (viewport[3] - _y), 1.0f, 1.0f, viewport);
     
     glOrtho( -DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
               DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,

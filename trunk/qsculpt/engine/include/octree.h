@@ -20,6 +20,7 @@
 #ifndef OCTREE_H
 #define OCTREE_H
 
+#include <QtDebug>
 #include <QVector>
 #include "point3d.h"
 
@@ -29,8 +30,8 @@ class Octree
 public:
     Octree() {
         m_rootNode = new OctreeNode<T>(this);
-        m_rootNode->setMinimumCoords(Vertex(-1000, -1000, -1000));
-        m_rootNode->setMaximumCoords(Vertex(1000, 1000, 1000));
+        m_rootNode->setMinimumCoords(Vertex(-1024, -1024, -1024));
+        m_rootNode->setMaximumCoords(Vertex(1024, 1024, 1024));
     }
     
     ~Octree() {
@@ -54,9 +55,12 @@ public:
     }
     
     inline void append(const T& v) {
-        qDebug("Octree::add");
+        //qDebug("Octree::add");
         if (!m_rootNode->add(v))
-            qDebug("Octree::add : failed: P: %s", qPrintable(v.vertex.toString()));
+        {
+            //qDebug("Octree::add : failed: P: %s",
+            //  qPrintable(v.vertex.toString()));
+        }
     }
     
     inline void remove(const T& v) {
@@ -83,7 +87,11 @@ public:
         }
         return -1;
     }
-    
+   
+    inline void reserve(int _size) {
+        m_data.reserve(_size);
+    }
+ 
     inline QString toString() {
         return m_rootNode->toString();
     }
@@ -100,6 +108,7 @@ private:
     template< typename D >
     class OctreeNode {
         static const int MaxVertex = 4;
+		static const int MaxDepth = 50;
     public:
         OctreeNode(Octree<D>* octree);          
         OctreeNode(OctreeNode<D>* parent, int depth = 0);           
@@ -326,18 +335,14 @@ bool Octree<T>::OctreeNode<D>::add(const D& data)
         }
     }
     else {
-        if ( m_dataIndices.size() < MaxVertex || m_depth >= 50 ) {
-            m_octree->toQVector().append(data);
-            int index = m_octree->toQVector().size() - 1;
+        if ( m_dataIndices.size() < MaxVertex || m_depth >= MaxDepth ) {
+            m_octree->m_data.append(data);
+            int index = m_octree->m_data.size() - 1;
             m_dataIndices.append(index);
-            //qDebug("minCoords: %s, maxCoords: %s", 
-            //     qPrintable( m_minimumCoords.toString() ),
-            //     qPrintable( m_maximumCoords.toString() ) );
             return true;
         }
         else {
             doPartition();
-            //qDebug("OctreeNode: childrenNodes count: %d", m_childrenNodes.size());
             foreach(OctreeNode<D>* n, m_childrenNodes) {
                 if ( n->add(data) )
                     return true;
@@ -351,8 +356,7 @@ template<typename T>
 template<typename D>
 void Octree<T>::OctreeNode<D>::doPartition()
 {
-    qDebug("Partition done at level: %d", m_depth + 1);
-    Vertex delta = (m_maximumCoords - m_minimumCoords) / 2.0f;
+	Vertex delta = (m_maximumCoords - m_minimumCoords) / 2.0f;
     
     OctreeNode<D>* node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(m_minimumCoords);
@@ -389,7 +393,7 @@ void Octree<T>::OctreeNode<D>::doPartition()
     m_childrenNodes.append(node);
     
     tmp = m_minimumCoords;
-    tmp.setX(tmp.getY() + delta.getY());
+    tmp.setX(tmp.getX() + delta.getX());
     tmp.setZ(tmp.getZ() + delta.getZ());
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
@@ -413,19 +417,15 @@ void Octree<T>::OctreeNode<D>::doPartition()
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
     
+	OctreeNode* n;
     int dataCount = m_dataIndices.size();
     for (int i = 0; i < dataCount; ++i)
     {
-        OctreeNode* n;
         foreach(n, m_childrenNodes)
         {
             if(n->isInVolume(m_octree->at(m_dataIndices[i])))
             {
                 n->m_dataIndices.append(m_dataIndices[i]);
-                //qDebug("Added...");
-                //qDebug("new minCoords: %s, maxCoords: %s", 
-                //     qPrintable( n->m_minimumCoords.toString() ),
-                //     qPrintable( n->m_maximumCoords.toString() ) );
                 break;
             }
         }
@@ -443,7 +443,8 @@ bool Octree<T>::OctreeNode<D>::isInVolume(const D& d)
     if ( x < m_minimumCoords.getX() || x >= m_maximumCoords.getX()
          || y < m_minimumCoords.getY() || y >= m_maximumCoords.getY()
          || z < m_minimumCoords.getZ() || z >= m_maximumCoords.getZ()
-         ) {
+         ) 
+    {
         return false;
     }
     
@@ -471,7 +472,6 @@ QString Octree<T>::OctreeNode<D>::toString()
         {
             res += n->toString();
         }
-        //qDebug("%s", qPrintable(res));
     }
     else {
         res = "";
