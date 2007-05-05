@@ -83,10 +83,10 @@ public:
     virtual void adjustPointNormal(int index);
     virtual const QVector<Normal>& getNormalList() const;
     virtual const PointContainer& getPointList() const;
-    virtual const QVector<Face>& getFaceList() const;
+    virtual const FaceContainer& getFaceList() const;
     virtual QVector<Normal>& getNormalList();
     virtual PointContainer& getPointList();
-    virtual QVector<Face>& getFaceList();
+    virtual FaceContainer& getFaceList();
     virtual void lock();
     virtual void unlock();
 // End IObject3D interface
@@ -173,7 +173,7 @@ private:
     
     PointContainer  m_pointList;
     QVector<Normal> m_normalList;
-    QVector<Face>   m_faceList;
+    FaceContainer   m_faceList;
     QMutex          m_mutex;
 };
 

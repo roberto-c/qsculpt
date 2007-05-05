@@ -94,7 +94,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 {
     Q_ASSERT(obj);
     PointContainer& pointList = obj->getPointList();
-    QVector<Face>& faceList = obj->getFaceList();
+    FaceContainer& faceList = obj->getFaceList();
     
     int progressValue = 0;
     QVector<Edge> edgeList;
@@ -211,7 +211,7 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
     Q_ASSERT(obj);
     
     PointContainer& pointList = obj->getPointList();
-    QVector<Face>& faceList = obj->getFaceList();
+    FaceContainer& faceList = obj->getFaceList();
     
     Normal res;
     
@@ -243,7 +243,7 @@ Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, 
 {
     Q_ASSERT(obj);
     
-    const QVector<Face>& faceList = obj->getFaceList();
+    const FaceContainer& faceList = obj->getFaceList();
     
     return faceList.size() > index ? computeFaceNormal(obj, faceList[index]) : Point3D();
 }

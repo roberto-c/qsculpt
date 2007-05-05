@@ -53,7 +53,7 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent* e);
 
 private:
-    void selectObject();
+	void selectObject();
     
     QVector<HitRecord>  m_record;
     IObject3D*          m_object;
