@@ -30,7 +30,6 @@
 #include "camera.h"
 #include "brushproperties.h"
 
-
 BrushCommand::BrushCommand()
     : CommandBase(),
     m_object(NULL),
@@ -94,7 +93,6 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
         if (m_vertexSelected.size() > 0)
         {
             Normal& n = m_object->getNormalAtPoint(m_vertexSelected[0]);
-            Point3D newPos = currPoint - m_currentPoint;
             for (int i = 0; i < m_vertexSelected.size(); i++)
             {
                 
@@ -121,6 +119,8 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
             m_vertexSelected.clear();
             selectObject();
         }
+		if (view)
+			view->updateView();
     }
     else
     {
@@ -132,6 +132,8 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
 {   
     DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
     
+	m_vertexSelected.clear();
+	m_record.clear();
     m_radius = m_propertiesWindow->getBrushRadius();
     m_action = m_propertiesWindow->getBrushAction();
     m_depth = m_propertiesWindow->getBrushStrength();
@@ -140,8 +142,6 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
     
     if (m_record.size() > 0)
     {
-        selectObject();
-    
         GLdouble x, y, z;
         GLfloat wz = 0.0f;
     
@@ -161,11 +161,16 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
         glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
         glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
         glGetIntegerv(GL_VIEWPORT, m_viewPort);
+		
+		selectObject();
     }
     else
     {
         CommandBase::mousePressEvent(e);
     }
+
+	if (view)
+		view->updateView();
 }
 
 void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
@@ -180,6 +185,9 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
     {
         CommandBase::mouseReleaseEvent(e);
     }
+	DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+	if (view)
+		view->updateView();
 }
 
 void BrushCommand::selectObject()

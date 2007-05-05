@@ -80,8 +80,8 @@ Object3D::Object3D(const Object3D& cpy)
     m_callListId(0),
     m_genereateCallList(true),
     //m_pointList(cpy.m_pointList),
-    m_normalList(cpy.m_normalList),
-    m_faceList(cpy.m_faceList)
+    m_normalList(cpy.m_normalList)
+    //m_faceList(cpy.m_faceList)
 {
 }
 
@@ -734,7 +734,7 @@ const PointContainer& Object3D::getPointList() const
     return m_pointList;
 }
 
-const QVector<Face>& Object3D::getFaceList() const
+const FaceContainer& Object3D::getFaceList() const
 {
     return m_faceList;
 }
@@ -749,7 +749,7 @@ PointContainer& Object3D::getPointList()
     return m_pointList;
 }
 
-QVector<Face>& Object3D::getFaceList()
+FaceContainer& Object3D::getFaceList()
 {
     return m_faceList;
 }

@@ -35,6 +35,7 @@ struct Edge;
 struct Point;
 
 typedef Octree<Point> PointContainer;
+typedef Octree<Face> FaceContainer;
 
 /**
 Interface that every 3D object should implement.
@@ -302,7 +303,7 @@ public:
     /**
      *
      */
-    virtual const QVector<Face>& getFaceList() const = 0;
+    virtual const FaceContainer& getFaceList() const = 0;
     
     /**
      *
@@ -317,7 +318,7 @@ public:
     /**
      *
      */
-    virtual QVector<Face>& getFaceList()  = 0;
+    virtual FaceContainer& getFaceList()  = 0;
     
     /**
      *
@@ -497,6 +498,18 @@ struct Face
         }
         return true;
     }
+	
+	operator Vertex()
+	{
+		Vertex vtx;
+		return vtx;
+	}
+	
+	operator Vertex() const
+	{
+		Vertex vtx;
+		return vtx;
+	}
 };
 
 #endif

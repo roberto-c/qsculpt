@@ -349,9 +349,9 @@ const PointContainer& VoxelObject::getPointList() const
 	return p;
 }
 
-const QVector<Face>& VoxelObject::getFaceList() const
+const FaceContainer& VoxelObject::getFaceList() const
 {
-	static QVector<Face> f;
+	static FaceContainer f;
 	
 	return f;
 }
@@ -370,9 +370,9 @@ PointContainer& VoxelObject::getPointList()
 	return p;
 }
 
-QVector<Face>& VoxelObject::getFaceList()
+FaceContainer& VoxelObject::getFaceList()
 {
-	static QVector<Face> f;
+	static FaceContainer f;
 	
 	return f;
 }
