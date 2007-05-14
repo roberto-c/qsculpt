@@ -68,6 +68,23 @@ void BrushCommand::activate(bool active)
     }
 }
 
+void BrushCommand::undo()
+{
+	if (m_object)
+	{
+		QHash<int, Vertex> hash = m_previousState[m_object];
+		QHash<int, Vertex>::iterator it, end = hash.end();
+		for (it = hash.begin(); it != end; ++it)
+		{
+			m_object->getVertex(it.key()) = it.value();
+		}
+		for (it = hash.begin(); it != end; ++it)
+		{
+			m_object->adjustPointNormal(it.key());
+		}
+	}
+}
+
 void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 {
     
@@ -134,6 +151,7 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
     
 	m_vertexSelected.clear();
 	m_record.clear();
+	m_previousState.clear();
     m_radius = m_propertiesWindow->getBrushRadius();
     m_action = m_propertiesWindow->getBrushAction();
     m_depth = m_propertiesWindow->getBrushStrength();
@@ -209,6 +227,13 @@ void BrushCommand::selectObject()
                 SPAPP->getMainWindow()->getCurrentView()->set3DCursorShape(GlDisplay::Cross);
                 SPAPP->getMainWindow()->getCurrentView()->setCursorPosition(m_intialPoint);
                 m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
+				int counter = m_vertexSelected.size();
+				for (int j = 0; j < counter; j++)
+				{
+					int index = m_vertexSelected[j];
+					if (!m_previousState[m_object].contains(m_vertexSelected[j]))
+						m_previousState[m_object].insert(index, m_object->getVertex(index));
+				}
             }
         }
     }
