@@ -93,6 +93,10 @@ void Object3D::initPoints()
 {
     qDebug("Object3D::initPoints()");
     m_pointList.clear();
+	m_pointList.reserve(100000);
+	m_normalList.reserve(100000);
+	m_faceList.reserve(100000);
+	m_edgeList.reserve(100000);
 }
 
 void Object3D::setScene(Scene* scene)
@@ -467,11 +471,73 @@ int Object3D::addFace(const QVector<int>& vertexIndexList)
             m_pointList[t.point[i]].faceRef.append(triangleIndex);
             adjustPointNormal(t.point[i]);
         }
+		
+		Edge edge;
+		int vertexCount = t.point.size();
+		int edgeIndex = -1;
+		for (int i = 0; i < vertexCount; i++)
+		{
+			edge.point1 = t.point.at(i);
+			edge.point2 = t.point.at((i + 1) %vertexCount);
+			edgeIndex = m_edgeList.indexOf(edge);
+			if (edgeIndex == -1)
+			{
+				m_edgeList.append(edge);
+				edgeIndex = m_edgeList.size() - 1;
+			}
+			m_edgeList.addFaceReference(edgeIndex, triangleIndex);
+			m_faceList[triangleIndex].edge.append(edgeIndex);
+		}
         
         return triangleIndex;
     }
     qDebug("Face added is not valid.");
     return -1;
+}
+
+void Object3D::replaceFace(int faceIndex, const QVector<int>& vertexIndexList)
+{
+    //qDebug("addFace");
+    Face& t = m_faceList[faceIndex];
+	t.setPoints(vertexIndexList);
+	t.edge.clear();
+    if (t.isValid())
+    {
+        Normal normal;
+        normal = computeFaceNormal( t );
+        
+        for (int i = 0; i < t.point.size(); ++i)
+        {
+            m_normalList.append(normal);
+            t.normal[i] = t.point.at(i);
+        }
+        
+        int pointSize = t.point.size();
+        for (int i = 0; i < pointSize; ++i)
+        {
+            m_pointList[t.point[i]].faceRef.append(faceIndex);
+            adjustPointNormal(t.point[i]);
+        }
+		
+		Edge edge;
+		int vertexCount = t.point.size();
+		int edgeIndex = -1;
+		for (int i = 0; i < vertexCount; i++)
+		{
+			edge.point1 = t.point.at(i);
+			edge.point2 = t.point.at((i + 1) %vertexCount);
+			edgeIndex = m_edgeList.indexOf(edge);
+			if (edgeIndex == -1)
+			{
+				m_edgeList.append(edge);
+				edgeIndex = m_edgeList.size() - 1;
+			}
+			m_edgeList.addFaceReference(edgeIndex, faceIndex);
+			m_faceList[faceIndex].edge.append(edgeIndex);
+		}
+    }
+	else
+		qDebug("Face replaced is not valid.");
 }
 
 void Object3D::removeFace( int id)
@@ -724,7 +790,7 @@ void Object3D::computeAllNormals()
     qDebug("computeAllNormals: Not Implemented");
 }
 
-const QVector<Normal>& Object3D::getNormalList() const
+const NormalContainer& Object3D::getNormalList() const
 {
     return m_normalList;
 }
@@ -739,7 +805,7 @@ const FaceContainer& Object3D::getFaceList() const
     return m_faceList;
 }
 
-QVector<Normal>& Object3D::getNormalList()
+NormalContainer& Object3D::getNormalList()
 {
     return m_normalList;
 }
@@ -752,6 +818,16 @@ PointContainer& Object3D::getPointList()
 FaceContainer& Object3D::getFaceList()
 {
     return m_faceList;
+}
+
+EdgeContainer& Object3D::getEdgeList()
+{
+	return m_edgeList;
+}
+
+const EdgeContainer& Object3D::getEdgeList() const
+{
+	return m_edgeList;
 }
 
 void Object3D::lock()

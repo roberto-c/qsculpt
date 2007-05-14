@@ -70,8 +70,8 @@ private:
 signals:
     void progress(int value);
 
-private:
-    unsigned int m_rbegin;
+private:    
+	unsigned int m_rbegin;
     unsigned int m_rend;
     IObject3D* m_obj;
 };
