@@ -21,6 +21,8 @@
 #define BRUSHCOMMAND_H
 
 #include <QVector>
+#include <QHash>
+#include <QMap>
 #include "commandbase.h"
 #include "documentview.h"
 #include "point3d.h"
@@ -51,8 +53,12 @@ public:
     virtual void mousePressEvent(QMouseEvent* e);
     
     virtual void mouseReleaseEvent(QMouseEvent* e);
+	
+	virtual void undo() ;
 
 private:
+	typedef QMap<IObject3D*, QHash<int, Vertex> > DirtyFaceMap;
+	
 	void selectObject();
     
     QVector<HitRecord>  m_record;
@@ -62,6 +68,7 @@ private:
     BrushAction         m_action;
     QVector<int>        m_vertexSelected;
     BrushProperties*    m_propertiesWindow;
+	DirtyFaceMap		m_previousState;
 };
 
 #endif
