@@ -24,6 +24,7 @@
 #include "point3d.h"
 #include "spenums.h"
 #include "octree.h"
+#include "EdgeContainer.h"
 
 /*
  * Class forward declaration
@@ -31,11 +32,11 @@
 class QColor;
 class Scene;
 struct Face;
-struct Edge;
 struct Point;
 
 typedef Octree<Point> PointContainer;
 typedef Octree<Face> FaceContainer;
+typedef QVector<Normal> NormalContainer;
 
 /**
 Interface that every 3D object should implement.
@@ -251,6 +252,11 @@ public:
      */
     virtual int addFace( const QVector<int>& vertexIndexes )=0;
     
+	/**
+	 * Replace a triangle with new indices to existing points.
+	 */
+	virtual void replaceFace(int index, const QVector<int>& vertexIndexList)=0;
+
     /**
      * Remove the triangle from the object. The points or vertices that
      * compound the triangle are not removed from the object. The points
@@ -293,7 +299,7 @@ public:
     /**
      *
      */
-    virtual const QVector<Normal>& getNormalList() const = 0;
+    virtual const NormalContainer& getNormalList() const = 0;
     
     /**
      *
@@ -308,7 +314,7 @@ public:
     /**
      *
      */
-    virtual QVector<Normal>& getNormalList() = 0;
+    virtual NormalContainer& getNormalList() = 0;
     
     /**
      *
@@ -319,6 +325,16 @@ public:
      *
      */
     virtual FaceContainer& getFaceList()  = 0;
+	
+	/**
+	 *
+	 */
+	virtual const EdgeContainer& getEdgeList() const = 0;
+	
+	/**
+	 *
+	 */
+	virtual EdgeContainer& getEdgeList() = 0;
     
     /**
      *
@@ -358,49 +374,6 @@ struct Point
 };
 
 /**
- * Used for the subdivision process. Used to store the different lines used
- * by each triangle to make sure that not duplicate points are contructed
- * when doing the process.
- */
-struct Edge
-{
-    int point1;
-    int point2;
-    int midPoint;
-    
-    QVector<int> faceRef;
-    
-    /**
-     * Default constructor, initializes the values on 0
-     */
-    Edge()
-        : point1(-1),
-        point2(-1),
-        midPoint(-1)
-    {
-    }
-    
-    /**
-     * Initializes the values on according to the parameters passed.
-     * 
-     * @param p1 index of the first point.
-     * @param p2 index of the second point.
-     */
-    Edge(int p1, int p2)
-        :   point1(p1),
-        point2(p2),
-        midPoint(-1)
-    {
-    }
-    
-    bool operator==(const Edge& val)
-    {
-        return (point1 == val.point1 && point2 == val.point2)
-        || (point2 == val.point1 && point1 == val.point2);
-    }
-};
-
-/**
  * Face class. This class conatains references to points that should
  * form a triangle.
  *
@@ -416,6 +389,8 @@ struct Face
 {
     QVector<int> point;   /**< Index of first point */
     QVector<int> normal;  /**< Index of normal */
+	QVector<int> edge;
+	int midPoint;
     bool isMarked;
     
     /**
@@ -424,6 +399,7 @@ struct Face
     Face()
         :   point(),
         normal(),
+		midPoint(-1),
         isMarked(false)
     {
     }
@@ -438,6 +414,7 @@ struct Face
      */
     Face(const QVector<int>& vertexIndexList)
         :   point(vertexIndexList),
+		midPoint(-1),
         isMarked(false)
     {
             normal.fill(-1, point.size());
@@ -511,5 +488,22 @@ struct Face
 		return vtx;
 	}
 };
+
+inline uint qHash(const Edge& key)
+{
+	if (key.point1 > key.point2)
+		return qHash( ((quint64)key.point1) << 32 | (quint64)key.point2 );
+	else
+		return qHash( ((quint64)key.point2) << 32 | (quint64)key.point1 );
+}
+
+inline uint qHash(const Point& key)
+{
+	qint16 x = key.vertex.getX() * 1000.0f;
+	qint16 y = key.vertex.getY() * 1000.0f;
+	qint16 z = key.vertex.getZ() * 1000.0f;
+	quint64 d = (quint64)(x && 0xFFFF) << 32 | (quint64)(y & 0xFFFF) << 16 | (quint64)(z & 0xFFFF);
+	return qHash(d);
+}
 
 #endif

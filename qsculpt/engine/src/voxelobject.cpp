@@ -305,6 +305,10 @@ int VoxelObject::addFace(const QVector<int>& vertexIndexList)
 	return -1;
 }
 
+void VoxelObject::replaceFace(int, const QVector<int>& )
+{
+}
+
 void VoxelObject::removeFace( int id)
 {
 	Q_UNUSED(id);
@@ -335,9 +339,9 @@ void VoxelObject::adjustPointNormal(int index)
 	Q_UNUSED(index);
 }
 
-const QVector<Normal>& VoxelObject::getNormalList() const
+const NormalContainer& VoxelObject::getNormalList() const
 {
-	static QVector<Normal> n;
+	static NormalContainer n;
 	
 	return n;
 }
@@ -356,9 +360,9 @@ const FaceContainer& VoxelObject::getFaceList() const
 	return f;
 }
 
-QVector<Normal>& VoxelObject::getNormalList()
+NormalContainer& VoxelObject::getNormalList()
 {
-	static QVector<Normal> n;
+	static NormalContainer n;
 	
 	return n;
 }
@@ -373,6 +377,20 @@ PointContainer& VoxelObject::getPointList()
 FaceContainer& VoxelObject::getFaceList()
 {
 	static FaceContainer f;
+	
+	return f;
+}
+
+EdgeContainer& VoxelObject::getEdgeList()
+{
+	static EdgeContainer f;
+	
+	return f;
+}
+
+const EdgeContainer& VoxelObject::getEdgeList() const
+{
+	static EdgeContainer f;
 	
 	return f;
 }

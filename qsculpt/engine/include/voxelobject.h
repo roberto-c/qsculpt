@@ -78,18 +78,20 @@ public:
     virtual Normal& getNormalAtPoint(int index);
     virtual const Normal& getNormalAtPoint(int index) const;
     virtual int addFace(const QVector<int>& vertexIndexList);
+	virtual void replaceFace(int index, const QVector<int>& vertexIndexList)=0;
     virtual void removeFace( int id);
-    //virtual void subdivide();
 	virtual int getFaceIndexAtPoint(const Point3D& p) const;
 	virtual int getClosestPointAtPoint(const Point3D &p) const;
 	virtual QVector<int> getPointsInRadius(const Point3D &p, float radius) const;
     virtual void adjustPointNormal(int index);
-    virtual const QVector<Normal>& getNormalList() const;
+    virtual const NormalContainer& getNormalList() const;
     virtual const PointContainer& getPointList() const;
     virtual const FaceContainer& getFaceList() const;
-	virtual QVector<Normal>& getNormalList();
+	virtual NormalContainer& getNormalList();
     virtual PointContainer& getPointList();
     virtual FaceContainer& getFaceList();
+	virtual const EdgeContainer& getEdgeList() const;
+	virtual EdgeContainer& getEdgeList();
 	virtual void lock();
 	virtual void unlock();
 	// End IObject3D interface
