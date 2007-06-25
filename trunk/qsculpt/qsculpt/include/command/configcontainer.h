@@ -36,6 +36,8 @@ class ConfigContainer : public IConfigContainer
 public:
     ConfigContainer();
 
+	ConfigContainer(const ConfigContainer& cpy);
+	
     virtual ~ConfigContainer();
 
     /*

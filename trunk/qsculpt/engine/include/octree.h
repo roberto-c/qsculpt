@@ -34,6 +34,16 @@ public:
         m_rootNode->setMaximumCoords(Vertex(1024, 1024, 1024));
     }
     
+	Octree(const Octree<T>& cpy) {
+		m_rootNode = new OctreeNode<T>(this);
+		m_rootNode->setMinimumCoords(Vertex(-1024, -1024, -1024));
+        m_rootNode->setMaximumCoords(Vertex(1024, 1024, 1024));
+		
+		foreach (Vertex v, m_data) {
+			append(v);
+		}
+	}
+	
     ~Octree() {
         delete m_rootNode;
     }
@@ -147,7 +157,6 @@ private:
     };
     
     // Do not allow coping semantincs
-    Octree(const Octree<T>&);
     Octree& operator=(const Octree<T>&);
     
     OctreeNode<T>*  m_rootNode;

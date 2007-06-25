@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow" >
   <property name="geometry" >
@@ -9,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>562</width>
-    <height>596</height>
+    <height>598</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -22,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>562</width>
-     <height>29</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File" >
@@ -37,6 +34,18 @@
     <addaction name="separator" />
     <addaction name="m_quit" />
    </widget>
+   <widget class="QMenu" name="menuTools" >
+    <property name="title" >
+     <string>&amp;Tools</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_View" >
+    <property name="title" >
+     <string>&amp;View</string>
+    </property>
+    <addaction name="m_showGrid" />
+    <addaction name="m_showNormals" />
+   </widget>
    <widget class="QMenu" name="menuObjects" >
     <property name="title" >
      <string>&amp;Objects</string>
@@ -50,37 +59,18 @@
     </widget>
     <addaction name="menu_Add" />
    </widget>
-   <widget class="QMenu" name="menuTools" >
+   <widget class="QMenu" name="menuEdit" >
     <property name="title" >
-     <string>&amp;Tools</string>
+     <string>Edit</string>
     </property>
-    <addaction name="m_select" />
-    <addaction name="m_transform" />
-    <addaction name="m_brush" />
-    <addaction name="m_subdivide" />
-   </widget>
-   <widget class="QMenu" name="menu_View" >
-    <property name="title" >
-     <string>&amp;View</string>
-    </property>
-    <addaction name="m_showGrid" />
-    <addaction name="m_showNormals" />
    </widget>
    <addaction name="menu_File" />
+   <addaction name="menuEdit" />
    <addaction name="menu_View" />
    <addaction name="menuObjects" />
    <addaction name="menuTools" />
   </widget>
-  <widget class="QStatusBar" name="statusbar" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>574</y>
-     <width>562</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="m_new" >
    <property name="text" >
     <string>&amp;New</string>
@@ -161,8 +151,17 @@
     <string>Show normals</string>
    </property>
   </action>
+  <action name="m_undo" >
+   <property name="text" >
+    <string>&amp;Undo</string>
+   </property>
+  </action>
+  <action name="m_redo" >
+   <property name="text" >
+    <string>&amp;Redo</string>
+   </property>
+  </action>
  </widget>
- <pixmapfunction></pixmapfunction>
  <resources/>
  <connections>
   <connection>

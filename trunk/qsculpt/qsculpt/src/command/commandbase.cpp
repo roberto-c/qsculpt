@@ -28,22 +28,52 @@
 #include "documentview.h"
 #include "camera.h"
 
-CommandBase::CommandBase(): ICommand(),
-    m_configContainer(new ConfigContainer()),
-    m_isActive(false),
-    m_rotationRadius(0.0),
-    m_currentCamera(NULL),
-    m_intialCameraState(new Camera),
-    m_panViewMode(false),
-    m_rotateViewMode(false)
+CommandBase::CommandBase(ICommand* parent)
+:	ICommand(parent), 
+	m_configContainer(new ConfigContainer()),
+	m_isActive(false),
+	m_rotationRadius(0.0),
+	m_currentCamera(NULL),
+	m_intialCameraState(new Camera),
+	m_panViewMode(false),
+	m_rotateViewMode(false)
 {
 }
 
+CommandBase::CommandBase(const CommandBase& cpy)
+:	ICommand(cpy),
+	m_configContainer(new ConfigContainer()),
+	m_isActive(cpy.m_isActive),
+	m_rotationRadius(cpy.m_rotationRadius),
+	m_currentCamera(new Camera),
+	m_intialCameraState(new Camera),
+	m_panViewMode(cpy.m_panViewMode),
+	m_rotateViewMode(cpy.m_rotateViewMode)
+{
+	//*m_currentCamera = *cpy.m_currentCamera;
+	//*m_intialCameraState = *cpy.m_intialCameraState;
+}
+
+CommandBase::CommandBase(const QString& text, ICommand* parent)
+:	ICommand(text, parent), 
+	m_configContainer(new ConfigContainer()),
+	m_isActive(false),
+	m_rotationRadius(0.0),
+	m_currentCamera(NULL),
+	m_intialCameraState(new Camera),
+	m_panViewMode(false),
+	m_rotateViewMode(false)
+{
+}
 
 CommandBase::~CommandBase()
 {
 }
 
+ICommand* CommandBase::clone() const
+{
+	return new CommandBase(*this);
+}
 
 IConfigContainer& CommandBase::getConfig() const
 {

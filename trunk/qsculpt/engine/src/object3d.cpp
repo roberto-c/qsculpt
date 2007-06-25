@@ -396,7 +396,7 @@ void Object3D::removeVertex(int id)
 
 Vertex& Object3D::getVertex(int index)
 {
-    return m_pointList[index].vertex;
+    return m_pointList.at(index).vertex;
 }
 
 Normal& Object3D::getNormalAtPoint(int index)
@@ -468,7 +468,7 @@ int Object3D::addFace(const QVector<int>& vertexIndexList)
         int pointSize = t.point.size();
         for (int i = 0; i < pointSize; ++i)
         {
-            m_pointList[t.point[i]].faceRef.append(triangleIndex);
+            m_pointList.addFaceReference(t.point[i], triangleIndex);
             adjustPointNormal(t.point[i]);
         }
 		
@@ -515,7 +515,7 @@ void Object3D::replaceFace(int faceIndex, const QVector<int>& vertexIndexList)
         int pointSize = t.point.size();
         for (int i = 0; i < pointSize; ++i)
         {
-            m_pointList[t.point[i]].faceRef.append(faceIndex);
+            m_pointList.addFaceReference(t.point[i], faceIndex);
             adjustPointNormal(t.point[i]);
         }
 		
@@ -548,7 +548,7 @@ void Object3D::removeFace( int id)
     {
         int index = m_pointList.at(f.point[i]).faceRef.indexOf(id);
         if (index >= 0)
-            m_pointList[f.point[i]].faceRef.remove(index);
+            m_pointList.addFaceReference(f.point[i], index);
     }
     m_faceList.remove(id);
     // TODO: remove Edges not used from edges list
@@ -631,7 +631,8 @@ void Object3D::scale(float xfactor, float yfactor, float zfactor)
         x = (xfactor == 1.0) ? x : x * xfactor;
         y = (yfactor == 1.0) ? y : y * yfactor;
         z = (zfactor == 1.0) ? z : z * zfactor;
-        m_pointList[i].vertex.setPoint(x, y, z);
+		Vertex v(x, y, z);
+        m_pointList.setVertex(i, v);
     }
 }
 

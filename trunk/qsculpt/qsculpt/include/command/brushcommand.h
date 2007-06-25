@@ -41,20 +41,21 @@ public:
         Push,
         Pull
     };
-    
-    BrushCommand();
+	
+	BrushCommand(ICommand* parent=0);
+	
+	BrushCommand(const BrushCommand& cpy);
 
     virtual ~BrushCommand();
 
-    virtual void activate(bool active);
-    
-    virtual void mouseMoveEvent(QMouseEvent* e);
-    
-    virtual void mousePressEvent(QMouseEvent* e);
-    
-    virtual void mouseReleaseEvent(QMouseEvent* e);
+	virtual ICommand* clone() const;
 	
-	virtual void undo() ;
+    virtual void activate(bool active);
+    virtual void mouseMoveEvent(QMouseEvent* e);
+    virtual void mousePressEvent(QMouseEvent* e);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
+	virtual void undo();
+	virtual void redo();
 
 private:
 	typedef QMap<IObject3D*, QHash<int, Vertex> > DirtyFaceMap;
@@ -69,6 +70,7 @@ private:
     QVector<int>        m_vertexSelected;
     BrushProperties*    m_propertiesWindow;
 	DirtyFaceMap		m_previousState;
+	bool				m_undoCalled;
 };
 
 #endif

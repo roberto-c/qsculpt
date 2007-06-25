@@ -29,17 +29,25 @@
 #include "documentview.h"
 #include "camera.h"
 
-SelectCommand::SelectCommand()
-    : CommandBase()
+SelectCommand::SelectCommand(ICommand* parent)
+    : CommandBase("Select", parent)
 {
 }
 
+SelectCommand::SelectCommand(const SelectCommand& cpy)
+: CommandBase(cpy)
+{
+}
 
 SelectCommand::~SelectCommand()
 {
 
 }
 
+ICommand* SelectCommand::clone() const
+{
+	return new SelectCommand(*this);
+}
 
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {

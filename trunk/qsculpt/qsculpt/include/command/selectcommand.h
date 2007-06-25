@@ -32,11 +32,15 @@
  */
 class SelectCommand : public CommandBase
 {
-public:
-    SelectCommand();
+public:	
+	SelectCommand(ICommand* parent = 0);
+	
+	SelectCommand(const SelectCommand& cpy);
 
     virtual ~SelectCommand();
 
+	ICommand* clone() const;
+	
     virtual void mouseMoveEvent(QMouseEvent* e);
     
     virtual void mousePressEvent(QMouseEvent* e);

@@ -37,10 +37,18 @@ class SubdivideCommand : public CommandBase
     
 public:
     SubdivideCommand();
+	
+	SubdivideCommand(const SubdivideCommand& cpy);
 
     ~SubdivideCommand();
+	
+	virtual ICommand* clone() const;
 
-    virtual void execute();
+    virtual void activate(bool activate);
+	
+	virtual void undo();
+	
+	virtual void redo();
 
 private:
     class WorkerThread;

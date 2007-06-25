@@ -23,6 +23,11 @@ ConfigContainer::ConfigContainer(): IConfigContainer()
 {
 }
 
+ConfigContainer::ConfigContainer(const ConfigContainer& cpy)
+: IConfigContainer(cpy),
+m_container(cpy.m_container)
+{
+}
 
 ConfigContainer::~ConfigContainer()
 {

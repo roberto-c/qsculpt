@@ -19,8 +19,7 @@
  ***************************************************************************/
 #if defined __cplusplus
 
+#include <QtDebug>
 #include <QtGui>
-#include <GL/gl.h>
-#include <GL/glu.h>
 
 #endif

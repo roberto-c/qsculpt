@@ -24,7 +24,8 @@
 #include "point3d.h"
 #include "spenums.h"
 #include "octree.h"
-#include "EdgeContainer.h"
+#include "pointcontainer.h"
+#include "edgecontainer.h"
 
 /*
  * Class forward declaration
@@ -32,9 +33,7 @@
 class QColor;
 class Scene;
 struct Face;
-struct Point;
 
-typedef Octree<Point> PointContainer;
 typedef Octree<Face> FaceContainer;
 typedef QVector<Normal> NormalContainer;
 
@@ -347,32 +346,6 @@ public:
     virtual void unlock() = 0;
 };
 
-struct Point
-{
-    Vertex vertex;
-    QVector<int> faceRef;
-    
-    Point() {}
-    Point(float x, float y, float z) : vertex(x, y, z){}
-    Point(const Vertex& v) : vertex(v) {}
-    
-    operator Vertex() {
-        return vertex;
-    }
-    
-    operator Vertex() const {
-        return vertex;
-    }
-    
-    bool operator==(const Vertex& v) const {
-        return vertex == v;
-    }
-    
-    bool operator==(const Point& p) const {
-        return vertex == p.vertex;
-    }
-};
-
 /**
  * Face class. This class conatains references to points that should
  * form a triangle.
@@ -495,15 +468,6 @@ inline uint qHash(const Edge& key)
 		return qHash( ((quint64)key.point1) << 32 | (quint64)key.point2 );
 	else
 		return qHash( ((quint64)key.point2) << 32 | (quint64)key.point1 );
-}
-
-inline uint qHash(const Point& key)
-{
-	qint16 x = key.vertex.getX() * 1000.0f;
-	qint16 y = key.vertex.getY() * 1000.0f;
-	qint16 z = key.vertex.getZ() * 1000.0f;
-	quint64 d = (quint64)(x && 0xFFFF) << 32 | (quint64)(y & 0xFFFF) << 16 | (quint64)(z & 0xFFFF);
-	return qHash(d);
 }
 
 #endif
