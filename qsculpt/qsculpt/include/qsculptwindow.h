@@ -23,8 +23,10 @@
 #define QSCULPTWINDOW_H
 
 #include <QMainWindow>
+#include <QStack>
 #include "ui_mainwindow.h"
 #include "idocument.h"
+#include "commandmanager.h"
 
 class QTextEdit;
 class QDockWidget;
@@ -99,16 +101,7 @@ private slots:
      * used, so, it is not included on the slot signature.
      */
     void documentChanged(IDocument::ChangeType type);
-    
-    /**
-     * 
-     */
-    void activateCommand();
-    
-    /**
-     * 
-     */
-    void executeCommand();
+
     
 private:
     /**
@@ -126,6 +119,8 @@ private:
     QString strippedName(const QString &fullFileName);
 
     DocumentView*   m_glWidget;
+	//QUndoStack		m_undoStack;
+	CommandManager	m_commandManager;
     QString         m_curFile;
     IDocument*      m_document;
     ICommand*       m_currentCommand;

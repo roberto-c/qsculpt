@@ -21,6 +21,7 @@
 #define ICOMMAND_H
 
 #include <QObject>
+#include <QUndoCommand>
 
 class IConfigContainer;
 class QMouseEvent;
@@ -33,25 +34,33 @@ class QMouseEvent;
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class ICommand : public QObject
+class ICommand : public QObject, public QUndoCommand
 {
     Q_OBJECT
-
-private:
-    ICommand(const ICommand&);
-    ICommand& operator=(const ICommand&);
     
 public:
     /**
      * Default contructor.
      */
-    ICommand(){}
+	ICommand(ICommand* parent=0) : QUndoCommand(parent) {
+	}
+	
+	ICommand(const QString& text, ICommand* parent=0)
+		: QUndoCommand(text, parent) {
+	}
 
+	ICommand(const ICommand&){}
     /**
      * Default destructor.
      */
     virtual ~ICommand(){}
     
+	/**
+	 * Creates a new instance of the command. The new command instance should
+	 * have, at least, the same configuration parameters as the original one.
+	 */
+	virtual ICommand* clone() const = 0;
+	
     /**
      * Set the command as the active one. This is called with the
      * parameter in true to indicate that the command is active and should
@@ -98,12 +107,7 @@ public:
      * 
      */
     virtual void mouseMoveEvent(QMouseEvent *e) = 0;
-    
-    /**
-     * 
-     */
-    virtual void undo() = 0;
-
+	
 public slots:
     /**
      * Execute the command in no interactive way. This means, that once that all the
@@ -114,6 +118,10 @@ public slots:
 
         
 signals:
+	/**
+	 * Serves as a way to indicate when the command has finished its execution.
+	 * This signal should be sent at the end of the undo() method implementation.
+	 */
     void executed();
 };
 

@@ -33,16 +33,27 @@
 class CommandBase : public ICommand
 {
 public:
-    /**
-     * Default constructor fot commands.
-     */
-    CommandBase();
-
+	/**
+	 *
+	 */
+	CommandBase(ICommand* parent=0);
+	
+	/**
+	 *
+	 */
+	CommandBase(const CommandBase&);
+	
+	/**
+	 *
+	 */
+	CommandBase(const QString& text, ICommand* parent=0);
+	
     virtual ~CommandBase();
 
     /*
      * ICommand interface implementation
      */
+	virtual ICommand* clone() const;
     virtual IConfigContainer& getConfig()const;
     virtual void activate(bool active);
     virtual bool isActive();
@@ -50,7 +61,6 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
     virtual void execute(){}
-    virtual void undo() {}
 
 protected:
     IConfigContainer*   m_configContainer;

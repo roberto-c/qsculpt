@@ -29,19 +29,39 @@
 #include "documentview.h"
 
 SubdivideCommand::SubdivideCommand()
- : CommandBase(),
+ : CommandBase("Subdivide"),
     m_workerThread(new WorkerThread)
 {
 }
 
+SubdivideCommand::SubdivideCommand(const SubdivideCommand& cpy)
+: CommandBase(cpy),
+	m_workerThread(new WorkerThread)
+{
+}
 
 SubdivideCommand::~SubdivideCommand()
 {
 }
 
-
-void SubdivideCommand::execute()
+ICommand* SubdivideCommand::clone() const
 {
+	return new SubdivideCommand(*this);
+}
+
+void SubdivideCommand::undo()
+{
+}
+
+void SubdivideCommand::redo()
+{
+}
+
+void SubdivideCommand::activate(bool activate)
+{
+	if (activate == false)
+		return;
+	
     qDebug("execute SubdivideCommand()");
     QProgressDialog dlg("Subdividing the selected object...", 0, 0, 100,
 						SPAPP->getMainWindow());
@@ -144,14 +164,14 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 			edge1.midPoint = edgeList.at(indexOf).midPoint;
 			if (edge1.midPoint == -1)
 			{
-				point = pointList[edge1.point1].vertex
-					+ pointList[edge1.point2].vertex;
+				point = pointList.at(edge1.point1).vertex
+					+ pointList.at(edge1.point2).vertex;
 							 
 				int faceCount = edge1.faceRef.size();
 				for (int k = 0; k < faceCount; ++k)
 				{
 					Face f = faceList[edge1.faceRef[k]];
-					point = point + pointList[f.midPoint].vertex;
+					point = point + pointList.at(f.midPoint).vertex;
 				}
 				point = point / float(faceCount + 2);
 				obj->addVertex(point);
@@ -173,14 +193,14 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 			edge2.midPoint = edgeList.at(indexOf).midPoint;
 			if (edge2.midPoint == -1)
 			{
-				point = pointList[edge2.point1].vertex
-					+ pointList[edge2.point2].vertex;
+				point = pointList.at(edge2.point1).vertex
+					+ pointList.at(edge2.point2).vertex;
 				
 				int faceCount = edge2.faceRef.size();
 				for (int k = 0; k < faceCount; ++k)
 				{
 					Face f = faceList[edge2.faceRef[k]];
-					point = point + pointList[f.midPoint].vertex;
+					point = point + pointList.at(f.midPoint).vertex;
 				}
 				point = point / float(faceCount + 2);
 				obj->addVertex(point);
@@ -190,10 +210,10 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 			
             // remove this triangle from the list of faces reference of the point
             int pointIndex = face.point.at(j % numVertex);
-            int faceIndex = pointList[pointIndex].faceRef.indexOf(i);
+            int faceIndex = pointList.at(pointIndex).faceRef.indexOf(i);
             if (faceIndex >= 0 )
             {
-                pointList[pointIndex].faceRef.remove(faceIndex);
+                pointList.at(pointIndex).faceRef.remove(faceIndex);
             }
 
             vertexIndex[0] = face.point[j % numVertex];
@@ -243,7 +263,7 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
     
     Normal res;
     
-    Point& p = pointList[index];
+    Point& p = pointList.at(index);
     int numFaces = p.faceRef.size();
     for (int i = 0; i < numFaces; i++)
     {
@@ -283,8 +303,8 @@ Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, 
     const PointContainer& pointList = obj->getPointList();
     
     int lastPoint = face.point.size() - 1;
-    Point3D v1 = pointList[face.point[1]].vertex - pointList[face.point[0]].vertex;
-    Point3D v2 = pointList[face.point[lastPoint]].vertex - pointList[face.point[0]].vertex;
+    Point3D v1 = pointList.at(face.point[1]).vertex - pointList.at(face.point[0]).vertex;
+    Point3D v2 = pointList.at(face.point[lastPoint]).vertex - pointList.at(face.point[0]).vertex;
     
     Point3D res = v1.crossProduct( v2);
     res.normalize();

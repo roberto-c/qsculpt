@@ -32,8 +32,8 @@ HEADERS += include/box.h \
            include/spenums.h \
            include/sphere.h \
            include/stdafx.h \
-           include/triangle.h 
-           include/edgecontainer.h \
+           include/triangle.h \
+           include/edgecontainer.h 
 SOURCES += src/box.cpp \
            src/camera.cpp \
            src/mesh.cpp \

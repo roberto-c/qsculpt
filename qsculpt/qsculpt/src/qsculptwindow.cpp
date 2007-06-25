@@ -72,44 +72,57 @@ void QSculptWindow::createWidgets()
     
     connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
+	
+	QAction *action = m_commandManager.createUndoAction(this);
+	menuEdit->addAction(action);
+	action = m_commandManager.createRedoAction(this);
+	menuEdit->addAction(action);
     
-    QVariant v;
+	m_toolActionGroup = new QActionGroup(this);
+	m_toolsToolbar = addToolBar("Tools");
     ICommand* cmd;
-    v.setValue((QObject*)(cmd = new SelectCommand));
-    m_select->setData( v );
-    m_select->setCheckable(true);
-    connect(m_select, SIGNAL(activated()), this, SLOT(activateCommand()));
+	
+	action = new QAction("Select", this);
+	cmd = new SelectCommand;
+	action->setToolTip("Select an object.");
+    action->setCheckable(true);
+	menuTools->addAction(action);
+	m_toolActionGroup->addAction(action);
+	m_toolsToolbar->addAction(action);
+	m_commandManager.registerCommand("Select", action, cmd);
     
-    v.setValue((QObject*)(cmd = new TransformCommand));
-    m_transform->setData( v );
-    m_transform->setCheckable(true);
-    m_transform->setEnabled(false);
-    connect(m_transform, SIGNAL(activated()), this, SLOT(activateCommand()));
+	action = new QAction("Transform", this);
+	cmd = new TransformCommand;
+	action->setToolTip("Move, rotate or scale an object.");
+    action->setCheckable(true);
+	action->setEnabled(false);
+	menuTools->addAction(action);
+	m_toolActionGroup->addAction(action);
+	m_toolsToolbar->addAction(action);
+	m_commandManager.registerCommand("Transform", action, cmd);
     
-    v.setValue((QObject*)(cmd = new BrushCommand));
-    m_brush->setData( v );
-    m_brush->setCheckable(true);
-    connect(m_brush, SIGNAL(activated()), this, SLOT(activateCommand()));
-    
-    v.setValue((QObject*)(cmd = new SubdivideCommand));
-    m_subdivide->setData( v );
-    connect(m_subdivide, SIGNAL(activated()), this, SLOT(executeCommand()));
-    
-    m_toolActionGroup = new QActionGroup(this);
-    m_toolActionGroup->addAction(m_select);
-    m_toolActionGroup->addAction(m_transform);
-    m_toolActionGroup->addAction(m_brush);
-    
-    // Create toolbar
-    m_toolsToolbar = addToolBar("Tools");
-    m_toolsToolbar->addAction(m_select);
-    m_toolsToolbar->addAction(m_transform);
-    m_toolsToolbar->addAction(m_brush);
-    m_toolsToolbar->addSeparator();
-    m_toolsToolbar->addAction(m_subdivide);
+    action = new QAction("Brush", this);
+	cmd = new BrushCommand;
+	action->setText("Brush");
+	action->setToolTip("Deform the object using different kinds of brushes.");
+    action->setCheckable(true);
+	menuTools->addAction(action);
+	m_toolActionGroup->addAction(action);
+	m_toolsToolbar->addAction(action);
+	m_commandManager.registerCommand("Brush", action, cmd);
+	
+	menuTools->addSeparator();
+	m_toolsToolbar->addSeparator();
+	
+	action = new QAction("Subdivide", this);
+	cmd = new SubdivideCommand;
+	action->setToolTip("Subdivides each object face.");
+	menuTools->addAction(action);
+	m_toolsToolbar->addAction(action);
+	m_commandManager.registerCommand("Subdivide", action, cmd);
     
     // Activate default tool
-    m_select->activate(QAction::Trigger);
+    m_commandManager.setActiveCommand("Select");
     
     connect(m_save, SIGNAL(activated()), this, SLOT(save()));
     connect(m_saveAs, SIGNAL(activated()), this, SLOT(saveAs()));
@@ -249,7 +262,6 @@ bool QSculptWindow::saveFile(const QString &fileName)
 void QSculptWindow::setCurrentFile(const QString &fileName)
 {
     m_curFile = fileName;
-    //textEdit->document()->setModified(false);
     setWindowModified(false);
 
     QString shownName;
@@ -283,62 +295,11 @@ void QSculptWindow::showGrid(bool val)
 
 ICommand* QSculptWindow::getSelectedCommand() const
 {
-    return m_currentCommand;
+    return m_commandManager.getActiveCommand();
 }
 
 void QSculptWindow::documentChanged(IDocument::ChangeType /*type*/)
 {
-//     TransformWidget* widget = (TransformWidget*)m_dockTransform->widget();
-//     if (m_document->getObjectsCount() > 0)
-//         widget->enable( true );
-//     else
-//         widget->enable( false );
-}
-
-void QSculptWindow::activateCommand()
-{
-    QObject* obj = sender();
-    if (obj && obj->inherits("QAction"))
-    {
-        ICommand* cmd = NULL;
-        QVariant value = ((QAction*)obj)->data();
-        if (value.isValid())
-        {
-            cmd = static_cast<ICommand*>( value.value<QObject*>() );
-            if (cmd)
-            {
-                if (m_currentCommand)
-                    m_currentCommand->activate(false);
-                
-                m_currentCommand = (ICommand*) cmd;
-                
-                m_currentCommand->activate(true);
-            }
-        }
-    }
-}
-
-void QSculptWindow::executeCommand()
-{
-    qDebug("executeCommand()");
-    QObject* obj = sender();
-    if (obj && obj->inherits("QAction"))
-    {
-        ICommand* cmd = NULL;
-        QVariant value = ((QAction*)obj)->data();
-        if (value.isValid())
-        {
-            cmd = dynamic_cast<ICommand*>(value.value<QObject*>());
-            if (cmd)
-            {
-                cmd->execute();
-            }
-            else
-            {
-                qDebug("command cast failed");
-            }
-        }
-    }
 }
 
 void QSculptWindow::setOptionsWidget(QWidget* widget)

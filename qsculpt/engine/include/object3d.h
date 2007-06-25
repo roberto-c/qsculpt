@@ -179,8 +179,6 @@ private:
     NormalContainer m_normalList;
     FaceContainer   m_faceList;
 	EdgeContainer	m_edgeList;
-	QMultiHash<Edge, int> m_edgeHash;
-	QHash<Point, int> m_pointHash;
     QMutex          m_mutex;
 };
 

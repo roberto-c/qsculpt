@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "brushcommand.h"
 
+#include "stable.h"
 #include <QtOpenGL>
 #include <QMouseEvent>
 #include "qsculptapp.h"
@@ -30,24 +31,51 @@
 #include "camera.h"
 #include "brushproperties.h"
 
-BrushCommand::BrushCommand()
-    : CommandBase(),
-    m_object(NULL),
-    m_radius(0.5),
-    m_depth( 0.1),
-    m_action(Push),
-    m_propertiesWindow(NULL)
+BrushCommand::BrushCommand(ICommand* parent)
+	: CommandBase("Brush", parent),
+	m_object(NULL),
+	m_radius(0.5),
+	m_depth( 0.1),
+	m_action(Push),
+	m_propertiesWindow(NULL),
+	m_undoCalled(false)
 {
-    m_propertiesWindow = new BrushProperties(NULL);
-    m_propertiesWindow->setBrushRadius(m_radius);
-    m_propertiesWindow->setBrushStrength(m_depth);
-    m_propertiesWindow->setBrushAction(Push);
+	m_propertiesWindow = new BrushProperties(NULL);
+	if (m_propertiesWindow)
+	{
+		m_propertiesWindow->setBrushRadius(m_radius);
+		m_propertiesWindow->setBrushStrength(m_depth);
+		m_propertiesWindow->setBrushAction(Push);
+	}
 }
 
+BrushCommand::BrushCommand(const BrushCommand& cpy)
+	: CommandBase(cpy),
+	m_object(cpy.m_object),
+	m_radius(cpy.m_radius),
+	m_depth(cpy.m_depth),
+	m_action(cpy.m_action),
+	m_propertiesWindow(cpy.m_propertiesWindow),
+	m_undoCalled(cpy.m_undoCalled)
+{
+	qDebug() << "BrushCommand::BrushCommand(cpy)";
+	if (m_propertiesWindow)
+	{
+		m_propertiesWindow->setBrushRadius(m_radius);
+		m_propertiesWindow->setBrushStrength(m_depth);
+		m_propertiesWindow->setBrushAction(cpy.m_action);
+	}
+}
 
 BrushCommand::~BrushCommand()
 {
+	qDebug() << "BrushCommand::~BrushCommand()";
+}
 
+ICommand* BrushCommand::clone() const
+{
+	qDebug() << "BrushCommand::clone()";
+	return new BrushCommand(*this);
 }
 
 void BrushCommand::activate(bool active)
@@ -68,20 +96,61 @@ void BrushCommand::activate(bool active)
     }
 }
 
+/**
+ * Undo the command. The undo information is in the previous state hash. It's
+ * the same hash table used for the redo command.
+ */
 void BrushCommand::undo()
 {
+	qDebug() << "BrushCommand::undo()";
 	if (m_object)
 	{
 		QHash<int, Vertex> hash = m_previousState[m_object];
 		QHash<int, Vertex>::iterator it, end = hash.end();
 		for (it = hash.begin(); it != end; ++it)
 		{
+			Vertex v = m_object->getVertex(it.key());
 			m_object->getVertex(it.key()) = it.value();
+			it.value() = v;
 		}
 		for (it = hash.begin(); it != end; ++it)
 		{
 			m_object->adjustPointNormal(it.key());
 		}
+		
+		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+		if (view)
+			view->updateView();
+	}
+	m_undoCalled = true;
+}
+
+/**
+ * Redo the command. The redo information is in the previous state hash. It's
+ * the same hash table used for the undo command. So the redo should be used
+ * only after the undo command, otherwise, the results would not be correct.
+ */
+void BrushCommand::redo()
+{
+	qDebug() << "BrushCommand::redo()";
+	if (m_object && m_undoCalled)
+	{
+		QHash<int, Vertex> hash = m_previousState[m_object];
+		QHash<int, Vertex>::iterator it, end = hash.end();
+		for (it = hash.begin(); it != end; ++it)
+		{
+			Vertex v = m_object->getVertex(it.key());
+			m_object->getVertex(it.key()) = it.value();
+			it.value() = v;
+		}
+		for (it = hash.begin(); it != end; ++it)
+		{
+			m_object->adjustPointNormal(it.key());
+		}
+		
+		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+		if (view)
+			view->updateView();
 	}
 }
 
