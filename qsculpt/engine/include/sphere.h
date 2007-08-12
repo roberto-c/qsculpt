@@ -34,11 +34,9 @@ public:
 
     ~Sphere();
 
-    virtual void draw();
-
 protected:
     virtual void initPoints();
-    
+
     GLUquadric* m_pquadratic;
 
 };

@@ -33,16 +33,5 @@ enum DrawingMode
     Texture
 };
 
-/**
- * Contains global enums and constants.
- *
- * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
-class SPEnums{
-private:
-    SPEnums();
-
-};
-
 #endif
 

@@ -8,7 +8,7 @@ UI_DIR=./ui
 MOC_DIR=./moc
 RCC_DIR=./res
 TEMPLATE = app
-TARGET = 
+TARGET =
 DEPENDPATH += . include resources src ui include/command src/command ../engine/include
 INCLUDEPATH += . include include/command ../engine/include
 release {
@@ -40,7 +40,8 @@ HEADERS += include/document.h \
            include/command/movecommand.h \
            include/command/selectcommand.h \
            include/command/subdividecommand.h \
-           include/command/transformcameracommand.h
+           include/command/transformcameracommand.h \
+           include/command/commandmanager.h
 FORMS += ui/BrushProperties.ui ui/mainwindow.ui ui/transformWidget.ui
 SOURCES += src/document.cpp \
            src/documentview.cpp \
@@ -56,5 +57,6 @@ SOURCES += src/document.cpp \
            src/command/movecommand.cpp \
            src/command/selectcommand.cpp \
            src/command/subdividecommand.cpp \
-           src/command/transformcameracommand.cpp
+           src/command/transformcameracommand.cpp \
+           src/command/commandmanager.cpp
 RESOURCES += resources/solidpaint3d.qrc

@@ -28,15 +28,27 @@
 #include "iobject3d.h"
 #include "documentview.h"
 #include "camera.h"
+#include "transformwidget.h"
 
 SelectCommand::SelectCommand(ICommand* parent)
-    : CommandBase("Select", parent)
+    : CommandBase("Select", parent),
+    m_objectProperties(NULL)
 {
+	m_objectProperties = new TransformWidget(NULL);
+	if(m_objectProperties)
+	{
+		// TODO: initialize object properties window
+	}
 }
 
 SelectCommand::SelectCommand(const SelectCommand& cpy)
-: CommandBase(cpy)
+: CommandBase(cpy),
+m_objectProperties(cpy.m_objectProperties)
 {
+	if(m_objectProperties)
+	{
+		// TODO: initialize object properties window
+	}
 }
 
 SelectCommand::~SelectCommand()
@@ -49,6 +61,24 @@ ICommand* SelectCommand::clone() const
 	return new SelectCommand(*this);
 }
 
+void SelectCommand::activate(bool active)
+{
+    CommandBase::activate(active);
+
+    if (active)
+    {
+        if (m_objectProperties)
+            SPAPP->getMainWindow()->setOptionsWidget(m_objectProperties);
+        else
+            qDebug("Properties window is null");
+    }
+    else
+    {
+        if (m_objectProperties)
+            SPAPP->getMainWindow()->setOptionsWidget(NULL);
+    }
+}
+
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {
     if (m_record.isEmpty())
@@ -56,23 +86,23 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 }
 
 void SelectCommand::mousePressEvent(QMouseEvent* e)
-{    
+{
     DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
-    
+
     m_record = view->getPickRecords( e->pos().x(), e->pos().y());
-    
+
     if (m_record.size() > 0)
     {
         selectObject();
     }
     else
-    {        
+    {
         CommandBase::mousePressEvent(e);
     }
 }
 
 void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
-{   
+{
     if (m_record.size() > 0)
         emit executed();
     else
@@ -82,10 +112,10 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 void SelectCommand::selectObject()
 {
     const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
-    
+
     if (!doc)
         return;
-    
+
     int docObjectCount = doc->getObjectsCount();
     int recordCount = m_record.size();
     for (int i = 0; i < recordCount; i++)

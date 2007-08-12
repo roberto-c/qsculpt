@@ -35,18 +35,18 @@ struct Point;
 
 /**
 Base class for all 3D objects.
- 
+
 	@author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
 class VoxelObject : public IObject3D
 {
 public:
     VoxelObject();
-	
+
     VoxelObject(const VoxelObject& cpy);
-    
+
     virtual ~VoxelObject();
-    
+
 	/******************************************************************************
 		* IObject3D interface
 		*/
@@ -95,7 +95,7 @@ public:
 	virtual void lock();
 	virtual void unlock();
 	// End IObject3D interface
-	
+
 private:
 		enum CubeFaces {
 			None = 0,
@@ -106,17 +106,17 @@ private:
 			Top = 0x10,
 			Bottom = 0x20
 		};
-	
+
 	void		drawCube(const Point3D& p, uint facesToDraw);
 	uint	facesToDraw(const Point3D& p);
-	
+
 	/**
 		* Draw a bounding box around the object.
      */
     void drawBoundingBox();
-	
+
 protected:
-	
+
 		Scene*		m_scene;
 		Point3D		m_position;
 		DrawingMode m_drawingMode;
@@ -135,7 +135,7 @@ protected:
 		bool		m_showBoundingBox;
 		int			m_callListId;
 		bool		m_regCallList;
-		
+
 private:
 		QVector<Point3D>	m_pointList;
 		QMap<int, QMap<int, QMap<int, bool> > > m_pointMap;
