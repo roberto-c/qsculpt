@@ -1,0 +1,15 @@
+#ifndef POINTRENDERER_H_
+#define POINTRENDERER_H_
+
+#include "irenderer.h"
+
+class PointRenderer : public IRenderer
+{
+public:
+	PointRenderer();
+	virtual ~PointRenderer();
+
+	virtual void renderObject(const IObject3D* mesh);
+};
+
+#endif /*POINTRENDERER_H_*/

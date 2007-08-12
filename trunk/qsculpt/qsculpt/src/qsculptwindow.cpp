@@ -41,7 +41,7 @@ QSculptWindow::QSculptWindow()
     m_toolsToolbar(NULL)
 {
     createWidgets();
-    
+
     readSettings();
 }
 
@@ -55,33 +55,33 @@ void QSculptWindow::createWidgets()
 {
     setupUi(this);
     m_glWidget->setDocument(m_document);
-    
+
     setCentralWidget(m_glWidget);
-    
+
     m_dockCommandOptions = new QDockWidget("Options", this);
     m_dockCommandOptions->setAllowedAreas(Qt::NoDockWidgetArea /*Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea*/);
-    //addDockWidget(Qt::NoDockWidgetArea, m_dockCommandOptions);
+    addDockWidget(Qt::NoDockWidgetArea, m_dockCommandOptions);
     m_dockCommandOptions->setFloating(true);
     m_dockCommandOptions->move(20, 50);
 
     //m_dockCommandOptions->setWindowOpacity(0.85);
-    
+
     connect(m_showGrid, SIGNAL(toggled(bool)), m_glWidget, SLOT(setGridVisible(bool)));
     connect(m_showNormals, SIGNAL(toggled(bool)), m_glWidget, SLOT(setNormalsVisible(bool)));
     connect(m_document, SIGNAL(changed(IDocument::ChangeType, IObject3D*)), this, SLOT(documentChanged(IDocument::ChangeType)));
-    
+
     connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
-	
+
 	QAction *action = m_commandManager.createUndoAction(this);
 	menuEdit->addAction(action);
 	action = m_commandManager.createRedoAction(this);
 	menuEdit->addAction(action);
-    
+
 	m_toolActionGroup = new QActionGroup(this);
 	m_toolsToolbar = addToolBar("Tools");
     ICommand* cmd;
-	
+
 	action = new QAction("Select", this);
 	cmd = new SelectCommand;
 	action->setToolTip("Select an object.");
@@ -90,7 +90,7 @@ void QSculptWindow::createWidgets()
 	m_toolActionGroup->addAction(action);
 	m_toolsToolbar->addAction(action);
 	m_commandManager.registerCommand("Select", action, cmd);
-    
+
 	action = new QAction("Transform", this);
 	cmd = new TransformCommand;
 	action->setToolTip("Move, rotate or scale an object.");
@@ -100,7 +100,7 @@ void QSculptWindow::createWidgets()
 	m_toolActionGroup->addAction(action);
 	m_toolsToolbar->addAction(action);
 	m_commandManager.registerCommand("Transform", action, cmd);
-    
+
     action = new QAction("Brush", this);
 	cmd = new BrushCommand;
 	action->setText("Brush");
@@ -110,20 +110,20 @@ void QSculptWindow::createWidgets()
 	m_toolActionGroup->addAction(action);
 	m_toolsToolbar->addAction(action);
 	m_commandManager.registerCommand("Brush", action, cmd);
-	
+
 	menuTools->addSeparator();
 	m_toolsToolbar->addSeparator();
-	
+
 	action = new QAction("Subdivide", this);
 	cmd = new SubdivideCommand;
 	action->setToolTip("Subdivides each object face.");
 	menuTools->addAction(action);
 	m_toolsToolbar->addAction(action);
 	m_commandManager.registerCommand("Subdivide", action, cmd);
-    
+
     // Activate default tool
     m_commandManager.setActiveCommand("Select");
-    
+
     connect(m_save, SIGNAL(activated()), this, SLOT(save()));
     connect(m_saveAs, SIGNAL(activated()), this, SLOT(saveAs()));
     connect(m_open, SIGNAL(activated()), this, SLOT(open()));
@@ -304,6 +304,8 @@ void QSculptWindow::documentChanged(IDocument::ChangeType /*type*/)
 
 void QSculptWindow::setOptionsWidget(QWidget* widget)
 {
+	Q_CHECK_PTR(m_dockCommandOptions);
+	Q_CHECK_PTR(widget);
     m_dockCommandOptions->setWidget(widget);
     m_dockCommandOptions->show();
 }

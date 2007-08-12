@@ -26,20 +26,19 @@
 #include "octree.h"
 #include "pointcontainer.h"
 #include "edgecontainer.h"
+#include "facecontainer.h"
 
 /*
  * Class forward declaration
  */
 class QColor;
 class Scene;
-struct Face;
 
-typedef Octree<Face> FaceContainer;
 typedef QVector<Normal> NormalContainer;
 
 /**
 Interface that every 3D object should implement.
- 
+
   @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
 class IObject3D {
@@ -53,14 +52,8 @@ public:
     virtual ~IObject3D(){}
 
     virtual void setScene(Scene* scene) = 0;
-    
+
     virtual Scene* getScene() const = 0;
-    
-    /**
-     * Returns the capabilitites of the object. This method can be used to
-     * know if the object can/can't support some operations. 
-     */
-    //virtual Capabilities getCapabilities() =0;
 
     /**
      * Set the object's position.
@@ -80,7 +73,7 @@ public:
 
     /**
      * Get the object's position.
-     * 
+     *
      * @param x Object x-axis position.
      * @param y Object y-axis position.
      * @param z Object z-axis position.
@@ -106,18 +99,12 @@ public:
 
     /**
      * Rotate the object. This rotation is applied over the local object axis.
-     * 
+     *
      * @param rotX Rotation angle in x-axis.
      * @param rotY Rotation angle in y-axis.
      * @param rotZ Rotation angle in z-axis.
      */
     virtual void rotate (float rotX, float rotY, float rotZ) = 0;
-
-    /**
-     * Draws the object on the screen.
-     * 
-     */
-    virtual void draw() = 0;
 
     /**
      * Returns the depth of the object.
@@ -138,7 +125,7 @@ public:
     virtual float getWidth() = 0;
 
     /**
-     * Sets the depth of the object. 
+     * Sets the depth of the object.
      *
      * @param value new depth value
      */
@@ -152,18 +139,11 @@ public:
     virtual void setHeight(float value) = 0;
 
     /**
-     * Sets the width of the object. 
+     * Sets the width of the object.
      *
      * @param value new width value
      */
     virtual void setWidth(float value) = 0;
-    
-    /**
-    * Sets the drawing mode for the object
-    *
-    * @param mode one of the DrawingMode enum values.
-    */
-    virtual void setDrawingMode(DrawingMode mode) = 0;
 
     /**
     * Sets the object base color. Used as vertex color, line color, shading
@@ -182,7 +162,7 @@ public:
     *
     */
     virtual const QColor getColor() = 0;
-    
+
     /**
      * Draw a bounding box around the object.
      *
@@ -190,38 +170,38 @@ public:
      * object.
      */
     virtual void showBoundingBox(bool val) = 0;
-    
+
     /**
      * Draw a bounding box around the object.
      *
      * @return true if the object has a bounding box, otherwise, false.
      */
     virtual bool getShowBoundingBox() = 0;
-    
+
     /**
      * Set the color of the bounding box.
      *
      * @param color color of bounding box.
      */
     virtual void setBoundingBoxColor(const QColor& color) = 0;
-    
+
     /**
      * Get the color of the bounding box.
      *
      * @return color of bounding box.
      */
     virtual QColor getBoundingBoxColor() = 0;
-    
+
     /**
-     * Add point to object. The point added is in local coordinates ( i.e. 
+     * Add point to object. The point added is in local coordinates ( i.e.
      * relative to object's origin.
      *
      * @param point point to add to the object. The point is in local coords.
-     * 
+     *
      * @return ID of the new point.
      */
     virtual int addVertex(const Point3D& point) = 0;
-    
+
     /**
      * Remove a point from the object. If the point form part of a
      * triangle then that triangle should be removed from the object.
@@ -229,20 +209,26 @@ public:
      * @param id ID of the point to delete.
      */
     virtual void removeVertex( int id) = 0;
-    
+
     /**
-     * 
+     *
      */
     virtual Vertex& getVertex(int index) = 0;
-    
+
+    /**
+     *
+     */
     virtual Normal& getNormalAtPoint(int index) = 0;
-    
+
+    /**
+     *
+     */
     virtual const Normal& getNormalAtPoint(int index) const = 0;
-    
+
     /**
      * Add a triangle to the object. The triangle is formed by the vertices
      * passed as arguments. The vertices are passed by means of their ID
-     * 
+     *
      * @param v1 id of the first vertex that form the triangle.
      * @param v2 id of the first vertex that form the triangle.
      * @param v3 id of the first vertex that form the triangle.
@@ -250,7 +236,7 @@ public:
      * @return triangle ID
      */
     virtual int addFace( const QVector<int>& vertexIndexes )=0;
-    
+
 	/**
 	 * Replace a triangle with new indices to existing points.
 	 */
@@ -264,210 +250,106 @@ public:
      * @param id triangle ID to remove.
      */
     virtual void removeFace( int id) =0;
-    
+
     /**
      *
      */
     virtual int getFaceIndexAtPoint(const Point3D& p) const = 0;
-    
+
     /**
-     * 
+     *
      */
     virtual int getClosestPointAtPoint(const Point3D &p) const = 0;
-    
+
     /**
-     * 
+     *
      */
     virtual QVector<int> getPointsInRadius(const Point3D &p, float radius) const = 0;
-    
+
     /**
-     * 
+     *
      */
     //virtual void markTriangle(int index, bool state) = 0;
-    
+
     /**
      * Adds more triangles to the model by face sub-division.
      */
     //virtual void subdivide() = 0;
-    
+
     /**
-     * 
+     *
      */
     virtual void adjustPointNormal(int index) = 0;
-    
+
     /**
      *
      */
     virtual const NormalContainer& getNormalList() const = 0;
-    
+
     /**
      *
      */
     virtual const PointContainer& getPointList() const = 0;
-    
+
     /**
      *
      */
     virtual const FaceContainer& getFaceList() const = 0;
-    
+
     /**
      *
      */
     virtual NormalContainer& getNormalList() = 0;
-    
+
     /**
      *
      */
     virtual PointContainer& getPointList()  = 0;
-    
+
     /**
      *
      */
     virtual FaceContainer& getFaceList()  = 0;
-	
+
 	/**
 	 *
 	 */
 	virtual const EdgeContainer& getEdgeList() const = 0;
-	
+
 	/**
 	 *
 	 */
 	virtual EdgeContainer& getEdgeList() = 0;
-    
+
     /**
      *
      */
     virtual void lock() = 0;
-    
+
     /**
      *
      */
     virtual void unlock() = 0;
-};
 
-/**
- * Face class. This class conatains references to points that should
- * form a triangle.
- *
- * The points are indices of the Object3D point list. So, this class It's
- * only meant to be used with the Object3D class (its not a generic triangle
-                                                  * class).
- *
- * A triangle its only valid if theirs three points are different. Using the
- * default constructor makes a non valid triangle.
- * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
- */
-struct Face
-{
-    QVector<int> point;   /**< Index of first point */
-    QVector<int> normal;  /**< Index of normal */
-	QVector<int> edge;
-	int midPoint;
-    bool isMarked;
-    
     /**
-     * Default constructor. Initiliazes all point to index 0.
-     */
-    Face()
-        :   point(),
-        normal(),
-		midPoint(-1),
-        isMarked(false)
-    {
-    }
-    
-    /**
-     * Construct a new triangle. The triangle is composed by the passed
-     * points ids or references.
      *
-     * @param p1 first point that form the triangle.
-     * @param p2 second point that form the triangle.
-     * @param p3 third point that form the triangle.
      */
-    Face(const QVector<int>& vertexIndexList)
-        :   point(vertexIndexList),
-		midPoint(-1),
-        isMarked(false)
-    {
-            normal.fill(-1, point.size());
-    }
-    
-    /**
-     * Checks if the triangle data is valid. Triangle is valid only if
-     * the three point that compound it are different.
-     *
-     * @return true if triangle is valid. False, otherwise.
-     */
-    bool isValid() { 
-        return !point.isEmpty();
-    }
-    
-    /**
-     * Sets the first point index reference.
-     *
-     * @param p1 index of the first point.
-     * @param p2 index of the second point.
-     * @param p3 index of the third point.
-     */
-    void setPoints(const QVector<int>& vertexIndexList) { 
-        point = vertexIndexList;
-        normal.resize(point.size());
-    }
-    
-    bool hasEdge(const Edge& e) const {
-        return hasEdge(e.point1, e.point2);
-    }
-    
-    bool hasEdge(int v1, int v2) const {
-        bool res = false;
-        if (int index = point.indexOf(v1) != -1)
-        {
-            if (index == point.size() - 1)
-                res = v2 == point[0];
-            else
-                res = v2 == point[index + 1];
-        }
-        return res;
-    }
-    
-    bool operator==(const Face& t) const {
-        int psize = point.size();
-        if (psize == 0 || psize != t.point.size())
-            return false;
-        
-        int elementIndex = t.point.indexOf(point[0]);
-        if (elementIndex == -1 )
-            return false;
-        
-        for (int i = 1; i < psize; ++i)
-        {
-            elementIndex = (elementIndex + 1 ) % psize;
-            if (point.at(i) != t.point.at(elementIndex) )
-                return false;
-        }
-        return true;
-    }
-	
-	operator Vertex()
-	{
-		Vertex vtx;
-		return vtx;
-	}
-	
-	operator Vertex() const
-	{
-		Vertex vtx;
-		return vtx;
-	}
-};
+    virtual void addResolutionLevel() = 0;
 
-inline uint qHash(const Edge& key)
-{
-	if (key.point1 > key.point2)
-		return qHash( ((quint64)key.point1) << 32 | (quint64)key.point2 );
-	else
-		return qHash( ((quint64)key.point2) << 32 | (quint64)key.point1 );
-}
+    /**
+     *
+     */
+    virtual void removeResolutionLevel(int level) = 0;
+
+    /**
+     *
+     */
+    virtual void setWorkingResolutionLevel(int level) = 0;
+
+    /**
+     *
+     */
+    virtual int getWorkingResolutionLevel() = 0;
+};
 
 #endif

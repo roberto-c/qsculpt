@@ -20,9 +20,6 @@
 #include "stdafx.h"
 #include "spenums.h"
 
-SPEnums::SPEnums()
-{
-}
 
 
 

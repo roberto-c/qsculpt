@@ -35,29 +35,23 @@ Sphere::~Sphere()
     //gluDeleteQuadric(m_pquadratic);
 }
 
-
-void Sphere::draw()
-{
-    Object3D::draw();
-}
-
 void Sphere::initPoints()
 {
-/*    
+/*
     double x, y, z;
-    
+
     double hw = m_width / 2;
     double hh = m_height / 2;
     double hd = m_depth / 2;
-    
+
     m_pointList.append(Point( 0, 0, hd));
     m_pointList.append(Point( 0, 0,-hd));
-    
+
     m_pointList.append(Point(-hw,-hh, 0.0));
     m_pointList.append(Point( hw,-hh, 0.0));
     m_pointList.append(Point( hw, hh, 0.0));
     m_pointList.append(Point(-hw, hh, 0.0));
-    
+
     Point3D normal;
     int newTriangleIndex = -1;
     m_triangleList.append(Object3D::Triangle(0, 2, 3));
@@ -67,7 +61,7 @@ void Sphere::initPoints()
     m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
     m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
     m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-    
+
     m_triangleList.append(Object3D::Triangle(0, 3, 4));
     normal = computeTriangleNormal( m_triangleList.size() -1);
     m_normalList.append(normal);
@@ -75,7 +69,7 @@ void Sphere::initPoints()
     m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
     m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
     m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-    
+
     m_triangleList.append(Object3D::Triangle(0, 4, 5));
     normal = computeTriangleNormal( m_triangleList.size() -1);
     m_normalList.append(normal);
@@ -83,7 +77,7 @@ void Sphere::initPoints()
     m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
     m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
     m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-    
+
     m_triangleList.append(Object3D::Triangle(0, 5, 2));
     normal = computeTriangleNormal( m_triangleList.size() -1);
     m_normalList.append(normal);
@@ -91,7 +85,7 @@ void Sphere::initPoints()
     m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
     m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
     m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-    
+
     m_triangleList.append(Object3D::Triangle(1, 3, 2));
     normal = computeTriangleNormal( m_triangleList.size() -1);
     m_normalList.append(normal);
@@ -99,7 +93,7 @@ void Sphere::initPoints()
     m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
     m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
     m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-    
+
     m_triangleList.append(Object3D::Triangle(1, 4, 3));
     normal = computeTriangleNormal( m_triangleList.size() -1);
     m_normalList.append(normal);
@@ -107,7 +101,7 @@ void Sphere::initPoints()
     m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
     m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
     m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-    
+
     m_triangleList.append(Object3D::Triangle(1, 5, 4));
     normal = computeTriangleNormal( m_triangleList.size() -1);
     m_normalList.append(normal);
@@ -115,7 +109,7 @@ void Sphere::initPoints()
     m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
     m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
     m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-    
+
     m_triangleList.append(Object3D::Triangle(1, 2, 5));
     normal = computeTriangleNormal( m_triangleList.size() -1);
     m_normalList.append(normal);
@@ -123,7 +117,7 @@ void Sphere::initPoints()
     m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
     m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
     m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-    
+
     subdivide();
     */
 }

@@ -25,6 +25,8 @@
 #include "documentview.h"
 #include "point3d.h"
 
+class TransformWidget;
+
 /**
  * Implements a simple object selection command.
  *
@@ -32,25 +34,29 @@
  */
 class SelectCommand : public CommandBase
 {
-public:	
+public:
 	SelectCommand(ICommand* parent = 0);
-	
+
 	SelectCommand(const SelectCommand& cpy);
 
     virtual ~SelectCommand();
 
 	ICommand* clone() const;
-	
+
+	virtual void activate(bool active);
+
     virtual void mouseMoveEvent(QMouseEvent* e);
-    
+
     virtual void mousePressEvent(QMouseEvent* e);
-    
+
     virtual void mouseReleaseEvent(QMouseEvent* e);
 
 private:
     QVector<HitRecord> m_record;
-    
+
     void selectObject();
+
+    TransformWidget*	m_objectProperties;
 };
 
 #endif

@@ -15,7 +15,7 @@ debug:DESTDIR=../build/debug
 
 TEMPLATE = lib
 CONFIG += lib_bundle
-TARGET = 
+TARGET =
 DEPENDPATH += . include src
 INCLUDEPATH += . include
 
@@ -33,13 +33,24 @@ HEADERS += include/box.h \
            include/sphere.h \
            include/stdafx.h \
            include/triangle.h \
-           include/edgecontainer.h 
+           include/edgecontainer.h \
+           include/facecontainer.h \
+           include/irenderer.h \
+           include/rendererfactory.h \
+           include/flatrenderer.h \
+           include/pointrenderer.h \
+           include/wireframerenderer.h \
+           include/smoothrenderer.h
 SOURCES += src/box.cpp \
            src/camera.cpp \
            src/mesh.cpp \
            src/object3d.cpp \
            src/octree.cpp \
            src/scene.cpp \
-           src/spenums.cpp \
            src/sphere.cpp \
-           src/stdafx.cpp 
+           src/stdafx.cpp \
+           src/rendererfactory.cpp \
+           src/flatrenderer.cpp \
+           src/pointrenderer.cpp \
+           src/wireframerenderer.cpp \
+           src/smoothrenderer.cpp

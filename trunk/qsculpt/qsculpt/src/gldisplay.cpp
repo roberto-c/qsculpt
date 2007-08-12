@@ -30,6 +30,8 @@
 #include "icommand.h"
 #include "documentview.h"
 #include "camera.h"
+#include "rendererfactory.h"
+
 
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
@@ -42,47 +44,48 @@ GlDisplay::GlDisplay(DocumentView* _parent)
     m_aspectRatio(1.0),
     m_viewType(Front),
     m_drawingMode(Points),
+    m_renderer(RendererFactory::getRenderer(m_drawingMode)),
     m_cursorShape(None),
     m_zoomFactor(1.0)
 {
     m_selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
-    
+
     Camera* camera = new Camera();
     camera->setTargetPoint( Point3D( 0, 0, 0) );
     camera->setOrientationVector(Point3D( 0, 1, 0) );
     camera->setPosition( Point3D( 0, 0, 1));
     m_cameraList[Front] = camera;
-    
+
     camera = new Camera();
     camera->setTargetPoint( Point3D( 0, 0, 0) );
     camera->setOrientationVector( Point3D( 0, 1, 0) );
     camera->setPosition( Point3D( 0, 0, -1));
     m_cameraList[Back] = camera;
-    
+
     camera = new Camera();
     camera->setTargetPoint( Point3D( 0, 0, 0) );
     camera->setOrientationVector( Point3D( 0, 0, -1) );
     camera->setPosition( Point3D( 0, 1, 0) );
     m_cameraList[Top] = camera;
-    
+
     camera = new Camera();
     camera->setTargetPoint( Point3D( 0, 0, 0) );
     camera->setOrientationVector( Point3D( 0, 0, 1) );
     camera->setPosition( Point3D( 0, -1, 0) );
     m_cameraList[Bottom] = camera;
-    
+
     camera = new Camera();
     camera->setTargetPoint( Point3D( 0, 0, 0) );
     camera->setOrientationVector( Point3D( 0, 1, 0) );
     camera->setPosition( Point3D(-1, 0, 0) );
     m_cameraList[Left] = camera;
-    
+
     camera = new Camera();
     camera->setTargetPoint( Point3D( 0, 0, 0) );
     camera->setOrientationVector( Point3D( 0, 1, 0) );
     camera->setPosition( Point3D( 1, 0, 0) );
     m_cameraList[Right] = camera;
-    
+
     camera = new Camera();
     camera->setTargetPoint( Point3D( 0, 0, 0) );
     camera->setOrientationVector( Point3D( 0, 0, 1) );
@@ -95,7 +98,7 @@ GlDisplay::~GlDisplay()
 {
     if (m_selectBuffer)
         delete [] m_selectBuffer;
-    
+
     QMutableMapIterator<int, Camera*> it(m_cameraList);
     while(it.hasNext())
     {
@@ -103,6 +106,9 @@ GlDisplay::~GlDisplay()
         delete it.value();
         it.remove();
     }
+
+    delete m_renderer;
+    m_renderer = NULL;
 }
 
 void GlDisplay::setGridVisible(bool value)
@@ -126,13 +132,19 @@ void GlDisplay::setNormalsVisible(bool visible)
     m_areNormalsVisible = visible;
 }
 
+void GlDisplay::setDrawingMode(DrawingMode mode){
+    m_drawingMode = mode;
+    delete m_renderer;
+    m_renderer = RendererFactory::getRenderer(m_drawingMode);
+}
+
 void GlDisplay::initializeGL()
 {
     // Set up the rendering context, define display lists etc.:
     //float lightAmbient[] = {0.5f, 0.5f, 0.5f, 1.0f};
     //float lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
     //float lightPosition[] = { 0.0f, 0.0f, 1.0f, 1.0f};
-    
+
     glClearColor( 0.4, 0.4, 0.4, 1.0 );
     glClearDepth(1.0f);
     glEnable( GL_DEPTH_TEST);
@@ -178,7 +190,7 @@ void GlDisplay::resizeGL( int w, int h )
      */
     //glFrustum(-5.0 * m_aspectRatio, 5.0 * m_aspectRatio, -5.0, 5.0, 0.5, 500.0);
     glMatrixMode( GL_MODELVIEW );
-    
+
     glGetIntegerv(GL_VIEWPORT, m_viewport);
 }
 
@@ -188,7 +200,7 @@ void GlDisplay::paintGL()
 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glLoadIdentity();
-    
+
     Camera* camera = m_cameraList.contains(m_viewType) ? m_cameraList[m_viewType] : NULL;
     if (camera)
     {
@@ -199,10 +211,10 @@ void GlDisplay::paintGL()
                 camera->getOrientationVector().getZ());
         //qDebug(qPrintable(camera->toString()));
     }
-    
+
     //glTranslatef(-100, -100, 0);
     glDisable(GL_LIGHTING);
-    
+
     if (m_isGridVisible)
         drawGrid();
 
@@ -219,7 +231,7 @@ void GlDisplay::paintGL()
     glVertex3f( 0.0f, 0.0f, 0.0f );
     glVertex3f( 0.0f, 0.0f, 1.0f );
     glEnd();
-    
+
     drawCursor();
 
     switch(m_drawingMode)
@@ -238,19 +250,31 @@ void GlDisplay::paintGL()
             break;
     }
     drawObjects();
-    
+
     //drawOrientationAxis();
 }
 
 void GlDisplay::drawObjects()
 {
+	float x = 0.0f, y = 0.0f, z=0.0f;
+	IObject3D* mesh;
     IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
     int count = doc->getObjectsCount();
     for ( int i = 0; i < count; i++ )
     {
         glLoadName(i+1);
-        doc->getObject(i)->setDrawingMode( m_drawingMode );
-        doc->getObject(i)->draw();
+        mesh = doc->getObject(i);
+		glPushMatrix();
+
+		//glRotated(m_rotX, 1, 0, 0);
+		//glRotated(m_rotY, 0, 1, 0);
+		//glRotated(m_rotZ, 0, 0, 1);
+		mesh->getPosition(&x, &y, &z);
+		glTranslatef(x, y, z);
+
+        if (m_renderer)
+        	m_renderer->renderObject(mesh);
+        glPopMatrix();
     }
 }
 
@@ -259,7 +283,7 @@ void GlDisplay::drawGrid()
     const double GRID_PLANE_Z = 0.0;
     glLineWidth(1.0);
     glBegin(GL_LINES);
-    
+
     glColor3f(0.3, 0.3, 0.3);
     for (double j = -5.0; j < 5.0; j+=0.2)
     {
@@ -267,21 +291,21 @@ void GlDisplay::drawGrid()
             continue;
         glVertex3f( j, -5.0, GRID_PLANE_Z);
         glVertex3f( j,  5.0, GRID_PLANE_Z);
-        
+
         glVertex3f(-5.0, j, GRID_PLANE_Z);
         glVertex3f( 5.0, j, GRID_PLANE_Z);
     }
     glEnd();
-    
+
     glLineWidth(2.0);
-    
+
     glBegin(GL_LINES);
     glColor3f(0.25, 0.25, 0.25);
     for (double i = -5.0; i <= 5.0; i += 1.0)
     {
         glVertex3f( i, -5.0, GRID_PLANE_Z);
         glVertex3f( i,  5.0, GRID_PLANE_Z);
-        
+
         glVertex3f(-5.0, i, GRID_PLANE_Z);
         glVertex3f( 5.0, i, GRID_PLANE_Z);
     }
@@ -305,16 +329,16 @@ void GlDisplay::drawCursor()
         glBegin(GL_LINES);
         glVertex3f( m_cursorPosition.getX() - 0.1, m_cursorPosition.getY(),m_cursorPosition.getZ());
         glVertex3f( m_cursorPosition.getX() + 0.1, m_cursorPosition.getY(),m_cursorPosition.getZ());
-        
+
         glVertex3f( m_cursorPosition.getX(), m_cursorPosition.getY() - 0.1, m_cursorPosition.getZ());
         glVertex3f( m_cursorPosition.getX(), m_cursorPosition.getY() + 0.1, m_cursorPosition.getZ());
         glEnd();
         break;
-        
+
     case Circle:
 
         break;
-        
+
     default:
         break;
     }
@@ -323,20 +347,20 @@ void GlDisplay::drawCursor()
 void GlDisplay::drawOrientationAxis()
 {
     bool lightEnabled = glIsEnabled(GL_LIGHTING);
-    
+
     if (lightEnabled)
         glDisable(GL_LIGHTING);
-    
+
     // setup viewport, projection etc.:
     glViewport( 0, 0, 100, 100 );
     glMatrixMode( GL_PROJECTION );
     glPushMatrix();
     glLoadIdentity();
     glOrtho( -1.5 * m_aspectRatio, 1.5 * m_aspectRatio, 1.5, -1.5, 2.0, -2.0 );
-    
-    
+
+
     glMatrixMode( GL_MODELVIEW );
-    
+
     Camera* camera = m_cameraList.contains(m_viewType) ? m_cameraList[m_viewType] : NULL;
     if (camera)
     {
@@ -347,7 +371,7 @@ void GlDisplay::drawOrientationAxis()
                    camera->getOrientationVector().getZ());
         //qDebug(qPrintable(camera->toString()));
     }
-    
+
     glBegin( GL_LINES );
     glColor3f( 1.0, 0.0, 0.0 );
     glVertex3f( 0.0f, 0.0f, 0.0f );
@@ -361,13 +385,13 @@ void GlDisplay::drawOrientationAxis()
     glVertex3f( 0.0f, 0.0f, 0.0f );
     glVertex3f( 0.0f, 0.0f, 1.0f );
     glEnd();
-    
+
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
-    
+
     glViewport( m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3] );
-    
+
     if (lightEnabled)
         glEnable(GL_LIGHTING);
 }
@@ -375,7 +399,7 @@ void GlDisplay::drawOrientationAxis()
 void GlDisplay::mouseMoveEvent ( QMouseEvent * e )
 {
     ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
-    
+
     if (cmd)
     {
         cmd->mouseMoveEvent( e );
@@ -387,7 +411,7 @@ void GlDisplay::mousePressEvent ( QMouseEvent * e )
 {
     qDebug("MousePress");
     ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
-    
+
     if (cmd)
     {
         cmd->mousePressEvent( e );
@@ -399,7 +423,7 @@ void GlDisplay::mouseReleaseEvent ( QMouseEvent * e )
 {
     qDebug("MouseRelease");
     ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
-    
+
     if (cmd)
     {
         cmd->mouseReleaseEvent( e );
@@ -413,7 +437,7 @@ void GlDisplay::wheelEvent ( QWheelEvent * e )
     int numSteps = numDegrees / 15;
 
     m_zoomFactor += numSteps * 0.01;
-    
+
     resizeGL( width(), height() );
     updateGL();
 }
@@ -421,19 +445,19 @@ void GlDisplay::wheelEvent ( QWheelEvent * e )
 QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
 {
     QVector<HitRecord> records;
-    
+
     glRenderMode(GL_SELECT);
     glInitNames();
-        
+
     glPushName(0);
-        
+
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
     GLint viewport[4] ={0};
     glGetIntegerv(GL_VIEWPORT, viewport);
     gluPickMatrix((GLdouble) _x, (GLdouble) (viewport[3] - _y), 1.0f, 1.0f, viewport);
-    
+
     glOrtho( -DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
               DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
              -DEFAULT_HEIGHT / 2 * m_zoomFactor,
@@ -452,9 +476,9 @@ QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
              100.0 );
      */
     glMatrixMode(GL_MODELVIEW);
-    
+
     drawObjects();
-    
+
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -474,12 +498,12 @@ QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
             records[i].stackContents = m_selectBuffer[i*4 + 3];
         }
     }
-    
+
     return records;
 }
 
-Camera* GlDisplay::getViewCamera() 
-{ 
+Camera* GlDisplay::getViewCamera()
+{
     if (!m_cameraList.contains(m_viewType))
     {
         qDebug("camera %d does not exists. Returning perspective camera.", m_viewType);

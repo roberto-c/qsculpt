@@ -43,9 +43,9 @@ public:
     Object3D();
 
     Object3D(const Object3D& cpy);
-    
+
     virtual ~Object3D();
-    
+
 /******************************************************************************
  * IObject3D interface
  */
@@ -57,14 +57,12 @@ public:
     virtual void rotate(float rotX, float rotY, float rotZ);
     virtual void setPosition(float x, float y, float z);
     virtual void setPosition(const Point3D& position);
-    virtual void draw();
     virtual float getDepth();
     virtual float getHeight();
     virtual float getWidth();
     virtual void setDepth(float value);
     virtual void setHeight(float value);
     virtual void setWidth(float value);
-    virtual void setDrawingMode(DrawingMode mode);
     virtual void setColor(const QColor& color);
     virtual const QColor getColor();
     virtual void showBoundingBox(bool val);
@@ -93,71 +91,54 @@ public:
 	virtual EdgeContainer& getEdgeList();
     virtual void lock();
     virtual void unlock();
+    virtual void addResolutionLevel();
+    virtual void removeResolutionLevel(int level);
+    virtual void setWorkingResolutionLevel(int level);
+    virtual int getWorkingResolutionLevel();
 // End IObject3D interface
 
     const Object3D& operator=(const Object3D& obj);
-    
+
 protected:
     /**
      * Initializes the points vector.
      */
     virtual void initPoints();
-    
-    /**
-     * Draw the object with lines.
-     */
-    virtual void drawWire();
-    
-    /**
-     * Draw the object with smooth rendering.
-     */
-    virtual void drawSmooth();
-    
-    /**
-     * Draw the object as points.
-     */
-    virtual void drawPoints();
-    
-    /**
-     * Draw the object with flat surfaces.
-     */
-    virtual void drawFlat();
-    
+
     /**
      * Draw a bounding box around the object.
      */
     void drawBoundingBox();
-    
+
     /**
      * Scales the object to a factor. This method loops by each point and
      * applies the corresponding factor of each component.
-     * 
+     *
      * @param xfactor factor to apply on the x compoent of each point.
      * @param yfactor factor to apply on the y compoent of each point.
      * @param zfactor factor to apply on the z compoent of each point.
      */
     void scale(float xfactor, float yfactor, float zfactor);
-    
+
     /**
-     * 
+     *
      */
     Point3D computeFaceNormal(int index);
-    
+
     /**
-     * 
+     *
      */
     Point3D computeFaceNormal(Face &face);
-    
+
     /**
-     * 
+     *
      */
     void computeAllNormals();
-    
+
     void drawVertexNormals();
-    
+
     Scene*          m_scene;
     Point3D         m_position;
-    DrawingMode     m_drawingMode;
     QColor          m_color,
                     m_boundingBoxColor;
     Point3D         m_boundingBoxVert[8];
@@ -171,15 +152,18 @@ protected:
     bool            m_showBoundingBox;
     int             m_callListId;
     bool            m_genereateCallList;
-    
+    int				m_currentResolutionLevel;
+
 private:
     void updateBoundingBox();
-    
-    PointContainer  m_pointList;
-    NormalContainer m_normalList;
-    FaceContainer   m_faceList;
-	EdgeContainer	m_edgeList;
-    QMutex          m_mutex;
+
+    PointContainer  			m_pointList;
+    NormalContainer 			m_normalList;
+    QVector<FaceContainer*>   	m_faceList;
+	QVector<EdgeContainer*>		m_edgeList;
+    //FaceContainer   	m_faceList;
+	//EdgeContainer		m_edgeList;
+    QMutex          			m_mutex;
 };
 
 #endif

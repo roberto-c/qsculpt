@@ -30,9 +30,10 @@ class DocumentView;
 class QMouseEvent;
 class QWheelEvent;
 class Camera;
+class IRenderer;
 
 /**
- * Structure used to hold a hit return. 
+ * Structure used to hold a hit return.
  */
 struct HitRecord
 {
@@ -53,7 +54,7 @@ class GlDisplay : public QGLWidget
     Q_OBJECT
 public:
     typedef QMap<int, Camera*> CameraContainer;
-    
+
     enum PerspectiveType {
         Front = 0,
         Back,
@@ -63,7 +64,7 @@ public:
         Right,
         Perspective
     };
-    
+
     enum CursorShapeType {
         None,
         Cross,
@@ -73,7 +74,7 @@ public:
     /**
      * Widget constructor. Initializes default parameters. This widget only can
      * have a DocumentView class-derived as parent.
-     * 
+     *
      * @param parent the parent view of the widget.
      */
     GlDisplay(DocumentView* parent = 0);
@@ -82,36 +83,36 @@ public:
      * Default destructor
      */
     ~GlDisplay();
-    
+
     /**
      * Return the state of the visibility of the grid.
      *
      * @return true if grid is visible. False otherwise.
      */
     bool isGridVisible();
-    
+
     /**
-     * 
+     *
      */
     bool areNormalsVisible();
-    
+
     /**
-     * Get a list of pick records as returned by glRender. This is used to 
+     * Get a list of pick records as returned by glRender. This is used to
      * support picking or selection on objects. Each record contains
      * information about the object under the (x, y) coordinates. The passed
      * coordinates are in window space coordinates.
-     * 
+     *
      * @param x coord's x component
      * @param y coord's y component
-     * 
+     *
      * @return HitRecord vector
      */
     QVector<HitRecord> getPickRecords(int _x, int _y);
-    
+
     /**
      */
     Camera* getViewCamera();
-    
+
     /**
      */
     PerspectiveType getPerspectiveView() {
@@ -125,17 +126,17 @@ public:
     CursorShapeType getCursorShape() {
         return m_cursorShape;
     };
-    
+
     void setCursorPosition(Point3D p) {
         m_cursorPosition = p;
     };
 
-    Point3D getCursorPosition() { 
-        return m_cursorPosition; 
+    Point3D getCursorPosition() {
+        return m_cursorPosition;
     };
 
     void setCursorOrientation(Point3D n) {
-        m_cursorOrientation = n; 
+        m_cursorOrientation = n;
     };
 
     Point3D getCursorOrientation() {
@@ -144,23 +145,21 @@ public:
 
 public slots:
     /**
-     * Set the drawing mode of the display. 
-     * 
+     * Set the drawing mode of the display.
+     *
      * @param mode New drawing mode to display.
      */
-    void setDrawingMode(DrawingMode mode){
-        m_drawingMode = mode;
-    };
-    
+    void setDrawingMode(DrawingMode mode);
+
     /**
      * Change the view perspective to one of the predefined type.
-     * 
+     *
      * @param type new view to use
      */
     void setPerspectiveView(PerspectiveType type) {
         m_viewType = type;
     };
-    
+
     /**
      * Turn the visibility of the grid on/off.
      *
@@ -169,10 +168,10 @@ public slots:
     void setGridVisible(bool value);
 
     /**
-     * 
+     *
      */
     void setNormalsVisible(bool value);
-    
+
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
@@ -184,17 +183,17 @@ protected:
 
     bool m_mousePressed;
     QPoint m_mousePosition;
-    
+
 private:
     /**
      * Draws the grid of the widget.
      */
     void drawGrid();
-        
+
     void drawObjects();
 
     void drawCursor();
-    
+
     void drawOrientationAxis();
 
     bool            m_isGridVisible;        /**< Grid visibility flag */
@@ -203,8 +202,9 @@ private:
     double          m_aspectRatio;
     PerspectiveType m_viewType;             /**< Kind of view to display */
     DrawingMode     m_drawingMode;          /**< Object drawing mode */
+    IRenderer*		m_renderer;				/**< Rendering engine for the objects */
     CameraContainer m_cameraList;           /**< Cameras for the differents view types */
-    
+
     CursorShapeType     m_cursorShape;
     Point3D             m_cursorPosition;
     Point3D             m_cursorOrientation;

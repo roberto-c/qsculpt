@@ -43,13 +43,13 @@ class QSculptWindow : public QMainWindow, private Ui::MainWindow
 public:
     QSculptWindow();
     virtual ~QSculptWindow();
-    
+
     /**
      * Gets the current document. This document is the one that all commands
      * should operate on.
      */
     const IDocument* getCurrentDocument();
-    
+
     /**
      * Get the current application command. This is the command that the
      * the user has selected to work with. This is used bu the document
@@ -64,12 +64,12 @@ public:
      * Get the current view of the document.
      */
     DocumentView* getCurrentView() const;
-    
+
     /**
      * Set the options configuration widget for the current command.
      */
     void setOptionsWidget( QWidget* widget);
-    
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -80,36 +80,36 @@ private slots:
     bool saveAs();
     void about();
     void documentWasModified();
-    
+
     /**
      * Add a new box object to the document.
      */
     void addBox();
-    
+
     /**
      * Add a new sphere object to the document.
      */
     void addSphere();
-    
+
     /**
      * Show a grid as a helper guide.
      */
     void showGrid(bool val);
-    
+
     /**
      * DocumentChanged signal handler. The object that was modified is not
      * used, so, it is not included on the slot signature.
      */
     void documentChanged(IDocument::ChangeType type);
 
-    
+
 private:
     /**
      * Create the widgets used on ths window. It setups the UI, create the
      * dock widgets, create some of the connections of slot/signal
      */
     void createWidgets();
-    
+
     void readSettings();
     void writeSettings();
     bool maybeSave();
@@ -119,12 +119,11 @@ private:
     QString strippedName(const QString &fullFileName);
 
     DocumentView*   m_glWidget;
-	//QUndoStack		m_undoStack;
 	CommandManager	m_commandManager;
     QString         m_curFile;
     IDocument*      m_document;
     ICommand*       m_currentCommand;
-    
+
     QActionGroup*   m_toolActionGroup;
     QDockWidget*    m_dockCommandOptions;
     QToolBar*       m_toolsToolbar;

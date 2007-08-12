@@ -29,25 +29,27 @@ TransformWidget::TransformWidget(QWidget* parent)
     : QWidget(parent), Ui::TransformWidget()
 {
     setupUi(this);
-    
-    connect(m_apply, SIGNAL(clicked()), this, SLOT(applyTransform()));
+
+    //connect(m_apply, SIGNAL(clicked()), this, SLOT(applyTransform()));
+    qDebug() << "TransformWidget constructor";
 }
 
 TransformWidget::~TransformWidget()
 {
+	qDebug() << "TransformWidget destructor";
 }
 
 void TransformWidget::enable(bool enable)
 {
-    m_apply->setEnabled(enable);
+    //m_apply->setEnabled(enable);
 }
 
 void TransformWidget::applyTransform()
 {
     TransformCommand cmd;
-    
+
     IConfigContainer& conf = cmd.getConfig();
-    
+
     conf.setInt( CONF_ACTION, TransformCommand::AllActions);
     conf.setDouble( CONF_MOVE_X, m_posX->value());
     conf.setDouble( CONF_MOVE_Y, m_posY->value());
@@ -58,9 +60,9 @@ void TransformWidget::applyTransform()
     conf.setDouble( CONF_SCALE_X, 1);
     conf.setDouble( CONF_SCALE_Y, 1);
     conf.setDouble( CONF_SCALE_Z, 1);
-    
+
     cmd.execute();
-    
+
     SPAPP->getMainWindow()->getCurrentView()->updateView();
 }
 
