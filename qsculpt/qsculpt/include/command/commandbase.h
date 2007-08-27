@@ -37,30 +37,29 @@ public:
 	 *
 	 */
 	CommandBase(ICommand* parent=0);
-	
+
 	/**
 	 *
 	 */
 	CommandBase(const CommandBase&);
-	
+
 	/**
 	 *
 	 */
 	CommandBase(const QString& text, ICommand* parent=0);
-	
+
     virtual ~CommandBase();
 
     /*
      * ICommand interface implementation
      */
-	virtual ICommand* clone() const;
     virtual IConfigContainer& getConfig()const;
     virtual void activate(bool active);
     virtual bool isActive();
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual void execute(){}
+    virtual void execute() {}
 
 protected:
     IConfigContainer*   m_configContainer;

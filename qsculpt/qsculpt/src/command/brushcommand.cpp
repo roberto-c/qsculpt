@@ -40,8 +40,7 @@ BrushCommand::BrushCommand(ICommand* parent)
 	m_propertiesWindow(NULL),
 	m_undoCalled(false)
 {
-	m_propertiesWindow = new BrushProperties(NULL);
-	if (m_propertiesWindow)
+	if (getOptionsWidget())
 	{
 		m_propertiesWindow->setBrushRadius(m_radius);
 		m_propertiesWindow->setBrushStrength(m_depth);
@@ -59,7 +58,7 @@ BrushCommand::BrushCommand(const BrushCommand& cpy)
 	m_undoCalled(cpy.m_undoCalled)
 {
 	qDebug() << "BrushCommand::BrushCommand(cpy)";
-	if (m_propertiesWindow)
+	if (getOptionsWidget())
 	{
 		m_propertiesWindow->setBrushRadius(m_radius);
 		m_propertiesWindow->setBrushStrength(m_depth);
@@ -78,22 +77,11 @@ ICommand* BrushCommand::clone() const
 	return new BrushCommand(*this);
 }
 
-void BrushCommand::activate(bool active)
+QWidget* BrushCommand::getOptionsWidget()
 {
-    CommandBase::activate(active);
-
-    if (active)
-    {
-        if (m_propertiesWindow)
-            SPAPP->getMainWindow()->setOptionsWidget(m_propertiesWindow);
-        else
-            qDebug("Properties window is null");
-    }
-    else
-    {
-        if (m_propertiesWindow)
-            SPAPP->getMainWindow()->setOptionsWidget(NULL);
-    }
+	if (m_propertiesWindow == NULL)
+		m_propertiesWindow = new BrushProperties(NULL);
+	return m_propertiesWindow;
 }
 
 /**
@@ -117,7 +105,7 @@ void BrushCommand::undo()
 		{
 			m_object->adjustPointNormal(it.key());
 		}
-		
+
 		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
 		if (view)
 			view->updateView();
@@ -147,7 +135,7 @@ void BrushCommand::redo()
 		{
 			m_object->adjustPointNormal(it.key());
 		}
-		
+
 		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
 		if (view)
 			view->updateView();
@@ -156,32 +144,32 @@ void BrushCommand::redo()
 
 void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 {
-    
+
     if (m_record.size() > 0)
     {
         GLdouble x = 0.0,
             y = 0.0,
             z = 0.0;
         GLfloat wz = 0.0f;
-        
+
         //glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
         // Use the same z depth to move in the plane parallel to the screen.
         wz = m_currentWinPoint.getZ();
-        gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, 
+        gluUnProject(e->x(), m_viewPort[3] - e->y(), wz,
             m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
-        
+
         Point3D currPoint = Point3D(x, y, z);
         Point3D currWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
-    
+
         // Set the direccion of the displacement
         int direction = m_action == Push ? -1 : 1;
-        
+
         if (m_vertexSelected.size() > 0)
         {
             Normal& n = m_object->getNormalAtPoint(m_vertexSelected[0]);
             for (int i = 0; i < m_vertexSelected.size(); i++)
             {
-                
+
                 Vertex& v = m_object->getVertex(m_vertexSelected[i]);
                 if ( n != Normal::null())
                 {
@@ -193,10 +181,10 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
                 }
             }
         }
-        
+
         m_currentPoint = currPoint;
         m_currentWinPoint = currWinPoint;
-        
+
         DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
         m_record.clear();
         m_record = view->getPickRecords( e->pos().x(), e->pos().y());
@@ -215,40 +203,40 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 }
 
 void BrushCommand::mousePressEvent(QMouseEvent* e)
-{   
+{
     DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
-    
+
 	m_vertexSelected.clear();
 	m_record.clear();
 	m_previousState.clear();
     m_radius = m_propertiesWindow->getBrushRadius();
     m_action = m_propertiesWindow->getBrushAction();
     m_depth = m_propertiesWindow->getBrushStrength();
-    
+
     m_record = view->getPickRecords( e->pos().x(), e->pos().y());
-    
+
     if (m_record.size() > 0)
     {
         GLdouble x, y, z;
         GLfloat wz = 0.0f;
-    
+
         glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
         glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
         glGetIntegerv(GL_VIEWPORT, m_viewPort);
-    
+
         glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-        gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, 
+        gluUnProject(e->x(), m_viewPort[3] - e->y(), wz,
             m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
-    
+
         m_initialWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
         m_currentWinPoint = m_initialWinPoint;
         m_intialPoint = Point3D(x, y, z);
         m_currentPoint = m_intialPoint;
-        
+
         glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
         glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
         glGetIntegerv(GL_VIEWPORT, m_viewPort);
-		
+
 		selectObject();
     }
     else
@@ -280,10 +268,10 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 void BrushCommand::selectObject()
 {
     const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
-    
+
     if (!doc)
         return;
-    
+
     int docObjectCount = doc->getObjectsCount();
     int recordCount = m_record.size();
     for (int i = 0; i < recordCount; i++)
@@ -307,4 +295,5 @@ void BrushCommand::selectObject()
         }
     }
 }
+
 

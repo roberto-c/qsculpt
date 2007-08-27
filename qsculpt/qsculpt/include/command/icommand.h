@@ -61,6 +61,13 @@ public:
 	 */
 	virtual ICommand* clone() const = 0;
 
+	/**
+	 * This method returns the options or configuration widget of the command.
+	 * The widget returned should contain all the controls necesary to allow
+	 * the user to change configuration parameters of the command.
+	 */
+	virtual QWidget* getOptionsWidget() = 0;
+
     /**
      * Set the command as the active one. This is called with the
      * parameter in true to indicate that the command is active and should

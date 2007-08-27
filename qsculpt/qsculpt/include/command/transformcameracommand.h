@@ -35,12 +35,18 @@ public:
 
     ~TransformCameraCommand();
 
+    // ICommand Interface
+    virtual ICommand* clone() const {
+    	return new TransformCameraCommand(*this);
+    }
     virtual void activate(bool active);
     virtual void execute();
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
     virtual void undo();
+    virtual QWidget* getOptionsWidget(){return NULL;}
+    // End ICommand Interface
 
 private:
     Point3D     m_eyePosition;

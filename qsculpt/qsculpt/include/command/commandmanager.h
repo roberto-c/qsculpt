@@ -37,36 +37,42 @@ class QAction;
 class CommandManager : public QObject
 {
 	Q_OBJECT
-	
+
 public:
 	/**
 	 * Default constructor
 	 */
 	CommandManager();
 	virtual ~CommandManager();
-	
+
 	bool registerCommand(QString name, QAction* action, ICommand* cmd);
 	void unregisterCommand(QString name);
-	
+
 	void setActiveCommand(QString name);
-	ICommand* getActiveCommand() const { 
+	ICommand* getActiveCommand() const {
 		return m_currentCommand;
 	}
 	QString getActiveCommandName();
-	
+
 	QAction* createUndoAction(QObject * parent,
 							  const QString & prefix = QString() ) const ;
-	
+
 	QAction* createRedoAction( QObject * parent,
 							   const QString & prefix = QString() ) const;
 signals:
 	void commandExecuted(QString name);
 
+	/**
+	 * This signal is sent when a new command is activated. This signal can be
+	 * used to know when a command has become active.
+	 */
+	void commandActivated(QString name);
+
 private slots:
 	void commandTriggered();
 
 	void commandExecuted();
-	
+
 private:
 	ICommand					*m_currentCommand;
 	QHash<QString, ICommand*>	m_commandTable;

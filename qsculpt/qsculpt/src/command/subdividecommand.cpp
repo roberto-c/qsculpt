@@ -61,7 +61,7 @@ void SubdivideCommand::activate(bool activate)
 {
 	if (activate == false)
 		return;
-	
+
     qDebug("execute SubdivideCommand()");
     QProgressDialog dlg("Subdividing the selected object...", 0, 0, 100,
 						SPAPP->getMainWindow());
@@ -69,21 +69,21 @@ void SubdivideCommand::activate(bool activate)
     dlg.setAutoReset(true);
     dlg.setAutoClose(true);
     dlg.setValue(0);
-    
+
     QThread::connect(m_workerThread, SIGNAL(progress(int)),
 					 &dlg, SLOT(setValue(int)));
-    
+
     dlg.show();
     qDebug() << "Start time:" << QDateTime::currentDateTime();
-    
+
     const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
-    
+
     if (!doc)
         return;
-    
+
     const QList<IObject3D*> selectedObjects = doc->getSelectedObjects();
     int objectCount = selectedObjects.size();
-    
+
     for (int i = 0; i < objectCount; ++i)
     {
         IObject3D* obj = selectedObjects.at(i);
@@ -116,7 +116,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
     PointContainer& pointList = obj->getPointList();
     FaceContainer& faceList = obj->getFaceList();
 	EdgeContainer& edgeList = obj->getEdgeList();
-    
+
     int progressValue = 0;
     Edge edge1, edge2;
     Point3D point;
@@ -127,7 +127,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 	{
 		obj->lock();
         const Face face = faceList.at(i);
-        
+
         Vertex midFaceVertex;
         int numVertex = face.point.size();
         for (int j = 0; j < numVertex; ++j)
@@ -138,14 +138,14 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
         obj->addVertex(midFaceVertex/* + midNormal*/);
         int midFaceIndex = pointList.size() - 1;
 		faceList[i].midPoint = midFaceIndex;
-        obj->unlock();		
+        obj->unlock();
 	}
 
     for (int i = rend; i >= rbegin; --i)
     {
         obj->lock();
         const Face face = faceList.at(i);
-        
+
         Vertex midFaceVertex;
         int numVertex = face.point.size();
         for (int j = 1; j <= numVertex; ++j)
@@ -166,7 +166,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 			{
 				point = pointList.at(edge1.point1).vertex
 					+ pointList.at(edge1.point2).vertex;
-							 
+
 				int faceCount = edge1.faceRef.size();
 				for (int k = 0; k < faceCount; ++k)
 				{
@@ -178,7 +178,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 				edge1.midPoint = pointList.size() - 1;
 				edgeList.setMidPointReference(indexOf, edge1.midPoint);
 			}
-			
+
 			edge2.point1 = face.point.at((j-1) % numVertex);
             edge2.point2 = face.point.at((j) % numVertex);
             indexOf = edgeList.indexOf(edge2);
@@ -195,7 +195,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 			{
 				point = pointList.at(edge2.point1).vertex
 					+ pointList.at(edge2.point2).vertex;
-				
+
 				int faceCount = edge2.faceRef.size();
 				for (int k = 0; k < faceCount; ++k)
 				{
@@ -207,7 +207,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 				edge2.midPoint = pointList.size() - 1;
 				edgeList.setMidPointReference(indexOf, edge2.midPoint);
 			}
-			
+
             // remove this triangle from the list of faces reference of the point
             int pointIndex = face.point.at(j % numVertex);
             int faceIndex = pointList.at(pointIndex).faceRef.indexOf(i);
@@ -220,12 +220,12 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
             vertexIndex[1] = edge1.midPoint;
             vertexIndex[2] = face.midPoint;
             vertexIndex[3] = edge2.midPoint;
-            
+
             // Modify the face vertices to the new values. This is only done
             // for the first vertex. For all other vertices, a new face is added.
             // This is done to be able to maintain the original face object without
             // modifying the indices of the points and faces.
-            
+
             if (j == numVertex)
             {
 				obj->replaceFace(i, vertexIndex);
@@ -234,7 +234,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 			{
                 obj->addFace(vertexIndex);
 			}
-            
+
         }
         obj->unlock();
         int prog = (rend - rbegin - i) * 100 / (rend - rbegin);
@@ -242,7 +242,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
             emit progress(prog);
         progressValue = prog;
     }
-    
+
     // adjust points normals
     int pointCount = pointList.size();
     for (int i = 0; i < pointCount; ++i)
@@ -257,19 +257,19 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index)
 {
     Q_ASSERT(obj);
-    
+
     PointContainer& pointList = obj->getPointList();
     FaceContainer& faceList = obj->getFaceList();
-    
+
     Normal res;
-    
+
     Point& p = pointList.at(index);
     int numFaces = p.faceRef.size();
     for (int i = 0; i < numFaces; i++)
     {
         res = res + computeFaceNormal(obj, p.faceRef[i]);
     }
-    
+
     res = res / (float)numFaces;
     res.normalize();
 
@@ -290,25 +290,25 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
 Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, int index)
 {
     Q_ASSERT(obj);
-    
+
     const FaceContainer& faceList = obj->getFaceList();
-    
+
     return faceList.size() > index ? computeFaceNormal(obj, faceList[index]) : Point3D();
 }
 
 Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, const Face &face)
 {
     Q_ASSERT(obj);
-    
+
     const PointContainer& pointList = obj->getPointList();
-    
+
     int lastPoint = face.point.size() - 1;
     Point3D v1 = pointList.at(face.point[1]).vertex - pointList.at(face.point[0]).vertex;
     Point3D v2 = pointList.at(face.point[lastPoint]).vertex - pointList.at(face.point[0]).vertex;
-    
+
     Point3D res = v1.crossProduct( v2);
     res.normalize();
-    
+
     return res;
 }
 
@@ -332,3 +332,4 @@ void SubdivideCommand::WorkerThread::setObject3D(IObject3D* obj)
 {
     m_obj = obj;
 }
+

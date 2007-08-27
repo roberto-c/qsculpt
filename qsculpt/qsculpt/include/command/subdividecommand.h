@@ -34,51 +34,51 @@ struct Face;
 class SubdivideCommand : public CommandBase
 {
     Q_OBJECT
-    
+
 public:
     SubdivideCommand();
-	
+
 	SubdivideCommand(const SubdivideCommand& cpy);
 
     ~SubdivideCommand();
-	
-	virtual ICommand* clone() const;
 
+    // ICommand Interface
+	virtual ICommand* clone() const;
     virtual void activate(bool activate);
-	
 	virtual void undo();
-	
 	virtual void redo();
+	virtual QWidget* getOptionsWidget(){return NULL;}
+	// End ICommand Interface
 
 private:
     class WorkerThread;
-    
+
     WorkerThread* m_workerThread;
 };
 
 class SubdivideCommand::WorkerThread : public QThread
 {
     Q_OBJECT
-    
+
 public:
     virtual void run();
-    
+
     void setRangeBegin(unsigned int value);
     void setRangeEnd(unsigned int value);
     void setObject3D(IObject3D* obj);
 
 private:
     void subdivide(IObject3D* obj, int rbegin, int rend);
-    
+
     void adjustPointNormal(IObject3D* obj, int index);
-    
+
     Point3D computeFaceNormal(const IObject3D* obj, int index);
-    
+
     Point3D computeFaceNormal(const IObject3D* obj, const Face &face);
 signals:
     void progress(int value);
 
-private:    
+private:
 	unsigned int m_rbegin;
     unsigned int m_rend;
     IObject3D* m_obj;

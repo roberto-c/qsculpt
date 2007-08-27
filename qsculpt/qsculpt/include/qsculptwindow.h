@@ -102,6 +102,11 @@ private slots:
      */
     void documentChanged(IDocument::ChangeType type);
 
+    /**
+     * This slot is called when a command is activated. The command activated
+     * is identified by a string.
+     */
+    void commandActivated(QString commandName);
 
 private:
     /**

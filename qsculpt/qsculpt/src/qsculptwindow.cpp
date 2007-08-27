@@ -48,7 +48,6 @@ QSculptWindow::QSculptWindow()
 QSculptWindow::~QSculptWindow()
 {
     delete m_document;
-    //delete m_moveCmd;
 }
 
 void QSculptWindow::createWidgets()
@@ -58,13 +57,9 @@ void QSculptWindow::createWidgets()
 
     setCentralWidget(m_glWidget);
 
-    m_dockCommandOptions = new QDockWidget("Options", this);
-    m_dockCommandOptions->setAllowedAreas(Qt::NoDockWidgetArea /*Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea*/);
-    addDockWidget(Qt::NoDockWidgetArea, m_dockCommandOptions);
-    m_dockCommandOptions->setFloating(true);
-    m_dockCommandOptions->move(20, 50);
-
-    //m_dockCommandOptions->setWindowOpacity(0.85);
+    m_dockCommandOptions = new QDockWidget("Options", NULL);
+    m_dockCommandOptions->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, m_dockCommandOptions);
 
     connect(m_showGrid, SIGNAL(toggled(bool)), m_glWidget, SLOT(setGridVisible(bool)));
     connect(m_showNormals, SIGNAL(toggled(bool)), m_glWidget, SLOT(setNormalsVisible(bool)));
@@ -121,12 +116,26 @@ void QSculptWindow::createWidgets()
 	m_toolsToolbar->addAction(action);
 	m_commandManager.registerCommand("Subdivide", action, cmd);
 
+	connect(&m_commandManager, SIGNAL(commandActivated(QString)),
+			this, SLOT(commandActivated(QString)));
+
     // Activate default tool
     m_commandManager.setActiveCommand("Select");
 
     connect(m_save, SIGNAL(activated()), this, SLOT(save()));
     connect(m_saveAs, SIGNAL(activated()), this, SLOT(saveAs()));
     connect(m_open, SIGNAL(activated()), this, SLOT(open()));
+
+    if (layout())
+    {
+    	qDebug() << "layout() setContentsMargins";
+    	layout()->setContentsMargins(0, 0, 0, 0);
+    	layout()->setSpacing(0);
+    }
+    else
+    {
+    	qDebug() << "layout() is NULL";
+    }
 }
 
 const IDocument* QSculptWindow::getCurrentDocument()
@@ -304,9 +313,33 @@ void QSculptWindow::documentChanged(IDocument::ChangeType /*type*/)
 
 void QSculptWindow::setOptionsWidget(QWidget* widget)
 {
-	Q_CHECK_PTR(m_dockCommandOptions);
-	Q_CHECK_PTR(widget);
+	qDebug() << "QSculptWindow::setOptionsWidget";
+
+	// Get the current widget on the dock and hide it
+	QWidget* wid = m_dockCommandOptions->widget();
+	if (wid)
+	{
+		wid->hide();
+	}
+	// Set the new widget on the dock and be sure
+	// it's visible
     m_dockCommandOptions->setWidget(widget);
-    m_dockCommandOptions->show();
+    if (widget)
+    {
+    	widget->show();
+    	m_dockCommandOptions->show();
+    }
+}
+
+void QSculptWindow::commandActivated(QString name)
+{
+	qDebug() << "QSculptWindow::commandActivated";
+	Q_UNUSED(name);
+	ICommand* cmd = m_commandManager.getActiveCommand();
+	if (cmd)
+	{
+
+		setOptionsWidget(cmd->getOptionsWidget());
+	}
 }
 
