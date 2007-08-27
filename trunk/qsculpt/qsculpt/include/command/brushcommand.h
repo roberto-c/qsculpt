@@ -41,27 +41,28 @@ public:
         Push,
         Pull
     };
-	
+
 	BrushCommand(ICommand* parent=0);
-	
+
 	BrushCommand(const BrushCommand& cpy);
 
     virtual ~BrushCommand();
 
+    // ICommand Interface
 	virtual ICommand* clone() const;
-	
-    virtual void activate(bool active);
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
 	virtual void undo();
 	virtual void redo();
+	virtual QWidget* getOptionsWidget();
+	// End ICommand Interface
 
 private:
 	typedef QMap<IObject3D*, QHash<int, Vertex> > DirtyFaceMap;
-	
+
 	void selectObject();
-    
+
     QVector<HitRecord>  m_record;
     IObject3D*          m_object;
     double              m_radius;

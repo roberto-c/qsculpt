@@ -29,7 +29,7 @@
 #include "camera.h"
 
 CommandBase::CommandBase(ICommand* parent)
-:	ICommand(parent), 
+:	ICommand(parent),
 	m_configContainer(new ConfigContainer()),
 	m_isActive(false),
 	m_rotationRadius(0.0),
@@ -55,7 +55,7 @@ CommandBase::CommandBase(const CommandBase& cpy)
 }
 
 CommandBase::CommandBase(const QString& text, ICommand* parent)
-:	ICommand(text, parent), 
+:	ICommand(text, parent),
 	m_configContainer(new ConfigContainer()),
 	m_isActive(false),
 	m_rotationRadius(0.0),
@@ -68,11 +68,6 @@ CommandBase::CommandBase(const QString& text, ICommand* parent)
 
 CommandBase::~CommandBase()
 {
-}
-
-ICommand* CommandBase::clone() const
-{
-	return new CommandBase(*this);
 }
 
 IConfigContainer& CommandBase::getConfig() const
@@ -93,7 +88,7 @@ bool CommandBase::isActive()
 void CommandBase::mousePressEvent(QMouseEvent* e)
 {
     DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
-    
+
     GLdouble x, y, z;
     GLfloat wz = 0.0f;
 
@@ -112,7 +107,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
 
     m_currentCamera = view->getViewCamera();
     *m_intialCameraState = *m_currentCamera;
-    
+
     // In prespective view, we canchange the orientation of the view, but we can't change it
     // if we are in the other fixed view. So, in those views we can only do a pan.
     if (view->getPerspectiveViewType() == GlDisplay::Perspective)
@@ -139,11 +134,11 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
         y = 0.0,
         z = 0.0;
     GLfloat wz = 0.0f;
-    
+
     glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
     gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
-    
-    
+
+
     Point3D currPoint = Point3D(x, y, z);
     Point3D currWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
     if (m_panViewMode)

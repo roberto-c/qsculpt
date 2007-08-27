@@ -22,6 +22,8 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QGridLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QComboBox>
 #include <QLabel>
 #include <QSpacerItem>
@@ -49,28 +51,34 @@ void DocumentView::createWidgets()
 {
     QGridLayout* gridLayout = new QGridLayout(this);
     m_display = new GlDisplay(this);
-    
-    QLabel* label = new QLabel("View", this);    
+
+    gridLayout->setContentsMargins(0, 0, 0, 0);
+    gridLayout->addWidget(m_display, 0,0, 1, 5);
+
+    QHBoxLayout* hboxLayout = new QHBoxLayout();
+    gridLayout->addLayout(hboxLayout, 1, 0);
+
+    QLabel* label = new QLabel("View", this);
     m_viewPerspective = new QComboBox(this);
     label->setBuddy(m_viewPerspective);
-    
-    gridLayout->addWidget(m_display, 0,0, 1, 5);
-    gridLayout->addWidget(label, 1, 0);
-    gridLayout->addWidget(m_viewPerspective, 1, 1);
-    
+
+    hboxLayout->addWidget(label);
+    hboxLayout->addWidget(m_viewPerspective);
+
     label = new QLabel("Drawing Mode", this);
     m_drawingMode = new QComboBox(this);
     label->setBuddy(m_drawingMode);
-    
-    gridLayout->addWidget(label, 1, 2);
-    gridLayout->addWidget(m_drawingMode, 1, 3);
-    gridLayout->addItem(new QSpacerItem(100, 0), 1, 4);
+
+    hboxLayout->setContentsMargins(11, 0, 0, 0);
+    hboxLayout->addWidget(label);
+    hboxLayout->addWidget(m_drawingMode);
+    hboxLayout->addItem(new QSpacerItem(100, 0));
     gridLayout->setColumnStretch(0,0);
     gridLayout->setColumnStretch(1,0);
     gridLayout->setColumnStretch(2,0);
     gridLayout->setColumnStretch(3,0);
     gridLayout->setColumnStretch(4,4);
-    
+
     m_viewPerspective->addItem("Front", GlDisplay::Front);
     m_viewPerspective->addItem("Back", GlDisplay::Back);
     m_viewPerspective->addItem("Top", GlDisplay::Top);
@@ -80,17 +88,17 @@ void DocumentView::createWidgets()
     m_viewPerspective->addItem("Perspective", GlDisplay::Perspective);
     m_viewPerspective->setCurrentIndex(6);
     m_display->setPerspectiveView( GlDisplay::Perspective );
-    
+
     m_drawingMode->addItem("Points", Points);
     m_drawingMode->addItem("Wireframe", Wireframe);
     m_drawingMode->addItem("Flat", Flat);
     m_drawingMode->addItem("Smooth", Smooth);
     m_drawingMode->setCurrentIndex(2);
     m_display->setDrawingMode( Flat );
-    
+
     connect(m_viewPerspective, SIGNAL(currentIndexChanged(int)), this, SLOT(viewPerspectiveChanged(int)));
     connect(m_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));
-    
+
 }
 
 void DocumentView::setGridVisible( bool value)
@@ -111,7 +119,7 @@ void DocumentView::updateView()
 void DocumentView::viewPerspectiveChanged(int index)
 {
     GlDisplay::PerspectiveType type;
-    
+
     type = (GlDisplay::PerspectiveType)m_viewPerspective->itemData(index).toInt();
     m_display->setPerspectiveView( type );
     updateView();
@@ -120,7 +128,7 @@ void DocumentView::viewPerspectiveChanged(int index)
 void DocumentView::drawingModeChanged(int index)
 {
     DrawingMode type;
-    
+
     type = (DrawingMode)m_viewPerspective->itemData(index).toInt();
     m_display->setDrawingMode( type );
     updateView();

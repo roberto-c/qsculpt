@@ -37,16 +37,16 @@ CommandManager::~CommandManager()
 {
     delete m_undoStack;
 }
-	
+
 bool CommandManager::registerCommand(QString name, QAction* action, ICommand* cmd)
 {
 	if (m_commandTable.contains(name))
 		return false;
-	
+
 	m_commandTable.insert(name, cmd);
 	m_actionTable.insert(name, action);
 	connect(action, SIGNAL(triggered()), this, SLOT(commandTriggered()));
-	
+
 	return true;
 }
 
@@ -72,7 +72,7 @@ QAction* CommandManager::createRedoAction( QObject * parent,
 {
     if (m_redoAction == NULL)
     {
-        qDebug() << "QUndoStack::createRedoAction"; 
+        qDebug() << "QUndoStack::createRedoAction";
         m_redoAction = m_undoStack->createRedoAction(parent, prefix);
     }
     return m_redoAction;
@@ -99,7 +99,8 @@ void CommandManager::commandTriggered()
     if (obj)
     {
         ICommand* cmd = NULL;
-		cmd = m_commandTable[m_actionTable.key(obj)];
+        QString commandName = m_actionTable.key(obj);
+		cmd = m_commandTable[commandName];
 		if (cmd)
 		{
 			ICommand* newCommand = cmd->clone();
@@ -107,14 +108,15 @@ void CommandManager::commandTriggered()
 			{
 				if (m_currentCommand)
 					m_currentCommand->activate(false);
-			
+
 				m_currentCommand = newCommand;
-				
+
 				disconnect(m_currentCommand, SIGNAL(executed()), 0, 0);
 				connect(m_currentCommand, SIGNAL(executed()),
 						this, SLOT(commandExecuted()));
-				
+
 				m_currentCommand->activate(true);
+				emit commandActivated(commandName);
 			}
 		}
 	}
@@ -132,13 +134,13 @@ void CommandManager::commandExecuted()
             m_undoStack->push(cmd);
             if (m_currentCommand)
                 m_currentCommand->activate(false);
-            
+
             disconnect(m_currentCommand, SIGNAL(executed()), 0, 0);
-            
+
             m_currentCommand = newCommand;
             connect(m_currentCommand, SIGNAL(executed()),
                     this, SLOT(commandExecuted()));
-            
+
             m_currentCommand->activate(true);
 		}
 	}

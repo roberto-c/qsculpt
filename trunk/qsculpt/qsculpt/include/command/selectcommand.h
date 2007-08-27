@@ -24,6 +24,7 @@
 #include "commandbase.h"
 #include "documentview.h"
 #include "point3d.h"
+#include <QPointer>
 
 class TransformWidget;
 
@@ -41,22 +42,20 @@ public:
 
     virtual ~SelectCommand();
 
-	ICommand* clone() const;
-
-	virtual void activate(bool active);
-
+    // ICommand interface
+	virtual ICommand* clone() const;
     virtual void mouseMoveEvent(QMouseEvent* e);
-
     virtual void mousePressEvent(QMouseEvent* e);
-
     virtual void mouseReleaseEvent(QMouseEvent* e);
+    virtual QWidget* getOptionsWidget();
+    // End ICommand interface
 
 private:
     QVector<HitRecord> m_record;
 
     void selectObject();
 
-    TransformWidget*	m_objectProperties;
+    static QPointer<TransformWidget>	m_objectProperties;
 };
 
 #endif

@@ -61,7 +61,7 @@ public:
         Scale,                      /**< Scale action */
         AllActions                  /**< Do all actions */
     };
-    
+
     /**
      * Enumeration flags used as the posible configuration values for
      * the axis movement
@@ -74,7 +74,7 @@ public:
         XZAxis = XAxis | ZAxis,     /**< Move on X and Z axis */
         YZAxis = YAxis | ZAxis      /**< Move on Y and Z axis */
     }RotateAxis, ScaleAxis;
-    
+
     /**
      * Move command constructor. Fill the configuration values container with
      * default values (ex. movement on XY axis as default).
@@ -84,40 +84,55 @@ public:
     virtual ~TransformCommand();
 
     /**
+     * Creates a copy of this object
+     */
+    virtual ICommand* clone() const {
+    	return new TransformCommand(*this);
+    }
+
+    /**
      * Execute the transformation command.
      */
     virtual void execute();
-    
+
     /**
      * Overriden from CommandBase. Mark the command as active/inactive.
      * If the active parameter is false and the object is moving, then
-     * the command is canceled and the object is returned to their 
+     * the command is canceled and the object is returned to their
      * initial position.
-     * 
+     *
      * @param active true to mark the command as active, false to
      * terminate the command.
      */
     virtual void activate(bool active);
-    
+
     /**
      * Overriden from CommandBase. This stores the initial position of the
      * object.
      */
     virtual void mousePressEvent(QMouseEvent* e);
-    
+
     /**
      * Overriden from CommandBase. Move the object acording to the mouse
      * movement. The movement is across the axis configurated.
      */
     virtual void mouseMoveEvent(QMouseEvent* e);
-    
+
     /**
-     * Overriden from CommandBase. Finish the movement of the object. 
+     * Overriden from CommandBase. Finish the movement of the object.
      */
     virtual void mouseReleaseEvent(QMouseEvent* e);
 
+    /**
+     * Overriden from ICommand. Returns the configuration widget for this
+     * command.
+     */
+    virtual QWidget* getOptionsWidget() {
+    	return NULL;
+    }
+
 private:
-    bool                m_actionFinished;   /**< Flag to indicate that the command 
+    bool                m_actionFinished;   /**< Flag to indicate that the command
                                              * is modifying the object. */
     Point3D             m_initial;          /**< Initial position of the object. */
     Point3D             m_delta;            /**< Change of position between mouse

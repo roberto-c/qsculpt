@@ -21,6 +21,7 @@
 
 #include <QtOpenGL>
 #include <QMouseEvent>
+#include <QPointer>
 #include "qsculptapp.h"
 #include "qsculptwindow.h"
 #include "idocument.h"
@@ -30,22 +31,21 @@
 #include "camera.h"
 #include "transformwidget.h"
 
+QPointer<TransformWidget> SelectCommand::m_objectProperties = NULL;
+
 SelectCommand::SelectCommand(ICommand* parent)
-    : CommandBase("Select", parent),
-    m_objectProperties(NULL)
+    : CommandBase("Select", parent)
 {
-	m_objectProperties = new TransformWidget(NULL);
-	if(m_objectProperties)
+	if(getOptionsWidget())
 	{
 		// TODO: initialize object properties window
 	}
 }
 
 SelectCommand::SelectCommand(const SelectCommand& cpy)
-: CommandBase(cpy),
-m_objectProperties(cpy.m_objectProperties)
+: CommandBase(cpy)
 {
-	if(m_objectProperties)
+	if(getOptionsWidget())
 	{
 		// TODO: initialize object properties window
 	}
@@ -61,22 +61,11 @@ ICommand* SelectCommand::clone() const
 	return new SelectCommand(*this);
 }
 
-void SelectCommand::activate(bool active)
+QWidget* SelectCommand::getOptionsWidget()
 {
-    CommandBase::activate(active);
-
-    if (active)
-    {
-        if (m_objectProperties)
-            SPAPP->getMainWindow()->setOptionsWidget(m_objectProperties);
-        else
-            qDebug("Properties window is null");
-    }
-    else
-    {
-        if (m_objectProperties)
-            SPAPP->getMainWindow()->setOptionsWidget(NULL);
-    }
+	if (m_objectProperties == NULL)
+		m_objectProperties = new TransformWidget(NULL);
+	return m_objectProperties;
 }
 
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
