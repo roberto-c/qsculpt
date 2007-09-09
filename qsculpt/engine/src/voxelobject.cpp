@@ -52,7 +52,7 @@ VoxelObject::VoxelObject()
 		m_rotX(0.0),
 		m_rotY(0.0),
 		m_rotZ(0.0),
-		m_showBoundingBox(false),
+		m_selected(false),
 		m_callListId(0),
 		m_regCallList(true)
 {
@@ -78,7 +78,7 @@ VoxelObject::VoxelObject(const VoxelObject& cpy)
 		m_rotX(cpy.m_rotX),
 		m_rotY(cpy.m_rotY),
 		m_rotZ(cpy.m_rotZ),
-		m_showBoundingBox(cpy.m_showBoundingBox),
+		m_selected(cpy.m_selected),
 		m_callListId(0),
 		m_regCallList(true),
 		m_pointList(cpy.m_pointList),
@@ -168,7 +168,7 @@ void VoxelObject::draw()
     glRotated(m_rotZ, 0, 0, 1);
     glTranslatef(m_position.getX(), m_position.getY(), m_position.getZ());
     
-    if (m_showBoundingBox)
+    if (m_selected)
         drawBoundingBox();
 	qDebug("m_callListId=%d", m_callListId);
 	glCallList(m_callListId);
@@ -223,12 +223,12 @@ const QColor VoxelObject::getColor()
 
 void VoxelObject::showBoundingBox(bool val)
 {
-	m_showBoundingBox = val;
+	m_selected = val;
 }
 
 bool VoxelObject::getShowBoundingBox()
 {
-	return m_showBoundingBox;
+	return m_selected;
 }
 
 void VoxelObject::setBoundingBoxColor(QColor color)

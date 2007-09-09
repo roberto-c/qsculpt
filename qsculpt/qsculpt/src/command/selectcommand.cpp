@@ -114,7 +114,7 @@ void SelectCommand::selectObject()
             IObject3D* obj = doc->getObject(m_record[i].stackContents - 1);
             if (obj)
             {
-                obj->showBoundingBox( !obj->getShowBoundingBox() );
+                obj->setSelected( !obj->isSelected() );
             }
         }
     }
