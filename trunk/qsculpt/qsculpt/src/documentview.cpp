@@ -101,6 +101,13 @@ void DocumentView::createWidgets()
 
 }
 
+void DocumentView::setDocument(IDocument* doc) {
+	if (m_document)
+		m_document->disconnect(this);
+    m_document = doc;
+    connect(m_document, SIGNAL(changed(IDocument::ChangeType, IObject3D*)), this, SLOT(updateView()));
+};
+
 void DocumentView::setGridVisible( bool value)
 {
     m_display->setGridVisible( value );
