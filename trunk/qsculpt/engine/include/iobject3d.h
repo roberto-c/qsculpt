@@ -164,19 +164,21 @@ public:
     virtual const QColor getColor() = 0;
 
     /**
-     * Draw a bounding box around the object.
+     * Mark the object as selected. This property is used by the renderers
+     * to mark selected objects (for example draw a bounding box around the
+     * object)
      *
-     * @param val pass true to draw a bounding box around the
-     * object.
+     * @param val pass true to set the object as selected
      */
-    virtual void showBoundingBox(bool val) = 0;
+    virtual void setSelected(bool val) = 0;
 
     /**
-     * Draw a bounding box around the object.
+     * Returns the selected state of the object.
      *
-     * @return true if the object has a bounding box, otherwise, false.
+     * @return true if the object is selected, otherwise, false.
+     * @see setSelected
      */
-    virtual bool getShowBoundingBox() = 0;
+    virtual bool isSelected() const = 0;
 
     /**
      * Set the color of the bounding box.
@@ -190,7 +192,7 @@ public:
      *
      * @return color of bounding box.
      */
-    virtual QColor getBoundingBoxColor() = 0;
+    virtual QColor getBoundingBoxColor() const = 0;
 
     /**
      * Add point to object. The point added is in local coordinates ( i.e.

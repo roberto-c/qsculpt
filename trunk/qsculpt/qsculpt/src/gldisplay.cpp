@@ -144,6 +144,8 @@ void GlDisplay::initializeGL()
     //float lightAmbient[] = {0.5f, 0.5f, 0.5f, 1.0f};
     //float lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
     //float lightPosition[] = { 0.0f, 0.0f, 1.0f, 1.0f};
+	//GLfloat mat_shininess[] = {50.0};
+	//GLfloat mat_specular[] = {1.0, 1.0, 1.0, 0.0};
 
     glClearColor( 0.4, 0.4, 0.4, 1.0 );
     glClearDepth(1.0f);
@@ -163,6 +165,10 @@ void GlDisplay::initializeGL()
     {
         qDebug("Depth buffer enabled. Precision: %d", format().depthBufferSize());
     }
+
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+
 }
 
 void GlDisplay::resizeGL( int w, int h )

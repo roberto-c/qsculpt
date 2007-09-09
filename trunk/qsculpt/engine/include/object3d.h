@@ -65,10 +65,10 @@ public:
     virtual void setWidth(float value);
     virtual void setColor(const QColor& color);
     virtual const QColor getColor();
-    virtual void showBoundingBox(bool val);
-    virtual bool getShowBoundingBox();
+    virtual void setSelected(bool val);
+    virtual bool isSelected() const;
     virtual void setBoundingBoxColor(const QColor& color);
-    virtual QColor getBoundingBoxColor();
+    virtual QColor getBoundingBoxColor() const;
     virtual int addVertex(const Vertex& point);
     virtual void removeVertex(int id);
     virtual Vertex& getVertex(int index);
@@ -135,8 +135,6 @@ protected:
      */
     void computeAllNormals();
 
-    void drawVertexNormals();
-
     Scene*          m_scene;
     Point3D         m_position;
     QColor          m_color,
@@ -149,7 +147,7 @@ protected:
                     m_minZ,
                     m_maxZ;
     float           m_rotX, m_rotY, m_rotZ;
-    bool            m_showBoundingBox;
+    bool            m_selected;
     int             m_callListId;
     bool            m_genereateCallList;
     int				m_currentResolutionLevel;
@@ -161,8 +159,6 @@ private:
     NormalContainer 			m_normalList;
     QVector<FaceContainer*>   	m_faceList;
 	QVector<EdgeContainer*>		m_edgeList;
-    //FaceContainer   	m_faceList;
-	//EdgeContainer		m_edgeList;
     QMutex          			m_mutex;
 };
 

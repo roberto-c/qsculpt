@@ -53,7 +53,7 @@ Object3D::Object3D()
     m_rotX(0.0),
     m_rotY(0.0),
     m_rotZ(0.0),
-    m_showBoundingBox(false),
+    m_selected(false),
     m_callListId(0),
     m_genereateCallList(true),
     m_currentResolutionLevel(0)
@@ -77,7 +77,7 @@ Object3D::Object3D(const Object3D& cpy)
     m_rotX(cpy.m_rotX),
     m_rotY(cpy.m_rotY),
     m_rotZ(cpy.m_rotZ),
-    m_showBoundingBox(cpy.m_showBoundingBox),
+    m_selected(cpy.m_selected),
     m_callListId(0),
     m_genereateCallList(true),
     m_currentResolutionLevel(cpy.m_currentResolutionLevel),
@@ -195,29 +195,6 @@ void Object3D::setWidth(float value)
     Q_UNUSED(value);
 }
 
-void Object3D::drawVertexNormals()
-{
-	FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
-    int faceCount = faceList.size();
-
-    glColor3d(0.0, 1.0, 0.8);
-
-    Normal normalLine;
-    glBegin(GL_LINES);
-    for ( int i = 0; i < faceCount; i++)
-    {
-        Face& f = faceList[i];
-        int size = f.point.size();
-        for (int j = 0; j < size; ++j)
-        {
-            glVertex3fv(m_pointList.at(f.point[j]).vertex.getPoint());
-            normalLine = m_normalList.at(f.normal[j]) + m_pointList.at(f.point[j]).vertex;
-            glVertex3fv(normalLine.getPoint());
-        }
-    }
-    glEnd();
-}
-
 void Object3D::setColor(const QColor& color)
 {
     m_color = color;
@@ -228,14 +205,14 @@ const QColor Object3D::getColor()
     return m_color;
 }
 
-void Object3D::showBoundingBox(bool val)
+void Object3D::setSelected(bool val)
 {
-    m_showBoundingBox = val;
+    m_selected = val;
 }
 
-bool Object3D::getShowBoundingBox()
+bool Object3D::isSelected() const
 {
-    return m_showBoundingBox;
+    return m_selected;
 }
 
 void Object3D::setBoundingBoxColor(const QColor& color)
@@ -243,7 +220,7 @@ void Object3D::setBoundingBoxColor(const QColor& color)
     m_boundingBoxColor = color;
 }
 
-QColor Object3D::getBoundingBoxColor()
+QColor Object3D::getBoundingBoxColor() const
 {
     return m_boundingBoxColor;
 }

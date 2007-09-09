@@ -26,7 +26,7 @@
 #include "sphere.h"
 
 Document::Document() {
-    
+
 }
 
 
@@ -38,7 +38,7 @@ Document::~Document() {
 void Document::loadFile(QString fileName)
 {
     qDebug("loadFile");
-    
+
     addObject(IDocument::Mesh);
     IObject3D* obj = getObject( m_objectList.size() -1);
     if (obj)
@@ -50,13 +50,13 @@ void Document::loadFile(QString fileName)
             return;
         }
         QTextStream inputFile(&file);
-        
+
         QString str;
         while(!inputFile.atEnd())
         {
             str = inputFile.readLine();
             QTextStream lineStream(&str);
-            
+
             QString token;
             lineStream >> token;
             if (token == "v")
@@ -95,10 +95,10 @@ void Document::loadFile(QString fileName)
 void Document::saveFile(QString fileName)
 {
     qDebug("Save file");
-    
+
     int numObjects = m_objectList.size();
     qDebug("Number of objects to save %d", numObjects);
-    
+
     if (numObjects > 0 )
     {
         QFile file(fileName);
@@ -108,7 +108,7 @@ void Document::saveFile(QString fileName)
             return;
         }
         QTextStream out(&file);
-        
+
         const IObject3D* obj = NULL;
         for (int i = 0; i < numObjects; ++i)
         {
@@ -121,7 +121,7 @@ void Document::saveFile(QString fileName)
                         << " " << obj->getPointList().at(j).vertex.getY()
                         << " " << obj->getPointList().at(j).vertex.getZ() << endl;
             }
-            
+
             int numNormals = obj->getNormalList().size();
             out << "#Num normal: " << numNormals << endl;
             for (int j = 0; j < numNormals; ++j)
@@ -130,7 +130,7 @@ void Document::saveFile(QString fileName)
                         << " " << obj->getNormalList().at(j).getY()
                         << " " << obj->getNormalList().at(j).getZ() << endl;
             }
-            
+
             int numFaces = obj->getFaceList().size();
             out << "#Num faces: " << numFaces << endl;
             for (int j = 0; j < numFaces; ++j)
@@ -151,7 +151,7 @@ void Document::saveFile(QString fileName)
 void Document::addObject(ObjectType type)
 {
     IObject3D* obj = NULL;
-    
+
     switch(type)
     {
         case IDocument::Box:
@@ -190,11 +190,11 @@ QList<IObject3D*> Document::getSelectedObjects() const
 {
     QList<IObject3D*> selectedObjectList;
     selectedObjectList.clear();
-    
+
     int count = m_objectList.size();
     for (int i = 0; i < count; ++i)
     {
-        if (m_objectList[i]->getShowBoundingBox())
+        if (m_objectList[i]->isSelected())
             selectedObjectList.append(m_objectList[i]);
     }
     return selectedObjectList;
