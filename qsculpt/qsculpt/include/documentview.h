@@ -59,64 +59,57 @@ public:
      */
     void createWidgets();
     /**
-     * Set document that contains all the objects to draw. 
+     * Set document that contains all the objects to draw.
      *
      * @param doc document from which to get objects to draw.
      */
-    void setDocument(IDocument* doc) { 
-        m_document = doc; 
-    };
-    
+    void setDocument(IDocument* doc);
+
     /**
-     * Get the view's document source. 
+     * Get the view's document source.
      *
      * @return source document for this view.
      */
     IDocument* getDocument() {
-        return m_document; 
+        return m_document;
     };
-    
+
     /**
      * Return the state of the visibility of the grid.
      *
      * @return true if grid is visible. False otherwise.
      */
     bool isGridVisible();
-    
+
     bool areNormalsVisible();
-    
-    /**
-     * update view display.
-     */
-    void updateView();
-    
+
     /**
      * Retuns a collection of hit record. Each hit record contains information
      * about the objects under an especific point on the screen.
-     * 
+     *
      * @param x x component of the point to test.
      * @param y y component of the point to test.
-     * 
+     *
      * @return a HitRecord vector with the results of the test.
      */
-    QVector<HitRecord> getPickRecords(int _x, int _y) { 
+    QVector<HitRecord> getPickRecords(int _x, int _y) {
         return m_display->getPickRecords(_x, _y);
     };
-    
+
     /**
      * getViewType
      */
-    GlDisplay::PerspectiveType getPerspectiveViewType() { 
+    GlDisplay::PerspectiveType getPerspectiveViewType() {
         return m_display->getPerspectiveView();
     };
-    
+
     /**
-     * 
+     *
      */
-    Camera* getViewCamera() { 
+    Camera* getViewCamera() {
         return m_display->getViewCamera();
     };
-    
+
     void set3DCursorShape(GlDisplay::CursorShapeType shape) {
         m_display->set3DCursorShape(shape);
     };
@@ -124,9 +117,9 @@ public:
     GlDisplay::CursorShapeType getCursorShape() {
         return m_display->getCursorShape();
     };
-    
-    void setCursorPosition(Point3D p) { 
-        m_display->setCursorPosition(p); 
+
+    void setCursorPosition(Point3D p) {
+        m_display->setCursorPosition(p);
     };
 
     Point3D getCursorPosition() {
@@ -148,22 +141,28 @@ public slots:
      * @param value true to turn on the grid. False to turn off.
      */
     void setGridVisible(bool value);
-    
+
     /**
      * Change the view perspective of the display.
      */
     void viewPerspectiveChanged(int index);
-    
+
     /**
-     * 
+     *
      */
     void drawingModeChanged(int index);
-    
+
     /**
-     * 
+     *
      */
     void setNormalsVisible(bool value);
-    
+
+    /**
+     * This method causes a repaint of the view. This should be called when
+     * data has changed.
+     */
+    void updateView();
+
 protected:
     IDocument* m_document;
     GlDisplay* m_display;
