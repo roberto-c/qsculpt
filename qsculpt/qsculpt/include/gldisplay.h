@@ -68,7 +68,8 @@ public:
     enum CursorShapeType {
         None,
         Cross,
-        Circle
+        Circle,
+        Image
     };
 
     /**
@@ -119,9 +120,7 @@ public:
         return m_viewType;
     };
 
-    void set3DCursorShape(CursorShapeType shape) {
-        m_cursorShape = shape;
-    };
+    void set3DCursorShape(CursorShapeType shape);
 
     CursorShapeType getCursorShape() {
         return m_cursorShape;
@@ -142,6 +141,17 @@ public:
     Point3D getCursorOrientation() {
         return m_cursorOrientation;
     };
+
+    /**
+     * Sets the image to show as the cursor. The image is copied to a new
+     * image.
+     */
+    void setCursorImage(const QImage& image);
+
+    /**
+     * Returns a copy of the image used as cursor.
+     */
+    QImage getCursorImage();
 
 public slots:
     /**
@@ -196,6 +206,9 @@ private:
 
     void drawOrientationAxis();
 
+    void mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx, double *wy, double *wz);
+    void mapWorldCoordsToScreenCoords(double wx, double wy, double wz, int *x, int *y, int *z);
+
     bool            m_isGridVisible;        /**< Grid visibility flag */
     bool            m_areNormalsVisible;    /**< Normals visibility flag */
     GLuint*         m_selectBuffer;         /**< Selection buffer */
@@ -210,6 +223,8 @@ private:
     Point3D             m_cursorOrientation;
     GLint               m_viewport[4];
     GLfloat             m_zoomFactor;
+    GLuint				m_textureId;
+    QImage				m_cursorImage;
 };
 
 #endif

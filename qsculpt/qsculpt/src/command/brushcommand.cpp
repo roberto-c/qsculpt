@@ -31,6 +31,8 @@
 #include "camera.h"
 #include "brushproperties.h"
 
+QImage BrushCommand::m_cursorImage;
+
 BrushCommand::BrushCommand(ICommand* parent)
 	: CommandBase("Brush", parent),
 	m_object(NULL),
@@ -45,6 +47,10 @@ BrushCommand::BrushCommand(ICommand* parent)
 		m_propertiesWindow->setBrushRadius(m_radius);
 		m_propertiesWindow->setBrushStrength(m_depth);
 		m_propertiesWindow->setBrushAction(Push);
+	}
+	if (m_cursorImage.isNull())
+	{
+		m_cursorImage.load("/Users/rcabral/images/test.png");
 	}
 }
 
@@ -64,6 +70,10 @@ BrushCommand::BrushCommand(const BrushCommand& cpy)
 		m_propertiesWindow->setBrushStrength(m_depth);
 		m_propertiesWindow->setBrushAction(cpy.m_action);
 	}
+	if (m_cursorImage.isNull())
+	{
+		m_cursorImage.load("/Users/rcabral/images/test.png");
+	}
 }
 
 BrushCommand::~BrushCommand()
@@ -82,6 +92,17 @@ QWidget* BrushCommand::getOptionsWidget()
 	if (m_propertiesWindow == NULL)
 		m_propertiesWindow = new BrushProperties(NULL);
 	return m_propertiesWindow;
+}
+
+void BrushCommand::activate(bool active)
+{
+	DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+	if (active)
+	{
+		view->setCursorImage(m_cursorImage);
+		view->set3DCursorShape(GlDisplay::Image);
+	}
+	CommandBase::activate(active);
 }
 
 /**
@@ -144,6 +165,11 @@ void BrushCommand::redo()
 
 void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 {
+	if (e->buttons() == Qt::NoButton)
+	{
+		CommandBase::mouseMoveEvent(e);
+		return;
+	}
 
     if (m_record.size() > 0)
     {
@@ -233,10 +259,6 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
         m_intialPoint = Point3D(x, y, z);
         m_currentPoint = m_intialPoint;
 
-        glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
-        glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
-        glGetIntegerv(GL_VIEWPORT, m_viewPort);
-
 		selectObject();
     }
     else
@@ -267,6 +289,7 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 
 void BrushCommand::selectObject()
 {
+	qDebug() << "BrushCommand::selectObject()";
     const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
 
     if (!doc)
@@ -274,17 +297,20 @@ void BrushCommand::selectObject()
 
     int docObjectCount = doc->getObjectsCount();
     int recordCount = m_record.size();
+    qDebug() << "recordCount =" << recordCount;
     for (int i = 0; i < recordCount; i++)
     {
         if (m_record[i].stackContents > 0 && m_record[i].stackContents - 1 < docObjectCount)
         {
+        	qDebug() << "record is between bounds" << recordCount;
             m_object = doc->getObject(m_record[i].stackContents - 1);
             if (m_object)
             {
-                SPAPP->getMainWindow()->getCurrentView()->set3DCursorShape(GlDisplay::Cross);
-                SPAPP->getMainWindow()->getCurrentView()->setCursorPosition(m_intialPoint);
+                //SPAPP->getMainWindow()->getCurrentView()->set3DCursorShape(GlDisplay::Cross);
+                //SPAPP->getMainWindow()->getCurrentView()->setCursorPosition(m_intialPoint);
                 m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
 				int counter = m_vertexSelected.size();
+				qDebug() << "currentPoint: " << qPrintable(m_currentPoint.toString()) << " points selected: " << counter;
 				for (int j = 0; j < counter; j++)
 				{
 					int index = m_vertexSelected[j];
@@ -292,6 +318,14 @@ void BrushCommand::selectObject()
 						m_previousState[m_object].insert(index, m_object->getVertex(index));
 				}
             }
+            else
+            {
+            	qDebug() << "m_object is null";
+            }
+        }
+        else
+        {
+        	qDebug() << "record is out of bounds: " << m_record[i].stackContents;
         }
     }
 }

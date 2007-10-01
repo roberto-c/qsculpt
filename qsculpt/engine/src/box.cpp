@@ -31,19 +31,19 @@ Box::Box()
 Box::~Box()
 {
 }
-    
+
 void Box::initPoints()
 {
-    qDebug("Box::initPoints()");
-    double hw = 2.5;
-    double hh = 2.5;
-    double hd = 2.5;
-    
+    //qDebug("Box::initPoints()");
+    double hw = 1.0;
+    double hh = 1.0;
+    double hd = 1.0;
+
     addVertex(Vertex(-hw, hh,-hd));
     addVertex(Vertex( hw, hh,-hd));
     addVertex(Vertex( hw,-hh,-hd));
     addVertex(Vertex(-hw,-hh,-hd));
-    
+
     addVertex(Vertex(-hw, hh, hd));
     addVertex(Vertex( hw, hh, hd));
     addVertex(Vertex( hw,-hh, hd));
@@ -52,8 +52,8 @@ void Box::initPoints()
 
 void Box::initTriangles()
 {
-    qDebug("Box::initTriangles()");
-    
+    //qDebug("Box::initTriangles()");
+
     QVector<int> indexList(4);
     indexList[0] = 0;
     indexList[1] = 1;
@@ -85,5 +85,5 @@ void Box::initTriangles()
     indexList[2] = 2;
     indexList[3] = 6;
     addFace( indexList );
-    qDebug("Box::initTriangles() end");
+    //qDebug("Box::initTriangles() end");
 }

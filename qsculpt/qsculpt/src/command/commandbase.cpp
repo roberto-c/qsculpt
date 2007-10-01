@@ -130,6 +130,10 @@ void CommandBase::mouseReleaseEvent(QMouseEvent* /*e*/)
 
 void CommandBase::mouseMoveEvent(QMouseEvent* e)
 {
+	if (e->buttons() == Qt::NoButton)
+	{
+		return;
+	}
     GLdouble x = 0.0,
         y = 0.0,
         z = 0.0;

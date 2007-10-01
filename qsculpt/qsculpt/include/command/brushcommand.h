@@ -50,6 +50,7 @@ public:
 
     // ICommand Interface
 	virtual ICommand* clone() const;
+	virtual void activate(bool active);
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
@@ -72,6 +73,7 @@ private:
     BrushProperties*    m_propertiesWindow;
 	DirtyFaceMap		m_previousState;
 	bool				m_undoCalled;
+	static QImage		m_cursorImage;
 };
 
 #endif
