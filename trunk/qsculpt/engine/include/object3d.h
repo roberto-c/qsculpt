@@ -64,7 +64,7 @@ public:
     virtual void setHeight(float value);
     virtual void setWidth(float value);
     virtual void setColor(const QColor& color);
-    virtual const QColor getColor();
+    virtual QColor getColor() const;
     virtual void setSelected(bool val);
     virtual bool isSelected() const;
     virtual void setBoundingBoxColor(const QColor& color);

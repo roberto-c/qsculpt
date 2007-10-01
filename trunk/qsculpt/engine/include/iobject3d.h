@@ -161,7 +161,7 @@ public:
     * @return color of the object.
     *
     */
-    virtual const QColor getColor() = 0;
+    virtual QColor getColor() const = 0;
 
     /**
      * Mark the object as selected. This property is used by the renderers
