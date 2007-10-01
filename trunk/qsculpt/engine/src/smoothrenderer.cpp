@@ -5,12 +5,12 @@
 
 SmoothRenderer::SmoothRenderer()
 {
-	qDebug() << "SmoothRenderer constructor";
+	//qDebug() << "SmoothRenderer constructor";
 }
 
 SmoothRenderer::~SmoothRenderer()
 {
-	qDebug() << "SmoothRenderer destructor";
+	//qDebug() << "SmoothRenderer destructor";
 }
 
 void SmoothRenderer::renderObject(const IObject3D* mesh)
