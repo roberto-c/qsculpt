@@ -5,12 +5,12 @@
 
 PointRenderer::PointRenderer()
 {
-	qDebug() << "PointRenderer constructor";
+	//qDebug() << "PointRenderer constructor";
 }
 
 PointRenderer::~PointRenderer()
 {
-	qDebug() << "PointRenderer destructor";
+	//qDebug() << "PointRenderer destructor";
 }
 
 void PointRenderer::renderObject(const IObject3D* mesh)
