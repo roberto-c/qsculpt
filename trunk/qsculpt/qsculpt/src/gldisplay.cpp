@@ -46,7 +46,8 @@ GlDisplay::GlDisplay(DocumentView* _parent)
     m_drawingMode(Points),
     m_renderer(RendererFactory::getRenderer(m_drawingMode)),
     m_cursorShape(None),
-    m_zoomFactor(1.0)
+    m_zoomFactor(1.0),
+    m_textureId(0)
 {
     m_selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
 
@@ -91,6 +92,8 @@ GlDisplay::GlDisplay(DocumentView* _parent)
     camera->setOrientationVector( Point3D( 0, 0, 1) );
     camera->setPosition( Point3D( 0.75, 0.75, 0.75) );
     m_cameraList[Perspective] = camera;
+
+    setCursor(Qt::CrossCursor);
 }
 
 
@@ -168,7 +171,6 @@ void GlDisplay::initializeGL()
 
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
-
 }
 
 void GlDisplay::resizeGL( int w, int h )
@@ -186,15 +188,7 @@ void GlDisplay::resizeGL( int w, int h )
               DEFAULT_HEIGHT / 2 * m_zoomFactor,
              -1000.0,
               1000.0 );
-    /*
-    glOrtho( (w % 2) == 0 ? -w/2 * m_zoomFactor: -(w+1)/2* m_zoomFactor,
-             (w % 2) == 0 ? w/2 * m_zoomFactor: (w+1)/2 * m_zoomFactor,
-             (h % 2) == 0 ? -h/2 * m_zoomFactor: -(h+1)/2* m_zoomFactor,
-             (h % 2) == 0 ? h/2 * m_zoomFactor: (h+1)/2 * m_zoomFactor,
-             -100.0,
-             100.0 );
-     */
-    //glFrustum(-5.0 * m_aspectRatio, 5.0 * m_aspectRatio, -5.0, 5.0, 0.5, 500.0);
+
     glMatrixMode( GL_MODELVIEW );
 
     glGetIntegerv(GL_VIEWPORT, m_viewport);
@@ -205,6 +199,7 @@ void GlDisplay::paintGL()
     //Point3D point( 3, 2, 4 );
 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glBindTexture(GL_TEXTURE_2D, 0);
     glLoadIdentity();
 
     Camera* camera = m_cameraList.contains(m_viewType) ? m_cameraList[m_viewType] : NULL;
@@ -238,8 +233,6 @@ void GlDisplay::paintGL()
     glVertex3f( 0.0f, 0.0f, 1.0f );
     glEnd();
 
-    drawCursor();
-
     switch(m_drawingMode)
     {
         case Smooth:
@@ -257,6 +250,8 @@ void GlDisplay::paintGL()
     }
     drawObjects();
 
+    drawCursor();
+
     //drawOrientationAxis();
 }
 
@@ -270,17 +265,9 @@ void GlDisplay::drawObjects()
     {
         glLoadName(i+1);
         mesh = doc->getObject(i);
-		glPushMatrix();
-
-		//glRotated(m_rotX, 1, 0, 0);
-		//glRotated(m_rotY, 0, 1, 0);
-		//glRotated(m_rotZ, 0, 0, 1);
-		mesh->getPosition(&x, &y, &z);
-		glTranslatef(x, y, z);
 
         if (m_renderer)
         	m_renderer->renderObject(mesh);
-        glPopMatrix();
     }
 }
 
@@ -321,31 +308,71 @@ void GlDisplay::drawGrid()
 
 void GlDisplay::drawCursor()
 {
-    m_cursorShape = Cross;
     if (m_cursorShape == None)
         return;
-
-    m_cursorPosition.setX(0.0);
-    m_cursorPosition.setY(0.0);
-    m_cursorPosition.setZ(2.0);
 
     switch(m_cursorShape)
     {
     case Cross:
-        glBegin(GL_LINES);
-        glVertex3f( m_cursorPosition.getX() - 0.1, m_cursorPosition.getY(),m_cursorPosition.getZ());
-        glVertex3f( m_cursorPosition.getX() + 0.1, m_cursorPosition.getY(),m_cursorPosition.getZ());
-
-        glVertex3f( m_cursorPosition.getX(), m_cursorPosition.getY() - 0.1, m_cursorPosition.getZ());
-        glVertex3f( m_cursorPosition.getX(), m_cursorPosition.getY() + 0.1, m_cursorPosition.getZ());
-        glEnd();
-        break;
-
     case Circle:
-
         break;
+    case Image:
+	    {
+	    	// Store current state of feature that we could modify
+	    	bool blendState = glIsEnabled(GL_BLEND);
+	    	bool textureState = glIsEnabled(GL_TEXTURE_2D);
+	    	bool depthTestState = glIsEnabled(GL_DEPTH_TEST);
 
-    default:
+	    	// Enable the texture and set the blend parameters
+	        glEnable(GL_TEXTURE_2D);
+	        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	        glEnable(GL_BLEND);
+	        
+	        // Disable depth test so we dont modify previusly rendered information
+	        if (depthTestState)
+	        	glDisable( GL_DEPTH_TEST);
+
+	        // Store the current matrix to restore it later
+	        glPushMatrix();
+	        
+	        // Start from a clean transformation matrix
+	        glLoadIdentity();
+	        
+	        // Setup the texture and color
+	        glBindTexture(GL_TEXTURE_2D, m_textureId);
+	        glColor3f(1.0f, 1.0f, 0.0f);
+
+	        // Calculate the coordinates of the box to paint the bitmap
+	        double wx1, wy1, wz1;
+	        mapScreenCoordsToWorldCoords(m_cursorPosition.getX() - m_cursorImage.width()/2,
+	        		m_cursorPosition.getY() - m_cursorImage.height() / 2,
+	        		m_cursorPosition.getZ(), &wx1, &wy1, &wz1);
+	        double wx2, wy2, wz2;
+	        mapScreenCoordsToWorldCoords(m_cursorPosition.getX() + m_cursorImage.width()/2,
+	        		m_cursorPosition.getY() + m_cursorImage.height() / 2,
+	        		m_cursorPosition.getZ(), &wx2, &wy2, &wz2);
+
+	        // Draw Bitmap cursor as a textured quad
+	        glBegin(GL_QUADS);
+	        glTexCoord2f(0.0f, 0.0f);
+	        glVertex3f(wx1, wy1, wz1);
+	        glTexCoord2f(1.0f, 0.0f);
+	        glVertex3f(wx1, wy2, 0.0f);
+	        glTexCoord2f(1.0f, 1.0f);
+	        glVertex3f(wx2, wy2, 0.0f);
+	        glTexCoord2f(0.0f, 1.0f);
+	        glVertex3f(wx2, wy1, 0.0f);
+	        glEnd();
+	        glPopMatrix();
+
+	        // Restore previus states
+	    	if (blendState == false)
+	        	glDisable(GL_BLEND);
+	    	if (textureState == false)
+	        	glDisable(GL_TEXTURE_2D);
+	    	if (depthTestState)
+	    		glEnable( GL_DEPTH_TEST);
+	    }
         break;
     }
 }
@@ -406,28 +433,49 @@ void GlDisplay::mouseMoveEvent ( QMouseEvent * e )
 {
     ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
 
+    bool needUpdate = false;
     if (cmd)
     {
         cmd->mouseMoveEvent( e );
-        updateGL();
+        needUpdate = true;
+    }
+    if (m_cursorShape != None)
+    {
+    	m_cursorPosition.setPoint(e->x(), e->y(), 0);
+    	needUpdate = true;
+    }
+    if (needUpdate)
+    {
+    	updateGL();
     }
 }
 
 void GlDisplay::mousePressEvent ( QMouseEvent * e )
 {
-    qDebug("MousePress");
+    //qDebug("MousePress");
     ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
 
+    bool needUpdate = false;
     if (cmd)
     {
         cmd->mousePressEvent( e );
-        updateGL();
+        needUpdate = true;
+    }
+    if (m_cursorShape != None)
+    {
+    	m_cursorPosition.setX(e->x());
+    	m_cursorPosition.setY(e->y());
+    	needUpdate = true;
+    }
+    if (needUpdate)
+    {
+    	updateGL();
     }
 }
 
 void GlDisplay::mouseReleaseEvent ( QMouseEvent * e )
 {
-    qDebug("MouseRelease");
+    //qDebug("MouseRelease");
     ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
 
     if (cmd)
@@ -471,16 +519,6 @@ QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
              -1000.0,
               1000.0 );
 
-    /*
-    int w = width();
-    int h = height();
-    glOrtho( (w % 2) == 0 ? -w/2 * m_zoomFactor: -(w+1)/2* m_zoomFactor,
-             (w % 2) == 0 ? w/2 * m_zoomFactor: (w+1)/2 * m_zoomFactor,
-             (h % 2) == 0 ? -h/2 * m_zoomFactor: -(h+1)/2* m_zoomFactor,
-             (h % 2) == 0 ? h/2 * m_zoomFactor: (h+1)/2 * m_zoomFactor,
-             -100.0,
-             100.0 );
-     */
     glMatrixMode(GL_MODELVIEW);
 
     drawObjects();
@@ -512,9 +550,73 @@ Camera* GlDisplay::getViewCamera()
 {
     if (!m_cameraList.contains(m_viewType))
     {
-        qDebug("camera %d does not exists. Returning perspective camera.", m_viewType);
+        //qDebug("camera %d does not exists. Returning perspective camera.", m_viewType);
         return m_cameraList[Perspective];
     }
     return m_cameraList[m_viewType];
 }
 
+void GlDisplay::set3DCursorShape(CursorShapeType shape)
+{
+    m_cursorShape = shape;
+
+    // Turn on mouse tracking only if we are going to draw a cursor
+    setMouseTracking(m_cursorShape != None);
+}
+
+void GlDisplay::setCursorImage(const QImage& image)
+{
+    if (image.isNull())
+    {
+    	qDebug("GlDisplay::setCursorImage: image is null !!!");
+    }
+    else
+    {
+    	// Delete any texture loaded before.
+    	deleteTexture(m_textureId);
+    	m_textureId = 0;
+
+	    m_cursorImage = image;
+    	m_textureId = bindTexture(m_cursorImage);
+    	if (m_textureId == 0)
+    	{
+    		qDebug("texture id is not valid");
+    	}
+    }
+
+}
+
+/**
+ * Returns a copy of the image used as cursor.
+ */
+QImage GlDisplay::getCursorImage()
+{
+	return m_cursorImage;
+}
+
+void GlDisplay::mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx, double *wy, double *wz)
+{
+    double modelMatrix[16], projMatrix[16];
+    GLint viewPort[4];
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+    glGetIntegerv(GL_VIEWPORT, viewPort);
+
+    gluUnProject( x, viewPort[3] - y, z, modelMatrix, projMatrix, viewPort,
+    		(GLdouble*)wx, (GLdouble*)wy, (GLdouble*)wz);
+}
+
+void GlDisplay::mapWorldCoordsToScreenCoords(double wx, double wy, double wz, int *x, int *y, int *z)
+{
+    double modelMatrix[16], projMatrix[16];
+    GLint viewPort[4];
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+    glGetIntegerv(GL_VIEWPORT, viewPort);
+
+    double dx, dy, dz;
+    gluProject( (GLdouble)wx, (GLdouble)wy, (GLdouble)wz, modelMatrix, projMatrix, viewPort, &dx, &dy, &dz);
+    if (x) *x = (int)dx;
+    if (y) *y = (int)dy;
+    if (z) *z = (int)dz;
+}

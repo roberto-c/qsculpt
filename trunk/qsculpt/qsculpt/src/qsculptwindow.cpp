@@ -90,7 +90,7 @@ void QSculptWindow::createWidgets()
 	cmd = new TransformCommand;
 	action->setToolTip("Move, rotate or scale an object.");
     action->setCheckable(true);
-	action->setEnabled(false);
+	//action->setEnabled(false);
 	menuTools->addAction(action);
 	m_toolActionGroup->addAction(action);
 	m_toolsToolbar->addAction(action);
@@ -128,13 +128,8 @@ void QSculptWindow::createWidgets()
 
     if (layout())
     {
-    	qDebug() << "layout() setContentsMargins";
     	layout()->setContentsMargins(0, 0, 0, 0);
     	layout()->setSpacing(0);
-    }
-    else
-    {
-    	qDebug() << "layout() is NULL";
     }
 }
 

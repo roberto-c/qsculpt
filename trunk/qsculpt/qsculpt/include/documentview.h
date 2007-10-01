@@ -134,6 +134,14 @@ public:
         return m_display->getCursorOrientation();
     };
 
+    void setCursorImage(const QImage& image) {
+    	m_display->setCursorImage(image);
+    }
+
+    QImage getCursorImage() {
+    	return m_display->getCursorImage();
+    }
+
 public slots:
     /**
      * Turn the visibility of the grid on/off.
