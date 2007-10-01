@@ -94,7 +94,7 @@ Object3D::~Object3D()
 
 void Object3D::initPoints()
 {
-    qDebug("Object3D::initPoints()");
+    //qDebug("Object3D::initPoints()");
     FaceContainer* faceContainer = new FaceContainer;
     faceContainer->reserve(100000);
     m_faceList.append(faceContainer);
@@ -200,7 +200,7 @@ void Object3D::setColor(const QColor& color)
     m_color = color;
 }
 
-const QColor Object3D::getColor()
+QColor Object3D::getColor() const
 {
     return m_color;
 }
@@ -271,17 +271,17 @@ Normal& Object3D::getNormalAtPoint(int index)
                 return m_normalList[t.normal[i]];
         }
 
-        qDebug("Normal not found!!!");
-        qDebug("Index: %d", index);
-        qDebug() << "Triangle Ref:";
+        //qDebug("Normal not found!!!");
+        //qDebug("Index: %d", index);
+        //qDebug() << "Triangle Ref:";
         for (int i = 0; i < numPoints; i++)
         {
-            qDebug() << " " << t.point[i];
+            //qDebug() << " " << t.point[i];
         }
-        qDebug() << endl;
+        //qDebug() << endl;
     }
     else
-        qDebug("faceReference Empty!!!");
+        //qDebug("faceReference Empty!!!");
 
     return const_cast<Normal&>(Normal::null());
 }
@@ -301,7 +301,7 @@ const Normal& Object3D::getNormalAtPoint(int index) const
                 return m_normalList.at(t.normal[i]);
         }
     }
-    qDebug("Normal not found!!!");
+    //qDebug("Normal not found!!!");
     return Normal::null();
 }
 
@@ -352,13 +352,13 @@ int Object3D::addFace(const QVector<int>& vertexIndexList)
 
         return triangleIndex;
     }
-    qDebug("Face added is not valid.");
+    //qDebug("Face added is not valid.");
     return -1;
 }
 
 void Object3D::replaceFace(int faceIndex, const QVector<int>& vertexIndexList)
 {
-    //qDebug("addFace");
+    ////qDebug("addFace");
 	FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
     Face& t = faceList[faceIndex];
 	t.setPoints(vertexIndexList);
@@ -399,8 +399,8 @@ void Object3D::replaceFace(int faceIndex, const QVector<int>& vertexIndexList)
 			faceList[faceIndex].edge.append(edgeIndex);
 		}
     }
-	else
-		qDebug("Face replaced is not valid.");
+	//else
+	//	qDebug("Face replaced is not valid.");
 }
 
 void Object3D::removeFace( int id)
@@ -579,11 +579,13 @@ int Object3D::getClosestPointAtPoint(const Point3D &p) const
 
 QVector<int> Object3D::getPointsInRadius(const Point3D &p, float radius) const
 {
+	//qDebug() << "Object3D::getPointsInRadius()";
     QVector<int> results;
 
     int pointCount = m_pointList.size();
     float distance = 0.0;
 
+    //qDebug() << "Point count = " << pointCount;
     if (pointCount > 0 )
     {
         for (int i = 0; i < pointCount; i ++)
@@ -636,8 +638,8 @@ void Object3D::adjustPointNormal(int index)
     res = res / (float)numFaces;
     res.normalize();
 
-    if (index == 0)
-        qDebug("First point: res: %s numFaces: %d", qPrintable(res.toString()), numFaces);
+    //if (index == 0)
+    //    qDebug("First point: res: %s numFaces: %d", qPrintable(res.toString()), numFaces);
 
     FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
     for (int i = 0; i < numFaces; i++)
