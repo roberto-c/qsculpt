@@ -2,6 +2,16 @@
 
 = Introduction =
 
-QSculpt is a project for 3D modeling. Its main focus is in modeling using sculpting tools. 
+QSculpt is a project for 3D modeling. Its main focus is in modeling using sculpting tools. The project is being developed under Qt 4.3 and its main developer is using Mac OS X as platform. 
 
+= Where to download =
 
+The project hasn't been released yet. However, its code can be downloaded from svn using the following command:
+
+{{{
+svn checkout http://qsculpt.googlecode.com/svn/trunk/ qsculpt
+}}}
+
+= Requirements =
+
+QSculpt makes use of Qt 4.3. Qt can be downloaded from [http://www.trolltech.com Trolltech]
