@@ -257,7 +257,7 @@ void GlDisplay::paintGL()
 
 void GlDisplay::drawObjects()
 {
-	float x = 0.0f, y = 0.0f, z=0.0f;
+	//float x = 0.0f, y = 0.0f, z=0.0f;
 	IObject3D* mesh;
     IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
     int count = doc->getObjectsCount();
@@ -313,6 +313,7 @@ void GlDisplay::drawCursor()
 
     switch(m_cursorShape)
     {
+	case None:
     case Cross:
     case Circle:
         break;

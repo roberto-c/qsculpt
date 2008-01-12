@@ -30,7 +30,7 @@
 class Scene;
 struct Face;
 struct Edge;
-struct Point;
+//struct Point;
 
 /**
  * Base class for all 3D objects.

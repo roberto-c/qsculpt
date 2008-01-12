@@ -102,6 +102,10 @@ void BrushCommand::activate(bool active)
 		view->setCursorImage(m_cursorImage);
 		view->set3DCursorShape(GlDisplay::Image);
 	}
+	else
+	{
+		view->set3DCursorShape(GlDisplay::None);
+	}
 	CommandBase::activate(active);
 }
 
@@ -306,8 +310,6 @@ void BrushCommand::selectObject()
             m_object = doc->getObject(m_record[i].stackContents - 1);
             if (m_object)
             {
-                //SPAPP->getMainWindow()->getCurrentView()->set3DCursorShape(GlDisplay::Cross);
-                //SPAPP->getMainWindow()->getCurrentView()->setCursorPosition(m_intialPoint);
                 m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
 				int counter = m_vertexSelected.size();
 				qDebug() << "currentPoint: " << qPrintable(m_currentPoint.toString()) << " points selected: " << counter;
@@ -315,7 +317,10 @@ void BrushCommand::selectObject()
 				{
 					int index = m_vertexSelected[j];
 					if (!m_previousState[m_object].contains(m_vertexSelected[j]))
+					{
+						//m_object->getPointList().at(index).color = QColor(255, 0, 0);
 						m_previousState[m_object].insert(index, m_object->getVertex(index));
+					}
 				}
             }
             else

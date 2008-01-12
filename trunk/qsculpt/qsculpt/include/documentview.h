@@ -171,6 +171,16 @@ public slots:
      */
     void updateView();
 
+    void grabMouse(bool val) {
+    	if (m_display)
+    	{
+    		if (val)
+    			m_display->grabMouse();
+    		else
+    			m_display->releaseMouse();
+    	}
+    }
+
 protected:
     IDocument* m_document;
     GlDisplay* m_display;

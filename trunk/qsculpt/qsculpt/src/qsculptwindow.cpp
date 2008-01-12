@@ -61,8 +61,10 @@ void QSculptWindow::createWidgets()
     m_dockCommandOptions->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, m_dockCommandOptions);
 
+    m_viewFullscreen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
     connect(m_showGrid, SIGNAL(toggled(bool)), m_glWidget, SLOT(setGridVisible(bool)));
     connect(m_showNormals, SIGNAL(toggled(bool)), m_glWidget, SLOT(setNormalsVisible(bool)));
+    connect(m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
     connect(m_document, SIGNAL(changed(IDocument::ChangeType, IObject3D*)), this, SLOT(documentChanged(IDocument::ChangeType)));
 
     connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
@@ -338,3 +340,24 @@ void QSculptWindow::commandActivated(QString name)
 	}
 }
 
+void QSculptWindow::viewFullscreen(bool value)
+{
+	if (value)
+	{
+		showFullScreen();
+		if (m_dockCommandOptions)
+		{
+			m_dockCommandOptions->setWindowOpacity(0.75);
+			m_glWidget->grabMouse(true);
+		}
+	}
+	else
+	{
+		showNormal();
+		if (m_dockCommandOptions)
+		{
+			m_dockCommandOptions->setWindowOpacity(1.0);
+			m_glWidget->grabMouse(false);
+		}
+	}
+}

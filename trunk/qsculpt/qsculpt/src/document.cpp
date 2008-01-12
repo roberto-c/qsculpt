@@ -117,9 +117,9 @@ void Document::saveFile(QString fileName)
             out << "#Num vertices: " << numPoints << endl;
             for (int j = 0; j < numPoints; ++j)
             {
-                out << "v " << obj->getPointList().at(j).vertex.getX()
-                        << " " << obj->getPointList().at(j).vertex.getY()
-                        << " " << obj->getPointList().at(j).vertex.getZ() << endl;
+                out << "v " << obj->getPointList().at(j).getX()
+                        << " " << obj->getPointList().at(j).getY()
+                        << " " << obj->getPointList().at(j).getZ() << endl;
             }
 
             int numNormals = obj->getNormalList().size();

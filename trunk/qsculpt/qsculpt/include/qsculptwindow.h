@@ -108,6 +108,11 @@ private slots:
      */
     void commandActivated(QString commandName);
 
+    /**
+     * Set the application to fullscreen mode.
+     */
+    void viewFullscreen(bool value);
+
 private:
     /**
      * Create the widgets used on ths window. It setups the UI, create the

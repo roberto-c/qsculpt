@@ -132,7 +132,7 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
         int numVertex = face.point.size();
         for (int j = 0; j < numVertex; ++j)
         {
-            midFaceVertex = midFaceVertex + pointList.at(face.point.at(j)).vertex;
+            midFaceVertex = midFaceVertex + pointList.at(face.point.at(j));
         }
         midFaceVertex = midFaceVertex / (float)numVertex;
         obj->addVertex(midFaceVertex/* + midNormal*/);
@@ -164,14 +164,14 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 			edge1.midPoint = edgeList.at(indexOf).midPoint;
 			if (edge1.midPoint == -1)
 			{
-				point = pointList.at(edge1.point1).vertex
-					+ pointList.at(edge1.point2).vertex;
+				point = pointList.at(edge1.point1)
+					+ pointList.at(edge1.point2);
 
 				int faceCount = edge1.faceRef.size();
 				for (int k = 0; k < faceCount; ++k)
 				{
 					Face f = faceList[edge1.faceRef[k]];
-					point = point + pointList.at(f.midPoint).vertex;
+					point = point + pointList.at(f.midPoint);
 				}
 				point = point / float(faceCount + 2);
 				obj->addVertex(point);
@@ -193,14 +193,14 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 			edge2.midPoint = edgeList.at(indexOf).midPoint;
 			if (edge2.midPoint == -1)
 			{
-				point = pointList.at(edge2.point1).vertex
-					+ pointList.at(edge2.point2).vertex;
+				point = pointList.at(edge2.point1)
+					+ pointList.at(edge2.point2);
 
 				int faceCount = edge2.faceRef.size();
 				for (int k = 0; k < faceCount; ++k)
 				{
 					Face f = faceList[edge2.faceRef[k]];
-					point = point + pointList.at(f.midPoint).vertex;
+					point = point + pointList.at(f.midPoint);
 				}
 				point = point / float(faceCount + 2);
 				obj->addVertex(point);
@@ -210,10 +210,10 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 
             // remove this triangle from the list of faces reference of the point
             int pointIndex = face.point.at(j % numVertex);
-            int faceIndex = pointList.at(pointIndex).faceRef.indexOf(i);
+            int faceIndex = pointList.getFaceReference(pointIndex).indexOf(i);
             if (faceIndex >= 0 )
             {
-                pointList.at(pointIndex).faceRef.remove(faceIndex);
+            	pointList.getFaceReference(pointIndex).remove(faceIndex);
             }
 
             vertexIndex[0] = face.point[j % numVertex];
@@ -263,11 +263,11 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
 
     Normal res;
 
-    Point& p = pointList.at(index);
-    int numFaces = p.faceRef.size();
+    //Vertex& p = pointList.at(index);
+    int numFaces = pointList.getFaceReference(index).size();
     for (int i = 0; i < numFaces; i++)
     {
-        res = res + computeFaceNormal(obj, p.faceRef[i]);
+        res = res + computeFaceNormal(obj, pointList.getFaceReference(index).at(i));
     }
 
     res = res / (float)numFaces;
@@ -275,7 +275,7 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
 
     for (int i = 0; i < numFaces; i++)
     {
-        Face& t = faceList[p.faceRef[i]];
+        Face& t = faceList[pointList.getFaceReference(index).at(i)];
         int numFacePoints = t.point.size();
         for (int j = 0; j < numFacePoints; ++j)
         {
@@ -303,8 +303,8 @@ Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, 
     const PointContainer& pointList = obj->getPointList();
 
     int lastPoint = face.point.size() - 1;
-    Point3D v1 = pointList.at(face.point[1]).vertex - pointList.at(face.point[0]).vertex;
-    Point3D v2 = pointList.at(face.point[lastPoint]).vertex - pointList.at(face.point[0]).vertex;
+    Point3D v1 = pointList.at(face.point[1]) - pointList.at(face.point[0]);
+    Point3D v2 = pointList.at(face.point[lastPoint]) - pointList.at(face.point[0]);
 
     Point3D res = v1.crossProduct( v2);
     res.normalize();

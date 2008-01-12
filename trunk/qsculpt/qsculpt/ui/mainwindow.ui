@@ -16,7 +16,7 @@
    <enum>Qt::ToolButtonTextUnderIcon</enum>
   </property>
   <property name="unifiedTitleAndToolBarOnMac" >
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget" >
    <property name="sizePolicy" >
@@ -58,6 +58,8 @@
     </property>
     <addaction name="m_showGrid" />
     <addaction name="m_showNormals" />
+    <addaction name="separator" />
+    <addaction name="m_viewFullscreen" />
    </widget>
    <widget class="QMenu" name="menuObjects" >
     <property name="title" >
@@ -172,6 +174,14 @@
   <action name="m_redo" >
    <property name="text" >
     <string>&amp;Redo</string>
+   </property>
+  </action>
+  <action name="m_viewFullscreen" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Fullscreen</string>
    </property>
   </action>
  </widget>
