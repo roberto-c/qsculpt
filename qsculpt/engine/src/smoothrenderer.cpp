@@ -35,7 +35,7 @@ void SmoothRenderer::renderObject(const IObject3D* mesh)
         for (int j = 0; j < f.point.size(); ++j)
         {
             glNormal3fv(mesh->getNormalList().at(f.normal[j]).getPoint());
-            glVertex3fv(mesh->getPointList().at(f.point[j]).vertex.getPoint());
+            glVertex3fv(mesh->getPointList().at(f.point[j]).getPoint());
         }
         glEnd();
     }

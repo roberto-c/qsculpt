@@ -20,7 +20,7 @@ void PointRenderer::renderObject(const IObject3D* mesh)
     glBegin(GL_POINTS);
     for ( int i = 0; i < size; i++)
     {
-        glVertex3fv(mesh->getPointList().at(i).vertex.getPoint());
+        glVertex3fv(mesh->getPointList().at(i).getPoint());
     }
     glEnd();
 }

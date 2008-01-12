@@ -25,8 +25,8 @@ void WireframeRenderer::renderObject(const IObject3D* mesh)
         int size = f.point.size();
         for (int j = 0; j < size; ++j)
         {
-            glVertex3fv(mesh->getPointList().at(f.point[j]).vertex.getPoint());
-            glVertex3fv(mesh->getPointList().at(f.point[(j + 1) % size]).vertex.getPoint());
+            glVertex3fv(mesh->getPointList().at(f.point[j]).getPoint());
+            glVertex3fv(mesh->getPointList().at(f.point[(j + 1) % size]).getPoint());
         }
     }
     glEnd();

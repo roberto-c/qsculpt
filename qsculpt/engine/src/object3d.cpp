@@ -252,18 +252,18 @@ void Object3D::removeVertex(int id)
 
 Vertex& Object3D::getVertex(int index)
 {
-    return m_pointList.at(index).vertex;
+    return m_pointList.at(index);
 }
 
 Normal& Object3D::getNormalAtPoint(int index)
 {
-    const Point p = m_pointList.at(index);
+    const Vertex p = m_pointList.at(index);
 
     //qDebug("size: %d", p.faceRef.size());
-    if ( !p.faceRef.isEmpty() )
+    if ( !m_pointList.getFaceReference(index).isEmpty() )
     {
     	FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
-        const Face& t = faceList[p.faceRef[0]];
+        const Face& t = faceList[m_pointList.getFaceReference(index).at(0)];
         int numPoints = t.point.size();
         for (int i = 0; i < numPoints; i++)
         {
@@ -281,19 +281,21 @@ Normal& Object3D::getNormalAtPoint(int index)
         //qDebug() << endl;
     }
     else
+    {
         //qDebug("faceReference Empty!!!");
+    }
 
     return const_cast<Normal&>(Normal::null());
 }
 
 const Normal& Object3D::getNormalAtPoint(int index) const
 {
-    const Point& p = m_pointList.at(index);
+//    const Vertex& p = m_pointList.at(index);
 
-    if ( !p.faceRef.isEmpty() )
+    if ( !m_pointList.getFaceReference(index).isEmpty() )
     {
     	FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
-        const Face& t = faceList[p.faceRef[0]];
+        const Face& t = faceList[m_pointList.getFaceReference(index).at(0)];
         int numPoints = t.point.size();
         for (int i = 0; i < numPoints; i++)
         {
@@ -410,7 +412,7 @@ void Object3D::removeFace( int id)
     int pointCount = f.point.size();
     for (int i = 0; i < pointCount; ++i)
     {
-        int index = m_pointList.at(f.point[i]).faceRef.indexOf(id);
+        int index = m_pointList.getFaceReference(f.point[i]).indexOf(id);
         if (index >= 0)
             m_pointList.addFaceReference(f.point[i], index);
     }
@@ -491,7 +493,7 @@ void Object3D::scale(float xfactor, float yfactor, float zfactor)
     float x, y, z;
     for (int i = 0; i < size; i++)
     {
-        m_pointList.at(i).vertex.getPoint(x, y, z);
+        m_pointList.at(i).getPoint(x, y, z);
         x = (xfactor == 1.0) ? x : x * xfactor;
         y = (yfactor == 1.0) ? y : y * yfactor;
         z = (zfactor == 1.0) ? z : z * zfactor;
@@ -504,8 +506,8 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
 {
     int closesPointIndex = getClosestPointAtPoint(p);
     Face face;
-    Point3D point;
-    int faceCount = m_pointList.at(closesPointIndex).faceRef.size();
+    Vertex point;
+    int faceCount = m_pointList.getFaceReference(closesPointIndex).size();
     int indexOf = -1;
     float distance = 0.0, minDistance = 0.0;
 
@@ -518,7 +520,7 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
 
         for (int j = 0; j < face.point.size(); ++j)
         {
-            point = m_pointList.at(face.point[j]).vertex;
+            point = m_pointList.at(face.point[j]);
             distance += fabs((p - point).length());
         }
         minDistance = distance;
@@ -526,10 +528,10 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
         for (int i = 1; i < faceCount; i ++)
         {
             distance = 0.0;
-            face = faceList[m_pointList.at(closesPointIndex).faceRef[i]];
+            face = faceList[m_pointList.getFaceReference(closesPointIndex).at(i)];
             for (int j = 0; j < face.point.size(); ++j)
             {
-                point = m_pointList.at(face.point[j]).vertex;
+                point = m_pointList.at(face.point[j]);
                 distance += fabs((p - point).length());
             }
 
@@ -555,14 +557,14 @@ int Object3D::getClosestPointAtPoint(const Point3D &p) const
     if (pointCount > 0 )
     {
         indexOf = 0;
-        Point3D point = m_pointList.at(0).vertex;
+        Vertex point = m_pointList.at(0);
 
         distance = fabs((p - point).length());
         minDistance = distance;
         //qDebug(" %f ", distance);
         for (int i = 1; i < pointCount; i ++)
         {
-            point = m_pointList.at(i).vertex;
+            point = m_pointList.at(i);
             distance = fabs((p - point).length());
             if ( distance < minDistance )
             {
@@ -590,7 +592,7 @@ QVector<int> Object3D::getPointsInRadius(const Point3D &p, float radius) const
     {
         for (int i = 0; i < pointCount; i ++)
         {
-            const Point3D& point = m_pointList.at(i).vertex;
+            const Vertex& point = m_pointList.at(i);
             distance = fabs((p - point).length());
             if ( distance < radius )
             {
@@ -613,10 +615,10 @@ Point3D Object3D::computeFaceNormal(int index)
 Point3D Object3D::computeFaceNormal(Face &face)
 {
     int lastPoint = face.point.size() - 1;
-    Point3D v1 = m_pointList.at(face.point[1]).vertex
-        - m_pointList.at(face.point[0]).vertex;
-    Point3D v2 = m_pointList.at(face.point[lastPoint]).vertex
-        - m_pointList.at(face.point[0]).vertex;
+    Point3D v1 = m_pointList.at(face.point[1])
+        - m_pointList.at(face.point[0]);
+    Point3D v2 = m_pointList.at(face.point[lastPoint])
+        - m_pointList.at(face.point[0]);
 
     Point3D res = v1.crossProduct( v2);
     res.normalize();
@@ -628,11 +630,11 @@ void Object3D::adjustPointNormal(int index)
 {
     Normal res;
 
-    const Point& p = m_pointList.at(index);
-    int numFaces = p.faceRef.size();
+    const Vertex& p = m_pointList.at(index);
+    int numFaces = m_pointList.getFaceReference(index).size();
     for (int i = 0; i < numFaces; i++)
     {
-        res = res + computeFaceNormal(p.faceRef[i]);
+        res = res + computeFaceNormal(m_pointList.getFaceReference(index).at(i));
     }
 
     res = res / (float)numFaces;
@@ -644,7 +646,7 @@ void Object3D::adjustPointNormal(int index)
     FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
     for (int i = 0; i < numFaces; i++)
     {
-        Face& t = faceList[p.faceRef[i]];
+        Face& t = faceList[m_pointList.getFaceReference(index).at(i)];
         int numFacePoints = t.point.size();
         for (int j = 0; j < numFacePoints; ++j)
         {

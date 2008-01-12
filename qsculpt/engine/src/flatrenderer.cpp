@@ -16,12 +16,8 @@ FlatRenderer::~FlatRenderer()
 void FlatRenderer::renderObject(const IObject3D* mesh)
 {
     //qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
-    // Change color of the object if it is selected;
-	if (mesh->isSelected())
-    	glColor3d(0.0, 1.0, 0.0);
-    else
-    	//qglColor(mesh->getColor());
-    	glColor3d(0.8, 0.8, 0.8);
+
+	// Set the depth function to the correct value
     glDepthFunc(GL_LESS);
 
   	// Store the transformation matrix
@@ -30,6 +26,7 @@ void FlatRenderer::renderObject(const IObject3D* mesh)
   	mesh->getPosition(&x, &y, &z);
    	glTranslatef(x, y, z);
 
+   	QColor color;
 	const FaceContainer& faceList = mesh->getFaceList();
     int size = faceList.size();
     for ( int i = 0; i < size; i++)
@@ -38,8 +35,18 @@ void FlatRenderer::renderObject(const IObject3D* mesh)
         const Face& f = faceList[i];
         for (int j = 0; j < f.point.size(); ++j)
         {
+            // Change color of the object if it is selected;
+        	color = Qt::white; //mesh->getPointList().at(f.normal[j]).color;
+        	if (mesh->isSelected())
+        	{
+        		glColor3d(color.redF(), color.greenF() + 0.3, color.blueF());
+        	}
+        	else
+        	{
+        		glColor3d(color.redF(), color.greenF(), color.blueF());
+        	}
             glNormal3fv(mesh->getNormalList().at(f.normal[j]).getPoint());
-            glVertex3fv(mesh->getPointList().at(f.point[j]).vertex.getPoint());
+            glVertex3fv(mesh->getPointList().at(f.point[j]).getPoint());
         }
         glEnd();
     }

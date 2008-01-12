@@ -271,16 +271,6 @@ public:
     /**
      *
      */
-    //virtual void markTriangle(int index, bool state) = 0;
-
-    /**
-     * Adds more triangles to the model by face sub-division.
-     */
-    //virtual void subdivide() = 0;
-
-    /**
-     *
-     */
     virtual void adjustPointNormal(int index) = 0;
 
     /**
@@ -352,6 +342,32 @@ public:
      *
      */
     virtual int getWorkingResolutionLevel() = 0;
+
+    /**
+     * Get a buffer with all the vertex data. This data is used to render the
+     * mesh using VBOs.
+     *
+     * The function return a pointer to the buffer data. The pointer should be
+     * considerated temporal (do not store the pointer for later use). This is
+     * because when inserting new vertices to the mesh, a new allocation may be
+     * needed.
+     *
+     * The function also returns the number of vertices contained in the buffer.
+     */
+    //virtual bool getVertexBuffer(float **buffer, int* size) = 0;
+
+    /**
+     * Get a buffer with all the normal data. This data is meant to be used
+     * to create VBOs.
+     *
+     * The function return a pointer to the buffer data. The pointer should be
+     * considerated temporal (do not store the pointer for later use). This is
+     * because when inserting new vertices to the mesh, a new allocation may be
+     * needed.
+     *
+     * The function also returns the number of vertices contained in the buffer.
+     */
+    //virtual bool getNormalBuffer(float **buffer, int* size) = 0;
 };
 
 #endif
