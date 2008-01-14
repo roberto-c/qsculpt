@@ -4,6 +4,7 @@
 #include <QtOpenGL>
 #include "point3d.h"
 
+template <
 class BufferObject
 {
 public:
@@ -11,6 +12,10 @@ public:
 	 * Initializes a Buffer Object (BO)
 	 */
 	BufferObject();
+	
+	/**
+	 * Destroy or frees the resources used by the buffer object
+	 */
 	~BufferObject();
 
 	/**
