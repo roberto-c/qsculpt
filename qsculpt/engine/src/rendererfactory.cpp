@@ -33,7 +33,7 @@ IRenderer* RendererFactory::getRenderer(DrawingMode drawingMode)
 	case Smooth:
 		return new SmoothRenderer;
 		break;
-
+			
 	case Texture:
 	default:
 		return new FlatRenderer;

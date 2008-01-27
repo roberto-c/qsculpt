@@ -27,7 +27,7 @@
  *
  * The points are indices of the Object3D point list. So, this class It's
  * only meant to be used with the Object3D class (its not a generic triangle
-                                                  * class).
+ * class).
  *
  * A triangle its only valid if theirs three points are different. Using the
  * default constructor makes a non valid triangle.
@@ -36,7 +36,6 @@
 struct Face
 {
     QVector<int> point;   /**< Index of first point */
-    QVector<int> normal;  /**< Index of normal */
 	QVector<int> edge;
 	int midPoint;
     bool isMarked;
@@ -47,7 +46,6 @@ struct Face
      */
     Face()
         :   point(),
-        normal(),
 		midPoint(-1),
         isMarked(false),
 		hashValue(0)
@@ -68,7 +66,7 @@ struct Face
         isMarked(false),
 		hashValue(0)
     {
-		normal.fill(-1, point.size());
+		//normal.fill(-1, point.size());
 		for(int i = 0; i < point.size(); ++i)
 			hashValue += point[i];
     }
@@ -92,7 +90,7 @@ struct Face
      */
     void setPoints(const QVector<int>& vertexIndexList) { 
         point = vertexIndexList;
-        normal.resize(point.size());
+        //normal.resize(point.size());
 		hashValue = 0;
 		for(int i = 0; i < point.size(); ++i)
 			hashValue += point[i];
@@ -177,12 +175,20 @@ public:
 		m_faceList.append(face);
 		int index =  m_faceList.size() -1;
 		m_faceHash.insert(face,index);
+		for (int i = 0; i < face.point.size(); ++i)
+		{
+			m_pointIndices.append(face.point[i]);
+		}
 		return index;
 	}
 	
 	void append(const Face& face) {
 		m_faceList.append(face);
 		m_faceHash.insert(face, m_faceList.size() -1);
+		for (int i = 0; i < face.point.size(); ++i)
+		{
+			m_pointIndices.append(face.point[i]);
+		}
 	}
 	
 	void remove(int index) {
@@ -205,6 +211,10 @@ public:
 			m_faceList[index].edge.append(edgeIndex);
 	}
 	
+	GLuint* getData() {
+		return m_pointIndices.data();
+	}
+	
 private:
 	FaceContainer(){}
 	
@@ -214,6 +224,7 @@ private:
 	
 	Octree<Face> m_faceList;
 	QHash<Face, int> m_faceHash;
+	QVector<GLuint> m_pointIndices;
 	
 	friend class Object3D;
 };

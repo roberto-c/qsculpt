@@ -93,6 +93,7 @@ void DocumentView::createWidgets()
     m_drawingMode->addItem("Wireframe", Wireframe);
     m_drawingMode->addItem("Flat", Flat);
     m_drawingMode->addItem("Smooth", Smooth);
+	m_drawingMode->addItem("Textured", Texture);
     m_drawingMode->setCurrentIndex(2);
     m_display->setDrawingMode( Flat );
 

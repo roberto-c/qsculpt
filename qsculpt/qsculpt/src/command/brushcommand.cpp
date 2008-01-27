@@ -130,7 +130,8 @@ void BrushCommand::undo()
 		{
 			m_object->adjustPointNormal(it.key());
 		}
-
+		m_object->setChanged(true);
+		
 		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
 		if (view)
 			view->updateView();
@@ -160,7 +161,8 @@ void BrushCommand::redo()
 		{
 			m_object->adjustPointNormal(it.key());
 		}
-
+		m_object->setChanged(true);
+		
 		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
 		if (view)
 			view->updateView();
@@ -210,6 +212,7 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
                     m_object->adjustPointNormal(m_vertexSelected[i]);
                 }
             }
+			m_object->setChanged(true);
         }
 
         m_currentPoint = currPoint;
@@ -280,6 +283,7 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
     if (m_record.size() > 0)
     {
         m_record.clear();
+		m_object->setChanged(true);
         emit executed();
     }
     else

@@ -103,6 +103,7 @@ void SubdivideCommand::activate(bool activate)
                 SPAPP->processEvents();
                 usleep(100 * 1000); // 100 ms
             }
+			obj->setChanged(true);
         }
     }
     qDebug() << "End time:" << QDateTime::currentDateTime();
@@ -112,146 +113,109 @@ void SubdivideCommand::activate(bool activate)
 
 void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int rend)
 {
-    Q_ASSERT(obj);
-    PointContainer& pointList = obj->getPointList();
-    FaceContainer& faceList = obj->getFaceList();
-	EdgeContainer& edgeList = obj->getEdgeList();
-
-    int progressValue = 0;
-    Edge edge1, edge2;
-    Point3D point;
-    QVector<int> vertexIndex(4);
-    int indexOf = -1;
-	// Calculate mid face point for all faces
+#define POINT_LIST() (obj->getPointList())
+#define FACE_LIST() (obj->getFaceList())
+#define EDGE_LIST() (obj->getEdgeList())
+	
+	Q_ASSERT(obj);
+	
+	int progressValue = 0;
+	Vertex vertex;
+	QVector<int> vtxIndices(4);
+	
+	obj->lock();
 	for (int i = rend; i >= rbegin; --i)
 	{
-		obj->lock();
-        const Face face = faceList.at(i);
-
-        Vertex midFaceVertex;
-        int numVertex = face.point.size();
-        for (int j = 0; j < numVertex; ++j)
-        {
-            midFaceVertex = midFaceVertex + pointList.at(face.point.at(j));
-        }
-        midFaceVertex = midFaceVertex / (float)numVertex;
-        obj->addVertex(midFaceVertex/* + midNormal*/);
-        int midFaceIndex = pointList.size() - 1;
-		faceList[i].midPoint = midFaceIndex;
-        obj->unlock();
-	}
-
-    for (int i = rend; i >= rbegin; --i)
-    {
-        obj->lock();
-        const Face face = faceList.at(i);
-
-        Vertex midFaceVertex;
-        int numVertex = face.point.size();
-        for (int j = 1; j <= numVertex; ++j)
-        {
-            edge1.point1 = face.point.at(j % numVertex);
-            edge1.point2 = face.point.at((j+1) % numVertex);
-            indexOf = edgeList.indexOf(edge1);
-			if (indexOf == -1)
+		Face f = FACE_LIST().at(i);
+		int numFaceVertices = f.point.size();
+		
+		// Find the vertex at the center of the polygon 
+		Vertex midVertex;
+		for (int j = 0; j < numFaceVertices; ++j)
+		{
+			midVertex = midVertex + POINT_LIST().at(f.point.at(j));
+		}
+		midVertex = midVertex / (float)numFaceVertices;
+		
+		// Add the new vertex to the mesh
+		int midVertexIndex = obj->addVertex(midVertex);
+		FACE_LIST()[i].midPoint = midVertexIndex;
+		
+		int edgeIndex = -1;
+		QVector<Edge> edgeList(numFaceVertices);
+		Edge edge;
+		for (int j = 0; j < numFaceVertices; ++j)
+		{
+			edgeIndex = EDGE_LIST().indexOf(
+						Edge( f.point[j], f.point[(j+1)%numFaceVertices] )
+						);
+			if (edgeIndex == -1)
 			{
-				qDebug() << "SubdivideCommand::WorkerThread::Subdivide"
-				<< "indexOf = -1 " << "edge1.p1 = " << edge1.point1
-				<< " edge1.p2 = " << edge1.point2
-				<< " numVertex = " << numVertex;
-				break;
+				qDebug() << "subdivide: Edge not found";
+				obj->unlock();
+				return;
 			}
-			edge1.midPoint = edgeList.at(indexOf).midPoint;
-			if (edge1.midPoint == -1)
+			edge = EDGE_LIST().at(edgeIndex);
+			edgeList[j] = edge;
+			
+			// If the edge has no mid point assigned, calculate the mid point
+			// and add it to the mesh
+			if (edge.midPoint == -1)
 			{
-				point = pointList.at(edge1.point1)
-					+ pointList.at(edge1.point2);
-
-				int faceCount = edge1.faceRef.size();
-				for (int k = 0; k < faceCount; ++k)
+				midVertex = POINT_LIST().at(edge.point1) + POINT_LIST().at(edge.point2);
+				midVertex = midVertex / 2.0f;
+				midVertexIndex = obj->addVertex(midVertex);
+				if (midVertexIndex == -1)
 				{
-					Face f = faceList[edge1.faceRef[k]];
-					point = point + pointList.at(f.midPoint);
+					qDebug() << "subdivide: Edge not found";
+					obj->unlock();
+					return;
 				}
-				point = point / float(faceCount + 2);
-				obj->addVertex(point);
-				edge1.midPoint = pointList.size() - 1;
-				edgeList.setMidPointReference(indexOf, edge1.midPoint);
+				EDGE_LIST().setMidPointReference(edgeIndex, midVertexIndex);
+				edgeList[j] = EDGE_LIST().at(edgeIndex);
 			}
-
-			edge2.point1 = face.point.at((j-1) % numVertex);
-            edge2.point2 = face.point.at((j) % numVertex);
-            indexOf = edgeList.indexOf(edge2);
-			if (indexOf == -1)
-			{
-				qDebug() << "SubdivideCommand::WorkerThread::Subdivide"
-					<< "indexOf = -1 " << "edge2.p1 = " << edge2.point1
-				<< " edge2.p2 = " << edge2.point2
-				<< " numVertex = " << numVertex;
-				break;
-			}
-			edge2.midPoint = edgeList.at(indexOf).midPoint;
-			if (edge2.midPoint == -1)
-			{
-				point = pointList.at(edge2.point1)
-					+ pointList.at(edge2.point2);
-
-				int faceCount = edge2.faceRef.size();
-				for (int k = 0; k < faceCount; ++k)
-				{
-					Face f = faceList[edge2.faceRef[k]];
-					point = point + pointList.at(f.midPoint);
-				}
-				point = point / float(faceCount + 2);
-				obj->addVertex(point);
-				edge2.midPoint = pointList.size() - 1;
-				edgeList.setMidPointReference(indexOf, edge2.midPoint);
-			}
-
-            // remove this triangle from the list of faces reference of the point
-            int pointIndex = face.point.at(j % numVertex);
-            int faceIndex = pointList.getFaceReference(pointIndex).indexOf(i);
-            if (faceIndex >= 0 )
-            {
-            	pointList.getFaceReference(pointIndex).remove(faceIndex);
-            }
-
-            vertexIndex[0] = face.point[j % numVertex];
-            vertexIndex[1] = edge1.midPoint;
-            vertexIndex[2] = face.midPoint;
-            vertexIndex[3] = edge2.midPoint;
-
-            // Modify the face vertices to the new values. This is only done
-            // for the first vertex. For all other vertices, a new face is added.
-            // This is done to be able to maintain the original face object without
-            // modifying the indices of the points and faces.
-
-            if (j == numVertex)
-            {
-				obj->replaceFace(i, vertexIndex);
-            }
-            else
-			{
-                obj->addFace(vertexIndex);
-			}
-
-        }
-        obj->unlock();
+		}
+		f = FACE_LIST().at(i);
+		vtxIndices[0] = edgeList[3].commonVertex(edgeList[0]);
+		vtxIndices[1] = edgeList[0].midPoint;
+		vtxIndices[2] = f.midPoint;
+		vtxIndices[3] = edgeList[3].midPoint;
+		obj->addFace(vtxIndices);
+		vtxIndices[0] = edgeList[0].midPoint;
+		vtxIndices[1] = edgeList[0].commonVertex(edgeList[1]);
+		vtxIndices[2] = edgeList[1].midPoint;
+		vtxIndices[3] = f.midPoint;
+		obj->addFace(vtxIndices);
+		vtxIndices[0] = f.midPoint;
+		vtxIndices[1] = edgeList[1].midPoint;
+		vtxIndices[2] = edgeList[1].commonVertex(edgeList[2]);
+		vtxIndices[3] = edgeList[2].midPoint;
+		obj->addFace(vtxIndices);
+		vtxIndices[0] = edgeList[3].midPoint;
+		vtxIndices[1] = f.midPoint;
+		vtxIndices[2] = edgeList[2].midPoint;
+		vtxIndices[3] = edgeList[2].commonVertex(edgeList[3]);
+		obj->replaceFace(i, vtxIndices);
+		FACE_LIST()[i].midPoint = -1;
+		
         int prog = (rend - rbegin - i) * 100 / (rend - rbegin);
         if (prog != progressValue)
             emit progress(prog);
         progressValue = prog;
-    }
-
+	}
+	obj->unlock();
+	
+	//qDebug() << "subdivide: Adjust normals"; 
+	
     // adjust points normals
-    int pointCount = pointList.size();
+    int pointCount = POINT_LIST().size();
     for (int i = 0; i < pointCount; ++i)
     {
         obj->lock();
         adjustPointNormal(obj, i);
         obj->unlock();
     }
-    qDebug("Num Vertex: %d Num Faces: %d", pointList.size(), faceList.size());
+    qDebug("subdivide: Num Vertex: %d Num Faces: %d", POINT_LIST().size(), FACE_LIST().size());
 }
 
 void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index)
@@ -259,7 +223,7 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
     Q_ASSERT(obj);
 
     PointContainer& pointList = obj->getPointList();
-    FaceContainer& faceList = obj->getFaceList();
+//    FaceContainer& faceList = obj->getFaceList();
 
     Normal res;
 
@@ -272,19 +236,20 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
 
     res = res / (float)numFaces;
     res.normalize();
-
-    for (int i = 0; i < numFaces; i++)
-    {
-        Face& t = faceList[pointList.getFaceReference(index).at(i)];
-        int numFacePoints = t.point.size();
-        for (int j = 0; j < numFacePoints; ++j)
-        {
-            if (index == t.point[j])
-            {
-                obj->getNormalList()[t.normal[j]] = res;
-            }
-        }
-    }
+    obj->getNormalList()[index] = res;
+	
+//    for (int i = 0; i < numFaces; i++)
+//    {
+//        Face& t = faceList[pointList.getFaceReference(index).at(i)];
+//        int numFacePoints = t.point.size();
+//        for (int j = 0; j < numFacePoints; ++j)
+//        {
+//            if (index == t.point[j])
+//            {
+//                obj->getNormalList()[t.point[j]] = res;
+//            }
+//        }
+//    }
 }
 
 Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, int index)

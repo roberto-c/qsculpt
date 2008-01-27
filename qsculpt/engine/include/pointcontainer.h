@@ -20,6 +20,7 @@
 #ifndef POINTCONTAINER_H_
 #define POINTCONTAINER_H_
 
+#include <QtOpenGL>
 #include <QVector>
 #include <QMultiHash>
 #include <QColor>
@@ -127,6 +128,10 @@ public:
 		return m_faceReference[index];
 	}
 
+	inline GLfloat* getData() {
+		return (GLfloat*)m_pointList.getData();
+	};
+	
 private:
 	PointContainer(){}
 

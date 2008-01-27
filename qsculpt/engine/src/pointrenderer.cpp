@@ -15,6 +15,7 @@ PointRenderer::~PointRenderer()
 
 void PointRenderer::renderObject(const IObject3D* mesh)
 {
+	mesh->lock();
     int size = mesh->getPointList().size();
 
     glBegin(GL_POINTS);
@@ -23,4 +24,5 @@ void PointRenderer::renderObject(const IObject3D* mesh)
         glVertex3fv(mesh->getPointList().at(i).getPoint());
     }
     glEnd();
+	mesh->unlock();
 }

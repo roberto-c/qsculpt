@@ -31,6 +31,7 @@
 #include "selectcommand.h"
 #include "brushcommand.h"
 #include "subdividecommand.h"
+#include "iobject3d.h"
 
 QSculptWindow::QSculptWindow()
     : m_glWidget(new DocumentView(this)),
@@ -291,7 +292,27 @@ void QSculptWindow::addBox()
 
 void QSculptWindow::addSphere()
 {
-    m_document->addObject( IDocument::Sphere );
+    //m_document->addObject( IDocument::Sphere );
+	QList<IObject3D*> objects = m_document->getSelectedObjects();
+	if (objects.size() > 0)
+	{
+		IObject3D* mesh = objects[0];
+		int numVertices = mesh->getPointList().size();
+		for (int i = 0; i < numVertices; ++i)
+		{
+			qDebug("Vertex %s - Normal %s", 
+				   qPrintable(mesh->getPointList().at(i).toString()),
+				   qPrintable(mesh->getNormalList().at(i).toString())
+				   ); 
+		}
+		int numFaces = mesh->getFaceList().size();
+		for (int i = 0; i < numFaces; ++i)
+		{
+			Face f = mesh->getFaceList().at(i);
+			qDebug("Face Index %d (%d, %d, %d, %d)", i, f.point[0],
+				   f.point[1], f.point[2], f.point[3]);
+		}
+	}
 }
 
 void QSculptWindow::showGrid(bool val)

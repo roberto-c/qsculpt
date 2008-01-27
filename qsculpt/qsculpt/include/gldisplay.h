@@ -25,6 +25,7 @@
 #include <QVector>
 #include "spenums.h"
 #include "point3d.h"
+#include "BufferObject.h"
 
 class DocumentView;
 class QMouseEvent;
@@ -225,6 +226,9 @@ private:
     GLfloat             m_zoomFactor;
     GLuint				m_textureId;
     QImage				m_cursorImage;
+	
+	VertexBuffer		m_vbo;
+	IndexBuffer			m_ibo;
 };
 
 #endif
