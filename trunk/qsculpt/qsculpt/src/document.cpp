@@ -139,8 +139,8 @@ void Document::saveFile(QString fileName)
                 int numFacePoints = obj->getFaceList().at(j).point.size();
                 for (int k = 0; k < numFacePoints; ++k)
                 {
-                    out << " " << obj->getFaceList().at(j).point.at(k) + 1
-                        << "//" << obj->getFaceList().at(j).normal.at(k) + 1;
+                    out << " " << obj->getFaceList().at(j).point.at(k) + 1;
+                        //<< "//" << obj->getFaceList().at(j).normal.at(k) + 1;
                 }
                 out << endl;
             }

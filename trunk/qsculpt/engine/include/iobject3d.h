@@ -227,6 +227,16 @@ public:
      */
     virtual const Normal& getNormalAtPoint(int index) const = 0;
 
+	/**
+	 *
+	 */
+	virtual int addEdge(const Edge& edge) = 0;
+	
+	/**
+	 *
+	 */
+	virtual int addEdge(int v1, int v2) = 0;
+	
     /**
      * Add a triangle to the object. The triangle is formed by the vertices
      * passed as arguments. The vertices are passed by means of their ID
@@ -316,12 +326,12 @@ public:
     /**
      *
      */
-    virtual void lock() = 0;
+    virtual void lock() const = 0;
 
     /**
      *
      */
-    virtual void unlock() = 0;
+    virtual void unlock() const = 0;
 
     /**
      *
@@ -368,6 +378,10 @@ public:
      * The function also returns the number of vertices contained in the buffer.
      */
     //virtual bool getNormalBuffer(float **buffer, int* size) = 0;
+	
+	virtual bool hasChanged()=0;
+	
+	virtual void setChanged(bool val)=0;
 };
 
 #endif

@@ -58,6 +58,24 @@ struct Edge
         midPoint(-1)
     {
     }
+	
+	/**
+	 * return the common vertex index with other Edge object. If none of the
+	 * vertex indices is common, this function returns -1;
+	 */
+	int commonVertex(const Edge& edge)
+	{
+		int ret = -1;
+		if (point1 == edge.point1)
+			ret = point1;
+		else if (point2 == edge.point2)
+			ret = point2;
+		else if (point1 == edge.point2)
+			ret = point1;
+		else if (point2 == edge.point1)
+			ret = point2;
+		return ret;
+	}
 
     bool operator==(const Edge& val) const
     {
@@ -71,7 +89,7 @@ class EdgeContainer
 public:
 	void reserve(int size) {
 		m_edgeList.reserve(size);
-		m_edgeList.reserve(size);
+		m_edgeHash.reserve(size);
 	}
 
 	int size() const {
@@ -87,6 +105,8 @@ public:
 	}
 
 	int insert(const Edge& edge) {
+		if (m_edgeHash.contains(edge))
+			return indexOf(edge);
 		m_edgeList.append(edge);
 		int index =  m_edgeList.size() -1;
 		m_edgeHash.insert(edge,index);
@@ -94,6 +114,8 @@ public:
 	}
 
 	void append(const Edge& edge) {
+		if (m_edgeHash.contains(edge))
+			return;
 		m_edgeList.append(edge);
 		m_edgeHash.insert(edge, m_edgeList.size() -1);
 	}

@@ -47,6 +47,10 @@ public:
     ~Octree() {
         delete m_rootNode;
     }
+	
+	inline T* getData() {
+		return m_data.data();
+	}
     
     inline T& operator[](int index) {
         return m_data[index];

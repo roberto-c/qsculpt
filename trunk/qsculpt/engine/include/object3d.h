@@ -74,6 +74,8 @@ public:
     virtual Vertex& getVertex(int index);
     virtual Normal& getNormalAtPoint(int index);
     virtual const Normal& getNormalAtPoint(int index) const;
+	virtual int addEdge(const Edge& edge);
+	virtual int addEdge(int v1, int v2);
     virtual int addFace(const QVector<int>& vertexIndexList);
 	virtual void replaceFace(int index, const QVector<int>& vertexIndexList);
     virtual void removeFace( int id);
@@ -89,12 +91,19 @@ public:
     virtual FaceContainer& getFaceList();
 	virtual const EdgeContainer& getEdgeList() const;
 	virtual EdgeContainer& getEdgeList();
-    virtual void lock();
-    virtual void unlock();
+    virtual void lock() const;
+    virtual void unlock() const;
     virtual void addResolutionLevel();
     virtual void removeResolutionLevel(int level);
     virtual void setWorkingResolutionLevel(int level);
     virtual int getWorkingResolutionLevel();
+	virtual bool hasChanged() {
+		return m_hasChanged;
+	};
+	virtual void setChanged(bool val) {
+		m_hasChanged = val;
+	};
+		
 // End IObject3D interface
 
     const Object3D& operator=(const Object3D& obj);
@@ -151,6 +160,7 @@ protected:
     int             m_callListId;
     bool            m_genereateCallList;
     int				m_currentResolutionLevel;
+	bool			m_hasChanged;
 
 private:
     void updateBoundingBox();
@@ -159,7 +169,7 @@ private:
     NormalContainer 			m_normalList;
     QVector<FaceContainer*>   	m_faceList;
 	QVector<EdgeContainer*>		m_edgeList;
-    QMutex          			m_mutex;
+    mutable QMutex    			m_mutex;
 };
 
 #endif

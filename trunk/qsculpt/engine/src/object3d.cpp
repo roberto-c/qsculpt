@@ -56,7 +56,8 @@ Object3D::Object3D()
     m_selected(false),
     m_callListId(0),
     m_genereateCallList(true),
-    m_currentResolutionLevel(0)
+    m_currentResolutionLevel(0),
+	m_hasChanged(true)
 {
     initPoints();
     updateBoundingBox();
@@ -241,7 +242,7 @@ int Object3D::addVertex(const Vertex& point)
 
     m_pointList.append(point);
     m_normalList.append(Normal());
-    return m_pointList.size();
+    return m_pointList.size()-1;
 }
 
 void Object3D::removeVertex(int id)
@@ -257,131 +258,101 @@ Vertex& Object3D::getVertex(int index)
 
 Normal& Object3D::getNormalAtPoint(int index)
 {
-    const Vertex p = m_pointList.at(index);
-
-    //qDebug("size: %d", p.faceRef.size());
-    if ( !m_pointList.getFaceReference(index).isEmpty() )
-    {
-    	FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
-        const Face& t = faceList[m_pointList.getFaceReference(index).at(0)];
-        int numPoints = t.point.size();
-        for (int i = 0; i < numPoints; i++)
-        {
-            if (t.point[i] == index)
-                return m_normalList[t.normal[i]];
-        }
-
-        //qDebug("Normal not found!!!");
-        //qDebug("Index: %d", index);
-        //qDebug() << "Triangle Ref:";
-        for (int i = 0; i < numPoints; i++)
-        {
-            //qDebug() << " " << t.point[i];
-        }
-        //qDebug() << endl;
-    }
-    else
-    {
-        //qDebug("faceReference Empty!!!");
-    }
-
-    return const_cast<Normal&>(Normal::null());
+	return m_normalList[index];
 }
 
 const Normal& Object3D::getNormalAtPoint(int index) const
 {
-//    const Vertex& p = m_pointList.at(index);
+	return m_normalList[index];
+}
 
-    if ( !m_pointList.getFaceReference(index).isEmpty() )
-    {
-    	FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
-        const Face& t = faceList[m_pointList.getFaceReference(index).at(0)];
-        int numPoints = t.point.size();
-        for (int i = 0; i < numPoints; i++)
-        {
-            if (t.point[i] == index)
-                return m_normalList.at(t.normal[i]);
-        }
-    }
-    //qDebug("Normal not found!!!");
-    return Normal::null();
+int Object3D::addEdge(const Edge& edge)
+{
+	int indexOf = -1; 
+	if ((indexOf = m_edgeList[m_currentResolutionLevel]->indexOf(edge)) == -1)
+	{
+		indexOf = m_edgeList[m_currentResolutionLevel]->insert(edge);
+	}
+	return indexOf;
+}
+
+int Object3D::addEdge(int v1, int v2)
+{
+	Edge edge(v1, v2);
+	return addEdge(edge);
 }
 
 int Object3D::addFace(const QVector<int>& vertexIndexList)
 {
-    //qDebug("addFace");
+    //qDebug("Object3D::addFace");
     Face t(vertexIndexList);
-
-    if (t.isValid())
+	int numFaceVertices = t.point.size();
+	int numVertices = m_pointList.size();
+	
+	bool isValid = true;
+	for (int i = 0; i < numFaceVertices; ++i)
+	{
+//		qDebug()<<t.point[i];
+		if (t.point[i] >= numVertices || t.point[i] < 0)
+			isValid = false;
+	}
+	
+    if (isValid)
     {
-        Normal normal;
-        normal = computeFaceNormal( t );
-
-        for (int i = 0; i < t.point.size(); ++i)
-        {
-            m_normalList.append(normal);
-            t.normal[i] = t.point.at(i);
-        }
+//		qDebug("Object3D::addFace: get face and edge lists");
         FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
         EdgeContainer& edgeList = *m_edgeList[m_currentResolutionLevel];
 
-        faceList.append(t);
-
-        int triangleIndex = faceList.size() - 1;
-        int pointSize = t.point.size();
-        for (int i = 0; i < pointSize; ++i)
+        int faceIndex = faceList.size();
+        for (int i = 0; i < numFaceVertices; ++i)
         {
-            m_pointList.addFaceReference(t.point[i], triangleIndex);
-            adjustPointNormal(t.point[i]);
+            m_pointList.addFaceReference(t.point[i], faceIndex);
         }
 
+//		qDebug("Object3D::addFace: add edges");
 		Edge edge;
-		int vertexCount = t.point.size();
 		int edgeIndex = -1;
-		for (int i = 0; i < vertexCount; i++)
+		for (int i = 0; i < numFaceVertices; i++)
 		{
 			edge.point1 = t.point.at(i);
-			edge.point2 = t.point.at((i + 1) %vertexCount);
-			edgeIndex = edgeList.indexOf(edge);
-			if (edgeIndex == -1)
+			edge.point2 = t.point.at((i + 1) %numFaceVertices);
+			if ((edgeIndex = edgeList.indexOf(edge)) == -1)
 			{
-				edgeList.append(edge);
-				edgeIndex = edgeList.size() - 1;
+//				qDebug("Object3D::addFace: edge not found");
+				edgeIndex = edgeList.insert(edge);
 			}
-			edgeList.addFaceReference(edgeIndex, triangleIndex);
-			faceList[triangleIndex].edge.append(edgeIndex);
+			edgeList.addFaceReference(edgeIndex, faceIndex);
+			t.edge.append(edgeIndex);
 		}
-
-        return triangleIndex;
+        faceList.append(t);
+		for (int i = 0; i < numFaceVertices; i++)
+		{
+			adjustPointNormal(t.point[i]);
+		}
+//		qDebug("Object3D::addFace: Face added");
+		return faceIndex;
     }
-    //qDebug("Face added is not valid.");
+    qDebug("Object3D::addFace: Face is not valid.");
     return -1;
 }
 
 void Object3D::replaceFace(int faceIndex, const QVector<int>& vertexIndexList)
 {
-    ////qDebug("addFace");
-	FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
-    Face& t = faceList[faceIndex];
-	t.setPoints(vertexIndexList);
-	t.edge.clear();
-    if (t.isValid())
-    {
-        Normal normal;
-        normal = computeFaceNormal( t );
-
-        for (int i = 0; i < t.point.size(); ++i)
-        {
-            m_normalList.append(normal);
-            t.normal[i] = t.point.at(i);
-        }
-
-        int pointSize = t.point.size();
-        for (int i = 0; i < pointSize; ++i)
-        {
-            m_pointList.addFaceReference(t.point[i], faceIndex);
-            adjustPointNormal(t.point[i]);
-        }
+    //qDebug("Object3D::replaceFace");
+	int numFaceVertices =vertexIndexList.size();
+	int numVertices = m_pointList.size();
+	bool isValid = true;
+	for (int i = 0; i < numFaceVertices; ++i)
+	{
+		if (vertexIndexList[i] >= numVertices || vertexIndexList[i] < 0)
+			isValid = false;
+	}
+	if (isValid)
+	{
+		FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
+		Face& t = faceList[faceIndex];
+		t.setPoints(vertexIndexList);
+		t.edge.clear();
 
         EdgeContainer& edgeList = *m_edgeList[m_currentResolutionLevel];
 		Edge edge;
@@ -400,9 +371,13 @@ void Object3D::replaceFace(int faceIndex, const QVector<int>& vertexIndexList)
 			edgeList.addFaceReference(edgeIndex, faceIndex);
 			faceList[faceIndex].edge.append(edgeIndex);
 		}
+		int numFaceVertices = t.point.size();
+        for (int i = 0; i < numFaceVertices; ++i)
+        {
+            m_pointList.addFaceReference(t.point[i], faceIndex);
+            adjustPointNormal(t.point[i]);
+        }
     }
-	//else
-	//	qDebug("Face replaced is not valid.");
 }
 
 void Object3D::removeFace( int id)
@@ -629,8 +604,7 @@ Point3D Object3D::computeFaceNormal(Face &face)
 void Object3D::adjustPointNormal(int index)
 {
     Normal res;
-
-    const Vertex& p = m_pointList.at(index);
+	
     int numFaces = m_pointList.getFaceReference(index).size();
     for (int i = 0; i < numFaces; i++)
     {
@@ -640,22 +614,7 @@ void Object3D::adjustPointNormal(int index)
     res = res / (float)numFaces;
     res.normalize();
 
-    //if (index == 0)
-    //    qDebug("First point: res: %s numFaces: %d", qPrintable(res.toString()), numFaces);
-
-    FaceContainer& faceList = *m_faceList[m_currentResolutionLevel];
-    for (int i = 0; i < numFaces; i++)
-    {
-        Face& t = faceList[m_pointList.getFaceReference(index).at(i)];
-        int numFacePoints = t.point.size();
-        for (int j = 0; j < numFacePoints; ++j)
-        {
-            if (index == t.point[j])
-            {
-                m_normalList[t.normal[j]] = res;
-            }
-        }
-    }
+	m_normalList[index] = res;
 }
 
 void Object3D::computeAllNormals()
@@ -703,12 +662,12 @@ const EdgeContainer& Object3D::getEdgeList() const
 	return *m_edgeList[m_currentResolutionLevel];
 }
 
-void Object3D::lock()
+void Object3D::lock() const
 {
     m_mutex.lock();
 }
 
-void Object3D::unlock()
+void Object3D::unlock() const
 {
     m_mutex.unlock();
 }
