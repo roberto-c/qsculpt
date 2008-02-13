@@ -24,7 +24,7 @@
 
 #include <QMainWindow>
 #include <QStack>
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 #include "IDocument.h"
 #include "CommandManager.h"
 
