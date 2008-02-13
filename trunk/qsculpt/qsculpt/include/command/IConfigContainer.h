@@ -21,7 +21,7 @@
 #define ICONFIGCONTAINER_H
 
 #include <QString>
-#include "point3d.h"
+#include "Point3D.h"
 
 /**
  * Container for configuration parameters of the commands.

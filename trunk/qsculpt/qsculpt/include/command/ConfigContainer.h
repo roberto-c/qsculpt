@@ -20,11 +20,11 @@
 #ifndef CONFIGCONTAINER_H
 #define CONFIGCONTAINER_H
 
-#include "iconfigcontainer.h"
+#include "IConfigContainer.h"
 #include <QMap>
 #include <QString>
 #include <QVariant>
-#include "point3d.h"
+#include "Point3D.h"
 
 /**
  * Implementation of IConfigContainer interface

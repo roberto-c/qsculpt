@@ -21,7 +21,7 @@
 #define DOCUMENT_H
 
 #include <QList>
-#include "idocument.h"
+#include "IDocument.h"
 
 class IObject3D;
 

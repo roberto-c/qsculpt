@@ -21,9 +21,9 @@
 #define SELECTCOMMAND_H
 
 #include <QVector>
-#include "commandbase.h"
-#include "documentview.h"
-#include "point3d.h"
+#include "CommandBase.h"
+#include "DocumentView.h"
+#include "Point3D.h"
 #include <QPointer>
 
 class TransformWidget;

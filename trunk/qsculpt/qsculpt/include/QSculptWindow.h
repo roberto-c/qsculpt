@@ -25,8 +25,8 @@
 #include <QMainWindow>
 #include <QStack>
 #include "ui_mainwindow.h"
-#include "idocument.h"
-#include "commandmanager.h"
+#include "IDocument.h"
+#include "CommandManager.h"
 
 class QTextEdit;
 class QDockWidget;

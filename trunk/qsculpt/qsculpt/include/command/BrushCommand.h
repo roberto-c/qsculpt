@@ -23,9 +23,9 @@
 #include <QVector>
 #include <QHash>
 #include <QMap>
-#include "commandbase.h"
-#include "documentview.h"
-#include "point3d.h"
+#include "CommandBase.h"
+#include "DocumentView.h"
+#include "Point3D.h"
 
 class BrushProperties;
 

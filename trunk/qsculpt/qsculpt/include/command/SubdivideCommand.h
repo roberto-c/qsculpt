@@ -21,7 +21,7 @@
 #define SUBDIVIDECOMMAND_H
 
 #include <QThread>
-#include "commandbase.h"
+#include "CommandBase.h"
 
 class IObject3D;
 struct Face;

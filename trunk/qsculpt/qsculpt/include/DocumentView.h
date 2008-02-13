@@ -23,8 +23,8 @@
 #include <QWidget>
 #include <QList>
 #include <QPoint>
-#include "point3d.h"
-#include "gldisplay.h"
+#include "Point3D.h"
+#include "GlDisplay.h"
 
 class IObject3D;
 class IDocument;

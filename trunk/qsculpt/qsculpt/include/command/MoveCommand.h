@@ -20,8 +20,8 @@
 #ifndef MOVECOMMAND_H
 #define MOVECOMMAND_H
 
-#include "commandbase.h"
-#include "point3d.h"
+#include "CommandBase.h"
+#include "Point3D.h"
 #include <QList>
 #include <QPoint>
 

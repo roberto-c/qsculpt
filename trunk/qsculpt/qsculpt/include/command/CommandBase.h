@@ -21,9 +21,9 @@
 #define COMMANDBASE_H
 
 #include <QtOpenGL>
-#include "icommand.h"
-#include "point3d.h"
-#include "camera.h"
+#include "ICommand.h"
+#include "Point3D.h"
+#include "Camera.h"
 
 /**
  * Base class for commands. Contains basic and common command implementation.
