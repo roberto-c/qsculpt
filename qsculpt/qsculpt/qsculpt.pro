@@ -23,40 +23,40 @@ debug {
 }
 
 # Input
-HEADERS += include/document.h \
-           include/documentview.h \
-           include/gldisplay.h \
-           include/idocument.h \
-           include/qsculptwindow.h \
-           include/qsculptapp.h \
-           include/stable.h \
-           include/transformwidget.h \
-           include/command/brushcommand.h \
-           include/command/brushproperties.h \
-           include/command/commandbase.h \
-           include/command/configcontainer.h \
-           include/command/icommand.h \
-           include/command/iconfigcontainer.h \
-           include/command/movecommand.h \
-           include/command/selectcommand.h \
-           include/command/subdividecommand.h \
-           include/command/transformcameracommand.h \
-           include/command/commandmanager.h
-FORMS += ui/BrushProperties.ui ui/mainwindow.ui ui/transformWidget.ui
-SOURCES += src/document.cpp \
-           src/documentview.cpp \
-           src/gldisplay.cpp \
+HEADERS += include/Document.h \
+           include/DocumentView.h \
+           include/GlDisplay.h \
+           include/IDocument.h \
+           include/QSculptWindow.h \
+           include/QSculptApp.h \
+           include/Stable.h \
+           include/TransformWidget.h \
+           include/command/BrushCommand.h \
+           include/command/BrushProperties.h \
+           include/command/CommandBase.h \
+           include/command/ConfigContainer.h \
+           include/command/ICommand.h \
+           include/command/IConfigContainer.h \
+           include/command/MoveCommand.h \
+           include/command/SelectCommand.h \
+           include/command/SubdivideCommand.h \
+           include/command/TransformCameraCommand.h \
+           include/command/CommandManager.h
+FORMS += ui/BrushProperties.ui ui/MainWindow.ui ui/TransformWidget.ui
+SOURCES += src/Document.cpp \
+           src/DocumentView.cpp \
+           src/GlDisplay.cpp \
            src/main.cpp \
-           src/qsculptwindow.cpp \
-           src/qsculptapp.cpp \
-           src/transformwidget.cpp \
-           src/command/brushcommand.cpp \
-           src/command/brushproperties.cpp \
-           src/command/commandbase.cpp \
-           src/command/configcontainer.cpp \
-           src/command/movecommand.cpp \
-           src/command/selectcommand.cpp \
-           src/command/subdividecommand.cpp \
-           src/command/transformcameracommand.cpp \
-           src/command/commandmanager.cpp
+           src/QSculptWindow.cpp \
+           src/QSculptApp.cpp \
+           src/TransformWidget.cpp \
+           src/command/BrushCommand.cpp \
+           src/command/BrushProperties.cpp \
+           src/command/CommandBase.cpp \
+           src/command/ConfigContainer.cpp \
+           src/command/MoveCommand.cpp \
+           src/command/SelectCommand.cpp \
+           src/command/SubdivideCommand.cpp \
+           src/command/TransformCameraCommand.cpp \
+           src/command/CommandManager.cpp
 RESOURCES += resources/solidpaint3d.qrc
