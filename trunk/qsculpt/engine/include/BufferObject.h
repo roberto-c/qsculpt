@@ -2,7 +2,7 @@
 #define BUFFEROBJECT_H_
 
 #include <QtOpenGL>
-#include "point3d.h"
+#include "Point3D.h"
 
 template <GLenum boTarget>
 class BufferObject
