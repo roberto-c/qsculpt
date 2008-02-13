@@ -23,8 +23,8 @@
 #include <QGLWidget>
 #include <QPoint>
 #include <QVector>
-#include "spenums.h"
-#include "point3d.h"
+#include "SpEnums.h"
+#include "Point3D.h"
 #include "BufferObject.h"
 
 class DocumentView;

@@ -20,8 +20,8 @@
 #ifndef TRANSFORMCAMERACOMMAND_H
 #define TRANSFORMCAMERACOMMAND_H
 
-#include "commandbase.h"
-#include "point3d.h"
+#include "CommandBase.h"
+#include "Point3D.h"
 
 /**
  * Moves and chage aim of camera.
