@@ -17,7 +17,7 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#include "documentview.h"
+#include "DocumentView.h"
 #include <iostream>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -28,13 +28,13 @@
 #include <QLabel>
 #include <QSpacerItem>
 
-#include "sphere.h"
-#include "box.h"
-#include "idocument.h"
-#include "qsculptapp.h"
-#include "qsculptwindow.h"
-#include "icommand.h"
-#include "gldisplay.h"
+#include "Sphere.h"
+#include "Box.h"
+#include "IDocument.h"
+#include "QSculptApp.h"
+#include "QSculptWindow.h"
+#include "ICommand.h"
+#include "GlDisplay.h"
 
 DocumentView::DocumentView( QWidget *_parent )
         : QWidget( _parent ),

@@ -22,7 +22,7 @@
 
 #include <QtDebug>
 #include <QVector>
-#include "point3d.h"
+#include "Point3D.h"
 
 template< typename T >
 class Octree

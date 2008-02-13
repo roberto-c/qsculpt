@@ -17,19 +17,19 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "brushcommand.h"
+#include "BrushCommand.h"
 
-#include "stable.h"
+#include "Stable.h"
 #include <QtOpenGL>
 #include <QMouseEvent>
-#include "qsculptapp.h"
-#include "qsculptwindow.h"
-#include "idocument.h"
-#include "iconfigcontainer.h"
-#include "iobject3d.h"
-#include "documentview.h"
-#include "camera.h"
-#include "brushproperties.h"
+#include "QSculptApp.h"
+#include "QSculptWindow.h"
+#include "IDocument.h"
+#include "IConfigContainer.h"
+#include "IObject3D.h"
+#include "DocumentView.h"
+#include "Camera.h"
+#include "BrushProperties.h"
 
 QImage BrushCommand::m_cursorImage;
 

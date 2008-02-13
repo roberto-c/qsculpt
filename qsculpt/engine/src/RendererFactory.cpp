@@ -1,10 +1,10 @@
-#include "stdafx.h"
-#include "rendererfactory.h"
-#include "spenums.h"
-#include "pointrenderer.h"
-#include "flatrenderer.h"
-#include "wireframerenderer.h"
-#include "smoothrenderer.h"
+#include "StdAfx.h"
+#include "RendererFactory.h"
+#include "SpEnums.h"
+#include "PointRenderer.h"
+#include "FlatRenderer.h"
+#include "WireframeRenderer.h"
+#include "SmoothRenderer.h"
 
 RendererFactory::RendererFactory()
 {

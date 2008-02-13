@@ -20,7 +20,7 @@
 #ifndef ICAMERA_H
 #define ICAMERA_H
 
-#include "point3d.h"
+#include "Point3D.h"
 
 /**
  * Camera class. Control the postion and orientation of the camera.

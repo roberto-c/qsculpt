@@ -1,7 +1,7 @@
-#include "stdafx.h"
-#include "pointrenderer.h"
+#include "StdAfx.h"
+#include "PointRenderer.h"
 #include <QtOpenGL>
-#include "iobject3d.h"
+#include "IObject3D.h"
 
 PointRenderer::PointRenderer()
 {

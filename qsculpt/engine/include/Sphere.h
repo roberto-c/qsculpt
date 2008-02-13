@@ -20,7 +20,7 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "object3d.h"
+#include "Object3D.h"
 struct GLUquadric;
 /**
  * Class that implement a sphere object.

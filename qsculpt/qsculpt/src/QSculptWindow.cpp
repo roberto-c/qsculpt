@@ -23,15 +23,15 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "qsculptwindow.h"
-#include "documentview.h"
-#include "document.h"
-#include "movecommand.h"
-#include "transformwidget.h"
-#include "selectcommand.h"
-#include "brushcommand.h"
-#include "subdividecommand.h"
-#include "iobject3d.h"
+#include "QSculptWindow.h"
+#include "DocumentView.h"
+#include "Document.h"
+#include "MoveCommand.h"
+#include "TransformWidget.h"
+#include "SelectCommand.h"
+#include "BrushCommand.h"
+#include "SubdivideCommand.h"
+#include "IObject3D.h"
 
 QSculptWindow::QSculptWindow()
     : m_glWidget(new DocumentView(this)),

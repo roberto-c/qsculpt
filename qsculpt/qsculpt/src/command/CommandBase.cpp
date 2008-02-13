@@ -17,16 +17,16 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "commandbase.h"
+#include "CommandBase.h"
 #include <QtOpenGL>
 #include <QMouseEvent>
-#include "configcontainer.h"
-#include "qsculptapp.h"
-#include "qsculptwindow.h"
-#include "idocument.h"
-#include "iobject3d.h"
-#include "documentview.h"
-#include "camera.h"
+#include "ConfigContainer.h"
+#include "QSculptApp.h"
+#include "QSculptWindow.h"
+#include "IDocument.h"
+#include "IObject3D.h"
+#include "DocumentView.h"
+#include "Camera.h"
 
 CommandBase::CommandBase(ICommand* parent)
 :	ICommand(parent),

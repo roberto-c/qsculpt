@@ -17,20 +17,20 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "gldisplay.h"
+#include "GlDisplay.h"
 #include <QtOpenGL>
 #include <iostream>
 #include <QMouseEvent>
 #include <QWheelEvent>
-#include "sphere.h"
-#include "box.h"
-#include "idocument.h"
-#include "qsculptwindow.h"
-#include "qsculptapp.h"
-#include "icommand.h"
-#include "documentview.h"
-#include "camera.h"
-#include "rendererfactory.h"
+#include "Sphere.h"
+#include "Box.h"
+#include "IDocument.h"
+#include "QSculptWindow.h"
+#include "QSculptApp.h"
+#include "ICommand.h"
+#include "DocumentView.h"
+#include "Camera.h"
+#include "RendererFactory.h"
 
 
 #define SELECT_BUFFER_SIZE 512

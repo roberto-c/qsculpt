@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "qsculptwindow.h"
-#include "qsculptapp.h"
+#include "QSculptWindow.h"
+#include "QSculptApp.h"
 
 #include <QFile>
 #include <QTextStream>

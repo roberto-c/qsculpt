@@ -24,7 +24,7 @@
 #include <QVector>
 #include <QMultiHash>
 #include <QColor>
-#include "octree.h"
+#include "Octree.h"
 
 //struct Point
 //{
