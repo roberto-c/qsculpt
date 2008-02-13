@@ -19,7 +19,7 @@
  ***************************************************************************/
 #include "StdAfx.h"
 #include "SmoothRenderer.h"
-#include "iobject3d.h"
+#include "IObject3D.h"
 #include <QtOpenGL>
 
 SmoothRenderer::SmoothRenderer()
