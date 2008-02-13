@@ -20,7 +20,7 @@
 #ifndef TRANSFORMWIDGET_H
 #define TRANSFORMWIDGET_H
 
-#include "ui_transformWidget.h"
+#include "ui_TransformWidget.h"
 #include <QWidget>
 
 class ICommand;

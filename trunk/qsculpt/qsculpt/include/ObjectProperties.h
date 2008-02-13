@@ -2,7 +2,7 @@
 #define OBJECTPROPERTIES_H_
 
 #include <QWidget>
-#include "../ui/ui_transformWidget.h"
+#include "../ui/ui_TransformWidget.h"
 
 class IObject3D;
 
