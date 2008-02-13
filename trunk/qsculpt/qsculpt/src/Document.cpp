@@ -17,13 +17,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "document.h"
+#include "Document.h"
 
 #include <QFile>
 #include <QTextStream>
-#include "iobject3d.h"
-#include "box.h"
-#include "sphere.h"
+#include "IObject3D.h"
+#include "Box.h"
+#include "Sphere.h"
 
 Document::Document() {
 

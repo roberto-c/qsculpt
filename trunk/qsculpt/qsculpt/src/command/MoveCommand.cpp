@@ -17,14 +17,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "movecommand.h"
+#include "MoveCommand.h"
 #include <QMouseEvent>
 #include <QtOpenGL>
-#include "idocument.h"
-#include "iconfigcontainer.h"
-#include "iobject3d.h"
-#include "qsculptapp.h"
-#include "qsculptwindow.h"
+#include "IDocument.h"
+#include "IConfigContainer.h"
+#include "IObject3D.h"
+#include "QSculptApp.h"
+#include "QSculptWindow.h"
 
 TransformCommand::TransformCommand()
     : CommandBase(),

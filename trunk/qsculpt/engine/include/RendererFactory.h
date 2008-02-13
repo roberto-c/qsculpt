@@ -2,8 +2,8 @@
 #define RENDERERFACTORY_H_
 
 #include <QStringList>
-#include "spenums.h"
-#include "irenderer.h"
+#include "SpEnums.h"
+#include "IRenderer.h"
 
 class RendererFactory
 {

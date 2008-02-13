@@ -1,7 +1,7 @@
 #ifndef SMOOTHRENDERER_H_
 #define SMOOTHRENDERER_H_
 
-#include "irenderer.h"
+#include "IRenderer.h"
 
 class SmoothRenderer : public IRenderer
 {

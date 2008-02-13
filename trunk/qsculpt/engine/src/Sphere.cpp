@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "stdafx.h"
-#include "sphere.h"
+#include "StdAfx.h"
+#include "Sphere.h"
 #include <QtOpenGL>
 #include <math.h>
 

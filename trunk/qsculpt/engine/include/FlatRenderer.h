@@ -1,7 +1,7 @@
 #ifndef FLATRENDERER_H_
 #define FLATRENDERER_H_
 
-#include "irenderer.h"
+#include "IRenderer.h"
 
 class FlatRenderer : public IRenderer
 {

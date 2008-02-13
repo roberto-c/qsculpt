@@ -20,7 +20,7 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "object3d.h"
+#include "Object3D.h"
 
 /**
  * Draw a 3D box.

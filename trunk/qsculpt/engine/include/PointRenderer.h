@@ -1,7 +1,7 @@
 #ifndef POINTRENDERER_H_
 #define POINTRENDERER_H_
 
-#include "irenderer.h"
+#include "IRenderer.h"
 
 class PointRenderer : public IRenderer
 {

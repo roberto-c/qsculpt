@@ -23,8 +23,8 @@
 #include <QColor>
 #include <QMutex>
 #include <QHash>
-#include "iobject3d.h"
-#include "point3d.h"
+#include "IObject3D.h"
+#include "Point3D.h"
 
 
 class Scene;

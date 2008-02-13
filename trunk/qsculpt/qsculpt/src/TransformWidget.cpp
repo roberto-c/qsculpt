@@ -17,13 +17,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "transformwidget.h"
-#include "qsculptapp.h"
-#include "qsculptwindow.h"
-#include "idocument.h"
-#include "documentview.h"
-#include "movecommand.h"
-#include "iconfigcontainer.h"
+#include "TransformWidget.h"
+#include "QSculptApp.h"
+#include "QSculptWindow.h"
+#include "IDocument.h"
+#include "DocumentView.h"
+#include "MoveCommand.h"
+#include "IConfigContainer.h"
 
 TransformWidget::TransformWidget(QWidget* parent)
     : QWidget(parent), Ui::TransformWidget()

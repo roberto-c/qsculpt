@@ -21,7 +21,7 @@
 #define SCENE_H
 
 #include <QVector>
-#include "point3d.h"
+#include "Point3D.h"
 
 class IObject3D;
 

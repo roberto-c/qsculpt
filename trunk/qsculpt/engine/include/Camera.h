@@ -20,7 +20,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "icamera.h"
+#include "ICamera.h"
 
 /**
  * Implements the ICamera interface

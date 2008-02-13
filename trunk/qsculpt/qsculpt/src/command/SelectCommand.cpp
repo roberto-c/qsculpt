@@ -17,19 +17,19 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "selectcommand.h"
+#include "SelectCommand.h"
 
 #include <QtOpenGL>
 #include <QMouseEvent>
 #include <QPointer>
-#include "qsculptapp.h"
-#include "qsculptwindow.h"
-#include "idocument.h"
-#include "iconfigcontainer.h"
-#include "iobject3d.h"
-#include "documentview.h"
-#include "camera.h"
-#include "transformwidget.h"
+#include "QSculptApp.h"
+#include "QSculptWindow.h"
+#include "IDocument.h"
+#include "IConfigContainer.h"
+#include "IObject3D.h"
+#include "DocumentView.h"
+#include "Camera.h"
+#include "TransformWidget.h"
 
 QPointer<TransformWidget> SelectCommand::m_objectProperties = NULL;
 

@@ -21,12 +21,12 @@
 #define IOBJECT3D_H
 
 #include <QVector>
-#include "point3d.h"
-#include "spenums.h"
-#include "octree.h"
-#include "pointcontainer.h"
-#include "edgecontainer.h"
-#include "facecontainer.h"
+#include "Point3D.h"
+#include "SpEnums.h"
+#include "Octree.h"
+#include "PointContainer.h"
+#include "EdgeContainer.h"
+#include "FaceContainer.h"
 
 /*
  * Class forward declaration

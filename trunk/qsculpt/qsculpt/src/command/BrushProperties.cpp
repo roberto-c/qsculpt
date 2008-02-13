@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "brushproperties.h"
+#include "BrushProperties.h"
 
 BrushProperties::BrushProperties(QWidget* _parent)
 : QWidget(_parent)

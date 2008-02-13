@@ -20,7 +20,7 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "object3d.h"
+#include "Object3D.h"
 
 /**
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>

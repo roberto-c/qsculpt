@@ -17,17 +17,17 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "stdafx.h"
-#include "object3d.h"
+#include "StdAfx.h"
+#include "Object3D.h"
 
 #include <QColor>
 #include <QtOpenGL>
 #include <QVector>
 #include <math.h>
 
-#include "box.h"
-#include "point3d.h"
-#include "scene.h"
+#include "Box.h"
+#include "Point3D.h"
+#include "Scene.h"
 
 
 #ifndef MIN

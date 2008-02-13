@@ -1,7 +1,7 @@
-#include "stdafx.h"
-#include "wireframerenderer.h"
+#include "StdAfx.h"
+#include "WireframeRenderer.h"
 #include <QtOpenGL>
-#include "iobject3d.h"
+#include "IObject3D.h"
 
 WireframeRenderer::WireframeRenderer()
 {
