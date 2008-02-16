@@ -36,3 +36,21 @@ QSculptWindow* QSculptApp::getMainWindow()
     return m_mainWindow;
 }
 
+
+/**
+ * Main entry point.
+ *
+ * Creates the application object. Passes the program arguments to the
+ * applicatoin object to process them. Creates and show the main
+ * application window.
+ */
+int main( int argc, char ** argv ) {
+    QSculptApp a( argc, argv );
+    
+	a.setOrganizationName("QSculpt");
+	a.setOrganizationDomain("qsculpt.com");
+	a.setApplicationName("QSculpt");
+    a.getMainWindow()->show();
+    
+    return a.exec();
+}
