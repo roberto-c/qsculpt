@@ -34,13 +34,16 @@
 #include "IObject3D.h"
 
 QSculptWindow::QSculptWindow()
-    : m_glWidget(new DocumentView(this)),
+    : m_documentView(new DocumentView(this)),
     m_document(new Document),
     m_currentCommand(NULL),
     m_toolActionGroup(NULL),
     m_dockCommandOptions(NULL),
     m_toolsToolbar(NULL)
 {
+	Q_CHECK_PTR(m_documentView);
+	Q_CHECK_PTR(m_document);
+	
     createWidgets();
 
     readSettings();
@@ -54,17 +57,18 @@ QSculptWindow::~QSculptWindow()
 void QSculptWindow::createWidgets()
 {
     setupUi(this);
-    m_glWidget->setDocument(m_document);
+    m_documentView->setDocument(m_document);
 
-    setCentralWidget(m_glWidget);
+    setCentralWidget(m_documentView);
 
     m_dockCommandOptions = new QDockWidget("Options", NULL);
+	Q_CHECK_PTR(m_dockCommandOptions);
     m_dockCommandOptions->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, m_dockCommandOptions);
 
     m_viewFullscreen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
-    connect(m_showGrid, SIGNAL(toggled(bool)), m_glWidget, SLOT(setGridVisible(bool)));
-    connect(m_showNormals, SIGNAL(toggled(bool)), m_glWidget, SLOT(setNormalsVisible(bool)));
+    connect(m_showGrid, SIGNAL(toggled(bool)), m_documentView, SLOT(setGridVisible(bool)));
+    connect(m_showNormals, SIGNAL(toggled(bool)), m_documentView, SLOT(setNormalsVisible(bool)));
     connect(m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
     connect(m_document, SIGNAL(changed(IDocument::ChangeType, IObject3D*)), this, SLOT(documentChanged(IDocument::ChangeType)));
 
@@ -72,16 +76,22 @@ void QSculptWindow::createWidgets()
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
 
 	QAction *action = m_commandManager.createUndoAction(this);
+	Q_CHECK_PTR(action);
 	menuEdit->addAction(action);
 	action = m_commandManager.createRedoAction(this);
+	Q_CHECK_PTR(action);
 	menuEdit->addAction(action);
 
 	m_toolActionGroup = new QActionGroup(this);
+	Q_CHECK_PTR(m_toolActionGroup);
 	m_toolsToolbar = addToolBar("Tools");
-    ICommand* cmd;
 
+    ICommand* cmd = NULL;
 	action = new QAction("Select", this);
 	cmd = new SelectCommand;
+	Q_CHECK_PTR(action);
+	Q_CHECK_PTR(cmd);
+	
 	action->setToolTip("Select an object.");
     action->setCheckable(true);
 	menuTools->addAction(action);
@@ -91,6 +101,8 @@ void QSculptWindow::createWidgets()
 
 	action = new QAction("Transform", this);
 	cmd = new TransformCommand;
+	Q_CHECK_PTR(action);
+	Q_CHECK_PTR(cmd);
 	action->setToolTip("Move, rotate or scale an object.");
     action->setCheckable(true);
 	//action->setEnabled(false);
@@ -101,6 +113,8 @@ void QSculptWindow::createWidgets()
 
     action = new QAction("Brush", this);
 	cmd = new BrushCommand;
+	Q_CHECK_PTR(action);
+	Q_CHECK_PTR(cmd);
 	action->setText("Brush");
 	action->setToolTip("Deform the object using different kinds of brushes.");
     action->setCheckable(true);
@@ -114,6 +128,8 @@ void QSculptWindow::createWidgets()
 
 	action = new QAction("Subdivide", this);
 	cmd = new SubdivideCommand;
+	Q_CHECK_PTR(action);
+	Q_CHECK_PTR(cmd);
 	action->setToolTip("Subdivides each object face.");
 	menuTools->addAction(action);
 	m_toolsToolbar->addAction(action);
@@ -143,7 +159,7 @@ const IDocument* QSculptWindow::getCurrentDocument()
 
 DocumentView* QSculptWindow::getCurrentView() const
 {
-    return m_glWidget;
+    return m_documentView;
 }
 
 void QSculptWindow::closeEvent(QCloseEvent *event)
@@ -317,7 +333,7 @@ void QSculptWindow::addSphere()
 
 void QSculptWindow::showGrid(bool val)
 {
-    m_glWidget->setGridVisible( val );
+    m_documentView->setGridVisible( val );
 }
 
 ICommand* QSculptWindow::getSelectedCommand() const
@@ -369,7 +385,7 @@ void QSculptWindow::viewFullscreen(bool value)
 		if (m_dockCommandOptions)
 		{
 			m_dockCommandOptions->setWindowOpacity(0.75);
-			m_glWidget->grabMouse(true);
+			m_documentView->grabMouse(true);
 		}
 	}
 	else
@@ -378,7 +394,7 @@ void QSculptWindow::viewFullscreen(bool value)
 		if (m_dockCommandOptions)
 		{
 			m_dockCommandOptions->setWindowOpacity(1.0);
-			m_glWidget->grabMouse(false);
+			m_documentView->grabMouse(false);
 		}
 	}
 }
