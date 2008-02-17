@@ -50,16 +50,26 @@ DocumentView::~DocumentView() {}
 void DocumentView::createWidgets()
 {
     QGridLayout* gridLayout = new QGridLayout(this);
-    m_display = new GlDisplay(this);
+	QHBoxLayout* hboxLayout = new QHBoxLayout();
+	m_display = new GlDisplay(this);
+	
+	Q_CHECK_PTR(gridLayout);
+	Q_CHECK_PTR(m_display);
+	Q_CHECK_PTR(hboxLayout);
 
+	// Set up gl display format
+	QGLFormat format = m_display->format();
+	format.setSwapInterval(1);
+	m_display->setFormat(format);
+	
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->addWidget(m_display, 0,0, 1, 5);
-
-    QHBoxLayout* hboxLayout = new QHBoxLayout();
     gridLayout->addLayout(hboxLayout, 1, 0);
 
     QLabel* label = new QLabel("View", this);
     m_viewPerspective = new QComboBox(this);
+	Q_CHECK_PTR(label);
+	Q_CHECK_PTR(m_viewPerspective);
     label->setBuddy(m_viewPerspective);
 
     hboxLayout->addWidget(label);
@@ -67,12 +77,16 @@ void DocumentView::createWidgets()
 
     label = new QLabel("Drawing Mode", this);
     m_drawingMode = new QComboBox(this);
+	Q_CHECK_PTR(label);
+	Q_CHECK_PTR(m_drawingMode);
     label->setBuddy(m_drawingMode);
 
     hboxLayout->setContentsMargins(11, 0, 0, 0);
     hboxLayout->addWidget(label);
     hboxLayout->addWidget(m_drawingMode);
-    hboxLayout->addItem(new QSpacerItem(100, 0));
+	QSpacerItem* spacer = new QSpacerItem(100, 0);
+	Q_CHECK_PTR(spacer);
+    hboxLayout->addItem(spacer);
     gridLayout->setColumnStretch(0,0);
     gridLayout->setColumnStretch(1,0);
     gridLayout->setColumnStretch(2,0);
@@ -103,6 +117,8 @@ void DocumentView::createWidgets()
 }
 
 void DocumentView::setDocument(IDocument* doc) {
+	Q_ASSERT(doc);
+	
 	if (m_document)
 		m_document->disconnect(this);
     m_document = doc;
@@ -111,21 +127,27 @@ void DocumentView::setDocument(IDocument* doc) {
 
 void DocumentView::setGridVisible( bool value)
 {
+	Q_ASSERT(m_display);
     m_display->setGridVisible( value );
 }
 
 bool DocumentView::isGridVisible()
 {
+	Q_ASSERT(m_display);
     return m_display->isGridVisible();
 }
 
 void DocumentView::updateView()
 {
+	Q_ASSERT(m_display);
     m_display->updateGL();
 }
 
 void DocumentView::viewPerspectiveChanged(int index)
 {
+	Q_ASSERT(m_display);
+	Q_ASSERT(m_viewPerspective);
+	
     GlDisplay::PerspectiveType type;
 
     type = (GlDisplay::PerspectiveType)m_viewPerspective->itemData(index).toInt();
@@ -135,6 +157,9 @@ void DocumentView::viewPerspectiveChanged(int index)
 
 void DocumentView::drawingModeChanged(int index)
 {
+	Q_ASSERT(m_display);
+	Q_ASSERT(m_viewPerspective);
+	
     DrawingMode type;
 
     type = (DrawingMode)m_viewPerspective->itemData(index).toInt();
@@ -144,6 +169,7 @@ void DocumentView::drawingModeChanged(int index)
 
 void DocumentView::setNormalsVisible(bool value)
 {
+	Q_ASSERT(m_display);
     m_display->setNormalsVisible(value);
 }
 

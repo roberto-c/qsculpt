@@ -128,7 +128,7 @@ private:
     void setCurrentFile(const QString &fileName);
     QString strippedName(const QString &fullFileName);
 
-    DocumentView*   m_glWidget;
+    DocumentView*   m_documentView;
 	CommandManager	m_commandManager;
     QString         m_curFile;
     IDocument*      m_document;
