@@ -42,6 +42,7 @@ public:
     virtual void loadFile(QString fileName);
     virtual void saveFile(QString fileName);
     virtual void addObject(ObjectType type);
+	virtual void addObject(ObjectType type, IObject3D* obj);
     virtual void removeObject(int index);
     virtual IObject3D* getObject(int index) const;
     virtual int getObjectsCount() const;
