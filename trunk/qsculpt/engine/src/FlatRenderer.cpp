@@ -42,6 +42,7 @@ FlatRenderer::~FlatRenderer()
 void FlatRenderer::renderObject(const IObject3D* mesh)
 {
 	renderVbo(mesh);
+	//renderImmediate(mesh);
 }
 
 void FlatRenderer::renderImmediate(const IObject3D* mesh)
@@ -89,8 +90,7 @@ void FlatRenderer::renderImmediate(const IObject3D* mesh)
 
 void FlatRenderer::renderVbo(const IObject3D* mesh)
 {
-	
-    //qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
+	//qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
 		return;
 	
@@ -114,14 +114,15 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 	glEnableClientState(GL_NORMAL_ARRAY);
 	
 	IObject3D* obj = const_cast<IObject3D*>(mesh);
-	if (obj->hasChanged())
+	int numFaces = obj->getFaceList().size();
+	int numFloats = numFaces*4*3;	// num floats = Faces * Num of point by face
+									//				* Num elements of point
+	
+	if (obj->hasChanged() && numFloats > 0)
 	{
 		qDebug() << "FlatRendererVBO::renderObject Start time:" << QDateTime::currentDateTime();
 		qDebug() << "Num Vertices=" << obj->getPointList().size();
 		qDebug() << "Num Normals=" << obj->getNormalList().size();
-		int numFaces = obj->getFaceList().size();
-		int numFloats = numFaces*4*3;	// num floats = Faces * Num of point by face
-										//				* Num elements of point
 		GLfloat* vtxData = new GLfloat[numFloats];
 		GLfloat* nmlData = new GLfloat[numFloats];
 

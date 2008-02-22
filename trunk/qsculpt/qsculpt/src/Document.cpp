@@ -39,8 +39,7 @@ void Document::loadFile(QString fileName)
 {
     qDebug("loadFile");
 
-    addObject(IDocument::Mesh);
-    IObject3D* obj = getObject( m_objectList.size() -1);
+	IObject3D* obj = new ::Object3D;
     if (obj)
     {
         QFile file(fileName);
@@ -88,7 +87,8 @@ void Document::loadFile(QString fileName)
                     obj->addFace( vertexIndices );
             }
         }
-        emit changed(AddObject, obj);
+		obj->setChanged(true);
+        addObject(IDocument::Mesh, obj);
     }
 }
 
@@ -164,6 +164,14 @@ void Document::addObject(ObjectType type)
             obj = new ::Object3D;
             break;
     }
+    m_objectList.append( obj );
+    emit changed(AddObject, obj);
+}
+
+void Document::addObject(ObjectType type, IObject3D* obj)
+{
+    Q_ASSERT(obj);
+	
     m_objectList.append( obj );
     emit changed(AddObject, obj);
 }

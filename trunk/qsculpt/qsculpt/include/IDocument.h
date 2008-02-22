@@ -67,11 +67,21 @@ public:
     virtual void saveFile(QString fileName) = 0;
     
     /**
-     * Adds an object to the document.
+     * Adds an object to the document. This function creates a new instance
+	 * of a mesh object and add it to the document's object list.
      *
      * @param type type of object to add.
      */
     virtual void addObject(ObjectType type) = 0;
+	
+	/**
+     * Adds an object to the document. The object passed as parameter is added
+	 * to the document's objects list.
+     *
+     * @param type type of object to add.
+	 * @param obj object to add to the document.
+     */
+	virtual void addObject(ObjectType type, IObject3D* obj) = 0;
     
     /**
      * Remove an object from the document. This does not free the memory allocated
