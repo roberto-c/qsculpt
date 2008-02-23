@@ -94,22 +94,23 @@ void QSculptWindow::createWidgets()
 	
 	action->setToolTip("Select an object.");
     action->setCheckable(true);
+	action->setIcon(QIcon(":/img_select.png"));
 	menuTools->addAction(action);
 	m_toolActionGroup->addAction(action);
 	m_toolsToolbar->addAction(action);
 	m_commandManager.registerCommand("Select", action, cmd);
 
-	action = new QAction("Transform", this);
-	cmd = new TransformCommand;
-	Q_CHECK_PTR(action);
-	Q_CHECK_PTR(cmd);
-	action->setToolTip("Move, rotate or scale an object.");
-    action->setCheckable(true);
-	//action->setEnabled(false);
-	menuTools->addAction(action);
-	m_toolActionGroup->addAction(action);
-	m_toolsToolbar->addAction(action);
-	m_commandManager.registerCommand("Transform", action, cmd);
+//	action = new QAction("Transform", this);
+//	cmd = new TransformCommand;
+//	Q_CHECK_PTR(action);
+//	Q_CHECK_PTR(cmd);
+//	action->setToolTip("Move, rotate or scale an object.");
+//    action->setCheckable(true);
+//	//action->setEnabled(false);
+//	menuTools->addAction(action);
+//	m_toolActionGroup->addAction(action);
+//	m_toolsToolbar->addAction(action);
+//	m_commandManager.registerCommand("Transform", action, cmd);
 
     action = new QAction("Brush", this);
 	cmd = new BrushCommand;
@@ -118,6 +119,7 @@ void QSculptWindow::createWidgets()
 	action->setText("Brush");
 	action->setToolTip("Deform the object using different kinds of brushes.");
     action->setCheckable(true);
+	action->setIcon(QIcon(":/img_brush.png"));
 	menuTools->addAction(action);
 	m_toolActionGroup->addAction(action);
 	m_toolsToolbar->addAction(action);
@@ -131,6 +133,7 @@ void QSculptWindow::createWidgets()
 	Q_CHECK_PTR(action);
 	Q_CHECK_PTR(cmd);
 	action->setToolTip("Subdivides each object face.");
+	action->setIcon(QIcon(":/img_subdivide.png"));
 	menuTools->addAction(action);
 	m_toolsToolbar->addAction(action);
 	m_commandManager.registerCommand("Subdivide", action, cmd);
