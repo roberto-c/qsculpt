@@ -46,7 +46,6 @@ FORMS += ui/BrushProperties.ui ui/MainWindow.ui ui/TransformWidget.ui
 SOURCES += src/Document.cpp \
            src/DocumentView.cpp \
            src/GlDisplay.cpp \
-           src/main.cpp \
            src/QSculptWindow.cpp \
            src/QSculptApp.cpp \
            src/TransformWidget.cpp \
@@ -59,4 +58,4 @@ SOURCES += src/Document.cpp \
            src/command/SubdivideCommand.cpp \
            src/command/TransformCameraCommand.cpp \
            src/command/CommandManager.cpp
-RESOURCES += resources/solidpaint3d.qrc
+RESOURCES += resources/QSculpt.qrc
