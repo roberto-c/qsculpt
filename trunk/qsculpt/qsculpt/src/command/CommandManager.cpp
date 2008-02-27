@@ -106,17 +106,26 @@ void CommandManager::commandTriggered()
 			ICommand* newCommand = cmd->clone();
 			if (newCommand)
 			{
-				if (m_currentCommand)
-					m_currentCommand->activate(false);
+				if (newCommand->needsUserInteraction())
+				{
+					if (m_currentCommand)
+						m_currentCommand->activate(false);
 
-				m_currentCommand = newCommand;
+					m_currentCommand = newCommand;
 
-				disconnect(m_currentCommand, SIGNAL(executed()), 0, 0);
-				connect(m_currentCommand, SIGNAL(executed()),
-						this, SLOT(commandExecuted()));
+					disconnect(m_currentCommand, SIGNAL(executed()), 0, 0);
+					connect(m_currentCommand, SIGNAL(executed()),
+							this, SLOT(commandExecuted()));
 
-				m_currentCommand->activate(true);
-				emit commandActivated(commandName);
+					m_currentCommand->activate(true);
+					emit commandActivated(commandName);
+				}
+				else
+				{
+					connect(m_currentCommand, SIGNAL(executed()),
+							this, SLOT(commandExecuted()));
+					newCommand->execute();
+				}
 			}
 		}
 	}
@@ -127,21 +136,30 @@ void CommandManager::commandExecuted()
 	ICommand* cmd = qobject_cast<ICommand*>(sender());
     if (cmd)
     {
-		ICommand* newCommand = cmd->clone();
-		if (newCommand)
+		if (cmd->needsUserInteraction())
 		{
+			ICommand* newCommand = cmd->clone();
+			if (newCommand)
+			{
+				qDebug() << "Added command to undo stack";
+				m_undoStack->push(cmd);
+				if (m_currentCommand)
+					m_currentCommand->activate(false);
+
+				disconnect(cmd, SIGNAL(executed()), 0, 0);
+
+				m_currentCommand = newCommand;
+				connect(m_currentCommand, SIGNAL(executed()),
+						this, SLOT(commandExecuted()));
+
+				m_currentCommand->activate(true);
+			}
+		}
+		else
+		{
+			disconnect(cmd, SIGNAL(executed()), 0, 0);
 			qDebug() << "Added command to undo stack";
-            m_undoStack->push(cmd);
-            if (m_currentCommand)
-                m_currentCommand->activate(false);
-
-            disconnect(m_currentCommand, SIGNAL(executed()), 0, 0);
-
-            m_currentCommand = newCommand;
-            connect(m_currentCommand, SIGNAL(executed()),
-                    this, SLOT(commandExecuted()));
-
-            m_currentCommand->activate(true);
+			m_undoStack->push(cmd);			
 		}
 	}
 }

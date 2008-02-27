@@ -44,7 +44,8 @@ public:
 
     // ICommand Interface
 	virtual ICommand* clone() const;
-    virtual void activate(bool activate);
+	virtual bool needsUserInteraction() const { return false; };
+    virtual void execute();
 	virtual void undo();
 	virtual void redo();
 	virtual QWidget* getOptionsWidget(){return NULL;}

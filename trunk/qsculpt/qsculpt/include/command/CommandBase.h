@@ -54,6 +54,7 @@ public:
      * ICommand interface implementation
      */
     virtual IConfigContainer& getConfig()const;
+	virtual bool needsUserInteraction() const { return true; };
     virtual void activate(bool active);
     virtual bool isActive();
     virtual void mousePressEvent(QMouseEvent *e);

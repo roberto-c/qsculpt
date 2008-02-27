@@ -62,6 +62,15 @@ public:
 	virtual ICommand* clone() const = 0;
 
 	/**
+	 * States if the command needs the user interaction for its execution.
+	 *
+	 * This should return TRUE if the command depends on user input like 
+	 * mouse movement. This function should return false if the command
+	 * does not require user intervention (its action is done immediatly).
+	 */
+	virtual bool needsUserInteraction() const = 0;
+	
+	/**
 	 * This method returns the options or configuration widget of the command.
 	 * The widget returned should contain all the controls necesary to allow
 	 * the user to change configuration parameters of the command.
