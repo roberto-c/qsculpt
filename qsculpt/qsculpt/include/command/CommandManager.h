@@ -78,8 +78,6 @@ private:
 	QHash<QString, ICommand*>	m_commandTable;
 	QHash<QString, QAction*>	m_actionTable;
 	QUndoStack					*m_undoStack;
-	//QStack<ICommand*> m_undoStack;
-	//QStack<ICommand*> m_redoStack;
 	mutable QAction				*m_undoAction;
 	mutable QAction				*m_redoAction;
 };

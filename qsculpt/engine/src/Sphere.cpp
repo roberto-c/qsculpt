@@ -37,88 +37,28 @@ Sphere::~Sphere()
 
 void Sphere::initPoints()
 {
-/*
+
     double x, y, z;
 
-    double hw = m_width / 2;
-    double hh = m_height / 2;
-    double hd = m_depth / 2;
+    double hw = getWidth() / 2;
+    double hh = getHeight() / 2;
+    double hd = getDepth() / 2;
 
-    m_pointList.append(Point( 0, 0, hd));
-    m_pointList.append(Point( 0, 0,-hd));
+	addVertex(Vertex( 0, 0, hd));
+	addVertex(Vertex( 0, 0,-hd));
 
-    m_pointList.append(Point(-hw,-hh, 0.0));
-    m_pointList.append(Point( hw,-hh, 0.0));
-    m_pointList.append(Point( hw, hh, 0.0));
-    m_pointList.append(Point(-hw, hh, 0.0));
-
-    Point3D normal;
-    int newTriangleIndex = -1;
-    m_triangleList.append(Object3D::Triangle(0, 2, 3));
-    normal = computeTriangleNormal( m_triangleList.size() -1);
-    m_normalList.append(normal);
-    newTriangleIndex = m_triangleList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
-    m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-
-    m_triangleList.append(Object3D::Triangle(0, 3, 4));
-    normal = computeTriangleNormal( m_triangleList.size() -1);
-    m_normalList.append(normal);
-    newTriangleIndex = m_triangleList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
-    m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-
-    m_triangleList.append(Object3D::Triangle(0, 4, 5));
-    normal = computeTriangleNormal( m_triangleList.size() -1);
-    m_normalList.append(normal);
-    newTriangleIndex = m_triangleList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
-    m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-
-    m_triangleList.append(Object3D::Triangle(0, 5, 2));
-    normal = computeTriangleNormal( m_triangleList.size() -1);
-    m_normalList.append(normal);
-    newTriangleIndex = m_triangleList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
-    m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-
-    m_triangleList.append(Object3D::Triangle(1, 3, 2));
-    normal = computeTriangleNormal( m_triangleList.size() -1);
-    m_normalList.append(normal);
-    newTriangleIndex = m_triangleList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
-    m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-
-    m_triangleList.append(Object3D::Triangle(1, 4, 3));
-    normal = computeTriangleNormal( m_triangleList.size() -1);
-    m_normalList.append(normal);
-    newTriangleIndex = m_triangleList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
-    m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-
-    m_triangleList.append(Object3D::Triangle(1, 5, 4));
-    normal = computeTriangleNormal( m_triangleList.size() -1);
-    m_normalList.append(normal);
-    newTriangleIndex = m_triangleList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
-    m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-
-    m_triangleList.append(Object3D::Triangle(1, 2, 5));
-    normal = computeTriangleNormal( m_triangleList.size() -1);
-    m_normalList.append(normal);
-    newTriangleIndex = m_triangleList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[0] = m_normalList.size() - 1;
-    m_triangleList[newTriangleIndex].normal[1] = m_triangleList[newTriangleIndex].normal[0];
-    m_triangleList[newTriangleIndex].normal[2] = m_triangleList[newTriangleIndex].normal[0];
-
-    subdivide();
-    */
+    addVertex(Vertex(-hw,-hh, 0.0));
+    addVertex(Vertex( hw,-hh, 0.0));
+    addVertex(Vertex( hw, hh, 0.0));
+    addVertex(Vertex(-hw, hh, 0.0));
+	
+	QVector<int> indexList(4);
+    indexList[0] = 2;
+    indexList[1] = 3;
+    indexList[2] = 4;
+    indexList[3] = 5;
+    addFace( indexList );
+	
+    //subdivide();
 }
 

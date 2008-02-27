@@ -57,10 +57,10 @@ void SubdivideCommand::redo()
 {
 }
 
-void SubdivideCommand::activate(bool activate)
+void SubdivideCommand::execute()
 {
-	if (activate == false)
-		return;
+	//if (activate == false)
+	//	return;
 
     qDebug("execute SubdivideCommand()");
     QProgressDialog dlg("Subdividing the selected object...", 0, 0, 100,
