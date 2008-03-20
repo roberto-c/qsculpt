@@ -217,6 +217,7 @@ private:
     PerspectiveType m_viewType;             /**< Kind of view to display */
     DrawingMode     m_drawingMode;          /**< Object drawing mode */
     IRenderer*		m_renderer;				/**< Rendering engine for the objects */
+	IRenderer*		m_selectionRenderer;	/**< Renderer used for selection. */
     CameraContainer m_cameraList;           /**< Cameras for the differents view types */
 
     CursorShapeType     m_cursorShape;
@@ -226,9 +227,6 @@ private:
     GLfloat             m_zoomFactor;
     GLuint				m_textureId;
     QImage				m_cursorImage;
-	
-	VertexBuffer		m_vbo;
-	IndexBuffer			m_ibo;
 };
 
 #endif

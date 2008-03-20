@@ -21,7 +21,21 @@ public:
 	/**
 	 *
 	 */
-	GLuint getBufferID() {
+	bool needUpdate() const {
+		return m_needUpdate;
+	};
+	
+	/**
+	 *
+	 */
+	void setNeedUpdate(bool val) {
+		m_needUpdate = val;
+	};
+	
+	/**
+	 *
+	 */
+	GLuint getBufferID() const {
 		return m_vboID;
 	};
 	
@@ -66,14 +80,15 @@ private:
 	GLuint		m_bufferSize; /*< Size of the buffer in bytes? */
 	GLfloat*	m_buffer;	/*< pointer to a buffer containing the vertex
 	 						    buffer object data */
-
+	bool		m_needUpdate; /*< True if the data needs to be updated*/
 };
 
 template <GLenum boTarget>
 BufferObject<boTarget>::BufferObject()
 :	m_vboID(0),
 m_bufferSize(0),
-m_buffer(NULL)
+m_buffer(NULL),
+m_needUpdate(true)
 {
 	//create();
 }

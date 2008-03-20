@@ -2,6 +2,7 @@
 #define FLATRENDERER_H_
 
 #include "IRenderer.h"
+#include "BufferObject.h"
 
 class FlatRenderer : public IRenderer
 {
@@ -27,6 +28,16 @@ private:
 	 * This method is a fallback method if the  VBOs are not supported.
 	 */
 	void renderImmediate(const IObject3D* mesh);
+	
+	/**
+	 *
+	 */
+	VertexBuffer* getVBO(IObject3D* mesh);
+	
+	/**
+	 * Fill vertex buffer with the mesh data.
+	 */
+	void fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo);
 };
 
 #endif /*FLATRENDERER_H_*/

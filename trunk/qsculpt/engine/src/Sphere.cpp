@@ -38,11 +38,11 @@ Sphere::~Sphere()
 void Sphere::initPoints()
 {
 
-    double x, y, z;
+    float x, y, z;
 
-    double hw = getWidth() / 2;
-    double hh = getHeight() / 2;
-    double hd = getDepth() / 2;
+    float hw = 1.0 / 2;
+    float hh = 1.0 / 2;
+    float hd = 1.0 / 2;
 
 	addVertex(Vertex( 0, 0, hd));
 	addVertex(Vertex( 0, 0,-hd));
@@ -56,8 +56,27 @@ void Sphere::initPoints()
     indexList[0] = 2;
     indexList[1] = 3;
     indexList[2] = 4;
+    indexList[3] = 0;
+    addFace( indexList );
+	indexList[0] = 2;
+    indexList[1] = 0;
+    indexList[2] = 4;
     indexList[3] = 5;
     addFace( indexList );
+	indexList[0] = 3;
+    indexList[1] = 2;
+    indexList[2] = 5;
+    indexList[3] = 1;
+    addFace( indexList );
+	indexList[0] = 5;
+    indexList[1] = 4;
+    indexList[2] = 3;
+    indexList[3] = 1;
+    addFace( indexList );
+	
+	qDebug() << "Width: " << getWidth();
+	qDebug() << "Height: " << getHeight();
+	qDebug() << "Depth: " << getDepth();
 	
     //subdivide();
 }
