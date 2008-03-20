@@ -38,7 +38,7 @@ public:
      * Application's constructor that receives arguments. Constructs an instance of
      * the main window.
      */
-    QSculptApp(int argc, char** argv);
+    QSculptApp(int& argc, char** argv);
     
     /**
      * Default detructor of the application

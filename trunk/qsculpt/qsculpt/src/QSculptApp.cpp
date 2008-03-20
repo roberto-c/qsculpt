@@ -21,7 +21,7 @@
 #include <QWidget>
 #include "QSculptWindow.h"
 
-QSculptApp::QSculptApp(int argc, char** argv)
+QSculptApp::QSculptApp(int& argc, char** argv)
     : QApplication(argc, argv),
     m_mainWindow(new QSculptWindow)
 {
