@@ -11,14 +11,26 @@ TEMPLATE = app
 TARGET =
 DEPENDPATH += . include resources src ui include/command src/command ../engine/include
 INCLUDEPATH += . include include/command ../engine/include
-release {
+macx:release {
 	QMAKE_LFLAGS += -F../build/release
 	LIBS += -framework engine
 	DESTDIR=../build/release
 }
-debug {
+unix:release {
+	QMAKE_CXXFLAGS += -DGL_GLEXT_PROTOTYPES
+	QMAKE_LFLAGS += -L../build/release
+	LIBS += -lengine
+	DESTDIR=../build/release
+}
+macx:debug {
 	QMAKE_LFLAGS += -F../build/debug
 	LIBS += -framework engine
+	DESTDIR=../build/debug
+}
+unix:debug {
+	QMAKE_CXXFLAGS += -DGL_GLEXT_PROTOTYPES
+	QMAKE_LFLAGS += -L../build/debug
+	LIBS += -lengine
 	DESTDIR=../build/debug
 }
 

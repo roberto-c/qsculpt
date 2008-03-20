@@ -19,7 +19,6 @@
  ***************************************************************************/
 #if defined __cplusplus
 
-#define GL_GLEXT_PROTOTYPES
 #include <QtDebug>
 #include <QtGui>
 

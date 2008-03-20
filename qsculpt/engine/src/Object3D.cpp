@@ -28,7 +28,6 @@
 #include "Box.h"
 #include "Point3D.h"
 #include "Scene.h"
-#include "Quaternion.h"
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))

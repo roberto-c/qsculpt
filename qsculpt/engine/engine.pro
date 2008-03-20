@@ -10,6 +10,8 @@ MOC_DIR=./moc
 RCC_DIR=./res
 VERSION=0.1.0
 
+QMAKE_CXXFLAGS += -DGL_GLEXT_PROTOTYPES
+
 release:DESTDIR=../build/release
 debug:DESTDIR=../build/debug
 
@@ -20,8 +22,7 @@ DEPENDPATH += . include src
 INCLUDEPATH += . include
 
 # Input
-HEADERS += include/BOManager.h \
-           include/Box.h \
+HEADERS += include/Box.h \
            include/Camera.h \
            include/ICamera.h \
            include/IObject3d.h \
@@ -42,8 +43,7 @@ HEADERS += include/BOManager.h \
            include/PointRenderer.h \
            include/WireframeRenderer.h \
            include/SmoothRenderer.h
-SOURCES += src/BOManager.cpp \
-           src/Box.cpp \
+SOURCES += src/Box.cpp \
            src/Camera.cpp \
            src/Mesh.cpp \
            src/Object3D.cpp \
