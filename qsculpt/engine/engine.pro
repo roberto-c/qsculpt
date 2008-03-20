@@ -20,7 +20,8 @@ DEPENDPATH += . include src
 INCLUDEPATH += . include
 
 # Input
-HEADERS += include/Box.h \
+HEADERS += include/BOManager.h \
+           include/Box.h \
            include/Camera.h \
            include/ICamera.h \
            include/IObject3d.h \
@@ -41,7 +42,8 @@ HEADERS += include/Box.h \
            include/PointRenderer.h \
            include/WireframeRenderer.h \
            include/SmoothRenderer.h
-SOURCES += src/Box.cpp \
+SOURCES += src/BOManager.cpp \
+           src/Box.cpp \
            src/Camera.cpp \
            src/Mesh.cpp \
            src/Object3D.cpp \

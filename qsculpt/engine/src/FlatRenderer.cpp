@@ -21,11 +21,12 @@
 #include "FlatRenderer.h"
 #include "IObject3D.h"
 #include <QtOpenGL>
-#include "BufferObject.h"
+#include "BOManager.h"
+#include <QMap>
 
-VertexBuffer g_vbo;
-VertexBuffer g_nbo;
-IndexBuffer g_ibo;
+typedef QMap<IObject3D*, VertexBuffer* > BOContainer;
+
+BOContainer g_vboContainer;
 
 bool g_enableVBO = false;
 
@@ -37,6 +38,12 @@ FlatRenderer::FlatRenderer()
 FlatRenderer::~FlatRenderer()
 {
 	qDebug() << "FlatRenderer destructor";
+	foreach(VertexBuffer* vbo, g_vboContainer)
+	{
+		vbo->destroy();
+		delete vbo;
+	}
+	g_vboContainer.clear();
 }
 
 void FlatRenderer::renderObject(const IObject3D* mesh)
@@ -94,13 +101,10 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 	if (mesh == NULL)
 		return;
 	
-	if (g_vbo.getBufferID() == 0)
-		g_vbo.create();
-	if (g_nbo.getBufferID() == 0)
-		g_nbo.create();
-//	if (g_ibo.getBufferID() == 0)
-//		g_ibo.create();
+	IObject3D* obj = const_cast<IObject3D*>(mesh);
 	
+	VertexBuffer* vbo = getVBO(obj);
+	qDebug() << "VBO id= " << vbo->getBufferID();
 	// Set the depth function to the correct value
     glDepthFunc(GL_LESS);
 	
@@ -110,52 +114,20 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
   	mesh->getPosition(&x, &y, &z);
    	glTranslatef(x, y, z);
 	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	
-	IObject3D* obj = const_cast<IObject3D*>(mesh);
-	int numFaces = obj->getFaceList().size();
-	int numFloats = numFaces*4*3;	// num floats = Faces * Num of point by face
-									//				* Num elements of point
-	
-	if (obj->hasChanged() && numFloats > 0)
+	bool vboNeedsRefresh = vbo->needUpdate() || obj->hasChanged();
+	if (vboNeedsRefresh)
 	{
-		qDebug() << "FlatRendererVBO::renderObject Start time:" << QDateTime::currentDateTime();
-		qDebug() << "Num Vertices=" << obj->getPointList().size();
-		qDebug() << "Num Normals=" << obj->getNormalList().size();
-		GLfloat* vtxData = new GLfloat[numFloats];
-		GLfloat* nmlData = new GLfloat[numFloats];
-
-		int vertexIndex;
-		for (int i = 0; i < numFaces; ++i)
-		{
-			for (int j = 0; j<4; ++j)
-			{
-				vertexIndex = obj->getFaceList().at(i).point[j];
-				vtxData[(i*12) + (j*3)] = obj->getPointList().at(vertexIndex).getX();
-				vtxData[(i*12) + (j*3) + 1] = obj->getPointList().at(vertexIndex).getY();
-				vtxData[(i*12) + (j*3) + 2] = obj->getPointList().at(vertexIndex).getZ();
-
-				nmlData[(i*12) + (j*3)] = obj->getNormalList().at(vertexIndex).getX();
-				nmlData[(i*12) + (j*3) + 1] = obj->getNormalList().at(vertexIndex).getY();
-				nmlData[(i*12) + (j*3) + 2] = obj->getNormalList().at(vertexIndex).getZ();
-			}
-		}
-
-		g_vbo.setBufferData((GLvoid*)vtxData, numFloats*sizeof(GL_FLOAT));
-		g_nbo.setBufferData((GLvoid*)nmlData, numFloats*sizeof(GL_FLOAT));
-		
-		delete [] vtxData;
-		delete [] nmlData;
-		qDebug() << "FlatRendererVBO::renderObject End time:" << QDateTime::currentDateTime();
-		
+		fillVertexBuffer(obj, vbo);
+		vbo->setNeedUpdate(false);
 		obj->setChanged(false);
 	}
 	
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbo.getBufferID());
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, g_nbo.getBufferID());
-	glNormalPointer(GL_FLOAT, 0, NULL);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_NORMAL_ARRAY);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
+	glVertexPointer(3, GL_FLOAT, 3*sizeof(GLfloat), NULL);
+	//glNormalPointer(GL_FLOAT, 3*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
 	
 	QColor color;
 	color = Qt::white; //mesh->getPointList().at(f.normal[j]).color;
@@ -168,14 +140,62 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 		glColor3d(color.redF(), color.greenF(), color.blueF());
 	}
 
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ibo.getBufferID());
-	glDrawArrays(GL_QUADS, 0, obj->getFaceList().size()*4);
-	//glDrawElements(GL_QUADS, obj->getFaceList().size()*4, GL_UNSIGNED_INT, NULL);
+	glDrawArrays(GL_POINTS, 0, 4/*obj->getFaceList().size()*4*/);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	
 	glPopMatrix();
+}
+
+VertexBuffer* FlatRenderer::getVBO(IObject3D* mesh)
+{
+	VertexBuffer* vbo = NULL;
+	if (g_vboContainer.contains(mesh))
+	{
+		vbo = g_vboContainer[mesh];
+	}
+	else
+	{
+		vbo = new VertexBuffer;
+		vbo->create();
+		g_vboContainer[mesh] = vbo;
+	}
+	return vbo;
+}
+
+void FlatRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
+{
+	qDebug() << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
+	qDebug() << "Num Vertices=" << mesh->getPointList().size();
+	qDebug() << "Num Normals=" << mesh->getNormalList().size();
+	int numFaces = mesh->getFaceList().size();
+	if (numFaces == 0)
+		return;
+	
+	int numFloats = numFaces*4*6;	// num floats = Faces * Num of point by face
+									//				* Num elements of point
+	GLfloat* vtxData = new GLfloat[numFloats]; // Make room for vertices and normals data
+	
+	int vertexIndex;
+	for (int i = 0; i < numFaces; ++i)
+	{
+		for (int j = 0; j<4; ++j)
+		{
+			vertexIndex = mesh->getFaceList().at(i).point[j];
+			vtxData[(i*24) + (j*6)] = mesh->getPointList().at(vertexIndex).getX();
+			vtxData[(i*24) + (j*6) + 1] = mesh->getPointList().at(vertexIndex).getY();
+			vtxData[(i*24) + (j*6) + 2] = mesh->getPointList().at(vertexIndex).getZ();
+			
+			vtxData[(i*24) + (j*6) + 3] = mesh->getNormalList().at(vertexIndex).getX();
+			vtxData[(i*24) + (j*6) + 4] = mesh->getNormalList().at(vertexIndex).getY();
+			vtxData[(i*24) + (j*6) + 5] = mesh->getNormalList().at(vertexIndex).getZ();
+		}
+	}
+	
+	vbo->setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
+	
+	delete [] vtxData;
+	qDebug() << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }

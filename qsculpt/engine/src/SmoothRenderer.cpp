@@ -128,8 +128,8 @@ void SmoothRenderer::renderVbo(const IObject3D* mesh)
 			}
 		}
 		
-		m_vertexBuffer.setBufferData((GLvoid*)vtxData, numFloats*sizeof(GL_FLOAT));
-		m_normalBuffer.setBufferData((GLvoid*)nmlData, numFloats*sizeof(GL_FLOAT));
+		m_vertexBuffer.setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
+		m_normalBuffer.setBufferData((GLvoid*)nmlData, numFloats*sizeof(GLfloat));
 		
 		delete [] vtxData;
 		delete [] nmlData;

@@ -17,6 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "Stable.h"
 #include "GlDisplay.h"
 #include <QtOpenGL>
 #include <iostream>
@@ -36,24 +37,6 @@
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
 
-static GLfloat g_vertexData[] = {
-	-0.5f, -0.5, 0.5,
-	0.5f, -0.5, 0.5,
-	0.5f,  0.5, 0.5,
-	-0.5f,  0.5, 0.5,
-	-0.5f, -0.5, -0.5,
-	0.5f, -0.5, -0.5,
-	0.5f,  0.5, -0.5,
-	-0.5f,  0.5, -0.5	
-};
-
-static GLuint g_indexData[] = {
-	0, 1, 2,
-	2, 3, 0,
-	4, 5, 6,
-	6, 7, 4
-};
-
 GlDisplay::GlDisplay(DocumentView* _parent)
 : QGLWidget(_parent),
 m_isGridVisible(false),
@@ -62,12 +45,19 @@ m_selectBuffer(NULL),
 m_aspectRatio(1.0),
 m_viewType(Front),
 m_drawingMode(Points),
-m_renderer(RendererFactory::getRenderer(m_drawingMode)),
+m_renderer(NULL),
+m_selectionRenderer(NULL),
 m_cursorShape(None),
 m_zoomFactor(1.0),
 m_textureId(0)
 {
-    m_selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
+	// Type of renderer used for displaying objects on the screen
+	m_renderer = RendererFactory::getRenderer(m_drawingMode);
+	
+	// Type of renderer used for user object picking
+	m_selectionRenderer = RendererFactory::getRenderer(Points);
+    
+	m_selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
 	
     Camera* camera = new Camera();
     camera->setTargetPoint( Point3D( 0, 0, 0) );
@@ -117,8 +107,6 @@ m_textureId(0)
 
 GlDisplay::~GlDisplay()
 {
-	m_vbo.destroy();
-	m_ibo.destroy();
     if (m_selectBuffer)
         delete [] m_selectBuffer;
 	
@@ -132,6 +120,9 @@ GlDisplay::~GlDisplay()
 	
     delete m_renderer;
     m_renderer = NULL;
+	
+	delete m_selectionRenderer;
+	m_selectionRenderer = NULL;
 }
 
 void GlDisplay::setGridVisible(bool value)
@@ -164,21 +155,12 @@ void GlDisplay::setDrawingMode(DrawingMode mode){
 void GlDisplay::initializeGL()
 {
     // Set up the rendering context, define display lists etc.:
-    //float lightAmbient[] = {0.5f, 0.5f, 0.5f, 1.0f};
-    //float lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    //float lightPosition[] = { 0.0f, 0.0f, 1.0f, 1.0f};
-	//GLfloat mat_shininess[] = {50.0};
-	//GLfloat mat_specular[] = {1.0, 1.0, 1.0, 0.0};
 	
     glClearColor( 0.4, 0.4, 0.4, 1.0 );
     glClearDepth(1.0f);
     glEnable( GL_DEPTH_TEST);
     glEnable( GL_LINE_SMOOTH);
     glShadeModel(GL_SMOOTH);
-    //glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, 1.0);
-    //glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-    //glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-    //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     glEnable(GL_LIGHT0);
     glSelectBuffer(SELECT_BUFFER_SIZE, m_selectBuffer);
 	
@@ -194,19 +176,6 @@ void GlDisplay::initializeGL()
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	
-	m_vbo.create();
-	m_ibo.create();
-	qDebug() << "Vertex buffer ID=" << m_vbo.getBufferID();
-	qDebug() << "Index buffer ID=" << m_ibo.getBufferID();
-	if (!m_vbo.setBufferData(g_vertexData, sizeof(g_vertexData)))
-	{
-		qDebug() << "Vertex buffer creation failed";
-	}
-	if (!m_ibo.setBufferData(g_indexData, sizeof(g_indexData)))
-	{
-		qDebug() << "Index buffer creation failed";
-	}
 }
 
 void GlDisplay::resizeGL( int w, int h )

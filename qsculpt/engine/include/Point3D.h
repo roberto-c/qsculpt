@@ -244,6 +244,25 @@ public:
         return *this;
     }
     
+	/**
+     * operator[] oveload.
+     *
+     * @param index component index to retrieve.
+     */
+    T& operator[](int index) {
+        return m_data[index];
+    }
+	
+	/**
+     * operator[] oveload.
+     *
+     * @param index component index to retrieve.
+     */
+    const T& operator[](int index) const {
+        return m_data[index];
+    }
+	
+	
     /**
      * operator+ oveload.
      *
@@ -337,6 +356,7 @@ inline const Point3D_t<F> operator/( F c, const Point3D_t<F> &val)
 typedef Point3D_t<float> Point3D;
 typedef Point3D_t<float> Vertex;
 typedef Point3D_t<float> Normal;
+typedef Point3D_t<float> Vector3;
 
 Q_DECLARE_METATYPE(Point3D)
 
