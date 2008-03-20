@@ -38,7 +38,7 @@ SmoothRenderer::~SmoothRenderer()
 
 void SmoothRenderer::renderObject(const IObject3D* mesh)
 {
-	renderVbo(mesh);
+	renderImmediate(mesh);
 }
 
 void SmoothRenderer::renderImmediate(const IObject3D* mesh)

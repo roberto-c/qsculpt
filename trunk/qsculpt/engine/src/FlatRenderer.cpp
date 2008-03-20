@@ -21,7 +21,6 @@
 #include "FlatRenderer.h"
 #include "IObject3D.h"
 #include <QtOpenGL>
-#include "BOManager.h"
 #include <QMap>
 
 typedef QMap<IObject3D*, VertexBuffer* > BOContainer;
@@ -48,8 +47,8 @@ FlatRenderer::~FlatRenderer()
 
 void FlatRenderer::renderObject(const IObject3D* mesh)
 {
-	renderVbo(mesh);
-	//renderImmediate(mesh);
+	//renderVbo(mesh);
+	renderImmediate(mesh);
 }
 
 void FlatRenderer::renderImmediate(const IObject3D* mesh)

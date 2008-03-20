@@ -19,7 +19,7 @@ PointRenderer::~PointRenderer()
 
 void PointRenderer::renderObject(const IObject3D* mesh)
 {
-	renderVbo(mesh);
+	renderImmediate(mesh);
 }
 
 void PointRenderer::renderImmediate(const IObject3D* mesh)
