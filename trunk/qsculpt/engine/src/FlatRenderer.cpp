@@ -47,8 +47,8 @@ FlatRenderer::~FlatRenderer()
 
 void FlatRenderer::renderObject(const IObject3D* mesh)
 {
-	//renderVbo(mesh);
-	renderImmediate(mesh);
+	renderVbo(mesh);
+	//renderImmediate(mesh);
 }
 
 void FlatRenderer::renderImmediate(const IObject3D* mesh)
@@ -103,9 +103,14 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 	IObject3D* obj = const_cast<IObject3D*>(mesh);
 	
 	VertexBuffer* vbo = getVBO(obj);
-	qDebug() << "VBO id= " << vbo->getBufferID();
+	if (vbo->getBufferID() == 0)
+	{
+		qDebug() << "Failed to create VBO. Fallback to immediate mode" ;
+		renderImmediate(mesh);
+		return;
+	}
 	// Set the depth function to the correct value
-    glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 	
   	// Store the transformation matrix
   	glPushMatrix();
@@ -120,13 +125,13 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 		vbo->setNeedUpdate(false);
 		obj->setChanged(false);
 	}
-	
+
 	glEnableClientState(GL_VERTEX_ARRAY);
-	//glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
 	glVertexPointer(3, GL_FLOAT, 3*sizeof(GLfloat), NULL);
-	//glNormalPointer(GL_FLOAT, 3*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
+	glNormalPointer(GL_FLOAT, 3*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
 	
 	QColor color;
 	color = Qt::white; //mesh->getPointList().at(f.normal[j]).color;
@@ -139,13 +144,15 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 		glColor3d(color.redF(), color.greenF(), color.blueF());
 	}
 
-	glDrawArrays(GL_POINTS, 0, 4/*obj->getFaceList().size()*4*/);
+	qDebug() << "Draw mesh";
+	glDrawArrays(GL_QUADS, 0, obj->getFaceList().size()*4);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	
 	glPopMatrix();
+	qDebug() << "Mesh rendered";
 }
 
 VertexBuffer* FlatRenderer::getVBO(IObject3D* mesh)

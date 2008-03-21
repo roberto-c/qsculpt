@@ -19,7 +19,7 @@ PointRenderer::~PointRenderer()
 
 void PointRenderer::renderObject(const IObject3D* mesh)
 {
-	renderImmediate(mesh);
+	renderVbo(mesh);
 }
 
 void PointRenderer::renderImmediate(const IObject3D* mesh)
@@ -55,8 +55,14 @@ void PointRenderer::renderVbo(const IObject3D* mesh)
 		buildVBO = true;
 	}
 	
+	if (m_vertexBuffer.getBufferID() == 0 || m_colorBuffer.getBufferID() == 0)
+	{
+		qDebug() << "Failed to create VBO. Fallback to immediate mode" ;
+		renderImmediate(mesh);
+		return;
+	}
 	// Set the depth function to the correct value
-    glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 	
   	// Store the transformation matrix
   	glPushMatrix();
