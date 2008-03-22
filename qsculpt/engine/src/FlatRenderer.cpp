@@ -130,19 +130,15 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 	glEnableClientState(GL_NORMAL_ARRAY);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
-	glVertexPointer(3, GL_FLOAT, 3*sizeof(GLfloat), NULL);
-	glNormalPointer(GL_FLOAT, 3*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
+	glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
+	glNormalPointer(GL_FLOAT, 6*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
 	
 	QColor color;
 	color = Qt::white; //mesh->getPointList().at(f.normal[j]).color;
 	if (mesh->isSelected())
-	{
 		glColor3d(color.redF(), color.greenF() + 0.3, color.blueF());
-	}
 	else
-	{
 		glColor3d(color.redF(), color.greenF(), color.blueF());
-	}
 
 	qDebug() << "Draw mesh";
 	glDrawArrays(GL_QUADS, 0, obj->getFaceList().size()*4);
@@ -173,9 +169,9 @@ VertexBuffer* FlatRenderer::getVBO(IObject3D* mesh)
 
 void FlatRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 {
-	qDebug() << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
-	qDebug() << "Num Vertices=" << mesh->getPointList().size();
-	qDebug() << "Num Normals=" << mesh->getNormalList().size();
+	//qDebug() << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
+	//qDebug() << "Num Vertices=" << mesh->getPointList().size();
+	//qDebug() << "Num Normals=" << mesh->getNormalList().size();
 	int numFaces = mesh->getFaceList().size();
 	if (numFaces == 0)
 		return;
@@ -203,5 +199,5 @@ void FlatRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 	vbo->setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
 	
 	delete [] vtxData;
-	qDebug() << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
+	//qDebug() << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }
