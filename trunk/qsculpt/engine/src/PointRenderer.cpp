@@ -2,6 +2,7 @@
 #include "PointRenderer.h"
 #include <QtOpenGL>
 #include "IObject3D.h"
+#include <QMap>
 
 PointRenderer::PointRenderer()
 {
@@ -11,10 +12,12 @@ PointRenderer::PointRenderer()
 PointRenderer::~PointRenderer()
 {
 	qDebug() << "PointRenderer destructor";
-	if (m_vertexBuffer.getBufferID() != 0)
-		m_vertexBuffer.destroy();
-	if (m_colorBuffer.getBufferID() != 0)
-		m_colorBuffer.destroy();
+	foreach(VertexBuffer* vbo, m_vboContainer)
+	{
+		vbo->destroy();
+		delete vbo;
+	}
+	m_vboContainer.clear();
 }
 
 void PointRenderer::renderObject(const IObject3D* mesh)
@@ -42,81 +45,93 @@ void PointRenderer::renderVbo(const IObject3D* mesh)
 	if (mesh == NULL)
 		return;
 	
-	bool buildVBO = false;
-	
-	if (m_vertexBuffer.getBufferID() == 0)
-	{
-		m_vertexBuffer.create();
-		buildVBO = true;
-	}
-	if (m_colorBuffer.getBufferID() == 0)
-	{
-		m_colorBuffer.create();
-		buildVBO = true;
-	}
-	
-	if (m_vertexBuffer.getBufferID() == 0 || m_colorBuffer.getBufferID() == 0)
+	IObject3D* obj = const_cast<IObject3D*>(mesh);
+	VertexBuffer *vbo = getVBO(obj);	
+	if (vbo->getBufferID() == 0)
 	{
 		qDebug() << "Failed to create VBO. Fallback to immediate mode" ;
 		renderImmediate(mesh);
 		return;
 	}
-	// Set the depth function to the correct value
-	glDepthFunc(GL_LESS);
-	
+		
   	// Store the transformation matrix
   	glPushMatrix();
   	float x = 0.0f, y = 0.0f, z = 0.0f;
   	mesh->getPosition(&x, &y, &z);
    	glTranslatef(x, y, z);
 	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	
-	IObject3D* obj = const_cast<IObject3D*>(mesh);
-	int numVertices = obj->getPointList().size();
-	int numFloats = numVertices*3;
-	
-	if ((obj->hasChanged() || buildVBO ) && numVertices > 0)
+	bool vboNeedsRefresh = vbo->needUpdate() || obj->hasChanged();
+	if (vboNeedsRefresh)
 	{
-		qDebug() << "PointRenderer::renderObject Start time:" << QDateTime::currentDateTime();
-		qDebug() << "Num Vertices=" << numVertices;
-		GLfloat* vtxData = new GLfloat[numFloats];
-		GLubyte* colorData = new GLubyte[numFloats];
-		
-		GLuint color = 0xFFFFFF;
-		for (int i = 0; i < numVertices; ++i)
-		{
-			vtxData[(i*3)] = obj->getPointList().at(i).getX();
-			vtxData[(i*3) + 1] = obj->getPointList().at(i).getY();
-			vtxData[(i*3) + 2] = obj->getPointList().at(i).getZ();
-			
-			colorData[(i*3)] = (color & 0xFF);
-			colorData[(i*3) + 1] = ((color >> 8) & 0xFF);
-			colorData[(i*3) + 2] = ((color >> 16) & 0xFF);
-			
-			color--;
-		}
-		
-		m_vertexBuffer.setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
-		m_colorBuffer.setBufferData((GLvoid*)colorData, numFloats*sizeof(GLubyte));
-		
-		delete [] vtxData;
-		qDebug() << "PointRenderer::renderObject End time:" << QDateTime::currentDateTime();
-		
+		fillVertexBuffer(obj, vbo);
+		vbo->setNeedUpdate(false);
 		obj->setChanged(false);
 	}
 	
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer.getBufferID());
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, m_colorBuffer.getBufferID());
-	glColorPointer(3, GL_UNSIGNED_BYTE, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
+	glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
+	glColorPointer(3, GL_FLOAT, 6*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
 	
+	glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT);
+	
+	glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_COLOR_ARRAY);
+	
+	glPointSize(3.0f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glDrawArrays(GL_POINTS, 0, obj->getPointList().size());
+	
+//	glDepthFunc(GL_EQUAL);
+//	glPointSize(1.5f);
+//	glColor3f(1.0f, 1.0f, 1.0f);
+//	glDrawArrays(GL_POINTS, 0, obj->getPointList().size());
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
+	//glDisableClientState(GL_COLOR_ARRAY);
+	
+	glPopAttrib();
 	
 	glPopMatrix();
+}
+
+VertexBuffer* PointRenderer::getVBO(IObject3D* mesh)
+{
+	VertexBuffer* vbo = NULL;
+	if (m_vboContainer.contains(mesh))
+	{
+		vbo = m_vboContainer[mesh];
+	}
+	else
+	{
+		vbo = new VertexBuffer;
+		vbo->create();
+		m_vboContainer[mesh] = vbo;
+	}
+	return vbo;	
+}
+
+void PointRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
+{
+	int numVertices = mesh->getPointList().size();
+	if (numVertices == 0)
+		return;
+	
+	int numFloats = numVertices*6;
+	GLfloat* vtxData = new GLfloat[numFloats];
+	
+	for (int i = 0; i < numVertices; ++i)
+	{
+		vtxData[(i*6)] = mesh->getPointList().at(i).getX();
+		vtxData[(i*6) + 1] = mesh->getPointList().at(i).getY();
+		vtxData[(i*6) + 2] = mesh->getPointList().at(i).getZ();
+		
+		vtxData[(i*6) + 3] = 0.85f;
+		vtxData[(i*6) + 4] = 0.85f;
+		vtxData[(i*6) + 5] = 0.85f;
+	}
+	
+	vbo->setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
+	
+	delete [] vtxData;
 }

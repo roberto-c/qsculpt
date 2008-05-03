@@ -38,6 +38,13 @@ public:
 	GLuint getBufferID() const {
 		return m_vboID;
 	};
+
+	/**
+	 *
+	 */
+	GLenum getType() const {
+		return boTarget;
+	};
 	
 	/**
 	 *

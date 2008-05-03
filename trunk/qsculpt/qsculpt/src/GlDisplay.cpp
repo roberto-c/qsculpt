@@ -32,7 +32,10 @@
 #include "DocumentView.h"
 #include "Camera.h"
 #include "RendererFactory.h"
+#include "Picking.h"
 
+
+PickingRenderer g_picking;
 
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
@@ -157,6 +160,7 @@ void GlDisplay::initializeGL()
     // Set up the rendering context, define display lists etc.:
 	
     glClearColor( 0.4, 0.4, 0.4, 1.0 );
+	//glClearColor( 0.0, 0.0, 0.0, 1.0 );
     glClearDepth(1.0f);
     glEnable( GL_DEPTH_TEST);
     glEnable( GL_LINE_SMOOTH);
@@ -176,6 +180,8 @@ void GlDisplay::initializeGL()
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 }
 
 void GlDisplay::resizeGL( int w, int h )
@@ -506,54 +512,32 @@ void GlDisplay::wheelEvent ( QWheelEvent * e )
 }
 
 QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
-{
+{	
     QVector<HitRecord> records;
 	
-    glRenderMode(GL_SELECT);
-    glInitNames();
-	
-    glPushName(0);
-	
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    GLint viewport[4] ={0};
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    gluPickMatrix((GLdouble) _x, (GLdouble) (viewport[3] - _y), 
-				  1.0f, 1.0f, viewport);
-	
-    glOrtho( -DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
-			DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
-			-DEFAULT_HEIGHT / 2 * m_zoomFactor,
-			DEFAULT_HEIGHT / 2 * m_zoomFactor,
-			-1000.0,
-			1000.0 );
-	
-    glMatrixMode(GL_MODELVIEW);
-	
-    drawObjects();
-	
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    int d = glRenderMode(GL_RENDER);
-	
-    //qDebug("Hits = %d", d);
+	IObject3D* mesh;
+    IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
+	PickingRenderer::ObjectList list;
+    int count = doc->getObjectsCount();
+    for ( int i = 0; i < count; i++ )
+    {
+        mesh = doc->getObject(i);
+		list.append(mesh);
+	}
+	PickingRenderer::ObjectList listObj = g_picking.getSelectedObjects(list, _x, m_viewport[3] - _y);
+
+	int d = listObj.size();
     if (d > 0)
     {
         records.resize(d);
         for (int i = 0; i < d; i++)
         {
-            //qDebug("%d : hits[0] = %d, hits[1] = %d, hits[2] = %d, hits[3] = %d",
-            //       i, m_selectBuffer[i*4], m_selectBuffer[i*4 + 1],
-			//		m_selectBuffer[i*4 + 2], m_selectBuffer[i*4 + 3]);
-            records[i].numNamesInStack = m_selectBuffer[i*4];
-            records[i].minDepth = m_selectBuffer[i*4 + 1];
-            records[i].maxDepth = m_selectBuffer[i*4 + 2];
-            records[i].stackContents = m_selectBuffer[i*4 + 3];
+            records[i].numNamesInStack = d;
+            records[i].minDepth = 0;
+            records[i].maxDepth = 0;
+            records[i].stackContents = d;
         }
     }
-	
     return records;
 }
 

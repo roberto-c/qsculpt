@@ -2,7 +2,7 @@
 #define POINTRENDERER_H_
 
 #include "IRenderer.h"
-#include "BufferObject.h"
+#include "BufferObject.h";
 
 class PointRenderer : public IRenderer
 {
@@ -25,8 +25,17 @@ private:
 	 */
 	void renderImmediate(const IObject3D* mesh);
 	
-	VertexBuffer m_vertexBuffer;
-	VertexBuffer m_colorBuffer;
+	/**
+	 *
+	 */
+	VertexBuffer* getVBO(IObject3D* mesh);
+	
+	void fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo);
+	
+	
+	typedef QMap<IObject3D*, VertexBuffer* > BOContainer;
+	
+	BOContainer m_vboContainer;
 };
 
 #endif /*POINTRENDERER_H_*/

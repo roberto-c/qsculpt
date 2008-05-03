@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2008 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,18 +18,30 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "StdAfx.h"
-#include "SmoothRenderer.h"
-#include "IObject3D.h"
 #include <QtOpenGL>
+#include "Picking.h"
 
-SmoothRenderer::SmoothRenderer()
+#include "IObject3D.h";
+
+inline bool printGlError()
 {
-	qDebug() << "SmoothRenderer constructor";
+	bool result = false;
+	while( (GLenum error = glGetError()) != GL_NO_ERROR )
+	{
+		result = true;
+		const GLubyte* strError = gluErrorString(error);
+		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
+	}
+	return result;
 }
 
-SmoothRenderer::~SmoothRenderer()
+PickingRenderer::PickingRenderer()
 {
-	qDebug() << "SmoothRenderer destructor";
+}
+
+PickingRenderer::~PickingRenderer()
+{
+	qDebug() << "PointRenderer destructor";
 	foreach(VertexBuffer* vbo, m_vboContainer)
 	{
 		vbo->destroy();
@@ -38,64 +50,107 @@ SmoothRenderer::~SmoothRenderer()
 	m_vboContainer.clear();
 }
 
-void SmoothRenderer::renderObject(const IObject3D* mesh)
+char* intToHexStr(unsigned int d)
 {
-	renderVbo(mesh);
-}
-
-void SmoothRenderer::renderImmediate(const IObject3D* mesh)
-{
-	const FaceContainer& faceList = mesh->getFaceList();
-	int size = faceList.size();
+	const char* symbols = "0123456789ABCDEF";
+	char* output = new char[34];
+	memset(output, 0, 34*sizeof(char));
 	
-	if (mesh->isSelected())
-		glColor3d(0.0, 1.0, 0.0);
-	else
-		glColor3d(0.8, 0.8, 0.8);
-	
-	for ( int i = 0; i < size; i++)
+	unsigned int digit = 0, c = d;
+	int index = 0;
+	do
 	{
-		//        if (faceList[i].isMarked)
-		//            glColor3f(1.0, 0.0, 0.0);
-		//        else
-		//            glColor3f(0.9, 0.9, 0.9);
-		glBegin(GL_POLYGON);
-		const Face& f = faceList[i];
-		for (int j = 0; j < f.point.size(); ++j)
-		{
-			glNormal3fv(mesh->getNormalList().at(f.point[j]).getPoint());
-			glVertex3fv(mesh->getPointList().at(f.point[j]).getPoint());
-		}
-		glEnd();
+		digit = c % 16;
+		c = c / 16;
+		output[index] = symbols[digit];
+		index++;
+	}while(c);
+	
+	// get the length of the string
+	int len = 0;
+	char* ptr = output;
+	while(*ptr)
+	{ len++; ptr++;}
+	
+	// Reverse the order of the string
+	for (int i =0; i < len/2; ++i)
+	{
+		char tmp = output[i];
+		output[i] = output[len - i - 1];
+		output[len - i - 1] = tmp;
 	}
+	return output;
 }
 
-void SmoothRenderer::renderVbo(const IObject3D* mesh)
+PickingRenderer::ObjectList PickingRenderer::getSelectedObjects(const ObjectList& list, GLint x, GLint y)
+{
+	ObjectList l;
+
+	unsigned int objId = 1;
+	GLuint data = 0;
+	foreach(IObject3D* mesh, list)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		renderVbo(mesh, objId);
+		glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&data);
+
+		if (data == objId)
+			l.append(mesh);
+		
+		objId++;
+		
+		if (printGlError()) break;
+	}
+
+	return l;
+}
+
+PickingRenderer::ObjectVerticesMap PickingRenderer::getSelectedVertices(const ObjectList& list, GLfloat x, GLfloat y)
+{
+	ObjectVerticesMap map;
+	return map;
+}
+
+PickingRenderer::ObjectFacesMap PickingRenderer::getSelectedFaces(const ObjectList& list, GLfloat x, GLfloat y)
+{
+	ObjectFacesMap map;
+	return map;
+}
+
+void PickingRenderer::renderImmediate(const IObject3D* mesh, unsigned int objID)
+{
+	mesh->lock();
+    int size = mesh->getPointList().size();
+	
+    glBegin(GL_POINTS);
+    for ( int i = 0; i < size; i++)
+    {
+        glVertex3fv(mesh->getPointList().at(i).getPoint());
+    }
+    glEnd();
+	mesh->unlock();
+}
+
+void PickingRenderer::renderVbo(const IObject3D* mesh, unsigned int objID)
 {
 	//qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
 		return;
 	
 	IObject3D* obj = const_cast<IObject3D*>(mesh);
-	VertexBuffer* vbo= getVBO(obj);
+	VertexBuffer *vbo = getVBO(obj);	
 	if (vbo->getBufferID() == 0)
 	{
 		qDebug() << "Failed to create VBO. Fallback to immediate mode" ;
-		renderImmediate(mesh);
+		renderImmediate(mesh, objID);
 		return;
 	}
-	
-	// Set the depth function to the correct value
-	glDepthFunc(GL_LESS);
 	
   	// Store the transformation matrix
   	glPushMatrix();
   	float x = 0.0f, y = 0.0f, z = 0.0f;
   	mesh->getPosition(&x, &y, &z);
    	glTranslatef(x, y, z);
-	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
 	
 	bool vboNeedsRefresh = vbo->needUpdate() || obj->hasChanged();
 	if (vboNeedsRefresh)
@@ -107,29 +162,28 @@ void SmoothRenderer::renderVbo(const IObject3D* mesh)
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
 	glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
-	glNormalPointer(GL_FLOAT, 6*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
 	
-	QColor color;
-	color = Qt::white; //mesh->getPointList().at(f.normal[j]).color;
-	if (mesh->isSelected())
-	{
-		glColor3d(color.redF(), color.greenF() + 0.3, color.blueF());
-	}
-	else
-	{
-		glColor3d(color.redF(), color.greenF(), color.blueF());
-	}
+	glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT|GL_LIGHTING_BIT|GL_ENABLE_BIT);
+	glDisable(GL_LIGHTING);
+	glShadeModel(GL_FLAT);
 	
+	glEnableClientState(GL_VERTEX_ARRAY);
+	
+	glPointSize(1.0f);
+	glColor4ub( objID & 0xff,(objID>>8) & 0xff, (objID>>16) & 0xff, (objID>>24) & 0xff);
 	glDrawArrays(GL_QUADS, 0, obj->getFaceList().size()*4);
+	
+	printGlError();
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
+	
+	glPopAttrib();
 	
 	glPopMatrix();
 }
 
-VertexBuffer* SmoothRenderer::getVBO(IObject3D* mesh)
+VertexBuffer* PickingRenderer::getVBO(IObject3D* mesh)
 {
 	VertexBuffer* vbo = NULL;
 	if (m_vboContainer.contains(mesh))
@@ -145,12 +199,15 @@ VertexBuffer* SmoothRenderer::getVBO(IObject3D* mesh)
 	return vbo;	
 }
 
-void SmoothRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
+void PickingRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 {
-	qDebug() << "SmoothRenderer::renderObject Start time:" << QDateTime::currentDateTime();
 	int numFaces = mesh->getFaceList().size();
-	int numFloats = numFaces*4*6;
-	GLfloat* vtxData = new GLfloat[numFloats];
+	if (numFaces == 0)
+		return;
+	
+	int numFloats = numFaces*4*6;	// num floats = Faces * Num of point by face
+	//				* Num elements of point
+	GLfloat* vtxData = new GLfloat[numFloats]; // Make room for vertices and normals data
 	
 	int vertexIndex;
 	for (int i = 0; i < numFaces; ++i)
@@ -171,5 +228,4 @@ void SmoothRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 	vbo->setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
 	
 	delete [] vtxData;
-	qDebug() << "SmoothRenderer::renderObject End time:" << QDateTime::currentDateTime();
 }
