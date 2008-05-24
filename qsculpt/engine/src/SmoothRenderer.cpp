@@ -21,6 +21,9 @@
 #include "SmoothRenderer.h"
 #include "IObject3D.h"
 #include <QtOpenGL>
+#include "BOManager.h"
+
+#define BO_POOL_NAME "SmoothRendererPool"
 
 SmoothRenderer::SmoothRenderer()
 {
@@ -30,12 +33,7 @@ SmoothRenderer::SmoothRenderer()
 SmoothRenderer::~SmoothRenderer()
 {
 	qDebug() << "SmoothRenderer destructor";
-	foreach(VertexBuffer* vbo, m_vboContainer)
-	{
-		vbo->destroy();
-		delete vbo;
-	}
-	m_vboContainer.clear();
+	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
 void SmoothRenderer::renderObject(const IObject3D* mesh)
@@ -88,21 +86,13 @@ void SmoothRenderer::renderVbo(const IObject3D* mesh)
 	// Set the depth function to the correct value
 	glDepthFunc(GL_LESS);
 	
-  	// Store the transformation matrix
-  	glPushMatrix();
-  	float x = 0.0f, y = 0.0f, z = 0.0f;
-  	mesh->getPosition(&x, &y, &z);
-   	glTranslatef(x, y, z);
-	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	
-	bool vboNeedsRefresh = vbo->needUpdate() || obj->hasChanged();
-	if (vboNeedsRefresh)
+	if (vbo->needUpdate())
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-		obj->setChanged(false);
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
@@ -125,22 +115,15 @@ void SmoothRenderer::renderVbo(const IObject3D* mesh)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
-	
-	glPopMatrix();
 }
 
 VertexBuffer* SmoothRenderer::getVBO(IObject3D* mesh)
 {
 	VertexBuffer* vbo = NULL;
-	if (m_vboContainer.contains(mesh))
+	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
+	if (vbo == NULL)
 	{
-		vbo = m_vboContainer[mesh];
-	}
-	else
-	{
-		vbo = new VertexBuffer;
-		vbo->create();
-		m_vboContainer[mesh] = vbo;
+		vbo = BOManager::getInstance()->createVBO(BO_POOL_NAME, mesh);
 	}
 	return vbo;	
 }

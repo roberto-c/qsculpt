@@ -20,6 +20,7 @@
 #ifndef IOBJECT3D_H
 #define IOBJECT3D_H
 
+#include <QObject>
 #include <QVector>
 #include "Point3D.h"
 #include "SpEnums.h"
@@ -41,7 +42,9 @@ Interface that every 3D object should implement.
 
   @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class IObject3D {
+class IObject3D : public QObject {
+	Q_OBJECT
+	
 public:
     /**
      * Default contructor. The classes that implement this interface, should
@@ -382,6 +385,11 @@ public:
 	virtual bool hasChanged()=0;
 	
 	virtual void setChanged(bool val)=0;
+	
+signals:
+	void meshChanged(IObject3D* mesh);
 };
+
+typedef QVector<IObject3D*> ObjectContainer;
 
 #endif

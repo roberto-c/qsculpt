@@ -26,6 +26,7 @@
 #include "SpEnums.h"
 #include "Point3D.h"
 #include "BufferObject.h"
+#include "IObject3D.h"
 
 class DocumentView;
 class QMouseEvent;
@@ -111,6 +112,8 @@ public:
      */
     QVector<HitRecord> getPickRecords(int _x, int _y);
 
+	ObjectContainer getSelectedObjects(GLint x, GLint y);
+	
     /**
      */
     Camera* getViewCamera();

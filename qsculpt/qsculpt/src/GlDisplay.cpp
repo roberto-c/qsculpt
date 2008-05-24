@@ -34,8 +34,9 @@
 #include "RendererFactory.h"
 #include "Picking.h"
 
+int g_x = 0; int g_y = 0;
 
-PickingRenderer g_picking;
+PickingObjectRenderer g_picking;
 
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
@@ -159,8 +160,8 @@ void GlDisplay::initializeGL()
 {
     // Set up the rendering context, define display lists etc.:
 	
-    glClearColor( 0.4, 0.4, 0.4, 1.0 );
-	//glClearColor( 0.0, 0.0, 0.0, 1.0 );
+    //glClearColor( 0.4, 0.4, 0.4, 1.0 );
+	glClearColor( 0.0, 0.0, 0.0, 1.0 );
     glClearDepth(1.0f);
     glEnable( GL_DEPTH_TEST);
     glEnable( GL_LINE_SMOOTH);
@@ -264,23 +265,28 @@ void GlDisplay::paintGL()
 	
     drawCursor();
 	
-	
+	glFlush();
     //drawOrientationAxis();
 }
 
 void GlDisplay::drawObjects()
 {
-	//float x = 0.0f, y = 0.0f, z=0.0f;
+	if (m_renderer == NULL)
+		return;
+	
 	IObject3D* mesh;
     IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
     int count = doc->getObjectsCount();
     for ( int i = 0; i < count; i++ )
     {
-        glLoadName(i+1);
         mesh = doc->getObject(i);
 		
-        if (m_renderer)
-        	m_renderer->renderObject(mesh);
+		glPushMatrix();
+		float x = 0.0f, y = 0.0f, z = 0.0f;
+		mesh->getPosition(&x, &y, &z);
+		glTranslatef(x, y, z);
+		m_renderer->renderObject(mesh);
+		glPopMatrix();
     }
 }
 
@@ -476,9 +482,11 @@ void GlDisplay::mousePressEvent ( QMouseEvent * e )
         cmd->mousePressEvent( e );
         needUpdate = true;
     }
+	m_cursorPosition.setX(e->x());
+	m_cursorPosition.setY(e->y());
     if (m_cursorShape != None)
     {
-    	m_cursorPosition.setX(e->x());
+		m_cursorPosition.setX(e->x());
     	m_cursorPosition.setY(e->y());
     	needUpdate = true;
     }
@@ -515,16 +523,7 @@ QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
 {	
     QVector<HitRecord> records;
 	
-	IObject3D* mesh;
-    IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
-	PickingRenderer::ObjectList list;
-    int count = doc->getObjectsCount();
-    for ( int i = 0; i < count; i++ )
-    {
-        mesh = doc->getObject(i);
-		list.append(mesh);
-	}
-	PickingRenderer::ObjectList listObj = g_picking.getSelectedObjects(list, _x, m_viewport[3] - _y);
+	ObjectContainer listObj = getSelectedObjects( _x, m_viewport[3] - _y);
 
 	int d = listObj.size();
     if (d > 0)
@@ -539,6 +538,41 @@ QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
         }
     }
     return records;
+}
+
+ObjectContainer GlDisplay::getSelectedObjects(GLint x, GLint y)
+{
+	ObjectContainer l;
+	if (m_renderer == NULL)
+		return l;
+	
+	unsigned int objId = 1;
+	GLuint d = 0;
+	IObject3D* mesh;
+    IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
+    int count = doc->getObjectsCount();
+    for ( int i = 0; i < count; i++ )
+    {
+        mesh = doc->getObject(i);
+		
+		glPushMatrix();
+		float px = 0.0f, py = 0.0f, pz = 0.0f;
+		mesh->getPosition(&px, &py, &pz);
+		glTranslatef(px, py, pz);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		g_picking.renderObject(mesh, objId);
+		glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
+		
+		if (d == objId)
+			l.append(mesh);
+		
+		objId++;
+		
+		glPopMatrix();
+		if (printGlError()) break;
+    }
+	return l;
 }
 
 Camera* GlDisplay::getViewCamera()

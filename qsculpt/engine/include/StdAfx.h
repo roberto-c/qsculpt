@@ -10,6 +10,21 @@
 
 // TODO: reference additional headers your program requires here
 #include <QtDebug>
+#include <QtOpenGL>
+
+inline bool printGlError()
+{
+	bool result = false;
+	GLenum error = glGetError();
+	while( error != GL_NO_ERROR )
+	{
+		result = true;
+		const GLubyte* strError = gluErrorString(error);
+		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
+		error = glGetError();
+	}
+	return result;
+}
 
 #endif
 

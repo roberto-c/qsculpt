@@ -4,20 +4,9 @@
 #include <QtOpenGL>
 #include "Point3D.h"
 
-template <GLenum boTarget>
 class BufferObject
 {
-public:
-	/**
-	 * Initializes a Buffer Object (BO)
-	 */
-	BufferObject();
-	
-	/**
-	 * Destroy or frees the resources used by the buffer object
-	 */
-	~BufferObject();
-
+public:		
 	/**
 	 *
 	 */
@@ -38,19 +27,19 @@ public:
 	GLuint getBufferID() const {
 		return m_vboID;
 	};
-
+	
 	/**
 	 *
 	 */
 	GLenum getType() const {
-		return boTarget;
+		return m_boTarget;
 	};
 	
 	/**
 	 *
 	 */
 	bool mapBuffer(GLvoid** buffer, GLuint* size);
-
+	
 	/**
 	 *
 	 */
@@ -59,8 +48,10 @@ public:
 	/**
 	 *
 	 */
-	int getBufferSize();
-
+	int getBufferSize() const {
+		return m_bufferSize;
+	}
+	
 	/**
 	 *
 	 */
@@ -71,7 +62,7 @@ public:
 	 */
 	bool setBufferSubData(GLint offset, GLuint size, GLvoid* buffer);
 	
-//private:
+	//private:
 	/**
 	 * Create a vertex buffer object of the specified type.
 	 */
@@ -82,35 +73,30 @@ public:
 	 */
 	bool destroy();
 	
-private:
-	GLuint		m_vboID;	/*< ID of the vertex buffer object */
-	GLuint		m_bufferSize; /*< Size of the buffer in bytes? */
-	GLfloat*	m_buffer;	/*< pointer to a buffer containing the vertex
-	 						    buffer object data */
-	bool		m_needUpdate; /*< True if the data needs to be updated*/
+protected:
+	/**
+	 * Initializes a Buffer Object (BO)
+	 */
+	BufferObject(GLenum boTarget = 0);
+	
+	GLenum		m_boTarget;
+	GLuint		m_vboID;		/*< ID of the vertex buffer object */
+	GLuint		m_bufferSize;	/*< Size of the buffer in bytes? */
+	bool		m_needUpdate;	/*< True if the data needs to be updated*/
 };
 
-template <GLenum boTarget>
-BufferObject<boTarget>::BufferObject()
-:	m_vboID(0),
-m_bufferSize(0),
-m_buffer(NULL),
-m_needUpdate(true)
+inline BufferObject::BufferObject(GLenum boTarget)
+:	m_boTarget(boTarget),
+	m_vboID(0),
+	m_bufferSize(0),
+	m_needUpdate(true)
 {
-	//create();
-}
-
-template <GLenum boTarget>
-BufferObject<boTarget>::~BufferObject()
-{
-	//destroy();
 }
 
 /**
  * Create a vertex buffer object of the specified type.
  */
-template <GLenum boTarget>
-bool BufferObject<boTarget>::create()
+inline bool BufferObject::create()
 {
 	glGenBuffers(1, &m_vboID);
 	return true;
@@ -119,8 +105,7 @@ bool BufferObject<boTarget>::create()
 /**
  * Deletes the vertex buffer object, freeing all the resources
  */
-template <GLenum boTarget>
-bool BufferObject<boTarget>::destroy()
+inline bool BufferObject::destroy()
 {
 	GLuint error = GL_NO_ERROR;
 	
@@ -131,7 +116,6 @@ bool BufferObject<boTarget>::destroy()
 		
 		// Reset value
 		m_vboID = 0;
-		m_buffer = NULL;
 		m_bufferSize = 0;
 	}
 	
@@ -145,11 +129,11 @@ Error:
 	return result;
 }
 
+
 /**
  *
  */
-template <GLenum boTarget>
-bool BufferObject<boTarget>::mapBuffer(GLvoid** buffer, GLuint* size)
+inline bool BufferObject::mapBuffer(GLvoid** buffer, GLuint* size)
 {
 	GLuint error = GL_NO_ERROR;
 	
@@ -158,11 +142,11 @@ bool BufferObject<boTarget>::mapBuffer(GLvoid** buffer, GLuint* size)
 		return false;
 	
 	// Be sure we are working with our buffer
-	glBindBuffer(boTarget, m_vboID);
+	glBindBuffer(m_boTarget, m_vboID);
 	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
 	
 	// Set the buffer of the mapped object
-	*buffer = glMapBuffer(boTarget, GL_READ_WRITE);
+	*buffer = glMapBuffer(m_boTarget, GL_READ_WRITE);
 	*size = 0;
 	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
 	
@@ -182,18 +166,17 @@ Error:
 	return result;
 }
 
-template <GLenum boTarget>
-bool BufferObject<boTarget>::unmapBuffer()
+inline bool BufferObject::unmapBuffer()
 {
 	GLuint error = GL_NO_ERROR;
 	bool result = true;
 	
 	// Be sure we are working with our buffer
-	glBindBuffer(boTarget, m_vboID);
+	glBindBuffer(m_boTarget, m_vboID);
 	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
 	
 	// Unmap the buffer object
-	result = glUnmapBuffer(boTarget);
+	result = glUnmapBuffer(m_boTarget);
 	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
 	
 Error:
@@ -209,26 +192,16 @@ Error:
 /**
  *
  */
-template <GLenum boTarget>
-int BufferObject<boTarget>::getBufferSize()
-{
-	return m_bufferSize;
-}
-
-/**
- *
- */
-template <GLenum boTarget>
-bool BufferObject<boTarget>::setBufferData(GLvoid* buffer, GLuint size)
+inline bool BufferObject::setBufferData(GLvoid* buffer, GLuint size)
 {
 	GLuint error = GL_NO_ERROR;
 	
-	glBindBuffer(boTarget, m_vboID);
+	glBindBuffer(m_boTarget, m_vboID);
 	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
 	
 	m_bufferSize = size;
 	
-	glBufferData(boTarget, 
+	glBufferData(m_boTarget, 
 				 m_bufferSize,
 				 buffer,
 				 GL_DYNAMIC_DRAW);
@@ -244,17 +217,16 @@ Error:
 	return result;
 }
 
-template <GLenum boTarget>
-bool BufferObject<boTarget>::setBufferSubData(GLint offset, GLuint size, GLvoid* buffer)
+inline bool BufferObject::setBufferSubData(GLint offset, GLuint size, GLvoid* buffer)
 {
 	GLuint error = GL_NO_ERROR;
 	
-	glBindBuffer(boTarget, m_vboID);
+	glBindBuffer(m_boTarget, m_vboID);
 	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
 	
 	m_bufferSize = size;
 	
-	glBufferSubData(boTarget,
+	glBufferSubData(m_boTarget,
 					offset,
 					m_bufferSize,
 					buffer);
@@ -268,8 +240,18 @@ Error:
 		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
 	}
 	return result;
-}
-typedef BufferObject<GL_ARRAY_BUFFER> VertexBuffer;
-typedef BufferObject<GL_ELEMENT_ARRAY_BUFFER> IndexBuffer;
+};
+
+class VertexBuffer : public BufferObject
+{
+public:
+	VertexBuffer() : BufferObject(GL_ARRAY_BUFFER) {}
+};
+
+class IndexBuffer : public BufferObject
+{
+public:
+	IndexBuffer() : BufferObject(GL_ELEMENT_ARRAY_BUFFER) {}
+};
 
 #endif /*BUFFEROBJECT_H_*/
