@@ -78,9 +78,11 @@ void QSculptWindow::createWidgets()
 
 	QAction *action = m_commandManager.createUndoAction(this);
 	Q_CHECK_PTR(action);
+	action->setShortcut(QKeySequence::Undo);
 	menuEdit->addAction(action);
 	action = m_commandManager.createRedoAction(this);
 	Q_CHECK_PTR(action);
+	action->setShortcut(QKeySequence::Redo);
 	menuEdit->addAction(action);
 
 	m_toolActionGroup = new QActionGroup(this);
