@@ -16,7 +16,7 @@ macx:release {
 	LIBS += -framework engine
 	DESTDIR=../build/release
 }
-unix:release {
+else unix:release {
 	QMAKE_CXXFLAGS += -DGL_GLEXT_PROTOTYPES
 	QMAKE_LFLAGS += -L../build/release
 	LIBS += -lengine
@@ -27,7 +27,7 @@ macx:debug {
 	LIBS += -framework engine
 	DESTDIR=../build/debug
 }
-unix:debug {
+else unix:debug {
 	QMAKE_CXXFLAGS += -DGL_GLEXT_PROTOTYPES
 	QMAKE_LFLAGS += -L../build/debug
 	LIBS += -lengine
