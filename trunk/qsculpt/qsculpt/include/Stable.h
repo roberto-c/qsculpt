@@ -17,9 +17,28 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef STABLE_H_
+#define STABLE_H_ 
+
 #if defined __cplusplus
 
 #include <QtDebug>
 #include <QtGui>
+#include <QtOpenGL>
 
+inline bool printGlError()
+{
+	bool result = false;
+	GLenum error = glGetError();
+	while( error != GL_NO_ERROR )
+	{
+		result = true;
+		const GLubyte* strError = gluErrorString(error);
+		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
+		error = glGetError();
+	}
+	return result;
+}
+
+#endif
 #endif

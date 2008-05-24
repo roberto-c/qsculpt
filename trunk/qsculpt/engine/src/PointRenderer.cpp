@@ -3,6 +3,9 @@
 #include <QtOpenGL>
 #include "IObject3D.h"
 #include <QMap>
+#include "BOManager.h"
+
+#define BO_POOL_NAME "PointRendererPool"
 
 PointRenderer::PointRenderer()
 {
@@ -12,12 +15,7 @@ PointRenderer::PointRenderer()
 PointRenderer::~PointRenderer()
 {
 	qDebug() << "PointRenderer destructor";
-	foreach(VertexBuffer* vbo, m_vboContainer)
-	{
-		vbo->destroy();
-		delete vbo;
-	}
-	m_vboContainer.clear();
+	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
 void PointRenderer::renderObject(const IObject3D* mesh)
@@ -53,19 +51,11 @@ void PointRenderer::renderVbo(const IObject3D* mesh)
 		renderImmediate(mesh);
 		return;
 	}
-		
-  	// Store the transformation matrix
-  	glPushMatrix();
-  	float x = 0.0f, y = 0.0f, z = 0.0f;
-  	mesh->getPosition(&x, &y, &z);
-   	glTranslatef(x, y, z);
 	
-	bool vboNeedsRefresh = vbo->needUpdate() || obj->hasChanged();
-	if (vboNeedsRefresh)
+	if (vbo->needUpdate())
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-		obj->setChanged(false);
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
@@ -91,24 +81,16 @@ void PointRenderer::renderVbo(const IObject3D* mesh)
 	//glDisableClientState(GL_COLOR_ARRAY);
 	
 	glPopAttrib();
-	
-	glPopMatrix();
 }
 
 VertexBuffer* PointRenderer::getVBO(IObject3D* mesh)
 {
 	VertexBuffer* vbo = NULL;
-	if (m_vboContainer.contains(mesh))
+	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
+	if (vbo == NULL)
 	{
-		vbo = m_vboContainer[mesh];
+		vbo = BOManager::getInstance()->createVBO(BO_POOL_NAME, mesh);
 	}
-	else
-	{
-		vbo = new VertexBuffer;
-		vbo->create();
-		m_vboContainer[mesh] = vbo;
-	}
-	return vbo;	
 }
 
 void PointRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)

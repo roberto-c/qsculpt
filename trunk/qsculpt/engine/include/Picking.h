@@ -23,22 +23,17 @@
 #include <QVector>
 #include <QMap>
 #include "BufferObject.h"
+#include "IRenderer.h"
 
 class IObject3D;
 
-class PickingRenderer 
+class PickingObjectRenderer
 {
-public:
-	typedef QVector<IObject3D*> ObjectList;
-	typedef QMap<IObject3D*, QVector<int> > ObjectVerticesMap;
-	typedef QMap<IObject3D*, QVector<int> > ObjectFacesMap;
+public:	
+	PickingObjectRenderer();
+	virtual ~PickingObjectRenderer();
 	
-	PickingRenderer();
-	~PickingRenderer();
-	
-	ObjectList getSelectedObjects(const ObjectList& list, GLint x, GLint y);
-	ObjectVerticesMap getSelectedVertices(const ObjectList& list, GLfloat x, GLfloat y);
-	ObjectFacesMap getSelectedFaces(const ObjectList& list, GLfloat x, GLfloat y);
+	virtual void renderObject(const IObject3D* mesh, GLuint objId);
 	
 private:
 	void renderVbo(const IObject3D* mesh, unsigned int objID);
@@ -47,11 +42,7 @@ private:
 	VertexBuffer* getVBO(IObject3D* mesh);
 	
 	void fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo);
-	
-	
-	typedef QMap<IObject3D*, VertexBuffer* > VboContainer;
-	
-	VboContainer m_vboContainer;
+	void fillPointVertexBuffer(IObject3D* mesh, VertexBuffer* vbo, VertexBuffer* cbo);
 };
 
 #endif

@@ -31,11 +31,6 @@ private:
 	VertexBuffer* getVBO(IObject3D* mesh);
 	
 	void fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo);
-	
-	
-	typedef QMap<IObject3D*, VertexBuffer* > BOContainer;
-	
-	BOContainer m_vboContainer;
 };
 
 #endif /*POINTRENDERER_H_*/

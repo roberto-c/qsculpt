@@ -62,31 +62,31 @@ Object3D::Object3D()
     updateBoundingBox();
 }
 
-Object3D::Object3D(const Object3D& cpy)
-    :   IObject3D(cpy),
-    m_scene(cpy.m_scene),
-    //m_drawingMode(cpy.m_drawingMode),
-    m_color(cpy.m_color),
-    m_boundingBoxColor(cpy.m_boundingBoxColor),
-    m_minX(cpy.m_minX),
-    m_maxX(cpy.m_maxX),
-    m_minY(cpy.m_minY),
-    m_maxY(cpy.m_maxY),
-    m_minZ(cpy.m_minZ),
-    m_maxZ(cpy.m_maxZ),
-    m_rotX(cpy.m_rotX),
-    m_rotY(cpy.m_rotY),
-    m_rotZ(cpy.m_rotZ),
-    m_selected(cpy.m_selected),
-    m_callListId(0),
-    m_genereateCallList(true),
-    m_currentResolutionLevel(cpy.m_currentResolutionLevel),
-    //m_pointList(cpy.m_pointList),
-    m_normalList(cpy.m_normalList)
-    //m_faceList(cpy.m_faceList)
-{
-	// TODO: IObject3D copy constructor broken
-}
+//Object3D::Object3D(const Object3D& cpy)
+//    :   IObject3D(cpy),
+//    m_scene(cpy.m_scene),
+//    //m_drawingMode(cpy.m_drawingMode),
+//    m_color(cpy.m_color),
+//    m_boundingBoxColor(cpy.m_boundingBoxColor),
+//    m_minX(cpy.m_minX),
+//    m_maxX(cpy.m_maxX),
+//    m_minY(cpy.m_minY),
+//    m_maxY(cpy.m_maxY),
+//    m_minZ(cpy.m_minZ),
+//    m_maxZ(cpy.m_maxZ),
+//    m_rotX(cpy.m_rotX),
+//    m_rotY(cpy.m_rotY),
+//    m_rotZ(cpy.m_rotZ),
+//    m_selected(cpy.m_selected),
+//    m_callListId(0),
+//    m_genereateCallList(true),
+//    m_currentResolutionLevel(cpy.m_currentResolutionLevel),
+//    //m_pointList(cpy.m_pointList),
+//    m_normalList(cpy.m_normalList)
+//    //m_faceList(cpy.m_faceList)
+//{
+//	// TODO: IObject3D copy constructor broken
+//}
 
 Object3D::~Object3D()
 {

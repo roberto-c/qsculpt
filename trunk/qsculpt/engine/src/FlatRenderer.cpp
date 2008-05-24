@@ -22,10 +22,13 @@
 #include "IObject3D.h"
 #include <QtOpenGL>
 #include <QMap>
+#include "BOManager.h"
 
-typedef QMap<IObject3D*, VertexBuffer* > BOContainer;
+//typedef QMap<IObject3D*, VertexBuffer* > BOContainer;
 
-BOContainer g_vboContainer;
+#define BO_POOL_NAME "FlatRendererPool"
+
+//BOContainer g_vboContainer;
 
 bool g_enableVBO = false;
 
@@ -37,12 +40,7 @@ FlatRenderer::FlatRenderer()
 FlatRenderer::~FlatRenderer()
 {
 	qDebug() << "FlatRenderer destructor";
-	foreach(VertexBuffer* vbo, g_vboContainer)
-	{
-		vbo->destroy();
-		delete vbo;
-	}
-	g_vboContainer.clear();
+	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
 void FlatRenderer::renderObject(const IObject3D* mesh)
@@ -59,12 +57,6 @@ void FlatRenderer::renderImmediate(const IObject3D* mesh)
 	
 	// Set the depth function to the correct value
     glDepthFunc(GL_LESS);
-
-  	// Store the transformation matrix
-  	glPushMatrix();
-  	float x = 0.0f, y = 0.0f, z = 0.0f;
-  	mesh->getPosition(&x, &y, &z);
-   	glTranslatef(x, y, z);
 	
    	QColor color;
 	const FaceContainer& faceList = mesh->getFaceList();
@@ -90,8 +82,6 @@ void FlatRenderer::renderImmediate(const IObject3D* mesh)
         }
         glEnd();
     }
-    // Restore the transformation matrix
-    glPopMatrix();
 }
 
 void FlatRenderer::renderVbo(const IObject3D* mesh)
@@ -103,7 +93,7 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 	IObject3D* obj = const_cast<IObject3D*>(mesh);
 	
 	VertexBuffer* vbo = getVBO(obj);
-	if (vbo->getBufferID() == 0)
+	if (vbo == NULL || vbo->getBufferID() == 0)
 	{
 		qDebug() << "Failed to create VBO. Fallback to immediate mode" ;
 		renderImmediate(mesh);
@@ -112,18 +102,10 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 	// Set the depth function to the correct value
 	glDepthFunc(GL_LESS);
 	
-  	// Store the transformation matrix
-  	glPushMatrix();
-  	float x = 0.0f, y = 0.0f, z = 0.0f;
-  	mesh->getPosition(&x, &y, &z);
-   	glTranslatef(x, y, z);
-	
-	bool vboNeedsRefresh = vbo->needUpdate() || obj->hasChanged();
-	if (vboNeedsRefresh)
+	if ( vbo->needUpdate())
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-		obj->setChanged(false);
 	}
 
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -140,29 +122,23 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 	else
 		glColor3d(color.redF(), color.greenF(), color.blueF());
 
-	qDebug() << "Draw mesh";
+	//qDebug() << "Draw mesh";
 	glDrawArrays(GL_QUADS, 0, obj->getFaceList().size()*4);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	
-	glPopMatrix();
-	qDebug() << "Mesh rendered";
+	//qDebug() << "Mesh rendered";
 }
 
 VertexBuffer* FlatRenderer::getVBO(IObject3D* mesh)
 {
 	VertexBuffer* vbo = NULL;
-	if (g_vboContainer.contains(mesh))
+	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
+	if (vbo == NULL)
 	{
-		vbo = g_vboContainer[mesh];
-	}
-	else
-	{
-		vbo = new VertexBuffer;
-		vbo->create();
-		g_vboContainer[mesh] = vbo;
+		vbo = BOManager::getInstance()->createVBO(BO_POOL_NAME, mesh);
 	}
 	return vbo;
 }

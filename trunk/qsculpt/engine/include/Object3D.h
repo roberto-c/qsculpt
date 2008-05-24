@@ -42,7 +42,7 @@ class Object3D : public IObject3D
 public:
     Object3D();
 
-    Object3D(const Object3D& cpy);
+    //Object3D(const Object3D& cpy);
 
     virtual ~Object3D();
 
@@ -102,11 +102,14 @@ public:
 	};
 	virtual void setChanged(bool val) {
 		m_hasChanged = val;
+		if (val) {
+			emit meshChanged(this);
+		}
 	};
 		
 // End IObject3D interface
 
-    const Object3D& operator=(const Object3D& obj);
+    //const Object3D& operator=(const Object3D& obj);
 
 protected:
     /**
