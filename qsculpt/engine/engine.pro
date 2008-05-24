@@ -42,7 +42,9 @@ HEADERS += include/Box.h \
            include/FlatRenderer.h \
            include/PointRenderer.h \
            include/WireframeRenderer.h \
-           include/SmoothRenderer.h
+           include/SmoothRenderer.h \
+           include/BOManager.h \
+           include/Picking.h
 SOURCES += src/Box.cpp \
            src/Camera.cpp \
            src/Mesh.cpp \
@@ -55,4 +57,6 @@ SOURCES += src/Box.cpp \
            src/FlatRenderer.cpp \
            src/PointRenderer.cpp \
            src/WireframeRenderer.cpp \
-           src/SmoothRenderer.cpp
+           src/SmoothRenderer.cpp \
+           src/BOManager.cpp \
+           src/Picking.cpp
