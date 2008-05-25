@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
- *   roberto.cabral@gmail.com   *
+ *   Copyright (C) 2008 by Juan Roberto Cabral Flores                      *
+ *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -76,7 +76,7 @@ void SmoothRenderer::renderVbo(const IObject3D* mesh)
 	
 	IObject3D* obj = const_cast<IObject3D*>(mesh);
 	VertexBuffer* vbo= getVBO(obj);
-	if (vbo->getBufferID() == 0)
+	if (vbo == NULL || vbo->getBufferID() == 0)
 	{
 		qDebug() << "Failed to create VBO. Fallback to immediate mode" ;
 		renderImmediate(mesh);
