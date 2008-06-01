@@ -23,6 +23,7 @@
 #include <iostream>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QtAlgorithms>
 #include "Sphere.h"
 #include "Box.h"
 #include "IDocument.h"
@@ -33,10 +34,12 @@
 #include "Camera.h"
 #include "RendererFactory.h"
 #include "Picking.h"
+#include "PickingFacesRenderer.h"
 
 int g_x = 0; int g_y = 0;
 
 PickingObjectRenderer g_picking;
+PickingFacesRenderer g_pickingVertices;
 
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
@@ -519,27 +522,6 @@ void GlDisplay::wheelEvent ( QWheelEvent * e )
     updateGL();
 }
 
-QVector<HitRecord> GlDisplay::getPickRecords(int _x, int _y)
-{	
-    QVector<HitRecord> records;
-	
-	ObjectContainer listObj = getSelectedObjects( _x, m_viewport[3] - _y);
-
-	int d = listObj.size();
-    if (d > 0)
-    {
-        records.resize(d);
-        for (int i = 0; i < d; i++)
-        {
-            records[i].numNamesInStack = d;
-            records[i].minDepth = 0;
-            records[i].maxDepth = 0;
-            records[i].stackContents = d;
-        }
-    }
-    return records;
-}
-
 ObjectContainer GlDisplay::getSelectedObjects(GLint x, GLint y)
 {
 	ObjectContainer l;
@@ -562,7 +544,7 @@ ObjectContainer GlDisplay::getSelectedObjects(GLint x, GLint y)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		g_picking.renderObject(mesh, objId);
-		glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
+		glReadPixels(x, m_viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
 		
 		if (d == objId)
 			l.append(mesh);
@@ -572,6 +554,68 @@ ObjectContainer GlDisplay::getSelectedObjects(GLint x, GLint y)
 		glPopMatrix();
 		if (printGlError()) break;
     }
+	return l;
+}
+
+PointIndexList GlDisplay::getSelectedVertices(GLint x, GLint y,
+											  GLint width, GLint height)
+{
+	PointIndexList l;
+	if (m_renderer == NULL || width == 0 || height == 0)
+		return l;
+	
+	int halfWidth = width / 2;
+	int halfHeight = height / 2;
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	unsigned int objId = 1;
+	GLuint* d = new GLuint[width * height];
+	IObject3D* mesh;
+    IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
+    int count = doc->getObjectsCount();
+    for ( int i = 0; i < count; i++ )
+    {
+        mesh = doc->getObject(i);
+		
+		memset(d, 0, width*height*sizeof(GLuint));
+		glPushMatrix();
+		float px = 0.0f, py = 0.0f, pz = 0.0f;
+		mesh->getPosition(&px, &py, &pz);
+		glTranslatef(px, py, pz);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		g_pickingVertices.renderObject(mesh, objId);
+		glReadPixels(x - halfWidth, m_viewport[3]- (y + halfHeight), 
+					 width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)d);
+		
+		int faceIndex = 0;
+		int vtxIndex = 0;
+		int numPoints = 0;
+		for (int j = 0; j < width * height; ++j)
+		{
+			if (d[j] != 0)
+			{
+				faceIndex = d[j]-1;
+				numPoints =  mesh->getFaceList().at(faceIndex).point.size();
+				for (int k = 0; k < numPoints; ++k)
+				{
+					vtxIndex = mesh->getFaceList().at(faceIndex).point[k];
+					if (qBinaryFind(l, vtxIndex) == l.end())
+					{
+						l.append(vtxIndex);
+						qSort(l);
+					}
+				}
+			}
+		}
+		
+		objId++;
+		
+		glPopMatrix();
+		if (printGlError()) break;
+    }
+	delete [] d;
+	glClearColor( 0.0, 0.0, 0.0, 1.0 );
+	
 	return l;
 }
 

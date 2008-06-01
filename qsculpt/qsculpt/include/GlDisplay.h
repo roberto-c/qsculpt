@@ -100,20 +100,17 @@ public:
     bool areNormalsVisible();
 
     /**
-     * Get a list of pick records as returned by glRender. This is used to
-     * support picking or selection on objects. Each record contains
-     * information about the object under the (x, y) coordinates. The passed
-     * coordinates are in window space coordinates.
+     * Get a list of objects drawn under the position (x, y).
      *
      * @param x coord's x component
      * @param y coord's y component
      *
      * @return HitRecord vector
      */
-    QVector<HitRecord> getPickRecords(int _x, int _y);
-
 	ObjectContainer getSelectedObjects(GLint x, GLint y);
 	
+	PointIndexList getSelectedVertices(GLint x, GLint y,
+									   GLint width, GLint height);
     /**
      */
     Camera* getViewCamera();

@@ -61,6 +61,7 @@ void DocumentView::createWidgets()
 	// Set up gl display format
 	QGLFormat format = m_display->format();
 	format.setSwapInterval(1);
+	format.setDepthBufferSize(32);
 	m_display->setFormat(format);
 	
     gridLayout->setContentsMargins(0, 0, 0, 0);

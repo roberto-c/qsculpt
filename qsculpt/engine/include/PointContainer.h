@@ -26,33 +26,7 @@
 #include <QColor>
 #include "Octree.h"
 
-//struct Point
-//{
-//    Vertex vertex;
-//    QColor color;
-//    QVector<int> faceRef;
-//
-//    Point() : color(Qt::gray) {}
-//    Point(float x, float y, float z) : vertex(x, y, z), color(Qt::gray){}
-//    Point(const Vertex& v) : vertex(v), color(Qt::gray) {}
-//    Point(const Point& cpy) : vertex(cpy.vertex), color(cpy.color), faceRef(cpy.faceRef) {}
-//
-//    operator Vertex() {
-//        return vertex;
-//    }
-//
-//    operator Vertex() const {
-//        return vertex;
-//    }
-//
-//    bool operator==(const Vertex& v) const {
-//        return vertex == v;
-//    }
-//
-//    bool operator==(const Point& p) const {
-//        return vertex == p.vertex;
-//    }
-//};
+typedef QVector<int> PointIndexList;
 
 class PointContainer
 {

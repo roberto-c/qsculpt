@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
- *   roberto.cabral@gmail.com   *
+ *   Copyright (C) 2008 by Juan Roberto Cabral Flores                      *
+ *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,45 +17,33 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SELECTCOMMAND_H
-#define SELECTCOMMAND_H
+#ifndef PICKINGVERTEXRENDERER_H_
+#define PICKINGVERTEXRENDERER_H_
 
 #include <QVector>
-#include "CommandBase.h"
-#include "DocumentView.h"
-#include "Point3D.h"
-#include <QPointer>
+#include <QMap>
+#include "BufferObject.h"
+#include "IRenderer.h"
 
-class TransformWidget;
+class IObject3D;
 
-/**
- * Implements a simple object selection command.
- *
- * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
- */
-class SelectCommand : public CommandBase
+class PickingFacesRenderer
 {
-public:
-	SelectCommand(ICommand* parent = 0);
-
-	SelectCommand(const SelectCommand& cpy);
-
-    virtual ~SelectCommand();
-
-    // ICommand interface
-	virtual ICommand* clone() const;
-    virtual void mouseMoveEvent(QMouseEvent* e);
-    virtual void mousePressEvent(QMouseEvent* e);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual QWidget* getOptionsWidget();
-    // End ICommand interface
-
+public:	
+	PickingFacesRenderer();
+	virtual ~PickingFacesRenderer();
+	
+	virtual void renderObject(const IObject3D* mesh, GLuint objId);
+	
 private:
-    ObjectContainer m_objectsSelected;
-
-    void selectObject();
-
-    static QPointer<TransformWidget>	m_objectProperties;
+	void renderVbo(const IObject3D* mesh, unsigned int objID);
+	void renderImmediate(const IObject3D* mesh, unsigned int objID);
+	
+	VertexBuffer* getVBO(IObject3D* mesh);
+	VertexBuffer* getFlatVBO(IObject3D* mesh);
+	
+	void fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo, GLuint objId);
+	void fillFlatVertexBuffer(IObject3D* mesh, VertexBuffer* vbo,GLuint objId);
 };
 
 #endif

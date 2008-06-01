@@ -178,7 +178,7 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 		return;
 	}
 
-    if (m_record.size() > 0)
+    if (m_selectedObjects.count() > 0)
     {
         GLdouble x = 0.0,
             y = 0.0,
@@ -192,21 +192,26 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
             m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
 
         Point3D currPoint = Point3D(x, y, z);
-        Point3D currWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
+        Point3D currWinPoint = Point3D(e->x(), e->y(), wz);
 
-        // Set the direccion of the displacement
+        // Set the direction of the displacement
         int direction = m_action == Push ? -1 : 1;
 
         if (m_vertexSelected.size() > 0)
         {
-            Normal& n = m_object->getNormalAtPoint(m_vertexSelected[0]);
+            Normal& n = m_object->getNormalAtPoint(m_vertexSelected[m_vertexSelected.count()/2]);
             for (int i = 0; i < m_vertexSelected.size(); i++)
             {
 
                 Vertex& v = m_object->getVertex(m_vertexSelected[i]);
+				GLdouble winX, winY, winZ;
+				gluProject(v.getX(), v.getY(), v.getZ(),
+						   m_modelMatrix, m_projMatrix, m_viewPort,
+						   &winX, &winY, &winZ);
+				Vertex wv(winX, winY, winZ);
                 if ( n != Normal::null())
                 {
-                    float factor = (m_radius - (m_currentPoint - v).length()) / m_radius;
+                    float factor =  0.2f; //(m_radius - (m_currentWinPoint - wv).length()) / m_radius;
                     factor = factor * m_depth * direction;
                     Vertex disp = n * factor;
                     v = v + disp;
@@ -220,9 +225,9 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
         m_currentWinPoint = currWinPoint;
 
         DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
-        m_record.clear();
-        m_record = view->getPickRecords( e->pos().x(), e->pos().y());
-        if (m_record.size() > 0)
+        m_selectedObjects.clear();
+        m_selectedObjects = view->getSelectedObjects( e->pos().x(), e->pos().y());
+        if (m_selectedObjects.count() > 0)
         {
             m_vertexSelected.clear();
             selectObject();
@@ -241,15 +246,15 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
     DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
 
 	m_vertexSelected.clear();
-	m_record.clear();
+	m_selectedObjects.clear();
 	m_previousState.clear();
     m_radius = m_propertiesWindow->getBrushRadius();
     m_action = m_propertiesWindow->getBrushAction();
     m_depth = m_propertiesWindow->getBrushStrength();
 
-    m_record = view->getPickRecords( e->pos().x(), e->pos().y());
+    m_selectedObjects = view->getSelectedObjects( e->pos().x(), e->pos().y());
 
-    if (m_record.size() > 0)
+    if (m_selectedObjects.count() > 0)
     {
         GLdouble x, y, z;
         GLfloat wz = 0.0f;
@@ -262,7 +267,7 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
         gluUnProject(e->x(), m_viewPort[3] - e->y(), wz,
             m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
 
-        m_initialWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
+        m_initialWinPoint = Point3D(e->x(), e->y(), wz);
         m_currentWinPoint = m_initialWinPoint;
         m_intialPoint = Point3D(x, y, z);
         m_currentPoint = m_intialPoint;
@@ -281,9 +286,9 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
 void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 {
     m_vertexSelected.clear();
-    if (m_record.size() > 0)
+    if (m_selectedObjects.count() > 0)
     {
-        m_record.clear();
+        m_selectedObjects.clear();
 		m_object->setChanged(true);
         emit executed();
     }
@@ -299,44 +304,37 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 void BrushCommand::selectObject()
 {
 	qDebug() << "BrushCommand::selectObject()";
-    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
+	DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
 
-    if (!doc)
+    if (!view)
         return;
-
-    int docObjectCount = doc->getObjectsCount();
-    int recordCount = m_record.size();
+    int recordCount = m_selectedObjects.count();
     qDebug() << "recordCount =" << recordCount;
     for (int i = 0; i < recordCount; i++)
     {
-        if (m_record[i].stackContents > 0 && m_record[i].stackContents - 1 < docObjectCount)
-        {
-        	qDebug() << "record is between bounds" << recordCount;
-            m_object = doc->getObject(m_record[i].stackContents - 1);
-            if (m_object)
-            {
-                m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
-				int counter = m_vertexSelected.size();
-				qDebug() << "currentPoint: " << qPrintable(m_currentPoint.toString()) << " points selected: " << counter;
-				for (int j = 0; j < counter; j++)
+		m_object = m_selectedObjects[i];
+		if (m_object)
+		{
+			m_vertexSelected = view->getSelectedVertices(m_currentWinPoint.getX(), 
+														m_currentWinPoint.getY(),
+														m_radius, m_radius);
+			//m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
+			int counter = m_vertexSelected.size();
+			qDebug() << "currentPoint: " << qPrintable(m_currentPoint.toString()) << " points selected: " << counter;
+			for (int j = 0; j < counter; j++)
+			{
+				int index = m_vertexSelected[j];
+				if (!m_previousState[m_object].contains(m_vertexSelected[j]))
 				{
-					int index = m_vertexSelected[j];
-					if (!m_previousState[m_object].contains(m_vertexSelected[j]))
-					{
-						//m_object->getPointList().at(index).color = QColor(255, 0, 0);
-						m_previousState[m_object].insert(index, m_object->getVertex(index));
-					}
+					//m_object->getPointList().at(index).color = QColor(255, 0, 0);
+					m_previousState[m_object].insert(index, m_object->getVertex(index));
 				}
-            }
-            else
-            {
-            	qDebug() << "m_object is null";
-            }
-        }
-        else
-        {
-        	qDebug() << "record is out of bounds: " << m_record[i].stackContents;
-        }
+			}
+		}
+		else
+		{
+			qDebug() << "m_object is null";
+		}
     }
 }
 

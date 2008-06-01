@@ -106,6 +106,12 @@ public:
 			emit meshChanged(this);
 		}
 	};
+	virtual QVector<int> getSelectedPoints() const {
+		return m_selectedPoints;
+	}
+	virtual void setSelectedPoints(const QVector<int>& indicesArray) {
+		m_selectedPoints = indicesArray;
+	}
 		
 // End IObject3D interface
 
@@ -164,6 +170,7 @@ protected:
     bool            m_genereateCallList;
     int				m_currentResolutionLevel;
 	bool			m_hasChanged;
+	QVector<int>	m_selectedPoints;
 
 private:
     void updateBoundingBox();

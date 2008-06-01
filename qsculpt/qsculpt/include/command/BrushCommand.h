@@ -64,7 +64,7 @@ private:
 
 	void selectObject();
 
-    QVector<HitRecord>  m_record;
+    ObjectContainer		m_selectedObjects;
     IObject3D*          m_object;
     double              m_radius;
     double              m_depth;
