@@ -84,17 +84,20 @@ public:
     bool areNormalsVisible();
 
     /**
-     * Retuns a collection of hit record. Each hit record contains information
-     * about the objects under an especific point on the screen.
+     * Retuns a collection of objects under the position (x, y).
      *
      * @param x x component of the point to test.
      * @param y y component of the point to test.
      *
-     * @return a HitRecord vector with the results of the test.
+     * @return an object container with the results of the test.
      */
-    QVector<HitRecord> getPickRecords(int _x, int _y) {
-        return m_display->getPickRecords(_x, _y);
+	ObjectContainer getSelectedObjects(int x, int y) {
+        return m_display->getSelectedObjects(x, y);
     };
+	PointIndexList getSelectedVertices(GLint x, GLint y,
+									   GLint width, GLint height) {
+		return m_display->getSelectedVertices(x, y, width, height);
+	}
 
     /**
      * getViewType

@@ -386,6 +386,9 @@ public:
 	
 	virtual void setChanged(bool val)=0;
 	
+	virtual QVector<int> getSelectedPoints() const = 0;
+	virtual void setSelectedPoints(const QVector<int>& indicesArray) = 0;
+	
 signals:
 	void meshChanged(IObject3D* mesh);
 };

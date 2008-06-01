@@ -70,7 +70,7 @@ QWidget* SelectCommand::getOptionsWidget()
 
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {
-    if (m_record.isEmpty())
+    if (m_objectsSelected.isEmpty())
         CommandBase::mouseMoveEvent(e);
 }
 
@@ -78,11 +78,16 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 {
     DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
 
-    m_record = view->getPickRecords( e->pos().x(), e->pos().y());
+    m_objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
+	QVector<int> verticesSelected = view->getSelectedVertices(e->pos().x(), e->pos().y(), 30, 30);
 
-    if (m_record.size() > 0)
+    if (m_objectsSelected.count() > 0)
     {
-        selectObject();
+		for (int i = 0; i < m_objectsSelected.count(); ++i)
+		{
+			m_objectsSelected[i]->setSelected(!m_objectsSelected[i]->isSelected());
+			m_objectsSelected[i]->setSelectedPoints(verticesSelected);
+		}
     }
     else
     {
@@ -92,31 +97,9 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 
 void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 {
-    if (m_record.size() > 0)
+    if (m_objectsSelected.count() > 0)
         emit executed();
     else
         CommandBase::mouseReleaseEvent(e);
-}
-
-void SelectCommand::selectObject()
-{
-    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
-
-    if (!doc)
-        return;
-
-    int docObjectCount = doc->getObjectsCount();
-    int recordCount = m_record.size();
-    for (int i = 0; i < recordCount; i++)
-    {
-        if (m_record[i].stackContents > 0 && m_record[i].stackContents - 1 < docObjectCount)
-        {
-            IObject3D* obj = doc->getObject(m_record[i].stackContents - 1);
-            if (obj)
-            {
-                obj->setSelected( !obj->isSelected() );
-            }
-        }
-    }
 }
 

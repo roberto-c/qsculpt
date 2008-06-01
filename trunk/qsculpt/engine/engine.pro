@@ -44,7 +44,8 @@ HEADERS += include/Box.h \
            include/WireframeRenderer.h \
            include/SmoothRenderer.h \
            include/BOManager.h \
-           include/Picking.h
+           include/Picking.h \
+		   include/PickingFacesRenderer.h
 SOURCES += src/Box.cpp \
            src/Camera.cpp \
            src/Mesh.cpp \
@@ -59,4 +60,5 @@ SOURCES += src/Box.cpp \
            src/WireframeRenderer.cpp \
            src/SmoothRenderer.cpp \
            src/BOManager.cpp \
-           src/Picking.cpp
+           src/Picking.cpp \
+		   src/PickingFacesRenderer.cpp
