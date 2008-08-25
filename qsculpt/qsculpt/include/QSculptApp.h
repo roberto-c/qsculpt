@@ -22,9 +22,10 @@
 
 #include <QApplication>
 
-#define SPAPP ((QSculptApp*)QSculptApp::instance())
+#define g_pApp g_pApp
 
 class QSculptWindow;
+class IDocument;
 
 /**
  * Contains methods or variables that are used in all the application.
@@ -53,9 +54,19 @@ public:
      */
     QSculptWindow* getMainWindow();
     
+	/**
+	 * Get the current document.
+	 *
+	 * This function is used to retreive the document where the operations
+	 * are being executed on.
+	 */
+	IDocument* getCurrentDocument();
+	
 private:
     QSculptWindow* m_mainWindow; /**< main widget of the application. */
 };
+
+extern QSculptApp* g_pApp;
 
 #endif
 

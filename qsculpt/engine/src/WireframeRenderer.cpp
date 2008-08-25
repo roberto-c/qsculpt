@@ -2,7 +2,7 @@
 #include "WireframeRenderer.h"
 #include <QtOpenGL>
 #include "IObject3D.h"
-
+#include <QPolygon>
 WireframeRenderer::WireframeRenderer()
 {
 	qDebug() << "WireframeRenderer constructor";
@@ -19,6 +19,7 @@ void WireframeRenderer::renderObject(const IObject3D* mesh)
     int size = faceList.size();
 
     glBegin(GL_LINES);
+	glColor3f(0.0f, 0.0f, 1.0f);
     for ( int i = 0; i < size; i++)
     {
         const Face& f = faceList[i];

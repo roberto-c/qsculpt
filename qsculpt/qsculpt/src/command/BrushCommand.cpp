@@ -41,7 +41,8 @@ BrushCommand::BrushCommand(ICommand* parent)
 	m_depth( 0.1),
 	m_action(Push),
 	m_propertiesWindow(NULL),
-	m_undoCalled(false)
+	m_undoCalled(false),
+	m_direction(-1)
 {
 	if (getOptionsWidget())
 	{
@@ -97,7 +98,7 @@ QWidget* BrushCommand::getOptionsWidget()
 
 void BrushCommand::activate(bool active)
 {
-	DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+	DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 	if (active)
 	{
 		view->setCursorImage(m_cursorImage);
@@ -133,7 +134,7 @@ void BrushCommand::undo()
 		}
 		m_object->setChanged(true);
 		
-		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+		DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 		if (view)
 			view->updateView();
 	}
@@ -164,7 +165,7 @@ void BrushCommand::redo()
 		}
 		m_object->setChanged(true);
 		
-		DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+		DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 		if (view)
 			view->updateView();
 	}
@@ -180,12 +181,9 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 
     if (m_selectedObjects.count() > 0)
     {
-        GLdouble x = 0.0,
-            y = 0.0,
-            z = 0.0;
+        GLdouble x = 0.0, y = 0.0,  z = 0.0;
         GLfloat wz = 0.0f;
 
-        //glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
         // Use the same z depth to move in the plane parallel to the screen.
         wz = m_currentWinPoint.getZ();
         gluUnProject(e->x(), m_viewPort[3] - e->y(), wz,
@@ -195,36 +193,14 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
         Point3D currWinPoint = Point3D(e->x(), e->y(), wz);
 
         // Set the direction of the displacement
-        int direction = m_action == Push ? -1 : 1;
+        m_direction = m_action == Push ? -1 : 1;
 
-        if (m_vertexSelected.size() > 0)
-        {
-            Normal& n = m_object->getNormalAtPoint(m_vertexSelected[m_vertexSelected.count()/2]);
-            for (int i = 0; i < m_vertexSelected.size(); i++)
-            {
-
-                Vertex& v = m_object->getVertex(m_vertexSelected[i]);
-				GLdouble winX, winY, winZ;
-				gluProject(v.getX(), v.getY(), v.getZ(),
-						   m_modelMatrix, m_projMatrix, m_viewPort,
-						   &winX, &winY, &winZ);
-				Vertex wv(winX, winY, winZ);
-                if ( n != Normal::null())
-                {
-                    float factor =  0.2f; //(m_radius - (m_currentWinPoint - wv).length()) / m_radius;
-                    factor = factor * m_depth * direction;
-                    Vertex disp = n * factor;
-                    v = v + disp;
-                    m_object->adjustPointNormal(m_vertexSelected[i]);
-                }
-            }
-			m_object->setChanged(true);
-        }
+        applyOperation();
 
         m_currentPoint = currPoint;
         m_currentWinPoint = currWinPoint;
 
-        DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+        DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
         m_selectedObjects.clear();
         m_selectedObjects = view->getSelectedObjects( e->pos().x(), e->pos().y());
         if (m_selectedObjects.count() > 0)
@@ -243,7 +219,7 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 
 void BrushCommand::mousePressEvent(QMouseEvent* e)
 {
-    DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
 	m_vertexSelected.clear();
 	m_selectedObjects.clear();
@@ -296,15 +272,43 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
     {
         CommandBase::mouseReleaseEvent(e);
     }
-	DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+	DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 	if (view)
 		view->updateView();
+}
+
+void BrushCommand::applyOperation()
+{
+	GLdouble winX, winY, winZ;
+	Vertex wv;
+	if (m_vertexSelected.size() > 0)
+	{
+		Normal& n = m_object->getNormalAtPoint(m_vertexSelected[m_vertexSelected.count()/2]);
+		for (int i = 0; i < m_vertexSelected.size(); i++)
+		{
+			
+			Vertex& v = m_object->getVertex(m_vertexSelected[i]);
+			gluProject(v.getX(), v.getY(), v.getZ(),
+					   m_modelMatrix, m_projMatrix, m_viewPort,
+					   &winX, &winY, &winZ);
+			wv.setPoint(winX, winY, winZ);
+			if ( n != Normal::null())
+			{
+				float factor =  (m_radius - (m_currentWinPoint - wv).length()) / m_radius;
+				factor = factor * m_depth * m_direction;
+				Vertex disp = n * factor;
+				v = v + disp;
+				m_object->adjustPointNormal(m_vertexSelected[i]);
+			}
+		}
+		m_object->setChanged(true);
+	}
 }
 
 void BrushCommand::selectObject()
 {
 	qDebug() << "BrushCommand::selectObject()";
-	DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+	DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
     if (!view)
         return;

@@ -209,7 +209,7 @@ private:
 
     void mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx, double *wy, double *wz);
     void mapWorldCoordsToScreenCoords(double wx, double wy, double wz, int *x, int *y, int *z);
-
+	
     bool            m_isGridVisible;        /**< Grid visibility flag */
     bool            m_areNormalsVisible;    /**< Normals visibility flag */
     GLuint*         m_selectBuffer;         /**< Selection buffer */

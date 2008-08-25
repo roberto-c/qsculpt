@@ -64,7 +64,7 @@ void SubdivideCommand::execute()
 
     qDebug("execute SubdivideCommand()");
     QProgressDialog dlg("Subdividing the selected object...", 0, 0, 100,
-						SPAPP->getMainWindow());
+						g_pApp->getMainWindow());
     dlg.setWindowModality(Qt::WindowModal);
     dlg.setAutoReset(true);
     dlg.setAutoClose(true);
@@ -76,7 +76,7 @@ void SubdivideCommand::execute()
     dlg.show();
     qDebug() << "Start time:" << QDateTime::currentDateTime();
 
-    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
+    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
     if (!doc)
         return;
@@ -100,7 +100,7 @@ void SubdivideCommand::execute()
             m_workerThread->start();
             while(m_workerThread->isRunning())
             {
-                SPAPP->processEvents();
+                g_pApp->processEvents();
                 usleep(100 * 1000); // 100 ms
             }
 			obj->setChanged(true);
@@ -108,7 +108,7 @@ void SubdivideCommand::execute()
     }
     qDebug() << "End time:" << QDateTime::currentDateTime();
     dlg.setValue(100);
-    SPAPP->getMainWindow()->getCurrentView()->updateView();
+    g_pApp->getMainWindow()->getCurrentView()->updateView();
 }
 
 void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int rend)

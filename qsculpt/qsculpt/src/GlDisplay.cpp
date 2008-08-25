@@ -24,6 +24,10 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QtAlgorithms>
+#include <QLineF>
+#include <QRectF>
+#include <QPolygonF>
+#include <QMatrix>
 #include "Sphere.h"
 #include "Box.h"
 #include "IDocument.h"
@@ -35,8 +39,6 @@
 #include "RendererFactory.h"
 #include "Picking.h"
 #include "PickingFacesRenderer.h"
-
-int g_x = 0; int g_y = 0;
 
 PickingObjectRenderer g_picking;
 PickingFacesRenderer g_pickingVertices;
@@ -210,9 +212,7 @@ void GlDisplay::resizeGL( int w, int h )
 }
 
 void GlDisplay::paintGL()
-{
-    //Point3D point( 3, 2, 4 );
-	
+{	
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glBindTexture(GL_TEXTURE_2D, 0);
     glLoadIdentity();
@@ -251,6 +251,7 @@ void GlDisplay::paintGL()
     switch(m_drawingMode)
     {
         case Smooth:
+		case Wireframe:
             glEnable(GL_LIGHTING);
             glShadeModel(GL_SMOOTH);
             break;
@@ -258,7 +259,6 @@ void GlDisplay::paintGL()
             glEnable(GL_LIGHTING);
             glShadeModel(GL_FLAT);
             break;
-        case Wireframe:
         case Texture:
         case Points:
             break;
@@ -455,7 +455,7 @@ void GlDisplay::drawOrientationAxis()
 
 void GlDisplay::mouseMoveEvent ( QMouseEvent * e )
 {
-    ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
+    ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
 	
     bool needUpdate = false;
     if (cmd)
@@ -477,7 +477,7 @@ void GlDisplay::mouseMoveEvent ( QMouseEvent * e )
 void GlDisplay::mousePressEvent ( QMouseEvent * e )
 {
     //qDebug("MousePress");
-    ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
+    ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
 	
     bool needUpdate = false;
     if (cmd)
@@ -502,7 +502,7 @@ void GlDisplay::mousePressEvent ( QMouseEvent * e )
 void GlDisplay::mouseReleaseEvent ( QMouseEvent * e )
 {
     //qDebug("MouseRelease");
-    ICommand* cmd = SPAPP->getMainWindow()->getSelectedCommand();
+    ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
 	
     if (cmd)
     {
@@ -671,12 +671,13 @@ void GlDisplay::mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx,
 											 double *wy, double *wz)
 {
     double modelMatrix[16], projMatrix[16];
-    GLint viewPort[4];
     glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
-    glGetIntegerv(GL_VIEWPORT, viewPort);
 	
-    gluUnProject( x, viewPort[3] - y, z, modelMatrix, projMatrix, viewPort,
+	GLdouble dx = GLdouble(x);
+	GLdouble dy = GLdouble(m_viewport[3] - y);
+	GLdouble dz = GLdouble(z);
+    gluUnProject( dx, dy, dz, modelMatrix, projMatrix, m_viewport,
 				 (GLdouble*)wx, (GLdouble*)wy, (GLdouble*)wz);
 }
 
@@ -684,15 +685,15 @@ void GlDisplay::mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
 											 int *x, int *y, int *z)
 {
     double modelMatrix[16], projMatrix[16];
-    GLint viewPort[4];
     glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
-    glGetIntegerv(GL_VIEWPORT, viewPort);
 	
     double dx, dy, dz;
     gluProject( (GLdouble)wx, (GLdouble)wy, (GLdouble)wz, 
-			   modelMatrix, projMatrix, viewPort, &dx, &dy, &dz);
+			   modelMatrix, projMatrix, m_viewport, &dx, &dy, &dz);
     if (x) *x = (int)dx;
     if (y) *y = (int)dy;
     if (z) *z = (int)dz;
 }
+
+
