@@ -88,7 +88,7 @@ bool CommandBase::isActive()
 
 void CommandBase::mousePressEvent(QMouseEvent* e)
 {
-    DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
     GLdouble x, y, z;
     GLfloat wz = 0.0f;

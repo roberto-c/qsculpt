@@ -76,7 +76,7 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 
 void SelectCommand::mousePressEvent(QMouseEvent* e)
 {
-    DocumentView* view = SPAPP->getMainWindow()->getCurrentView();
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
     m_objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
 	QVector<int> verticesSelected = view->getSelectedVertices(e->pos().x(), e->pos().y(), 30, 30);

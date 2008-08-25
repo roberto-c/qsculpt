@@ -21,6 +21,10 @@
 #include "QSculptApp.h"
 #include <QWidget>
 #include "QSculptWindow.h"
+#include "IDocument.h"
+
+
+QSculptApp* g_pApp = NULL;
 
 QSculptApp::QSculptApp(int& argc, char** argv)
     : QApplication(argc, argv),
@@ -48,10 +52,14 @@ QSculptWindow* QSculptApp::getMainWindow()
 int main( int argc, char ** argv ) {
     QSculptApp a( argc, argv );
     
-	a.setOrganizationName("QSculpt");
-	a.setOrganizationDomain("qsculpt.com");
-	a.setApplicationName("QSculpt");
-    a.getMainWindow()->show();
+	g_pApp = (QSculptApp*)QSculptApp::instance();
+	
+	g_pApp->setOrganizationName("QSculpt");
+	g_pApp->setOrganizationDomain("qsculpt.com");
+	g_pApp->setApplicationName("QSculpt");
+    g_pApp->getMainWindow()->show();
     
-    return a.exec();
+	int result = a.exec();
+
+    return result;
 }

@@ -64,6 +64,6 @@ void TransformWidget::applyTransform()
 
     cmd.execute();
 
-    SPAPP->getMainWindow()->getCurrentView()->updateView();
+    g_pApp->getMainWindow()->getCurrentView()->updateView();
 }
 

@@ -71,7 +71,7 @@ void TransformCommand::execute()
     sy = m_configContainer->getDouble(CONF_SCALE_Y);
     sz = m_configContainer->getDouble(CONF_SCALE_Z);
 
-    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
+    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
     Action action = (Action)m_configContainer->getInt(CONF_MOVE_AXIS);
     QList<IObject3D*> objects = doc->getSelectedObjects();
@@ -123,7 +123,7 @@ void TransformCommand::activate(bool active)
 
     m_objects.clear();
 
-    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
+    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
     if (doc->getObjectsCount() > 0 )
     {
@@ -214,7 +214,7 @@ void TransformCommand::mousePressEvent(QMouseEvent* e)
     m_final = m_initial;
     qDebug("Initial position: %s", qPrintable(m_initial.toString()));
 
-    const IDocument* doc = SPAPP->getMainWindow()->getCurrentDocument();
+    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (doc->getSelectedObjects().size() > 0 )
     {
         m_objects += doc->getSelectedObjects();

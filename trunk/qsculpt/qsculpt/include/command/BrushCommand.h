@@ -62,6 +62,8 @@ public:
 private:
 	typedef QMap<IObject3D*, QHash<int, Vertex> > DirtyFaceMap;
 
+	void applyOperation(); 
+	
 	void selectObject();
 
     ObjectContainer		m_selectedObjects;
@@ -74,6 +76,7 @@ private:
 	DirtyFaceMap		m_previousState;
 	bool				m_undoCalled;
 	static QImage		m_cursorImage;
+	int					m_direction;
 };
 
 #endif
