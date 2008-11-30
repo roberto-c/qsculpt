@@ -35,7 +35,7 @@
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "ICommand.h"
-#include "GlDisplay.h"
+#include "GlView.h"
 
 DocumentView::DocumentView( QWidget *_parent )
         : QWidget( _parent ),
@@ -52,7 +52,7 @@ void DocumentView::createWidgets()
 {
     QGridLayout* gridLayout = new QGridLayout(this);
 	QHBoxLayout* hboxLayout = new QHBoxLayout();
-	m_display = new GlDisplay(this);
+	m_display = new GlView(this);
 	
 	Q_CHECK_PTR(gridLayout);
 	Q_CHECK_PTR(m_display);
@@ -95,15 +95,15 @@ void DocumentView::createWidgets()
     gridLayout->setColumnStretch(3,0);
     gridLayout->setColumnStretch(4,4);
 
-    m_viewPerspective->addItem("Front", GlDisplay::Front);
-    m_viewPerspective->addItem("Back", GlDisplay::Back);
-    m_viewPerspective->addItem("Top", GlDisplay::Top);
-    m_viewPerspective->addItem("Bottom", GlDisplay::Bottom);
-    m_viewPerspective->addItem("Left", GlDisplay::Left);
-    m_viewPerspective->addItem("Right", GlDisplay::Right);
-    m_viewPerspective->addItem("Perspective", GlDisplay::Perspective);
+    m_viewPerspective->addItem("Front", GlView::Front);
+    m_viewPerspective->addItem("Back", GlView::Back);
+    m_viewPerspective->addItem("Top", GlView::Top);
+    m_viewPerspective->addItem("Bottom", GlView::Bottom);
+    m_viewPerspective->addItem("Left", GlView::Left);
+    m_viewPerspective->addItem("Right", GlView::Right);
+    m_viewPerspective->addItem("Perspective", GlView::Perspective);
     m_viewPerspective->setCurrentIndex(6);
-    m_display->setPerspectiveView( GlDisplay::Perspective );
+    m_display->setPerspectiveView( GlView::Perspective );
 
     m_drawingMode->addItem("Points", Points);
     m_drawingMode->addItem("Wireframe", Wireframe);
@@ -150,9 +150,9 @@ void DocumentView::viewPerspectiveChanged(int index)
 	Q_ASSERT(m_display);
 	Q_ASSERT(m_viewPerspective);
 	
-    GlDisplay::PerspectiveType type;
+    GlView::PerspectiveType type;
 
-    type = (GlDisplay::PerspectiveType)m_viewPerspective->itemData(index).toInt();
+    type = (GlView::PerspectiveType)m_viewPerspective->itemData(index).toInt();
     m_display->setPerspectiveView( type );
     updateView();
 }

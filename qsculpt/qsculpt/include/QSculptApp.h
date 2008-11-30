@@ -48,7 +48,7 @@ public:
 
     /**
      * Get the main widget of the application. The main widget generally is the
-     * main window (class SolidPaint3D)
+     * main window.
      * 
      * @return a pointer to the main widget
      */

@@ -51,7 +51,7 @@ struct HitRecord
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class GlDisplay : public QGLWidget
+class GlView : public QGLWidget
 {
     Q_OBJECT
 public:
@@ -80,12 +80,12 @@ public:
      *
      * @param parent the parent view of the widget.
      */
-    GlDisplay(DocumentView* parent = 0);
+    GlView(DocumentView* parent = 0);
 
     /**
      * Default destructor
      */
-    ~GlDisplay();
+    ~GlView();
 
     /**
      * Return the state of the visibility of the grid.
