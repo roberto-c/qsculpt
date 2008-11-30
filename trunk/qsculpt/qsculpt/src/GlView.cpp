@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include "GlDisplay.h"
+#include "GlView.h"
 #include <QtOpenGL>
 #include <iostream>
 #include <QMouseEvent>
@@ -46,7 +46,7 @@ PickingFacesRenderer g_pickingVertices;
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
 
-GlDisplay::GlDisplay(DocumentView* _parent)
+GlView::GlView(DocumentView* _parent)
 : QGLWidget(_parent),
 m_isGridVisible(false),
 m_areNormalsVisible(false),
@@ -114,7 +114,7 @@ m_textureId(0)
 }
 
 
-GlDisplay::~GlDisplay()
+GlView::~GlView()
 {
     if (m_selectBuffer)
         delete [] m_selectBuffer;
@@ -134,34 +134,34 @@ GlDisplay::~GlDisplay()
 	m_selectionRenderer = NULL;
 }
 
-void GlDisplay::setGridVisible(bool value)
+void GlView::setGridVisible(bool value)
 {
     m_isGridVisible = value;
     updateGL();
 }
 
-bool GlDisplay::isGridVisible()
+bool GlView::isGridVisible()
 {
     return m_isGridVisible;
 }
 
-bool GlDisplay::areNormalsVisible()
+bool GlView::areNormalsVisible()
 {
     return m_areNormalsVisible;
 }
 
-void GlDisplay::setNormalsVisible(bool visible)
+void GlView::setNormalsVisible(bool visible)
 {
     m_areNormalsVisible = visible;
 }
 
-void GlDisplay::setDrawingMode(DrawingMode mode){
+void GlView::setDrawingMode(DrawingMode mode){
     m_drawingMode = mode;
     delete m_renderer;
     m_renderer = RendererFactory::getRenderer(m_drawingMode);
 }
 
-void GlDisplay::initializeGL()
+void GlView::initializeGL()
 {
     // Set up the rendering context, define display lists etc.:
 	
@@ -190,7 +190,7 @@ void GlDisplay::initializeGL()
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 }
 
-void GlDisplay::resizeGL( int w, int h )
+void GlView::resizeGL( int w, int h )
 {
     if ( h > 0 )
         m_aspectRatio = GLdouble( w ) / GLdouble( h );
@@ -211,7 +211,7 @@ void GlDisplay::resizeGL( int w, int h )
     glGetIntegerv(GL_VIEWPORT, m_viewport);
 }
 
-void GlDisplay::paintGL()
+void GlView::paintGL()
 {	
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -272,7 +272,7 @@ void GlDisplay::paintGL()
     //drawOrientationAxis();
 }
 
-void GlDisplay::drawObjects()
+void GlView::drawObjects()
 {
 	if (m_renderer == NULL)
 		return;
@@ -293,7 +293,7 @@ void GlDisplay::drawObjects()
     }
 }
 
-void GlDisplay::drawGrid()
+void GlView::drawGrid()
 {
     const double GRID_PLANE_Z = 0.0;
     glLineWidth(1.0);
@@ -328,7 +328,7 @@ void GlDisplay::drawGrid()
     glLineWidth(1.0);
 }
 
-void GlDisplay::drawCursor()
+void GlView::drawCursor()
 {
     if (m_cursorShape == None)
         return;
@@ -400,7 +400,7 @@ void GlDisplay::drawCursor()
     }
 }
 
-void GlDisplay::drawOrientationAxis()
+void GlView::drawOrientationAxis()
 {
     bool lightEnabled = glIsEnabled(GL_LIGHTING);
 	
@@ -453,7 +453,7 @@ void GlDisplay::drawOrientationAxis()
         glEnable(GL_LIGHTING);
 }
 
-void GlDisplay::mouseMoveEvent ( QMouseEvent * e )
+void GlView::mouseMoveEvent ( QMouseEvent * e )
 {
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
 	
@@ -474,7 +474,7 @@ void GlDisplay::mouseMoveEvent ( QMouseEvent * e )
     }
 }
 
-void GlDisplay::mousePressEvent ( QMouseEvent * e )
+void GlView::mousePressEvent ( QMouseEvent * e )
 {
     //qDebug("MousePress");
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
@@ -499,7 +499,7 @@ void GlDisplay::mousePressEvent ( QMouseEvent * e )
     }
 }
 
-void GlDisplay::mouseReleaseEvent ( QMouseEvent * e )
+void GlView::mouseReleaseEvent ( QMouseEvent * e )
 {
     //qDebug("MouseRelease");
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
@@ -511,7 +511,7 @@ void GlDisplay::mouseReleaseEvent ( QMouseEvent * e )
     }
 }
 
-void GlDisplay::wheelEvent ( QWheelEvent * e )
+void GlView::wheelEvent ( QWheelEvent * e )
 {
     int numDegrees = e->delta() / 8;
     int numSteps = numDegrees / 15;
@@ -522,7 +522,7 @@ void GlDisplay::wheelEvent ( QWheelEvent * e )
     updateGL();
 }
 
-ObjectContainer GlDisplay::getSelectedObjects(GLint x, GLint y)
+ObjectContainer GlView::getSelectedObjects(GLint x, GLint y)
 {
 	ObjectContainer l;
 	if (m_renderer == NULL)
@@ -557,7 +557,7 @@ ObjectContainer GlDisplay::getSelectedObjects(GLint x, GLint y)
 	return l;
 }
 
-PointIndexList GlDisplay::getSelectedVertices(GLint x, GLint y,
+PointIndexList GlView::getSelectedVertices(GLint x, GLint y,
 											  GLint width, GLint height)
 {
 	PointIndexList l;
@@ -619,7 +619,7 @@ PointIndexList GlDisplay::getSelectedVertices(GLint x, GLint y,
 	return l;
 }
 
-Camera* GlDisplay::getViewCamera()
+Camera* GlView::getViewCamera()
 {
     if (!m_cameraList.contains(m_viewType))
     {
@@ -629,7 +629,7 @@ Camera* GlDisplay::getViewCamera()
     return m_cameraList[m_viewType];
 }
 
-void GlDisplay::set3DCursorShape(CursorShapeType shape)
+void GlView::set3DCursorShape(CursorShapeType shape)
 {
     m_cursorShape = shape;
 	
@@ -637,7 +637,7 @@ void GlDisplay::set3DCursorShape(CursorShapeType shape)
     setMouseTracking(m_cursorShape != None);
 }
 
-void GlDisplay::setCursorImage(const QImage& image)
+void GlView::setCursorImage(const QImage& image)
 {
     if (image.isNull())
     {
@@ -662,12 +662,12 @@ void GlDisplay::setCursorImage(const QImage& image)
 /**
  * Returns a copy of the image used as cursor.
  */
-QImage GlDisplay::getCursorImage()
+QImage GlView::getCursorImage()
 {
 	return m_cursorImage;
 }
 
-void GlDisplay::mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx,
+void GlView::mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx,
 											 double *wy, double *wz)
 {
     double modelMatrix[16], projMatrix[16];
@@ -681,7 +681,7 @@ void GlDisplay::mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx,
 				 (GLdouble*)wx, (GLdouble*)wy, (GLdouble*)wz);
 }
 
-void GlDisplay::mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
+void GlView::mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
 											 int *x, int *y, int *z)
 {
     double modelMatrix[16], projMatrix[16];

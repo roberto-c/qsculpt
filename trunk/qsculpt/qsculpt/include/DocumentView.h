@@ -24,7 +24,7 @@
 #include <QList>
 #include <QPoint>
 #include "Point3D.h"
-#include "GlDisplay.h"
+#include "GlView.h"
 
 class IObject3D;
 class IDocument;
@@ -102,7 +102,7 @@ public:
     /**
      * getViewType
      */
-    GlDisplay::PerspectiveType getPerspectiveViewType() {
+    GlView::PerspectiveType getPerspectiveViewType() {
         return m_display->getPerspectiveView();
     };
 
@@ -113,11 +113,11 @@ public:
         return m_display->getViewCamera();
     };
 
-    void set3DCursorShape(GlDisplay::CursorShapeType shape) {
+    void set3DCursorShape(GlView::CursorShapeType shape) {
         m_display->set3DCursorShape(shape);
     };
 
-    GlDisplay::CursorShapeType getCursorShape() {
+    GlView::CursorShapeType getCursorShape() {
         return m_display->getCursorShape();
     };
 
@@ -186,7 +186,7 @@ public slots:
 
 protected:
     IDocument* m_document;
-    GlDisplay* m_display;
+    GlView* m_display;
     QComboBox* m_viewPerspective;
     QComboBox* m_drawingMode;
 };

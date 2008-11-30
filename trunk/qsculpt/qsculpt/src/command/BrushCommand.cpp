@@ -102,11 +102,11 @@ void BrushCommand::activate(bool active)
 	if (active)
 	{
 		view->setCursorImage(m_cursorImage);
-		view->set3DCursorShape(GlDisplay::Image);
+		view->set3DCursorShape(GlView::Image);
 	}
 	else
 	{
-		view->set3DCursorShape(GlDisplay::None);
+		view->set3DCursorShape(GlView::None);
 	}
 	CommandBase::activate(active);
 }

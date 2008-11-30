@@ -111,7 +111,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
 
     // In prespective view, we canchange the orientation of the view, but we can't change it
     // if we are in the other fixed view. So, in those views we can only do a pan.
-    if (view->getPerspectiveViewType() == GlDisplay::Perspective)
+    if (view->getPerspectiveViewType() == GlView::Perspective)
     {
         m_panViewMode = e->modifiers() & Qt::ControlModifier ? true : false;
         m_rotateViewMode = !m_panViewMode;
