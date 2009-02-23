@@ -294,7 +294,8 @@ void BrushCommand::applyOperation()
 			wv.setPoint(winX, winY, winZ);
 			if ( n != Normal::null())
 			{
-				float factor =  (m_radius - (m_currentWinPoint - wv).length()) / m_radius;
+				//float factor =  (m_radius - (m_currentWinPoint - wv).length()) / m_radius;
+				float factor =  (m_radius - (m_currentPoint - v).length()) / m_radius;
 				factor = factor * m_depth * m_direction;
 				Vertex disp = n * factor;
 				v = v + disp;
@@ -319,10 +320,10 @@ void BrushCommand::selectObject()
 		m_object = m_selectedObjects[i];
 		if (m_object)
 		{
-			m_vertexSelected = view->getSelectedVertices(m_currentWinPoint.getX(), 
-														m_currentWinPoint.getY(),
-														m_radius, m_radius);
-			//m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
+//			m_vertexSelected = view->getSelectedVertices(m_currentWinPoint.getX(), 
+//														m_currentWinPoint.getY(),
+//														m_radius, m_radius);
+			m_vertexSelected = m_object->getPointsInRadius(m_currentPoint, m_radius);
 			int counter = m_vertexSelected.size();
 			qDebug() << "currentPoint: " << qPrintable(m_currentPoint.toString()) << " points selected: " << counter;
 			for (int j = 0; j < counter; j++)

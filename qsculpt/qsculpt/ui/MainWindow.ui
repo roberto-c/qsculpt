@@ -16,9 +16,17 @@
    <enum>Qt::ToolButtonTextUnderIcon</enum>
   </property>
   <property name="unifiedTitleAndToolBarOnMac" >
-   <bool>false</bool>
+   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>22</y>
+     <width>562</width>
+     <height>554</height>
+    </rect>
+   </property>
    <property name="sizePolicy" >
     <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
      <horstretch>0</horstretch>
@@ -85,7 +93,16 @@
    <addaction name="menuObjects" />
    <addaction name="menuTools" />
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QStatusBar" name="statusbar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>576</y>
+     <width>562</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
   <action name="m_new" >
    <property name="text" >
     <string>&amp;New</string>
