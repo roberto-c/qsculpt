@@ -157,6 +157,8 @@ void PickingObjectRenderer::renderVbo(const IObject3D* mesh, unsigned int objID)
 	glColor4ub( objID & 0xff,(objID>>8) & 0xff, (objID>>16) & 0xff, (objID>>24) & 0xff);
 	glDrawArrays(GL_QUADS, 0, obj->getFaceList().size()*4);
 	
+	glPopAttrib();
+	
 	printGlError();
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

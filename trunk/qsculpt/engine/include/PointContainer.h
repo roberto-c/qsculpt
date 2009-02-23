@@ -28,83 +28,41 @@
 
 typedef QVector<int> PointIndexList;
 
+/**
+ *
+ */
 class PointContainer
 {
 public:
-	void reserve(int size) {
-		m_pointList.reserve(size);
-		m_faceReference.reserve(size);
-		m_pointHash.reserve(size);
-	}
+	void reserve(int size);
+	
+	int size() const;
 
-	int size() const {
-		return m_pointList.size();
-	}
+	bool contains(const Vertex& point);
 
-	bool contains(const Vertex& point) {
-		return m_pointHash.contains(point);
-	}
+	Vertex& at(int index);
 
-	Vertex& at(int index)  {
-		return m_pointList[index];
-	}
+	const Vertex& at(int index) const;
 
-	const Vertex& at(int index) const {
-		return m_pointList[index];
-	}
+	int insert(const Vertex& point);
 
-	int insert(const Vertex& point) {
-		m_pointList.append(point);
-		int index =  m_pointList.size() -1;
-		m_pointHash.insert(point,index);
-		m_faceReference.append(QVector<int>());
-		return index;
-	}
+	void append(const Vertex& point);
 
-	void append(const Vertex& point) {
-		m_pointList.append(point);
-		m_pointHash.insert(point, m_pointList.size() -1);
-		m_faceReference.append(QVector<int>());
-	}
+	int indexOf(const Vertex& point);
 
-	int indexOf(const Vertex& point) {
-		if (!m_pointHash.contains(point))
-			return -1;
-		return m_pointHash.value(point);
-	}
+	void clear();
 
-	void clear() {
-		m_pointList.clear();
-		m_pointHash.clear();
-	}
+	void remove(int index);
+	
+	void addFaceReference(int index, int faceIndex);
 
-	void remove(int index) {
-		m_pointHash.remove(m_pointList.at(index));
-		m_pointList.remove(index);
-		m_faceReference.remove(index);
-	}
+	void setVertex(int index, const Vertex& v);
 
-	void addFaceReference(int index, int faceIndex) {
-		m_faceReference[index].append(faceIndex);
-	}
+	QVector<int>& getFaceReference(int index);
 
-	void setVertex(int index, const Vertex& v) {
-		m_pointHash.remove(m_pointList.at(index));
-		m_pointList[index] = v;
-		m_pointHash.insert(m_pointList[index], index);
-	}
+	const QVector<int>& getFaceReference(int index) const;
 
-	QVector<int>& getFaceReference(int index) {
-		return m_faceReference[index];
-	}
-
-	const QVector<int>& getFaceReference(int index) const {
-		return m_faceReference[index];
-	}
-
-	inline GLfloat* getData() {
-		return (GLfloat*)m_pointList.getData();
-	};
+	GLfloat* getData() ;
 	
 private:
 	PointContainer(){}
@@ -120,7 +78,99 @@ private:
 	friend class Object3D;
 };
 
-inline uint qHash(const Vertex& key)
+// Inline definitions
+inline
+void PointContainer::reserve(int size) {
+	m_pointList.reserve(size);
+	m_faceReference.reserve(size);
+	m_pointHash.reserve(size);
+}
+
+inline
+int PointContainer::size() const {
+	return m_pointList.size();
+}
+
+inline
+bool PointContainer::contains(const Vertex& point) {
+	return m_pointHash.contains(point);
+}
+
+inline
+Vertex& PointContainer::at(int index)  {
+	return m_pointList[index];
+}
+
+inline
+const Vertex& PointContainer::at(int index) const {
+	return m_pointList[index];
+}
+
+inline
+int PointContainer::insert(const Vertex& point) {
+	m_pointList.append(point);
+	int index =  m_pointList.size() -1;
+	m_pointHash.insert(point,index);
+	m_faceReference.append(QVector<int>());
+	return index;
+}
+
+inline
+void PointContainer::append(const Vertex& point) {
+	m_pointList.append(point);
+	m_pointHash.insert(point, m_pointList.size() -1);
+	m_faceReference.append(QVector<int>());
+}
+
+inline
+int PointContainer::indexOf(const Vertex& point) {
+	if (!m_pointHash.contains(point))
+		return -1;
+	return m_pointHash.value(point);
+}
+
+inline
+void PointContainer::clear() {
+	m_pointList.clear();
+	m_pointHash.clear();
+}
+
+inline
+void PointContainer::remove(int index) {
+	m_pointHash.remove(m_pointList.at(index));
+	m_pointList.remove(index);
+	m_faceReference.remove(index);
+}
+
+inline
+void PointContainer::addFaceReference(int index, int faceIndex) {
+	m_faceReference[index].append(faceIndex);
+}
+
+inline
+void PointContainer::setVertex(int index, const Vertex& v) {
+	m_pointHash.remove(m_pointList.at(index));
+	m_pointList[index] = v;
+	m_pointHash.insert(m_pointList[index], index);
+}
+
+inline
+QVector<int>& PointContainer::getFaceReference(int index) {
+	return m_faceReference[index];
+}
+
+inline
+const QVector<int>& PointContainer::getFaceReference(int index) const {
+	return m_faceReference[index];
+}
+
+inline
+GLfloat* PointContainer::getData() {
+	return (GLfloat*)m_pointList.getData();
+};
+
+inline
+uint qHash(const Vertex& key)
 {
 	qint16 x = lrintf(key.getX() * 1000.0f);
 	qint16 y = lrintf(key.getY() * 1000.0f);
