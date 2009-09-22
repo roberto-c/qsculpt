@@ -36,48 +36,59 @@ Sphere::~Sphere()
 }
 
 void Sphere::initPoints()
-{
+{	
+#define NUM_LAT 32
+#define NUM_PAR 15
+	float lat_step = M_PI * 2 / NUM_LAT;
+	float par_step = M_PI  / 16;
+	float s = M_PI, u = 0;
+	Vertex vtx, tmp;
 
-    float x, y, z;
-
-    float hw = 1.0 / 2;
-    float hh = 1.0 / 2;
-    float hd = 1.0 / 2;
-
-	addVertex(Vertex( 0, 0, hd));
-	addVertex(Vertex( 0, 0,-hd));
-
-    addVertex(Vertex(-hw,-hh, 0.0));
-    addVertex(Vertex( hw,-hh, 0.0));
-    addVertex(Vertex( hw, hh, 0.0));
-    addVertex(Vertex(-hw, hh, 0.0));
-	
+	for ( s = 0; s < M_PI * 2; s+=lat_step) 
+	{
+		for ( u = par_step; u < M_PI; u+=par_step)
+		{
+			addVertex(evalCoords(s, u));
+		}
+	}
+	int num_points = this->getPointList().size();
 	QVector<int> indexList(4);
-    indexList[0] = 2;
-    indexList[1] = 3;
-    indexList[2] = 4;
-    indexList[3] = 0;
-    addFace( indexList );
-	indexList[0] = 2;
-    indexList[1] = 0;
-    indexList[2] = 4;
-    indexList[3] = 5;
-    addFace( indexList );
-	indexList[0] = 3;
-    indexList[1] = 2;
-    indexList[2] = 5;
-    indexList[3] = 1;
-    addFace( indexList );
-	indexList[0] = 5;
-    indexList[1] = 4;
-    indexList[2] = 3;
-    indexList[3] = 1;
-    addFace( indexList );
+	for (int j = 0; j < NUM_LAT; ++j ) {
+		for (int i = 0; i < NUM_PAR-1 ; ++i) {
+			indexList[0] = ((i + j*NUM_PAR) ) % num_points;
+			indexList[1] = ((i + j*NUM_PAR) + 1) % num_points;
+			indexList[2] = ((i + j*NUM_PAR) + NUM_PAR + 1 ) % num_points;
+			indexList[3] = ((i + j*NUM_PAR) + NUM_PAR ) % num_points;
+			addFace( indexList );
+		}
+	}
 	
-	qDebug() << "Width: " << getWidth();
-	qDebug() << "Height: " << getHeight();
-	qDebug() << "Depth: " << getDepth();
+	int topPointIndex = addVertex(evalCoords(0, 0));
+	for (int j = 0; j < NUM_LAT; ++j ) {
+		indexList[0] = ((j*NUM_PAR) ) % num_points;
+		indexList[1] = ((j+1)*NUM_PAR) % num_points;
+		indexList[2] = topPointIndex;
+		indexList[3] = topPointIndex;
+		addFace( indexList );
+	}
+	int bottomPointIndex = addVertex(evalCoords(0, M_PI));
+	for (int j = 0; j < NUM_LAT; ++j ) {
+		indexList[0] = ((j)*NUM_PAR + NUM_PAR - 1) % num_points;
+		indexList[1] = ((j+1)*NUM_PAR  + NUM_PAR - 1) % num_points;
+		indexList[2] = bottomPointIndex;
+		indexList[3] = bottomPointIndex;
+		addFace( indexList );
+	}
+}
+
+Vertex Sphere::evalCoords(float s, float u) 
+{
+	Vertex vtx;
 	
-    //subdivide();
+	vtx[0] = cosf(s) * sinf(u);
+	vtx[1] = sinf(s) * sinf(u);
+	vtx[2] = cosf(u);
+	
+	return vtx;
 }
 
