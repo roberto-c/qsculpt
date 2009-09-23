@@ -72,8 +72,7 @@ public:
         //qDebug("Octree::add");
         if (!m_rootNode->add(v))
         {
-            //qDebug("Octree::add : failed: P: %s",
-            //  qPrintable(v.vertex.toString()));
+            qDebug("Octree::add : failed: P");
         }
     }
     

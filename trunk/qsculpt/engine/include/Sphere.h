@@ -36,6 +36,8 @@ public:
 
 protected:
     virtual void initPoints();
+	
+	Vertex evalCoords(float s, float u);
 
     GLUquadric* m_pquadratic;
 
