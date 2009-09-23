@@ -174,6 +174,11 @@ protected:
 
 private:
     void updateBoundingBox();
+	
+	/* Subdivide the object from one level and set faces that result in
+	 * a new level of resolution.
+	 */
+	bool subdivide(int fromLevel);
 
     PointContainer  			m_pointList;
     NormalContainer 			m_normalList;

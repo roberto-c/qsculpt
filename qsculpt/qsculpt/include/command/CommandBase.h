@@ -63,6 +63,9 @@ public:
     virtual void execute() {}
 
 protected:
+    virtual void initializeConfigContainer(){}
+
+protected:
     IConfigContainer*   m_configContainer;
     bool                m_isActive;
     Point3D             m_intialPoint;

@@ -70,6 +70,8 @@ public:
 
 private:
     void subdivide(IObject3D* obj, int rbegin, int rend);
+	
+	void subdivideFace(IObject3D* obj, int faceIndex);
 
     void adjustPointNormal(IObject3D* obj, int index);
 

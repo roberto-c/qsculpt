@@ -37,7 +37,7 @@ else unix:debug {
 # Input
 HEADERS += include/Document.h \
            include/DocumentView.h \
-           include/GlDisplay.h \
+           include/GlView.h \
            include/IDocument.h \
            include/QSculptWindow.h \
            include/QSculptApp.h \
@@ -57,7 +57,7 @@ HEADERS += include/Document.h \
 FORMS += ui/BrushProperties.ui ui/MainWindow.ui ui/TransformWidget.ui
 SOURCES += src/Document.cpp \
            src/DocumentView.cpp \
-           src/GlDisplay.cpp \
+           src/GlView.cpp \
            src/QSculptWindow.cpp \
            src/QSculptApp.cpp \
            src/TransformWidget.cpp \

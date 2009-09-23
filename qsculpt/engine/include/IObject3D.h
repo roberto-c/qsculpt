@@ -391,6 +391,8 @@ public:
 	
 signals:
 	void meshChanged(IObject3D* mesh);
+	
+	void positionChanged(float x, float y, float z);
 };
 
 typedef QVector<IObject3D*> ObjectContainer;

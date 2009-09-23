@@ -127,7 +127,8 @@ Point3D Object3D::getPosition() const
 
 void Object3D::displace(const Point3D& delta)
 {
-  m_position = m_position + delta;
+	m_position = m_position + delta;
+	emit positionChanged(m_position.getX(), m_position.getY(), m_position.getZ());
 }
 
 void Object3D::getPosition(float *x, float *y, float *z) const
@@ -146,14 +147,17 @@ void Object3D::rotate(float rotX, float rotY, float rotZ)
 
 void Object3D::setPosition(float x, float y, float z)
 {
-  m_position.setX(x);
-  m_position.setY(y);
-  m_position.setZ(z);
+	m_position.setX(x);
+	m_position.setY(y);
+	m_position.setZ(z);
+
+	emit positionChanged(x, y, z);
 }
 
 void Object3D::setPosition(const Point3D& position)
 {
-  m_position = position;
+	m_position = position;
+	emit positionChanged(m_position.getX(), m_position.getY(), m_position.getZ());
 }
 
 float Object3D::getDepth()
