@@ -104,7 +104,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     m_currentWinPoint = m_initialWinPoint;
     m_intialPoint = Point3D(x, y, z);
     m_currentPoint = m_intialPoint;
-    qDebug("wz: %f %s", wz, qPrintable(m_intialPoint.toString()));
+    //qDebug("wz: %f %s", wz, qPrintable(m_intialPoint.toString()));
 
     m_currentCamera = view->getViewCamera();
     *m_intialCameraState = *m_currentCamera;
@@ -115,7 +115,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     {
         m_panViewMode = e->modifiers() & Qt::ControlModifier ? true : false;
         m_rotateViewMode = !m_panViewMode;
-        m_rotationRadius = (m_currentCamera->getPosition() - m_currentCamera->getTargetPoint()).length();
+        m_rotationRadius = (m_currentCamera->getPosition() - m_currentCamera->getTargetPoint()).norm();
     }
     else
     {
@@ -151,15 +151,15 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
         Point3D newPos = m_currentPoint - currPoint;
         m_currentCamera->setPosition(newPos + m_currentCamera->getPosition());
         m_currentCamera->setTargetPoint(newPos + m_currentCamera->getTargetPoint());
-        qDebug(qPrintable(m_currentCamera->getPosition().toString()));
+        //qDebug(qPrintable(m_currentCamera->getPosition().toString()));
     }
     else if (m_rotateViewMode)
     {
         float longitude, colatitude;
         Point3D newPos = m_currentWinPoint - currWinPoint;
 
-        longitude = newPos.getX() / 500.0f; // m_currentCamera->getDistanceFromTarget();
-        colatitude = newPos.getY() / 500.0f; //m_currentCamera->getDistanceFromTarget();
+        longitude = newPos.x() / 500.0f; // m_currentCamera->getDistanceFromTarget();
+        colatitude = newPos.y() / 500.0f; //m_currentCamera->getDistanceFromTarget();
         m_currentCamera->setLongitude(longitude + m_currentCamera->getLongitude());
         m_currentCamera->setColatitude(colatitude + m_currentCamera->getColatitude());
 

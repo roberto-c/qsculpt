@@ -9,6 +9,12 @@
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
 // TODO: reference additional headers your program requires here
+#include <Eigen/Core>
+#include <Eigen/StdVector>
+#include <Eigen/Geometry>
+#include <Eigen/LU>
+unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
+
 #include <QtDebug>
 #include <QtOpenGL>
 

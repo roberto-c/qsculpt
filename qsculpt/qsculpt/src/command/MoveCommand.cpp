@@ -84,7 +84,10 @@ void TransformCommand::execute()
                 m_initial = objects[0]->getPosition();
             for (int i = 0; i < count; i++)
             {
-                m_final.setPoint( mx, my, mz);
+                //m_final.setPoint( mx, my, mz);
+				m_final.x() = mx;
+				m_final.y() = my;
+				m_final.z() = mz;
                 if (count == 1)
                     objects[i]->setPosition( m_final);
                 else
@@ -150,39 +153,39 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
 
     //m_final = Point3D(x, y, z);
     Point3D delta = Point3D(x, y, z) - m_initial;
-    qDebug("Delta: %s", qPrintable(delta.toString()));
-    dx = delta.getX();
-    dy = delta.getY();
+    //qDebug("Delta: %s", qPrintable(delta.toString()));
+    dx = delta.x();
+    dy = delta.y();
 
     Point3D d;
     switch(m_configContainer->getInt(CONF_MOVE_AXIS))
     {
         case XAxis:
-            d.setX(dx);
+            d.x() = dx;
             break;
 
         case YAxis:
-            d.setY(dy);
+            d.y() = dy;
             break;
 
         case ZAxis:
-            d.setZ(dz);
+            d.z() = dz;
             break;
 
         default:
         case XYAxis:
-            d.setX(dx);
-            d.setY(dy);
+            d.x() = dx;
+            d.y() = dy;
             break;
 
         case XZAxis:
-            d.setX(dx);
-            d.setZ(dy);
+            d.x() = dx;
+            d.z() = dy;
             break;
 
         case YZAxis:
-            d.setZ(dz);
-            d.setY(dy);
+            d.z() = dz;
+            d.y() = dy;
             break;
     }
     int count = m_objects.count();
@@ -212,7 +215,7 @@ void TransformCommand::mousePressEvent(QMouseEvent* e)
 
     m_initial = Point3D(x, y, z);
     m_final = m_initial;
-    qDebug("Initial position: %s", qPrintable(m_initial.toString()));
+    //qDebug("Initial position: %s", qPrintable(m_initial.toString()));
 
     const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (doc->getSelectedObjects().size() > 0 )
@@ -225,7 +228,7 @@ void TransformCommand::mouseReleaseEvent(QMouseEvent* e)
 {
     //CommandBase::mouseReleaseEvent(e);
 
-    qDebug("Final position: %s", qPrintable(m_final.toString()));
+    //qDebug("Final position: %s", qPrintable(m_final.toString()));
 
     m_actionFinished = false;
     emit executed();

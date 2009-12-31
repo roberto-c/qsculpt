@@ -218,7 +218,7 @@ public:
     /**
      *
      */
-    virtual Vertex& getVertex(int index) = 0;
+    virtual Point3D& getVertex(int index) = 0;
 
     /**
      *

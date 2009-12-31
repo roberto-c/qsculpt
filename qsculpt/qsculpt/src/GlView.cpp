@@ -220,11 +220,11 @@ void GlView::paintGL()
     Camera* camera = m_cameraList.contains(m_viewType) ? m_cameraList[m_viewType] : NULL;
     if (camera)
     {
-        gluLookAt( camera->getPosition().getX(), camera->getPosition().getY(),
-				  camera->getPosition().getZ(), camera->getTargetPoint().getX(),
-				  camera->getTargetPoint().getY(), camera->getTargetPoint().getZ(),
-				  camera->getOrientationVector().getX(), camera->getOrientationVector().getY(),
-				  camera->getOrientationVector().getZ());
+        gluLookAt( camera->getPosition().x(), camera->getPosition().y(),
+				  camera->getPosition().z(), camera->getTargetPoint().x(),
+				  camera->getTargetPoint().y(), camera->getTargetPoint().z(),
+				  camera->getOrientationVector().x(), camera->getOrientationVector().y(),
+				  camera->getOrientationVector().z());
         //qDebug(qPrintable(camera->toString()));
     }
 	
@@ -367,13 +367,13 @@ void GlView::drawCursor()
 			
 	        // Calculate the coordinates of the box to paint the bitmap
 	        double wx1, wy1, wz1;
-	        mapScreenCoordsToWorldCoords(m_cursorPosition.getX() - m_cursorImage.width()/2,
-										 m_cursorPosition.getY() - m_cursorImage.height() / 2,
-										 m_cursorPosition.getZ(), &wx1, &wy1, &wz1);
+	        mapScreenCoordsToWorldCoords(m_cursorPosition.x() - m_cursorImage.width()/2,
+										 m_cursorPosition.y() - m_cursorImage.height() / 2,
+										 m_cursorPosition.z(), &wx1, &wy1, &wz1);
 	        double wx2, wy2, wz2;
-	        mapScreenCoordsToWorldCoords(m_cursorPosition.getX() + m_cursorImage.width()/2,
-										 m_cursorPosition.getY() + m_cursorImage.height() / 2,
-										 m_cursorPosition.getZ(), &wx2, &wy2, &wz2);
+	        mapScreenCoordsToWorldCoords(m_cursorPosition.x() + m_cursorImage.width()/2,
+										 m_cursorPosition.y() + m_cursorImage.height() / 2,
+										 m_cursorPosition.z(), &wx2, &wy2, &wz2);
 			
 	        // Draw Bitmap cursor as a textured quad
 	        glBegin(GL_QUADS);
@@ -420,12 +420,12 @@ void GlView::drawOrientationAxis()
     Camera* camera = m_cameraList.contains(m_viewType) ? m_cameraList[m_viewType] : NULL;
     if (camera)
     {
-        gluLookAt( camera->getPosition().getX(), camera->getPosition().getY(),
-				  camera->getPosition().getZ(), camera->getTargetPoint().getX(),
-				  camera->getTargetPoint().getY(), camera->getTargetPoint().getZ(),
-				  camera->getOrientationVector().getX(),
-				  camera->getOrientationVector().getY(),
-				  camera->getOrientationVector().getZ());
+        gluLookAt( camera->getPosition().x(), camera->getPosition().y(),
+				  camera->getPosition().z(), camera->getTargetPoint().x(),
+				  camera->getTargetPoint().y(), camera->getTargetPoint().z(),
+				  camera->getOrientationVector().x(),
+				  camera->getOrientationVector().y(),
+				  camera->getOrientationVector().z());
         //qDebug(qPrintable(camera->toString()));
     }
 	
@@ -465,8 +465,11 @@ void GlView::mouseMoveEvent ( QMouseEvent * e )
     }
     if (m_cursorShape != None)
     {
-    	m_cursorPosition.setPoint(e->x(), e->y(), 0);
-    	needUpdate = true;
+    	//m_cursorPosition.setPoint(e->x(), e->y(), 0);
+    	m_cursorPosition.x() = e->x();
+		m_cursorPosition.y() = e->y();
+		m_cursorPosition.z() = 0;
+		needUpdate = true;
     }
     if (needUpdate)
     {
@@ -485,12 +488,12 @@ void GlView::mousePressEvent ( QMouseEvent * e )
         cmd->mousePressEvent( e );
         needUpdate = true;
     }
-	m_cursorPosition.setX(e->x());
-	m_cursorPosition.setY(e->y());
+	m_cursorPosition.x() = e->x();
+	m_cursorPosition.y() = e->y();
     if (m_cursorShape != None)
     {
-		m_cursorPosition.setX(e->x());
-    	m_cursorPosition.setY(e->y());
+		m_cursorPosition.x() = e->x();
+		m_cursorPosition.y() = e->y();
     	needUpdate = true;
     }
     if (needUpdate)

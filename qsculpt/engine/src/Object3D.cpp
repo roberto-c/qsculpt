@@ -24,6 +24,7 @@
 #include <QtOpenGL>
 #include <QVector>
 #include <math.h>
+#include <Eigen/Core>
 
 #include "Box.h"
 #include "Point3D.h"
@@ -128,14 +129,14 @@ Point3D Object3D::getPosition() const
 void Object3D::displace(const Point3D& delta)
 {
 	m_position = m_position + delta;
-	emit positionChanged(m_position.getX(), m_position.getY(), m_position.getZ());
+	emit positionChanged(m_position.x(), m_position.y(), m_position.z());
 }
 
 void Object3D::getPosition(float *x, float *y, float *z) const
 {
-    if (x) *x = m_position.getX();
-    if (y) *y = m_position.getY();
-    if (z) *z = m_position.getZ();
+    if (x) *x = m_position.x();
+    if (y) *y = m_position.y();
+    if (z) *z = m_position.z();
 }
 
 void Object3D::rotate(float rotX, float rotY, float rotZ)
@@ -147,9 +148,9 @@ void Object3D::rotate(float rotX, float rotY, float rotZ)
 
 void Object3D::setPosition(float x, float y, float z)
 {
-	m_position.setX(x);
-	m_position.setY(y);
-	m_position.setZ(z);
+	m_position.x() = x;
+	m_position.y() = y;
+	m_position.z() = z;
 
 	emit positionChanged(x, y, z);
 }
@@ -157,7 +158,7 @@ void Object3D::setPosition(float x, float y, float z)
 void Object3D::setPosition(const Point3D& position)
 {
 	m_position = position;
-	emit positionChanged(m_position.getX(), m_position.getY(), m_position.getZ());
+	emit positionChanged(m_position.x(), m_position.y(), m_position.z());
 }
 
 float Object3D::getDepth()
@@ -229,11 +230,11 @@ QColor Object3D::getBoundingBoxColor() const
     return m_boundingBoxColor;
 }
 
-int Object3D::addVertex(const Vertex& point)
+int Object3D::addVertex(const Point3D& point)
 {
-    float x = point.getX();
-    float y = point.getY();
-    float z = point.getZ();
+    float x = point[0];
+    float y = point[1];
+    float z = point[2];
 
     m_minX = MIN(x , m_minX);
     m_minY = MIN(y , m_minY);
@@ -254,7 +255,7 @@ void Object3D::removeVertex(int id)
         m_pointList.remove(id);
 }
 
-Vertex& Object3D::getVertex(int index)
+Point3D& Object3D::getVertex(int index)
 {
     return m_pointList.at(index);
 }
@@ -450,19 +451,22 @@ void Object3D::drawBoundingBox()
 
 void Object3D::updateBoundingBox()
 {
+	//TODO: Clean this up
+#define setPoint(p, px, py, pz) p.x() = (px); p.y() = py; p.z() = pz
     float hw = getWidth() / 2;
     float hh = getHeight() / 2;
     float hd = getDepth() / 2;
 
-    m_boundingBoxVert[0].setPoint(-hw - 0.2,-hh - 0.2,-hd - 0.2);
-    m_boundingBoxVert[1].setPoint( hw + 0.2,-hh - 0.2,-hd - 0.2);
-    m_boundingBoxVert[2].setPoint( hw + 0.2, hh + 0.2,-hd - 0.2);
-    m_boundingBoxVert[3].setPoint(-hw - 0.2, hh + 0.2,-hd - 0.2);
+    setPoint(m_boundingBoxVert[0], -hw - 0.2,-hh - 0.2,-hd - 0.2);
+    setPoint(m_boundingBoxVert[1], hw + 0.2,-hh - 0.2,-hd - 0.2);
+    setPoint(m_boundingBoxVert[2], hw + 0.2, hh + 0.2,-hd - 0.2);
+    setPoint(m_boundingBoxVert[3], -hw - 0.2, hh + 0.2,-hd - 0.2);
 
-    m_boundingBoxVert[4].setPoint(-hw - 0.2,-hh - 0.2, hd + 0.2);
-    m_boundingBoxVert[5].setPoint( hw + 0.2,-hh - 0.2, hd + 0.2);
-    m_boundingBoxVert[6].setPoint( hw + 0.2, hh + 0.2, hd + 0.2);
-    m_boundingBoxVert[7].setPoint(-hw - 0.2, hh + 0.2, hd + 0.2);
+    setPoint(m_boundingBoxVert[4], -hw - 0.2,-hh - 0.2, hd + 0.2);
+    setPoint(m_boundingBoxVert[5],  hw + 0.2,-hh - 0.2, hd + 0.2);
+    setPoint(m_boundingBoxVert[6],  hw + 0.2, hh + 0.2, hd + 0.2);
+    setPoint(m_boundingBoxVert[7], -hw - 0.2, hh + 0.2, hd + 0.2);
+#undef setPoint
 }
 
 void Object3D::scale(float xfactor, float yfactor, float zfactor)
@@ -471,11 +475,14 @@ void Object3D::scale(float xfactor, float yfactor, float zfactor)
     float x, y, z;
     for (int i = 0; i < size; i++)
     {
-        m_pointList.at(i).getPoint(x, y, z);
+		x = m_pointList.at(i).x();
+		y = m_pointList.at(i).y();
+		z = m_pointList.at(i).z();
+        //m_pointList.at(i).getPoint(x, y, z);
         x = (xfactor == 1.0) ? x : x * xfactor;
         y = (yfactor == 1.0) ? y : y * yfactor;
         z = (zfactor == 1.0) ? z : z * zfactor;
-		Vertex v(x, y, z);
+		Point3D v(x, y, z);
         m_pointList.setVertex(i, v);
     }
 }
@@ -484,7 +491,7 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
 {
     int closesPointIndex = getClosestPointAtPoint(p);
     Face face;
-    Vertex point;
+    Point3D point;
     int faceCount = m_pointList.getFaceReference(closesPointIndex).size();
     int indexOf = -1;
     float distance = 0.0, minDistance = 0.0;
@@ -499,7 +506,7 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
         for (int j = 0; j < face.point.size(); ++j)
         {
             point = m_pointList.at(face.point[j]);
-            distance += fabs((p - point).length());
+            distance += fabs((p - point).norm());
         }
         minDistance = distance;
         //qDebug(" %f ", distance);
@@ -510,7 +517,7 @@ int Object3D::getFaceIndexAtPoint(const Point3D& p) const
             for (int j = 0; j < face.point.size(); ++j)
             {
                 point = m_pointList.at(face.point[j]);
-                distance += fabs((p - point).length());
+                distance += fabs((p - point).norm());
             }
 
             if ( distance < minDistance )
@@ -535,15 +542,15 @@ int Object3D::getClosestPointAtPoint(const Point3D &p) const
     if (pointCount > 0 )
     {
         indexOf = 0;
-        Vertex point = m_pointList.at(0);
+        Point3D point = m_pointList.at(0);
 
-        distance = fabs((p - point).length());
+        distance = fabs((p - point).norm());
         minDistance = distance;
         //qDebug(" %f ", distance);
         for (int i = 1; i < pointCount; i ++)
         {
             point = m_pointList.at(i);
-            distance = fabs((p - point).length());
+            distance = fabs((p - point).norm());
             if ( distance < minDistance )
             {
                 minDistance = distance;
@@ -570,8 +577,8 @@ QVector<int> Object3D::getPointsInRadius(const Point3D &p, float radius) const
     {
         for (int i = 0; i < pointCount; i ++)
         {
-            const Vertex& point = m_pointList.at(i);
-            distance = fabs((p - point).length());
+            const Point3D& point = m_pointList.at(i);
+            distance = fabs((p - point).norm());
             if ( distance < radius )
             {
                 results.append(i);
@@ -598,7 +605,7 @@ Point3D Object3D::computeFaceNormal(Face &face)
     Point3D v2 = m_pointList.at(face.point[lastPoint])
         - m_pointList.at(face.point[0]);
 
-    Point3D res = v1.crossProduct( v2);
+    Point3D res = v1.cross( v2);
     res.normalize();
 
     return res;

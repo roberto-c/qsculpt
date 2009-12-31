@@ -37,7 +37,7 @@ public:
 protected:
     virtual void initPoints();
 	
-	Vertex evalCoords(float s, float u);
+	Point3D evalCoords(float s, float u);
 
     GLUquadric* m_pquadratic;
 

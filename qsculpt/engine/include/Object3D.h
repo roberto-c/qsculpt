@@ -24,8 +24,7 @@
 #include <QMutex>
 #include <QHash>
 #include "IObject3D.h"
-#include "Point3D.h"
-
+#include "PointContainer.h"
 
 class Scene;
 struct Face;
@@ -69,9 +68,9 @@ public:
     virtual bool isSelected() const;
     virtual void setBoundingBoxColor(const QColor& color);
     virtual QColor getBoundingBoxColor() const;
-    virtual int addVertex(const Vertex& point);
+    virtual int addVertex(const Point3D& point);
     virtual void removeVertex(int id);
-    virtual Vertex& getVertex(int index);
+    virtual Point3D& getVertex(int index);
     virtual Normal& getNormalAtPoint(int index);
     virtual const Normal& getNormalAtPoint(int index) const;
 	virtual int addEdge(const Edge& edge);

@@ -61,8 +61,12 @@ void SmoothRenderer::renderImmediate(const IObject3D* mesh)
 		const Face& f = faceList[i];
 		for (int j = 0; j < f.point.size(); ++j)
 		{
-			glNormal3fv(mesh->getNormalList().at(f.point[j]).getPoint());
-			glVertex3fv(mesh->getPointList().at(f.point[j]).getPoint());
+			glNormal3f(mesh->getNormalList().at(f.point[j]).x(),
+						mesh->getNormalList().at(f.point[j]).y(),
+						mesh->getNormalList().at(f.point[j]).z());
+			glVertex3f(mesh->getPointList().at(f.point[j]).x(),
+					   mesh->getPointList().at(f.point[j]).y(),
+					   mesh->getPointList().at(f.point[j]).z());
 		}
 		glEnd();
 	}
@@ -141,13 +145,13 @@ void SmoothRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 		for (int j = 0; j<4; ++j)
 		{
 			vertexIndex = mesh->getFaceList().at(i).point[j];
-			vtxData[(i*24) + (j*6)] = mesh->getPointList().at(vertexIndex).getX();
-			vtxData[(i*24) + (j*6) + 1] = mesh->getPointList().at(vertexIndex).getY();
-			vtxData[(i*24) + (j*6) + 2] = mesh->getPointList().at(vertexIndex).getZ();
+			vtxData[(i*24) + (j*6)] = mesh->getPointList().at(vertexIndex).x();
+			vtxData[(i*24) + (j*6) + 1] = mesh->getPointList().at(vertexIndex).y();
+			vtxData[(i*24) + (j*6) + 2] = mesh->getPointList().at(vertexIndex).z();
 			
-			vtxData[(i*24) + (j*6) + 3] = mesh->getNormalList().at(vertexIndex).getX();
-			vtxData[(i*24) + (j*6) + 4] = mesh->getNormalList().at(vertexIndex).getY();
-			vtxData[(i*24) + (j*6) + 5] = mesh->getNormalList().at(vertexIndex).getZ();
+			vtxData[(i*24) + (j*6) + 3] = mesh->getNormalList().at(vertexIndex).x();
+			vtxData[(i*24) + (j*6) + 4] = mesh->getNormalList().at(vertexIndex).y();
+			vtxData[(i*24) + (j*6) + 5] = mesh->getNormalList().at(vertexIndex).z();
 		}
 	}
 	
