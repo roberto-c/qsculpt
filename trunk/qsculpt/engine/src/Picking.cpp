@@ -27,6 +27,8 @@
 #define BO_POOL_NAME			"ObjectPickingPool"
 #define BO_VERTEX_POOL_NAME		"VertexPickingPool"
 
+char* intToHexStr(unsigned int d);
+
 PickingObjectRenderer::PickingObjectRenderer()
 {
 }
@@ -117,7 +119,9 @@ void PickingObjectRenderer::renderImmediate(const IObject3D* mesh, unsigned int 
     glBegin(GL_POINTS);
     for ( int i = 0; i < size; i++)
     {
-        glVertex3fv(mesh->getPointList().at(i).getPoint());
+        glVertex3f(mesh->getPointList().at(i).x(),
+				   mesh->getPointList().at(i).y(),
+				   mesh->getPointList().at(i).z());
     }
     glEnd();
 	mesh->unlock();
@@ -257,13 +261,13 @@ void PickingObjectRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 		for (int j = 0; j<4; ++j)
 		{
 			vertexIndex = mesh->getFaceList().at(i).point[j];
-			vtxData[(i*24) + (j*6)] = mesh->getPointList().at(vertexIndex).getX();
-			vtxData[(i*24) + (j*6) + 1] = mesh->getPointList().at(vertexIndex).getY();
-			vtxData[(i*24) + (j*6) + 2] = mesh->getPointList().at(vertexIndex).getZ();
+			vtxData[(i*24) + (j*6)] = mesh->getPointList().at(vertexIndex).x();
+			vtxData[(i*24) + (j*6) + 1] = mesh->getPointList().at(vertexIndex).y();
+			vtxData[(i*24) + (j*6) + 2] = mesh->getPointList().at(vertexIndex).x();
 			
-			vtxData[(i*24) + (j*6) + 3] = mesh->getNormalList().at(vertexIndex).getX();
-			vtxData[(i*24) + (j*6) + 4] = mesh->getNormalList().at(vertexIndex).getY();
-			vtxData[(i*24) + (j*6) + 5] = mesh->getNormalList().at(vertexIndex).getZ();
+			vtxData[(i*24) + (j*6) + 3] = mesh->getNormalList().at(vertexIndex).x();
+			vtxData[(i*24) + (j*6) + 4] = mesh->getNormalList().at(vertexIndex).y();
+			vtxData[(i*24) + (j*6) + 5] = mesh->getNormalList().at(vertexIndex).z();
 		}
 	}
 	
@@ -287,9 +291,9 @@ void PickingObjectRenderer::fillPointVertexBuffer(IObject3D* mesh, VertexBuffer*
 	GLuint color = 1;
 	for (int i = 0; i < numVertices; ++i)
 	{
-		vtxData[(i*3)] = mesh->getPointList().at(i).getX();
-		vtxData[(i*3) + 1] = mesh->getPointList().at(i).getY();
-		vtxData[(i*3) + 2] = mesh->getPointList().at(i).getZ();
+		vtxData[(i*3)] = mesh->getPointList().at(i).x();
+		vtxData[(i*3) + 1] = mesh->getPointList().at(i).y();
+		vtxData[(i*3) + 2] = mesh->getPointList().at(i).z();
 		
 		// copy the color data into the color array
 		memcpy((void*)colorData[(i*4)], (const GLubyte*)&color, sizeof(color));

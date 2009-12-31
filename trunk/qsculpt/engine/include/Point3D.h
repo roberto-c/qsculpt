@@ -22,6 +22,7 @@
 
 #include <qstring.h>
 #include <QMetaType>
+#include <QHash>
 #include <math.h>
 #include <limits>
 
@@ -353,10 +354,13 @@ inline const Point3D_t<F> operator/( F c, const Point3D_t<F> &val)
                    val.m_data[2] / c);
 }
 
-typedef Point3D_t<float> Point3D;
-typedef Point3D_t<float> Vertex;
-typedef Point3D_t<float> Normal;
-typedef Point3D_t<float> Vector3;
+//typedef Point3D_t<float> Point3D;
+//typedef Point3D_t<float> Vertex;
+//typedef Point3D_t<float> Normal;
+//typedef Point3D_t<float> Vector3;
+typedef Eigen::Vector3f Point3D;
+typedef Eigen::Vector3f Vector3;
+typedef Eigen::Vector3f Normal;
 
 Q_DECLARE_METATYPE(Point3D)
 

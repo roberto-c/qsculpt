@@ -30,16 +30,16 @@ class Octree
 public:
     Octree() {
         m_rootNode = new OctreeNode<T>(this);
-        m_rootNode->setMinimumCoords(Vertex(-1024, -1024, -1024));
-        m_rootNode->setMaximumCoords(Vertex(1024, 1024, 1024));
+        m_rootNode->setMinimumCoords(Point3D(-1024, -1024, -1024));
+        m_rootNode->setMaximumCoords(Point3D(1024, 1024, 1024));
     }
     
 	Octree(const Octree<T>& cpy) {
 		m_rootNode = new OctreeNode<T>(this);
-		m_rootNode->setMinimumCoords(Vertex(-1024, -1024, -1024));
-        m_rootNode->setMaximumCoords(Vertex(1024, 1024, 1024));
+		m_rootNode->setMinimumCoords(Point3D(-1024, -1024, -1024));
+        m_rootNode->setMaximumCoords(Point3D(1024, 1024, 1024));
 		
-		foreach (Vertex v, m_data) {
+		foreach (Point3D v, m_data) {
 			append(v);
 		}
 	}
@@ -93,7 +93,7 @@ public:
         return m_data.size();
     }
     
-    inline int findClosest(const Vertex& v) const {
+    inline int findClosest(const Point3D& v) const {
         T data;
         if (m_rootNode->findClosest(v, &data)) {
             return m_rootNode->indexOf(data);
@@ -127,11 +127,11 @@ private:
         OctreeNode(OctreeNode<D>* parent, int depth = 0);           
         ~OctreeNode();
             
-        inline void setMinimumCoords(const Vertex& v);          
-        inline Vertex getMinimumCoords();       
-        inline void setMaximumCoords(const Vertex& v);      
-        inline Vertex getMaximumCoords();       
-        bool findClosest(const Vertex& v, D* data) ;            
+        inline void setMinimumCoords(const Point3D& v);          
+        inline Point3D getMinimumCoords();       
+        inline void setMaximumCoords(const Point3D& v);      
+        inline Point3D getMaximumCoords();       
+        bool findClosest(const Point3D& v, D* data) ;            
         int indexOf(const D& data);     
         inline bool contains(const D& data);        
         bool add(const D& data) ;       
@@ -153,8 +153,8 @@ private:
         OctreeNode<D>*          m_parent;           // Pointer to parent node
         QVector<OctreeNode<D>*> m_childrenNodes;    // Children nodes.
         QVector<int>            m_dataIndices;  // 
-        Vertex                  m_minimumCoords;
-        Vertex                  m_maximumCoords;
+        Point3D                  m_minimumCoords;
+        Point3D                  m_maximumCoords;
         bool                    m_hasChildren;
         int                     m_depth;
     };
@@ -175,8 +175,8 @@ Octree< T >::OctreeNode< D >::OctreeNode(Octree<D>* octree)
       m_hasChildren(false),
       m_depth (0) 
 {                
-    m_minimumCoords = Vertex::null();
-    m_maximumCoords = Vertex::null();
+//    m_minimumCoords = Vertex::null();
+//    m_maximumCoords = Vertex::null();
 }
 
 template<typename T>
@@ -187,8 +187,8 @@ Octree<T>::OctreeNode<D>::OctreeNode(OctreeNode<D>* parent, int depth)
       m_depth (depth) 
 {
     m_octree = m_parent != NULL ? m_parent->m_octree : NULL;
-    m_minimumCoords = Vertex::null();
-    m_maximumCoords = Vertex::null();
+//    m_minimumCoords = Vertex::null();
+//    m_maximumCoords = Vertex::null();
 }
 
 template<typename T>
@@ -200,28 +200,28 @@ Octree<T>::OctreeNode<D>::~OctreeNode()
 
 template<typename T>
 template<typename D>
-inline void Octree<T>::OctreeNode<D>::setMinimumCoords(const Vertex& v)
+inline void Octree<T>::OctreeNode<D>::setMinimumCoords(const Point3D& v)
 {
     m_minimumCoords = v;
 }
 
 template<typename T>
 template<typename D>
-inline Vertex Octree<T>::OctreeNode<D>::getMinimumCoords() 
+inline Point3D Octree<T>::OctreeNode<D>::getMinimumCoords() 
 {
     return m_minimumCoords;
 }
 
 template<typename T>
 template<typename D>
-inline void Octree<T>::OctreeNode<D>::setMaximumCoords(const Vertex& v) 
+inline void Octree<T>::OctreeNode<D>::setMaximumCoords(const Point3D& v) 
 {
     m_maximumCoords = v;
 }
 
 template<typename T>
 template<typename D>
-inline Vertex Octree<T>::OctreeNode<D>::getMaximumCoords() 
+inline Point3D Octree<T>::OctreeNode<D>::getMaximumCoords() 
 {
     return m_maximumCoords;
 }
@@ -245,7 +245,7 @@ void Octree<T>::OctreeNode<D>::clear()
 
 template<typename T>
 template<typename D>
-bool Octree<T>::OctreeNode<D>::findClosest(const Vertex& v, D* data) 
+bool Octree<T>::OctreeNode<D>::findClosest(const Point3D& v, D* data) 
 {
     if (data == NULL)
         return false;
@@ -368,62 +368,74 @@ template<typename T>
 template<typename D>
 void Octree<T>::OctreeNode<D>::doPartition()
 {
-	Vertex delta = (m_maximumCoords - m_minimumCoords) / 2.0f;
+	Vector3 delta = (m_maximumCoords - m_minimumCoords) / 2.0f;
     
     OctreeNode<D>* node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(m_minimumCoords);
     node->setMaximumCoords(m_minimumCoords + delta);
     m_childrenNodes.append(node);
     
-    Vertex tmp = m_minimumCoords;
-    tmp.setX(tmp.getX() + delta.getX());
+    Point3D tmp = m_minimumCoords;
+//    tmp.setX(tmp.getX() + delta.getX());
+	tmp[0] += delta[0]; // tmp.x += delta.x;
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
     
     tmp = m_minimumCoords;
-    tmp.setX(tmp.getX() + delta.getX());
-    tmp.setY(tmp.getY() + delta.getY());
+    //tmp.setX(tmp.getX() + delta.getX());
+    //tmp.setY(tmp.getY() + delta.getY());
+	tmp[0] += delta[0]; // tmp.x += delta.x;
+	tmp[1] += delta[1]; // tmp.y += delta.y;
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
     
     tmp = m_minimumCoords;
-    tmp.setY(tmp.getY() + delta.getY());
+    //tmp.setY(tmp.getY() + delta.getY());
+	tmp[1] += delta[1]; // tmp.y += delta.y;
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
     
     tmp = m_minimumCoords;
-    tmp.setZ(tmp.getZ() + delta.getZ());
+    //tmp.setZ(tmp.getZ() + delta.getZ());
+	tmp[2] += delta[2]; // tmp.z += delta.z;
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
     
     tmp = m_minimumCoords;
-    tmp.setX(tmp.getX() + delta.getX());
-    tmp.setZ(tmp.getZ() + delta.getZ());
+    //tmp.setX(tmp.getX() + delta.getX());
+    //tmp.setZ(tmp.getZ() + delta.getZ());
+	tmp[0] += delta[0]; // tmp.x += delta.x;
+	tmp[2] += delta[2]; // tmp.z += delta.z;
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
     
     tmp = m_minimumCoords;
-    tmp.setX(tmp.getX() + delta.getX());
-    tmp.setY(tmp.getY() + delta.getY());
-    tmp.setZ(tmp.getZ() + delta.getZ());
+    //tmp.setX(tmp.getX() + delta.getX());
+    //tmp.setY(tmp.getY() + delta.getY());
+    //tmp.setZ(tmp.getZ() + delta.getZ());
+	tmp[0] += delta[0]; // tmp.x += delta.x;
+	tmp[1] += delta[1]; // tmp.y += delta.y;
+	tmp[2] += delta[2]; // tmp.z += delta.z;
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
     
     tmp = m_minimumCoords;
-    tmp.setY(tmp.getY() + delta.getY());
-    tmp.setZ(tmp.getZ() + delta.getZ());
+    //tmp.setY(tmp.getY() + delta.getY());
+    //tmp.setZ(tmp.getZ() + delta.getZ());
+	tmp[1] += delta[1]; // tmp.y += delta.Y;
+	tmp[2] += delta[2]; // tmp.z += delta.z;
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
@@ -450,11 +462,11 @@ template<typename T>
 template<typename D>
 bool Octree<T>::OctreeNode<D>::isInVolume(const D& d)
 {
-    Vertex v = d;
-    float x = v.getX(), y = v.getY(), z = v.getZ();
-    if ( x < m_minimumCoords.getX() || x >= m_maximumCoords.getX()
-         || y < m_minimumCoords.getY() || y >= m_maximumCoords.getY()
-         || z < m_minimumCoords.getZ() || z >= m_maximumCoords.getZ()
+    Point3D v = d;
+    float x = v[0], y = v[1], z = v[2];
+    if ( x < m_minimumCoords[0] || x >= m_maximumCoords[0]
+         || y < m_minimumCoords[1] || y >= m_maximumCoords[1]
+         || z < m_minimumCoords[2] || z >= m_maximumCoords[2]
          ) 
     {
         return false;
@@ -474,8 +486,8 @@ QString Octree<T>::OctreeNode<D>::toString()
     
     res = indent + "Node{\n";
     res += indent + "m_depth:" + QString::number(m_depth) + "\n"; 
-    res += indent + "m_minCoords:" + m_minimumCoords.toString() + "\n"; 
-    res += indent + "m_maxCoords:" + m_maximumCoords.toString();
+    //res += indent + "m_minCoords:" + m_minimumCoords.toString() + "\n"; 
+    //res += indent + "m_maxCoords:" + m_maximumCoords.toString();
     qDebug("%s", qPrintable(res));
     if (m_hasChildren) {
         OctreeNode* n;

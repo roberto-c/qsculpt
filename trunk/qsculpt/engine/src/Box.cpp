@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "StdAfx.h"
 #include <QtOpenGL>
+#include "Point3D.h"
 #include "Box.h"
 
 Box::Box()
@@ -39,15 +40,15 @@ void Box::initPoints()
     double hh = 1.0;
     double hd = 1.0;
 
-    addVertex(Vertex(-hw, hh,-hd));
-    addVertex(Vertex( hw, hh,-hd));
-    addVertex(Vertex( hw,-hh,-hd));
-    addVertex(Vertex(-hw,-hh,-hd));
+    addVertex(Point3D(-hw, hh,-hd));
+    addVertex(Point3D( hw, hh,-hd));
+    addVertex(Point3D( hw,-hh,-hd));
+    addVertex(Point3D(-hw,-hh,-hd));
 
-    addVertex(Vertex(-hw, hh, hd));
-    addVertex(Vertex( hw, hh, hd));
-    addVertex(Vertex( hw,-hh, hd));
-    addVertex(Vertex(-hw,-hh, hd));
+    addVertex(Point3D(-hw, hh, hd));
+    addVertex(Point3D( hw, hh, hd));
+    addVertex(Point3D( hw,-hh, hd));
+    addVertex(Point3D(-hw,-hh, hd));
 }
 
 void Box::initTriangles()

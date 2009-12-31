@@ -21,6 +21,8 @@
 #ifndef FACECONTAINER_H
 #define FACECONTAINER_H
 
+#include "Vertex.h"
+
 /**
 * Face class. This class contains references to points that should
  * form a triangle.
@@ -140,6 +142,18 @@ struct Face
 	{
 		Vertex vtx;
 		return vtx;
+	}
+	
+	operator Point3D()
+	{
+		Point3D p;
+		return p;
+	}
+	
+	operator Point3D() const
+	{
+		Point3D p;
+		return p;
 	}
 };
 

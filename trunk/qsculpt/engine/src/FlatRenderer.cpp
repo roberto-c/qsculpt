@@ -87,8 +87,16 @@ void FlatRenderer::renderImmediate(const IObject3D* mesh)
         	{
         		glColor3d(color.redF(), color.greenF(), color.blueF());
         	}
-            glNormal3fv(mesh->getNormalList().at(f.point[j]).getPoint());
-            glVertex3fv(mesh->getPointList().at(f.point[j]).getPoint());
+			// TODO: clean up this
+			float tmp[3];
+			tmp[0] = mesh->getNormalList().at(f.point[j]).x();
+			tmp[1] = mesh->getNormalList().at(f.point[j]).y();
+			tmp[2] = mesh->getNormalList().at(f.point[j]).z();
+            glNormal3fv(tmp);
+			tmp[0] = mesh->getPointList().at(f.point[j]).x();
+			tmp[1] = mesh->getPointList().at(f.point[j]).y();
+			tmp[2] = mesh->getPointList().at(f.point[j]).z();
+            glVertex3fv(tmp);
         }
         glEnd();
     }
@@ -177,14 +185,22 @@ void FlatRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 	int numVertices = numFaces*4;	
 	FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
 	
+	float tmp[3];
 	int vertexIndex;
 	for (int i = 0; i < numFaces; ++i)
 	{
 		for (int j = 0; j<4; ++j)
 		{
 			vertexIndex = mesh->getFaceList().at(i).point[j];
-			memcpy(vtxData[i*4 + j].v, mesh->getPointList().at(vertexIndex).getPoint(), SIZE_OF_VERTEX);
-			memcpy(vtxData[i*4 + j].n, mesh->getNormalList().at(vertexIndex).getPoint(), SIZE_OF_NORMAL);
+			// TODO: clean up this
+			tmp[0] = mesh->getPointList().at(vertexIndex).x();
+			tmp[1] = mesh->getPointList().at(vertexIndex).y();
+			tmp[2] = mesh->getPointList().at(vertexIndex).z();
+			memcpy(vtxData[i*4 + j].v, tmp, SIZE_OF_VERTEX);
+			tmp[0] = mesh->getNormalList().at(vertexIndex).x();
+			tmp[1] = mesh->getNormalList().at(vertexIndex).y();
+			tmp[2] = mesh->getNormalList().at(vertexIndex).z();
+			memcpy(vtxData[i*4 + j].n, tmp, SIZE_OF_NORMAL);
 		}
 	}
 	

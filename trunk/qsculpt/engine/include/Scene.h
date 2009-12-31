@@ -22,6 +22,8 @@
 
 #include <QVector>
 #include "Point3D.h"
+#include "SceneNode.h"
+#include "Vertex.h"
 
 class IObject3D;
 

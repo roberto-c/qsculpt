@@ -129,7 +129,9 @@ void PickingFacesRenderer::renderImmediate(const IObject3D* mesh, unsigned int o
     glBegin(GL_POINTS);
     for ( int i = 0; i < size; i++)
     {
-        glVertex3fv(mesh->getPointList().at(i).getPoint());
+        glVertex3f(mesh->getPointList().at(i).x(),
+				   mesh->getPointList().at(i).y(),
+				   mesh->getPointList().at(i).z());
     }
     glEnd();
 	mesh->unlock();
@@ -167,7 +169,10 @@ void PickingFacesRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo, 
 	
 	for (int i = 0; i < numVertices; ++i)
 	{
-		memcpy(vtxData[i].v, mesh->getPointList().at(i).getPoint(), SIZE_OF_VERTEX);
+		vtxData[i].v[0] = mesh->getPointList().at(i).x();
+		vtxData[i].v[1] = mesh->getPointList().at(i).y();
+		vtxData[i].v[2] = mesh->getPointList().at(i).z();
+		//memcpy(vtxData[i].v, mesh->getPointList().at(i).getPoint(), SIZE_OF_VERTEX);
 		memcpy((void*)vtxData[i].color, (const GLubyte*)&objId, sizeof(objId));
 		objId++;
 	}
@@ -195,8 +200,15 @@ void PickingFacesRenderer::fillFlatVertexBuffer(IObject3D* mesh, VertexBuffer* v
 		for (int j = 0; j<4; ++j)
 		{
 			vertexIndex = mesh->getFaceList().at(i).point[j];
-			memcpy(vtxData[i*4 + j].v, mesh->getPointList().at(vertexIndex).getPoint(), SIZE_OF_VERTEX);
-			memcpy(vtxData[i*4 + j].n, mesh->getNormalList().at(vertexIndex).getPoint(), SIZE_OF_NORMAL);
+			vtxData[i*4 + j].v[0] = mesh->getPointList().at(vertexIndex).x();
+			vtxData[i*4 + j].v[1] = mesh->getPointList().at(vertexIndex).y();
+			vtxData[i*4 + j].v[2] = mesh->getPointList().at(vertexIndex).z();
+			//memcpy(vtxData[i*4 + j].v, mesh->getPointList().at(vertexIndex).getPoint(), SIZE_OF_VERTEX);
+			
+			vtxData[i*4 + j].n[0] = mesh->getNormalList().at(vertexIndex).x();
+			vtxData[i*4 + j].n[1] = mesh->getNormalList().at(vertexIndex).y();
+			vtxData[i*4 + j].n[2] = mesh->getNormalList().at(vertexIndex).z();
+			//memcpy(vtxData[i*4 + j].n, mesh->getNormalList().at(vertexIndex).getPoint(), SIZE_OF_NORMAL);
 			
 			memcpy((void*)vtxData[i*4 + j].color, (const GLubyte*)&objId, sizeof(objId));
 		}

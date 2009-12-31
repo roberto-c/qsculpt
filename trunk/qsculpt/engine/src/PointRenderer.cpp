@@ -50,7 +50,9 @@ void PointRenderer::renderImmediate(const IObject3D* mesh)
     glBegin(GL_POINTS);
     for ( int i = 0; i < size; i++)
     {
-        glVertex3fv(mesh->getPointList().at(i).getPoint());
+        glVertex3f(mesh->getPointList().at(i).x(),
+				   mesh->getPointList().at(i).y(),
+				   mesh->getPointList().at(i).z());
     }
     glEnd();
 	mesh->unlock();
@@ -124,9 +126,9 @@ void PointRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 	
 	for (int i = 0; i < numVertices; ++i)
 	{
-		vtxData[(i*6)] = mesh->getPointList().at(i).getX();
-		vtxData[(i*6) + 1] = mesh->getPointList().at(i).getY();
-		vtxData[(i*6) + 2] = mesh->getPointList().at(i).getZ();
+		vtxData[(i*6)] = mesh->getPointList().at(i).x();
+		vtxData[(i*6) + 1] = mesh->getPointList().at(i).y();
+		vtxData[(i*6) + 2] = mesh->getPointList().at(i).z();
 		
 		vtxData[(i*6) + 3] = 0.85f;
 		vtxData[(i*6) + 4] = 0.85f;

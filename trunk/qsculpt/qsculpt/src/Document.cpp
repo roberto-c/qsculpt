@@ -62,7 +62,7 @@ void Document::loadFile(QString fileName)
             {
                 double x, y, z;
                 lineStream >> x >> y >> z;
-                obj->addVertex( Vertex(x, y, z) );
+                obj->addVertex( Point3D(x, y, z) );
             }
             else if (token == "f")
             {
@@ -117,18 +117,18 @@ void Document::saveFile(QString fileName)
             out << "#Num vertices: " << numPoints << endl;
             for (int j = 0; j < numPoints; ++j)
             {
-                out << "v " << obj->getPointList().at(j).getX()
-                        << " " << obj->getPointList().at(j).getY()
-                        << " " << obj->getPointList().at(j).getZ() << endl;
+                out << "v " << obj->getPointList().at(j).x()
+                        << " " << obj->getPointList().at(j).y()
+                        << " " << obj->getPointList().at(j).z() << endl;
             }
 
             int numNormals = obj->getNormalList().size();
             out << "#Num normal: " << numNormals << endl;
             for (int j = 0; j < numNormals; ++j)
             {
-                out << "vn " << obj->getNormalList().at(j).getX()
-                        << " " << obj->getNormalList().at(j).getY()
-                        << " " << obj->getNormalList().at(j).getZ() << endl;
+                out << "vn " << obj->getNormalList().at(j).x()
+                        << " " << obj->getNormalList().at(j).y()
+                        << " " << obj->getNormalList().at(j).z() << endl;
             }
 
             int numFaces = obj->getFaceList().size();

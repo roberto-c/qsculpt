@@ -152,14 +152,14 @@ void SubdivideCommand::WorkerThread::subdivideFace(IObject3D* obj, int faceIndex
 	
 	Q_ASSERT(obj);
 	Q_ASSERT(faceIndex >= 0 && faceIndex < obj->getFaceList().size());
-	Vertex vertex;
+	Point3D vertex;
 	QVector<int> vtxIndices(4);
 	
 	Face f = FACE_LIST().at(faceIndex);
 	int numFaceVertices = f.point.size();
 	
 	// Find the vertex at the center of the polygon 
-	Vertex midVertex;
+	Point3D midVertex;
 	for (int j = 0; j < numFaceVertices; ++j)
 	{
 		midVertex = midVertex + POINT_LIST().at(f.point.at(j));
@@ -281,7 +281,7 @@ Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, 
     Point3D v1 = pointList.at(face.point[1]) - pointList.at(face.point[0]);
     Point3D v2 = pointList.at(face.point[lastPoint]) - pointList.at(face.point[0]);
 
-    Point3D res = v1.crossProduct( v2);
+    Point3D res = v1.cross( v2);
     res.normalize();
 
     return res;

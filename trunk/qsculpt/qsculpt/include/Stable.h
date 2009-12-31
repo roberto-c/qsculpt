@@ -22,6 +22,12 @@
 
 #if defined __cplusplus
 
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <Eigen/LU>
+
+unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
+
 #include <QtDebug>
 #include <QtGui>
 #include <QtOpenGL>

@@ -40,9 +40,9 @@ void Camera::setPosition(const Point3D& p)
     m_position = p;
 
     Point3D v = m_position - m_target;
-    m_distanceFromTarget = v.length();
-    m_colatitude = acos(v.getZ()/m_distanceFromTarget);
-    m_longitude = acos(v.getX()/(m_distanceFromTarget * sin(m_colatitude)));
+    m_distanceFromTarget = v.norm();
+    m_colatitude = acos(v.z()/m_distanceFromTarget);
+    m_longitude = acos(v.x()/(m_distanceFromTarget * sin(m_colatitude)));
 }
 
 Point3D Camera::getPosition()
@@ -55,9 +55,9 @@ void Camera::setTargetPoint(const Point3D & target)
     m_target = target;
 
     Point3D v = m_position - m_target;
-    m_distanceFromTarget = v.length();
-    m_colatitude = acos(v.getZ()/m_distanceFromTarget);
-    m_longitude = acos(v.getX()/(m_distanceFromTarget * sin(m_colatitude)));
+    m_distanceFromTarget = v.norm();
+    m_colatitude = acos(v.z()/m_distanceFromTarget);
+    m_longitude = acos(v.x()/(m_distanceFromTarget * sin(m_colatitude)));
 }
 
 Point3D Camera::getTargetPoint()
@@ -127,8 +127,8 @@ QString Camera::toString()
 {
     QString str;
     
-    str ="Camera Position: " + m_position.toString() + "Camera Target: " + m_target.toString()
-            + "Camera Orientation: " + m_orientation.toString();
+    //str ="Camera Position: " + m_position.toString() + "Camera Target: " + m_target.toString()
+    //        + "Camera Orientation: " + m_orientation.toString();
     
     return str;
 }
