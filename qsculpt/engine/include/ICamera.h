@@ -33,17 +33,17 @@ public:
 
     virtual ~ICamera() {}
     
-    virtual void setPosition(const Point3D& p) = 0;
+    virtual void setPosition(const Point3& p) = 0;
 
-    virtual Point3D getPosition() = 0;
+    virtual Point3 getPosition() = 0;
     
-    virtual void setTargetPoint(const Point3D & target) = 0;
+    virtual void setTargetPoint(const Point3 & target) = 0;
     
-    virtual Point3D getTargetPoint() = 0;
+    virtual Point3 getTargetPoint() = 0;
     
-    virtual void setOrientationVector(const Point3D& v) = 0;
+    virtual void setOrientationVector(const Point3& v) = 0;
     
-    virtual Point3D getOrientationVector() = 0;
+    virtual Point3 getOrientationVector() = 0;
 
     virtual void setLongitude(double longitude) = 0;
 

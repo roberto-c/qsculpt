@@ -49,9 +49,9 @@ public:
     // End ICommand Interface
 
 private:
-    Point3D     m_eyePosition;
-    Point3D     m_targetDirection;
-    Point3D     m_upVector;
+    Point3     m_eyePosition;
+    Point3     m_targetDirection;
+    Point3     m_upVector;
 };
 
 #endif

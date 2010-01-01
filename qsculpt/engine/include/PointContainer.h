@@ -39,17 +39,17 @@ public:
 	
 	int size() const;
 
-	bool contains(const Point3D& point);
+	bool contains(const Point3& point);
 
-	Point3D& at(int index);
+	Point3& at(int index);
 
-	const Point3D& at(int index) const;
+	const Point3& at(int index) const;
 
-	int insert(const Point3D& point);
+	int insert(const Point3& point);
 
-	void append(const Point3D& point);
+	void append(const Point3& point);
 
-	int indexOf(const Point3D& point);
+	int indexOf(const Point3& point);
 
 	void clear();
 
@@ -57,7 +57,7 @@ public:
 	
 	void addFaceReference(int index, int faceIndex);
 
-	void setVertex(int index, const Point3D& v);
+	void setVertex(int index, const Point3& v);
 
 	QVector<int>& getFaceReference(int index);
 
@@ -72,9 +72,9 @@ private:
 	PointContainer(const PointContainer&);
 	PointContainer operator=(const PointContainer&);
 
-	Octree<Point3D> m_pointList;
+	Octree<Point3> m_pointList;
 	QVector<QVector<int> > m_faceReference;
-	QHash<Point3D, int> m_pointHash;
+	QHash<Point3, int> m_pointHash;
 
 	friend class Object3D;
 };
@@ -93,22 +93,22 @@ int PointContainer::size() const {
 }
 
 inline
-bool PointContainer::contains(const Point3D& point) {
+bool PointContainer::contains(const Point3& point) {
 	return m_pointHash.contains(point);
 }
 
 inline
-Point3D& PointContainer::at(int index)  {
+Point3& PointContainer::at(int index)  {
 	return m_pointList[index];
 }
 
 inline
-const Point3D& PointContainer::at(int index) const {
+const Point3& PointContainer::at(int index) const {
 	return m_pointList[index];
 }
 
 inline
-int PointContainer::insert(const Point3D& point) {
+int PointContainer::insert(const Point3& point) {
 	m_pointList.append(point);
 	int index =  m_pointList.size() -1;
 	m_pointHash.insert(point,index);
@@ -117,14 +117,14 @@ int PointContainer::insert(const Point3D& point) {
 }
 
 inline
-void PointContainer::append(const Point3D& point) {
+void PointContainer::append(const Point3& point) {
 	m_pointList.append(point);
 	m_pointHash.insert(point, m_pointList.size() -1);
 	m_faceReference.append(QVector<int>());
 }
 
 inline
-int PointContainer::indexOf(const Point3D& point) {
+int PointContainer::indexOf(const Point3& point) {
 	if (!m_pointHash.contains(point))
 		return -1;
 	return m_pointHash.value(point);
@@ -149,7 +149,7 @@ void PointContainer::addFaceReference(int index, int faceIndex) {
 }
 
 inline
-void PointContainer::setVertex(int index, const Point3D& v) {
+void PointContainer::setVertex(int index, const Point3& v) {
 	m_pointHash.remove(m_pointList.at(index));
 	m_pointList[index] = v;
 	m_pointHash.insert(m_pointList[index], index);

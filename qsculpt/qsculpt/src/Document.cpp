@@ -62,7 +62,7 @@ void Document::loadFile(QString fileName)
             {
                 double x, y, z;
                 lineStream >> x >> y >> z;
-                obj->addVertex( Point3D(x, y, z) );
+                obj->addVertex( Point3(x, y, z) );
             }
             else if (token == "f")
             {

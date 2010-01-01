@@ -49,7 +49,7 @@ public:
     
 private:
     QVector<Vertex> mVertexList;
-    QVector<Normal> mNormalList;
+    QVector<Vector3> mNormalList;
     QVector<IObject3D*> mObjectList;
 };
 

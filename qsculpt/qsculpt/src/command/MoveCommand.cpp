@@ -152,12 +152,12 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
     gluUnProject(m_mousePosition.x(), viewPort[3] - m_mousePosition.y(), 0, modelMatrix, projMatrix, viewPort, &x, &y, &z);
 
     //m_final = Point3D(x, y, z);
-    Point3D delta = Point3D(x, y, z) - m_initial;
+    Point3 delta = Point3(x, y, z) - m_initial;
     //qDebug("Delta: %s", qPrintable(delta.toString()));
     dx = delta.x();
     dy = delta.y();
 
-    Point3D d;
+    Point3 d;
     switch(m_configContainer->getInt(CONF_MOVE_AXIS))
     {
         case XAxis:
@@ -213,7 +213,7 @@ void TransformCommand::mousePressEvent(QMouseEvent* e)
     glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
     gluUnProject(m_mousePosition.x(), m_viewPort[3] - m_mousePosition.y(), 0, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
 
-    m_initial = Point3D(x, y, z);
+    m_initial = Point3(x, y, z);
     m_final = m_initial;
     //qDebug("Initial position: %s", qPrintable(m_initial.toString()));
 

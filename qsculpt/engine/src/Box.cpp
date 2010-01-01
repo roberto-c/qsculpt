@@ -40,15 +40,15 @@ void Box::initPoints()
     double hh = 1.0;
     double hd = 1.0;
 
-    addVertex(Point3D(-hw, hh,-hd));
-    addVertex(Point3D( hw, hh,-hd));
-    addVertex(Point3D( hw,-hh,-hd));
-    addVertex(Point3D(-hw,-hh,-hd));
+    addVertex(Point3(-hw, hh,-hd));
+    addVertex(Point3( hw, hh,-hd));
+    addVertex(Point3( hw,-hh,-hd));
+    addVertex(Point3(-hw,-hh,-hd));
 
-    addVertex(Point3D(-hw, hh, hd));
-    addVertex(Point3D( hw, hh, hd));
-    addVertex(Point3D( hw,-hh, hd));
-    addVertex(Point3D(-hw,-hh, hd));
+    addVertex(Point3(-hw, hh, hd));
+    addVertex(Point3( hw, hh, hd));
+    addVertex(Point3( hw,-hh, hd));
+    addVertex(Point3(-hw,-hh, hd));
 }
 
 void Box::initTriangles()

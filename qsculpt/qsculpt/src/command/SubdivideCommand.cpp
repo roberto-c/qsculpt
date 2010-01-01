@@ -152,14 +152,14 @@ void SubdivideCommand::WorkerThread::subdivideFace(IObject3D* obj, int faceIndex
 	
 	Q_ASSERT(obj);
 	Q_ASSERT(faceIndex >= 0 && faceIndex < obj->getFaceList().size());
-	Point3D vertex;
+	Point3 vertex;
 	QVector<int> vtxIndices(4);
 	
 	Face f = FACE_LIST().at(faceIndex);
 	int numFaceVertices = f.point.size();
 	
 	// Find the vertex at the center of the polygon 
-	Point3D midVertex;
+	Point3 midVertex;
 	for (int j = 0; j < numFaceVertices; ++j)
 	{
 		midVertex = midVertex + POINT_LIST().at(f.point.at(j));
@@ -235,7 +235,7 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
     PointContainer& pointList = obj->getPointList();
 //    FaceContainer& faceList = obj->getFaceList();
 
-    Normal res;
+    Vector3 res;
 
     //Vertex& p = pointList.at(index);
     int numFaces = pointList.getFaceReference(index).size();
@@ -262,26 +262,26 @@ void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index
 //    }
 }
 
-Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, int index)
+Point3 SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, int index)
 {
     Q_ASSERT(obj);
 
     const FaceContainer& faceList = obj->getFaceList();
 
-    return faceList.size() > index ? computeFaceNormal(obj, faceList[index]) : Point3D();
+    return faceList.size() > index ? computeFaceNormal(obj, faceList[index]) : Point3();
 }
 
-Point3D SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, const Face &face)
+Point3 SubdivideCommand::WorkerThread::computeFaceNormal(const IObject3D* obj, const Face &face)
 {
     Q_ASSERT(obj);
 
     const PointContainer& pointList = obj->getPointList();
 
     int lastPoint = face.point.size() - 1;
-    Point3D v1 = pointList.at(face.point[1]) - pointList.at(face.point[0]);
-    Point3D v2 = pointList.at(face.point[lastPoint]) - pointList.at(face.point[0]);
+    Point3 v1 = pointList.at(face.point[1]) - pointList.at(face.point[0]);
+    Point3 v2 = pointList.at(face.point[lastPoint]) - pointList.at(face.point[0]);
 
-    Point3D res = v1.cross( v2);
+    Point3 res = v1.cross( v2);
     res.normalize();
 
     return res;

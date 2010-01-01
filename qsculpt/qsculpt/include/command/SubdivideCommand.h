@@ -75,9 +75,9 @@ private:
 
     void adjustPointNormal(IObject3D* obj, int index);
 
-    Point3D computeFaceNormal(const IObject3D* obj, int index);
+    Point3 computeFaceNormal(const IObject3D* obj, int index);
 
-    Point3D computeFaceNormal(const IObject3D* obj, const Face &face);
+    Point3 computeFaceNormal(const IObject3D* obj, const Face &face);
 signals:
     void progress(int value);
 

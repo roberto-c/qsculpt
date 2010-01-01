@@ -30,16 +30,16 @@ class Octree
 public:
     Octree() {
         m_rootNode = new OctreeNode<T>(this);
-        m_rootNode->setMinimumCoords(Point3D(-1024, -1024, -1024));
-        m_rootNode->setMaximumCoords(Point3D(1024, 1024, 1024));
+        m_rootNode->setMinimumCoords(Point3(-1024, -1024, -1024));
+        m_rootNode->setMaximumCoords(Point3(1024, 1024, 1024));
     }
     
 	Octree(const Octree<T>& cpy) {
 		m_rootNode = new OctreeNode<T>(this);
-		m_rootNode->setMinimumCoords(Point3D(-1024, -1024, -1024));
-        m_rootNode->setMaximumCoords(Point3D(1024, 1024, 1024));
+		m_rootNode->setMinimumCoords(Point3(-1024, -1024, -1024));
+        m_rootNode->setMaximumCoords(Point3(1024, 1024, 1024));
 		
-		foreach (Point3D v, m_data) {
+		foreach (Point3 v, m_data) {
 			append(v);
 		}
 	}
@@ -93,7 +93,7 @@ public:
         return m_data.size();
     }
     
-    inline int findClosest(const Point3D& v) const {
+    inline int findClosest(const Point3& v) const {
         T data;
         if (m_rootNode->findClosest(v, &data)) {
             return m_rootNode->indexOf(data);
@@ -127,11 +127,11 @@ private:
         OctreeNode(OctreeNode<D>* parent, int depth = 0);           
         ~OctreeNode();
             
-        inline void setMinimumCoords(const Point3D& v);          
-        inline Point3D getMinimumCoords();       
-        inline void setMaximumCoords(const Point3D& v);      
-        inline Point3D getMaximumCoords();       
-        bool findClosest(const Point3D& v, D* data) ;            
+        inline void setMinimumCoords(const Point3& v);          
+        inline Point3 getMinimumCoords();       
+        inline void setMaximumCoords(const Point3& v);      
+        inline Point3 getMaximumCoords();       
+        bool findClosest(const Point3& v, D* data) ;            
         int indexOf(const D& data);     
         inline bool contains(const D& data);        
         bool add(const D& data) ;       
@@ -153,8 +153,8 @@ private:
         OctreeNode<D>*          m_parent;           // Pointer to parent node
         QVector<OctreeNode<D>*> m_childrenNodes;    // Children nodes.
         QVector<int>            m_dataIndices;  // 
-        Point3D                  m_minimumCoords;
-        Point3D                  m_maximumCoords;
+        Point3                  m_minimumCoords;
+        Point3                  m_maximumCoords;
         bool                    m_hasChildren;
         int                     m_depth;
     };
@@ -200,28 +200,28 @@ Octree<T>::OctreeNode<D>::~OctreeNode()
 
 template<typename T>
 template<typename D>
-inline void Octree<T>::OctreeNode<D>::setMinimumCoords(const Point3D& v)
+inline void Octree<T>::OctreeNode<D>::setMinimumCoords(const Point3& v)
 {
     m_minimumCoords = v;
 }
 
 template<typename T>
 template<typename D>
-inline Point3D Octree<T>::OctreeNode<D>::getMinimumCoords() 
+inline Point3 Octree<T>::OctreeNode<D>::getMinimumCoords() 
 {
     return m_minimumCoords;
 }
 
 template<typename T>
 template<typename D>
-inline void Octree<T>::OctreeNode<D>::setMaximumCoords(const Point3D& v) 
+inline void Octree<T>::OctreeNode<D>::setMaximumCoords(const Point3& v) 
 {
     m_maximumCoords = v;
 }
 
 template<typename T>
 template<typename D>
-inline Point3D Octree<T>::OctreeNode<D>::getMaximumCoords() 
+inline Point3 Octree<T>::OctreeNode<D>::getMaximumCoords() 
 {
     return m_maximumCoords;
 }
@@ -245,7 +245,7 @@ void Octree<T>::OctreeNode<D>::clear()
 
 template<typename T>
 template<typename D>
-bool Octree<T>::OctreeNode<D>::findClosest(const Point3D& v, D* data) 
+bool Octree<T>::OctreeNode<D>::findClosest(const Point3& v, D* data) 
 {
     if (data == NULL)
         return false;
@@ -375,7 +375,7 @@ void Octree<T>::OctreeNode<D>::doPartition()
     node->setMaximumCoords(m_minimumCoords + delta);
     m_childrenNodes.append(node);
     
-    Point3D tmp = m_minimumCoords;
+    Point3 tmp = m_minimumCoords;
 //    tmp.setX(tmp.getX() + delta.getX());
 	tmp[0] += delta[0]; // tmp.x += delta.x;
     node = new OctreeNode<D>(this, m_depth + 1);
@@ -462,7 +462,7 @@ template<typename T>
 template<typename D>
 bool Octree<T>::OctreeNode<D>::isInVolume(const D& d)
 {
-    Point3D v = d;
+    Point3 v = d;
     float x = v[0], y = v[1], z = v[2];
     if ( x < m_minimumCoords[0] || x >= m_maximumCoords[0]
          || y < m_minimumCoords[1] || y >= m_maximumCoords[1]

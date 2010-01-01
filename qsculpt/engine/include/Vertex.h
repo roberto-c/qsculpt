@@ -15,12 +15,12 @@
 
 class Vertex
 {
-	Point3D _position;
+	Point3 _position;
 	Vector3 _normal;
 	Vector3 _color;
 	
 public:
-	Point3D getPosition() { return _position; }
+	Point3 getPosition() { return _position; }
 };
 
 #endif

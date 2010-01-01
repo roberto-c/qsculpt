@@ -46,7 +46,7 @@ protected:
     virtual void initTriangles();
     
 private:
-    Point3D m_vertex[8];
+    Point3 m_vertex[8];
 
 };
 

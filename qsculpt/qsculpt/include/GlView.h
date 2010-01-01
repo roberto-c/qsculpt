@@ -127,19 +127,19 @@ public:
         return m_cursorShape;
     };
 
-    void setCursorPosition(Point3D p) {
+    void setCursorPosition(Point3 p) {
         m_cursorPosition = p;
     };
 
-    Point3D getCursorPosition() {
+    Point3 getCursorPosition() {
         return m_cursorPosition;
     };
 
-    void setCursorOrientation(Point3D n) {
+    void setCursorOrientation(Point3 n) {
         m_cursorOrientation = n;
     };
 
-    Point3D getCursorOrientation() {
+    Point3 getCursorOrientation() {
         return m_cursorOrientation;
     };
 
@@ -221,8 +221,8 @@ private:
     CameraContainer m_cameraList;           /**< Cameras for the differents view types */
 
     CursorShapeType     m_cursorShape;
-    Point3D             m_cursorPosition;
-    Point3D             m_cursorOrientation;
+    Point3             m_cursorPosition;
+    Point3             m_cursorOrientation;
     GLint               m_viewport[4];
     GLfloat             m_zoomFactor;
     GLuint				m_textureId;

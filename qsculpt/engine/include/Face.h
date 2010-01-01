@@ -21,11 +21,11 @@ public:
 	~Face() {
 	}
 	
-	Point3D operator Point3D() {
+	Point3 operator Point3() {
 		return h->getVertex().getPosition();
 	}
 	
-	const Point3D operator Point3D() const {
+	const Point3 operator Point3() const {
 		return h->getVertex().getPosition();
 	}
 	

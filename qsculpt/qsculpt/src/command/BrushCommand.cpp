@@ -120,11 +120,11 @@ void BrushCommand::undo()
 	qDebug() << "BrushCommand::undo()";
 	if (m_object)
 	{
-		QHash<int, Point3D> hash = m_previousState[m_object];
-		QHash<int, Point3D>::iterator it, end = hash.end();
+		QHash<int, Point3> hash = m_previousState[m_object];
+		QHash<int, Point3>::iterator it, end = hash.end();
 		for (it = hash.begin(); it != end; ++it)
 		{
-			Point3D v = m_object->getVertex(it.key());
+			Point3 v = m_object->getVertex(it.key());
 			m_object->getVertex(it.key()) = it.value();
 			it.value() = v;
 		}
@@ -151,11 +151,11 @@ void BrushCommand::redo()
 	qDebug() << "BrushCommand::redo()";
 	if (m_object && m_undoCalled)
 	{
-		QHash<int, Point3D> hash = m_previousState[m_object];
-		QHash<int, Point3D>::iterator it, end = hash.end();
+		QHash<int, Point3> hash = m_previousState[m_object];
+		QHash<int, Point3>::iterator it, end = hash.end();
 		for (it = hash.begin(); it != end; ++it)
 		{
-			Point3D v = m_object->getVertex(it.key());
+			Point3 v = m_object->getVertex(it.key());
 			m_object->getVertex(it.key()) = it.value();
 			it.value() = v;
 		}
@@ -189,8 +189,8 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
         gluUnProject(e->x(), m_viewPort[3] - e->y(), wz,
             m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
 
-        Point3D currPoint = Point3D(x, y, z);
-        Point3D currWinPoint = Point3D(e->x(), e->y(), wz);
+        Point3 currPoint = Point3(x, y, z);
+        Point3 currWinPoint = Point3(e->x(), e->y(), wz);
 
         // Set the direction of the displacement
         m_direction = m_action == Push ? -1 : 1;
@@ -243,9 +243,9 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
         gluUnProject(e->x(), m_viewPort[3] - e->y(), wz,
             m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
 
-        m_initialWinPoint = Point3D(e->x(), e->y(), wz);
+        m_initialWinPoint = Point3(e->x(), e->y(), wz);
         m_currentWinPoint = m_initialWinPoint;
-        m_intialPoint = Point3D(x, y, z);
+        m_intialPoint = Point3(x, y, z);
         m_currentPoint = m_intialPoint;
 
 		selectObject();
@@ -280,14 +280,14 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 void BrushCommand::applyOperation()
 {
 	GLdouble winX, winY, winZ;
-	Point3D wv;
+	Point3 wv;
 	if (m_vertexSelected.size() > 0)
 	{
-		Normal& n = m_object->getNormalAtPoint(m_vertexSelected[m_vertexSelected.count()/2]);
+		Vector3& n = m_object->getNormalAtPoint(m_vertexSelected[m_vertexSelected.count()/2]);
 		for (int i = 0; i < m_vertexSelected.size(); i++)
 		{
 			
-			Point3D& v = m_object->getVertex(m_vertexSelected[i]);
+			Point3& v = m_object->getVertex(m_vertexSelected[i]);
 			gluProject(v.x(), v.y(), v.z(),
 					   m_modelMatrix, m_projMatrix, m_viewPort,
 					   &winX, &winY, &winZ);
@@ -300,7 +300,7 @@ void BrushCommand::applyOperation()
 				//float factor =  (m_radius - (m_currentWinPoint - wv).length()) / m_radius;
 				float factor =  (m_radius - (m_currentPoint - v).norm()) / m_radius;
 				factor = factor * m_depth * m_direction;
-				Point3D disp = n * factor;
+				Point3 disp = n * factor;
 				v = v + disp;
 				m_object->adjustPointNormal(m_vertexSelected[i]);
 			}
