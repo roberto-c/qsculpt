@@ -100,9 +100,9 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
     gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
 
-    m_initialWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
+    m_initialWinPoint = Point3(e->x(), m_viewPort[3] - e->y(), wz);
     m_currentWinPoint = m_initialWinPoint;
-    m_intialPoint = Point3D(x, y, z);
+    m_intialPoint = Point3(x, y, z);
     m_currentPoint = m_intialPoint;
     //qDebug("wz: %f %s", wz, qPrintable(m_intialPoint.toString()));
 
@@ -144,11 +144,11 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
     gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
 
 
-    Point3D currPoint = Point3D(x, y, z);
-    Point3D currWinPoint = Point3D(e->x(), m_viewPort[3] - e->y(), wz);
+    Point3 currPoint = Point3(x, y, z);
+    Point3 currWinPoint = Point3(e->x(), m_viewPort[3] - e->y(), wz);
     if (m_panViewMode)
     {
-        Point3D newPos = m_currentPoint - currPoint;
+        Point3 newPos = m_currentPoint - currPoint;
         m_currentCamera->setPosition(newPos + m_currentCamera->getPosition());
         m_currentCamera->setTargetPoint(newPos + m_currentCamera->getTargetPoint());
         //qDebug(qPrintable(m_currentCamera->getPosition().toString()));
@@ -156,7 +156,7 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
     else if (m_rotateViewMode)
     {
         float longitude, colatitude;
-        Point3D newPos = m_currentWinPoint - currWinPoint;
+        Point3 newPos = m_currentWinPoint - currWinPoint;
 
         longitude = newPos.x() / 500.0f; // m_currentCamera->getDistanceFromTarget();
         colatitude = newPos.y() / 500.0f; //m_currentCamera->getDistanceFromTarget();

@@ -42,7 +42,7 @@ void Sphere::initPoints()
 	float lat_step = M_PI * 2 / NUM_LAT;
 	float par_step = M_PI  / 16;
 	float s = M_PI, u = 0;
-	Point3D vtx, tmp;
+	Point3 vtx, tmp;
 
 	for ( s = 0; s < M_PI * 2; s+=lat_step) 
 	{
@@ -81,9 +81,9 @@ void Sphere::initPoints()
 	}
 }
 
-Point3D Sphere::evalCoords(float s, float u) 
+Point3 Sphere::evalCoords(float s, float u) 
 {
-	Point3D vtx;
+	Point3 vtx;
 	
 	vtx[0] = cosf(s) * sinf(u);
 	vtx[1] = sinf(s) * sinf(u);

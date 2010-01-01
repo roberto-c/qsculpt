@@ -144,15 +144,15 @@ struct Face
 		return vtx;
 	}
 	
-	operator Point3D()
+	operator Point3()
 	{
-		Point3D p;
+		Point3 p;
 		return p;
 	}
 	
-	operator Point3D() const
+	operator Point3() const
 	{
-		Point3D p;
+		Point3 p;
 		return p;
 	}
 };

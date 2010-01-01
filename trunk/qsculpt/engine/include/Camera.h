@@ -34,17 +34,17 @@ public:
 
     virtual ~Camera();
 
-    virtual void setPosition(const Point3D& p);
+    virtual void setPosition(const Point3& p);
 
-    virtual Point3D getPosition();
+    virtual Point3 getPosition();
     
-    virtual void setTargetPoint(const Point3D & target);
+    virtual void setTargetPoint(const Point3 & target);
     
-    virtual Point3D getTargetPoint();
+    virtual Point3 getTargetPoint();
     
-    virtual void setOrientationVector(const Point3D& v);
+    virtual void setOrientationVector(const Point3& v);
     
-    virtual Point3D getOrientationVector();
+    virtual Point3 getOrientationVector();
 
     virtual void setLongitude(double longitude);
 
@@ -61,9 +61,9 @@ public:
     QString toString();
 
 private:
-    Point3D m_position;
-    Point3D m_target;
-    Point3D m_orientation;
+    Point3 m_position;
+    Point3 m_target;
+    Point3 m_orientation;
 
     double m_colatitude;
     double m_longitude;

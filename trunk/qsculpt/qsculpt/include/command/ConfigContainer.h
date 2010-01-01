@@ -52,8 +52,8 @@ public:
     virtual void setString(QString key, QString value);
     virtual bool getBool(QString key);
     virtual void setBool(QString key, bool value);
-    virtual Point3D getPoint3D(QString key);
-    virtual void setPoint3D(QString key, const Point3D &v);
+    virtual Point3 getPoint3D(QString key);
+    virtual void setPoint3D(QString key, const Point3 &v);
     
 private:
     QMap<QString, QVariant> m_container;

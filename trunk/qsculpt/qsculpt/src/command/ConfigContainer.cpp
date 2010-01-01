@@ -80,12 +80,12 @@ void ConfigContainer::setBool(QString key, bool value)
     m_container[key] = QVariant(value);
 }
 
-Point3D ConfigContainer::getPoint3D(QString key)
+Point3 ConfigContainer::getPoint3D(QString key)
 {
-    return !m_container.contains(key) ? Point3D( 0, 0, 0) : m_container[key].value<Point3D>();
+    return !m_container.contains(key) ? Point3( 0, 0, 0) : m_container[key].value<Point3>();
 }
 
-void ConfigContainer::setPoint3D(QString key, const Point3D &v)
+void ConfigContainer::setPoint3D(QString key, const Point3 &v)
 {
     m_container[key] = QVariant::fromValue(v);
 }

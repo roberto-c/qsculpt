@@ -60,7 +60,7 @@ public:
 	// End ICommand Interface
 
 private:
-	typedef QMap<IObject3D*, QHash<int, Point3D> > DirtyFaceMap;
+	typedef QMap<IObject3D*, QHash<int, Point3> > DirtyFaceMap;
 
 	void applyOperation(); 
 	

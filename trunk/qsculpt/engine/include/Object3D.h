@@ -50,12 +50,12 @@ public:
  */
     virtual void setScene(Scene* scene) ;
     virtual Scene* getScene() const;
-    virtual Point3D getPosition() const;
-    virtual void displace(const Point3D& delta);
+    virtual Point3 getPosition() const;
+    virtual void displace(const Point3& delta);
     virtual void getPosition(float *x, float *y, float *z) const;
     virtual void rotate(float rotX, float rotY, float rotZ);
     virtual void setPosition(float x, float y, float z);
-    virtual void setPosition(const Point3D& position);
+    virtual void setPosition(const Point3& position);
     virtual float getDepth();
     virtual float getHeight();
     virtual float getWidth();
@@ -68,19 +68,19 @@ public:
     virtual bool isSelected() const;
     virtual void setBoundingBoxColor(const QColor& color);
     virtual QColor getBoundingBoxColor() const;
-    virtual int addVertex(const Point3D& point);
+    virtual int addVertex(const Point3& point);
     virtual void removeVertex(int id);
-    virtual Point3D& getVertex(int index);
-    virtual Normal& getNormalAtPoint(int index);
-    virtual const Normal& getNormalAtPoint(int index) const;
+    virtual Point3& getVertex(int index);
+    virtual Vector3& getNormalAtPoint(int index);
+    virtual const Vector3& getNormalAtPoint(int index) const;
 	virtual int addEdge(const Edge& edge);
 	virtual int addEdge(int v1, int v2);
     virtual int addFace(const QVector<int>& vertexIndexList);
 	virtual void replaceFace(int index, const QVector<int>& vertexIndexList);
     virtual void removeFace( int id);
-    virtual int getFaceIndexAtPoint(const Point3D& p) const;
-    virtual int getClosestPointAtPoint(const Point3D &p) const;
-    virtual QVector<int> getPointsInRadius(const Point3D &p, float radius) const;
+    virtual int getFaceIndexAtPoint(const Point3& p) const;
+    virtual int getClosestPointAtPoint(const Point3 &p) const;
+    virtual QVector<int> getPointsInRadius(const Point3 &p, float radius) const;
     virtual void adjustPointNormal(int index);
     virtual const NormalContainer& getNormalList() const;
     virtual const PointContainer& getPointList() const;
@@ -140,12 +140,12 @@ protected:
     /**
      *
      */
-    Point3D computeFaceNormal(int index);
+    Vector3 computeFaceNormal(int index);
 
     /**
      *
      */
-    Point3D computeFaceNormal(Face &face);
+    Vector3 computeFaceNormal(Face &face);
 
     /**
      *
@@ -153,10 +153,10 @@ protected:
     void computeAllNormals();
 
     Scene*          m_scene;
-    Point3D         m_position;
+    Point3         m_position;
     QColor          m_color,
                     m_boundingBoxColor;
-    Point3D         m_boundingBoxVert[8];
+    Point3         m_boundingBoxVert[8];
     float           m_minX,
                     m_maxX,
                     m_minY,

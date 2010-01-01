@@ -68,12 +68,12 @@ protected:
 protected:
     IConfigContainer*   m_configContainer;
     bool                m_isActive;
-    Point3D             m_intialPoint;
-    Point3D             m_currentPoint;
-    Point3D             m_finalPoint;
-    Point3D             m_initialWinPoint;
-    Point3D             m_currentWinPoint;
-    Point3D             m_finalWinPoint;
+    Point3             m_intialPoint;
+    Point3             m_currentPoint;
+    Point3             m_finalPoint;
+    Point3             m_initialWinPoint;
+    Point3             m_currentWinPoint;
+    Point3             m_finalWinPoint;
     double              m_modelMatrix[16];
     double              m_projMatrix[16];
     GLint               m_viewPort[4];

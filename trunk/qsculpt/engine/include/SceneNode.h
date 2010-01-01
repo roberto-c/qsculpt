@@ -6,6 +6,7 @@
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
+#include "StdAfx.h"
 #include <vector>
 
 class SceneNode

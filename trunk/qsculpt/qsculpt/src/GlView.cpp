@@ -69,45 +69,45 @@ m_textureId(0)
 	m_selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
 	
     Camera* camera = new Camera();
-    camera->setTargetPoint( Point3D( 0, 0, 0) );
-    camera->setOrientationVector(Point3D( 0, 1, 0) );
-    camera->setPosition( Point3D( 0, 0, 1));
+    camera->setTargetPoint( Point3( 0, 0, 0) );
+    camera->setOrientationVector(Point3( 0, 1, 0) );
+    camera->setPosition( Point3( 0, 0, 1));
     m_cameraList[Front] = camera;
 	
     camera = new Camera();
-    camera->setTargetPoint( Point3D( 0, 0, 0) );
-    camera->setOrientationVector( Point3D( 0, 1, 0) );
-    camera->setPosition( Point3D( 0, 0, -1));
+    camera->setTargetPoint( Point3( 0, 0, 0) );
+    camera->setOrientationVector( Point3( 0, 1, 0) );
+    camera->setPosition( Point3( 0, 0, -1));
     m_cameraList[Back] = camera;
 	
     camera = new Camera();
-    camera->setTargetPoint( Point3D( 0, 0, 0) );
-    camera->setOrientationVector( Point3D( 0, 0, -1) );
-    camera->setPosition( Point3D( 0, 1, 0) );
+    camera->setTargetPoint( Point3( 0, 0, 0) );
+    camera->setOrientationVector( Point3( 0, 0, -1) );
+    camera->setPosition( Point3( 0, 1, 0) );
     m_cameraList[Top] = camera;
 	
     camera = new Camera();
-    camera->setTargetPoint( Point3D( 0, 0, 0) );
-    camera->setOrientationVector( Point3D( 0, 0, 1) );
-    camera->setPosition( Point3D( 0, -1, 0) );
+    camera->setTargetPoint( Point3( 0, 0, 0) );
+    camera->setOrientationVector( Point3( 0, 0, 1) );
+    camera->setPosition( Point3( 0, -1, 0) );
     m_cameraList[Bottom] = camera;
 	
     camera = new Camera();
-    camera->setTargetPoint( Point3D( 0, 0, 0) );
-    camera->setOrientationVector( Point3D( 0, 1, 0) );
-    camera->setPosition( Point3D(-1, 0, 0) );
+    camera->setTargetPoint( Point3( 0, 0, 0) );
+    camera->setOrientationVector( Point3( 0, 1, 0) );
+    camera->setPosition( Point3(-1, 0, 0) );
     m_cameraList[Left] = camera;
 	
     camera = new Camera();
-    camera->setTargetPoint( Point3D( 0, 0, 0) );
-    camera->setOrientationVector( Point3D( 0, 1, 0) );
-    camera->setPosition( Point3D( 1, 0, 0) );
+    camera->setTargetPoint( Point3( 0, 0, 0) );
+    camera->setOrientationVector( Point3( 0, 1, 0) );
+    camera->setPosition( Point3( 1, 0, 0) );
     m_cameraList[Right] = camera;
 	
     camera = new Camera();
-    camera->setTargetPoint( Point3D( 0, 0, 0) );
-    camera->setOrientationVector( Point3D( 0, 0, 1) );
-    camera->setPosition( Point3D( 0.75, 0.75, 0.75) );
+    camera->setTargetPoint( Point3( 0, 0, 0) );
+    camera->setOrientationVector( Point3( 0, 0, 1) );
+    camera->setPosition( Point3( 0.75, 0.75, 0.75) );
     m_cameraList[Perspective] = camera;
 	
     setCursor(Qt::CrossCursor);

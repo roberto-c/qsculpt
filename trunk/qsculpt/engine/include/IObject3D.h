@@ -35,7 +35,7 @@
 class QColor;
 class Scene;
 
-typedef QVector<Normal> NormalContainer;
+typedef QVector<Vector3> NormalContainer;
 
 /**
 Interface that every 3D object should implement.
@@ -72,7 +72,7 @@ public:
      *
      * @param position Object position.
      */
-    virtual void setPosition (const Point3D& position) = 0;
+    virtual void setPosition (const Point3& position) = 0;
 
     /**
      * Get the object's position.
@@ -88,7 +88,7 @@ public:
      *
      * @return position of the object.
      */
-    virtual Point3D getPosition () const = 0;
+    virtual Point3 getPosition () const = 0;
 
     /**
      * Move the object.
@@ -98,7 +98,7 @@ public:
      *
      * @param delta Point that contains the amount of displacement for each axis.
      */
-    virtual void displace (const Point3D& delta) = 0;
+    virtual void displace (const Point3& delta) = 0;
 
     /**
      * Rotate the object. This rotation is applied over the local object axis.
@@ -205,7 +205,7 @@ public:
      *
      * @return ID of the new point.
      */
-    virtual int addVertex(const Point3D& point) = 0;
+    virtual int addVertex(const Point3& point) = 0;
 
     /**
      * Remove a point from the object. If the point form part of a
@@ -218,17 +218,17 @@ public:
     /**
      *
      */
-    virtual Point3D& getVertex(int index) = 0;
+    virtual Point3& getVertex(int index) = 0;
 
     /**
      *
      */
-    virtual Normal& getNormalAtPoint(int index) = 0;
+    virtual Vector3& getNormalAtPoint(int index) = 0;
 
     /**
      *
      */
-    virtual const Normal& getNormalAtPoint(int index) const = 0;
+    virtual const Vector3& getNormalAtPoint(int index) const = 0;
 
 	/**
 	 *
@@ -269,17 +269,17 @@ public:
     /**
      *
      */
-    virtual int getFaceIndexAtPoint(const Point3D& p) const = 0;
+    virtual int getFaceIndexAtPoint(const Point3& p) const = 0;
 
     /**
      *
      */
-    virtual int getClosestPointAtPoint(const Point3D &p) const = 0;
+    virtual int getClosestPointAtPoint(const Point3 &p) const = 0;
 
     /**
      *
      */
-    virtual QVector<int> getPointsInRadius(const Point3D &p, float radius) const = 0;
+    virtual QVector<int> getPointsInRadius(const Point3 &p, float radius) const = 0;
 
     /**
      *

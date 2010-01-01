@@ -129,10 +129,10 @@ public:
      */
     virtual void setBool(QString key, bool value) = 0;
     
-    virtual Point3D getPoint3D(QString key)=0;
+    virtual Point3 getPoint3D(QString key)=0;
     
     
-    virtual void setPoint3D(QString key, const Point3D &v) = 0;
+    virtual void setPoint3D(QString key, const Point3 &v) = 0;
 };
 
 #endif

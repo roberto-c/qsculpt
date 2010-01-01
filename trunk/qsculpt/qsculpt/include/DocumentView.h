@@ -121,19 +121,19 @@ public:
         return m_display->getCursorShape();
     };
 
-    void setCursorPosition(Point3D p) {
+    void setCursorPosition(Point3 p) {
         m_display->setCursorPosition(p);
     };
 
-    Point3D getCursorPosition() {
+    Point3 getCursorPosition() {
         return m_display->getCursorPosition();
     };
 
-    void setCursorOrientation(Point3D n) {
+    void setCursorOrientation(Point3 n) {
         m_display->setCursorOrientation(n);
     };
 
-    Point3D getCursorOrientation() {
+    Point3 getCursorOrientation() {
         return m_display->getCursorOrientation();
     };
 
