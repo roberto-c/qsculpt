@@ -10,28 +10,74 @@
 #ifndef FACE_H_
 #define FACE_H_
 
-
-class HEdge;
+#include <QAtomicInt>
+#include "Vertex.h"
+#include "HEdge.h"
 
 class Face {
+	static QAtomicInt NEXT_ID;
+	
+	int _id;
+	HEdge *_he;
+	
 public:
-	Face() {
+	class VertexIterator;
+	
+public:
+	Face();
+	
+	~Face();
+	
+	operator Point3() {
+		return _he->head()->position();
 	}
 	
-	~Face() {
+	operator Point3() const {
+		return _he->head()->position();
 	}
 	
-	Point3 operator Point3() {
-		return h->getVertex().getPosition();
-	}
+	VertexIterator vertexIterator();
 	
-	const Point3 operator Point3() const {
-		return h->getVertex().getPosition();
-	}
+	/* Inner classes */
+public:
+	class VertexIterator
+	{
+		friend class Face;
+		
+		Face* _f;
+		
+	protected:
+		/**
+		 * Constructor of a vertex iterator. The vertex iterator
+		 * is only contructed by means of Vertex::vertexIterator() function
+		 */
+		VertexIterator(Face* f);
+		
+	public:
+		/**
+		 * Return true if the iterator has more elements (i.e. it is not at the
+		 * end)
+		 */
+		bool hasNext() const;
+		
+		/**
+		 * Returns true if the iterator is not at the beginning of the iteration
+		 */
+		bool hasPrevious() const;
+		
+		/**
+		 * Returns the next element and advance the iterator by one.
+		 */
+		Vertex & next();
+		
+		/**
+		 * Returns the previous elements and move the iterator one position
+		 * backwards.
+		 */
+		Vertex & previous();
+	};
 	
-private:
-	HEdge *h;
-	
+	friend class VertexIterator;
 };
 
 #endif

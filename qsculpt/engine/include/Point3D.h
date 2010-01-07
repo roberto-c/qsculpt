@@ -20,16 +20,22 @@
 #ifndef POINT3D_H
 #define POINT3D_H
 
-#include <qstring.h>
 #include <QMetaType>
-#include <QHash>
-#include <math.h>
-#include <limits>
+#include <QString>
 
 typedef Eigen::Vector3f Point3;
 typedef Eigen::Vector3f Vector3;
 
 Q_DECLARE_METATYPE(Point3)
+
+inline QString toString(const Vector3& v)
+{
+	QString str;
+	str += "(" + QString::number(v[0]) + "," + 
+	QString::number(v[1]) + "," +
+	QString::number(v[2]) + ")";
+	return str;
+}
 
 #endif
 

@@ -22,6 +22,8 @@
 
 #if defined __cplusplus
 
+#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
