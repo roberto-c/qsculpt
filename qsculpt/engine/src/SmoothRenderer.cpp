@@ -114,7 +114,7 @@ void SmoothRenderer::renderVbo(const IObject3D* mesh)
 		glColor3d(color.redF(), color.greenF(), color.blueF());
 	}
 	
-	glDrawArrays(GL_QUADS, 0, obj->getFaceList().size()*4);
+	glDrawArrays(GL_QUADS, 0, obj->getNumFaces()*4);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -135,24 +135,26 @@ VertexBuffer* SmoothRenderer::getVBO(IObject3D* mesh)
 void SmoothRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 {
 	qDebug() << "SmoothRenderer::renderObject Start time:" << QDateTime::currentDateTime();
-	int numFaces = mesh->getFaceList().size();
+	int numFaces = mesh->getNumFaces();
 	int numFloats = numFaces*4*6;
 	GLfloat* vtxData = new GLfloat[numFloats];
-	
-	int vertexIndex;
-	for (int i = 0; i < numFaces; ++i)
-	{
-		for (int j = 0; j<4; ++j)
-		{
-			vertexIndex = mesh->getFaceList().at(i).point[j];
-			vtxData[(i*24) + (j*6)] = mesh->getPointList().at(vertexIndex).x();
-			vtxData[(i*24) + (j*6) + 1] = mesh->getPointList().at(vertexIndex).y();
-			vtxData[(i*24) + (j*6) + 2] = mesh->getPointList().at(vertexIndex).z();
-			
-			vtxData[(i*24) + (j*6) + 3] = mesh->getNormalList().at(vertexIndex).x();
-			vtxData[(i*24) + (j*6) + 4] = mesh->getNormalList().at(vertexIndex).y();
-			vtxData[(i*24) + (j*6) + 5] = mesh->getNormalList().at(vertexIndex).z();
-		}
+
+    int offset = 0;
+	Iterator<Face> it = mesh->constFaceIterator();
+	while(it.hasNext()) {
+		const Face& f = it.next();
+        Iterator<Vertex> vtxIt = f.constVertexIterator();
+        while(vtxIt.hasNext()) {
+            const Vertex& v = vtxIt.next();
+            // qDebug() << "Vertex:" << toString(v.position());
+            vtxData[offset++] = v.position().x();
+            vtxData[offset++] = v.position().y();
+            vtxData[offset++] = v.position().z();
+            
+            vtxData[offset++] = v.normal().x();
+            vtxData[offset++] = v.normal().y();
+            vtxData[offset++] = v.normal().z();
+        }        
 	}
 	
 	vbo->setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
