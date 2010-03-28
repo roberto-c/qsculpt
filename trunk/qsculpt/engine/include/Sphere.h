@@ -21,13 +21,15 @@
 #define SPHERE_H
 
 #include "Object3D.h"
+#include "Subdivision.h"
+
 struct GLUquadric;
 /**
  * Class that implement a sphere object.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class Sphere : public Object3D
+class Sphere : public Subdivision
 {
 public:
     Sphere();

@@ -22,67 +22,68 @@
 
 #include <QVector>
 #include <QMultiHash>
+#include "HEdge.h"
 
 /**
 * Used for the subdivision process. Used to store the different lines used
  * by each triangle to make sure that not duplicate points are contructed
  * when doing the process.
  */
-struct Edge
-{
-    int point1;
-    int point2;
-    int midPoint;
-
-    QList<int> faceRef;
-
-    /**
-		* Default constructor, initializes the values on 0
-     */
-    Edge()
-        : point1(-1),
-        point2(-1),
-        midPoint(-1)
-    {
-    }
-
-    /**
-		* Initializes the values on according to the parameters passed.
-     *
-     * @param p1 index of the first point.
-     * @param p2 index of the second point.
-     */
-    Edge(int p1, int p2)
-        :   point1(p1),
-        point2(p2),
-        midPoint(-1)
-    {
-    }
-	
-	/**
-	 * return the common vertex index with other Edge object. If none of the
-	 * vertex indices is common, this function returns -1;
-	 */
-	int commonVertex(const Edge& edge)
-	{
-		int ret = -1;
-		if (point1 == edge.point1)
-			ret = point1;
-		else if (point2 == edge.point2)
-			ret = point2;
-		else if (point1 == edge.point2)
-			ret = point1;
-		else if (point2 == edge.point1)
-			ret = point2;
-		return ret;
-	}
-
-    bool operator==(const Edge& val) const
-    {
-        return (point1 == val.point1 && point2 == val.point2)
-        || (point2 == val.point1 && point1 == val.point2);
-    }
-};
+//struct Edge
+//{
+//    int point1;
+//    int point2;
+//    int midPoint;
+//
+//    QList<int> faceRef;
+//
+//    /**
+//		* Default constructor, initializes the values on 0
+//     */
+//    Edge()
+//        : point1(-1),
+//        point2(-1),
+//        midPoint(-1)
+//    {
+//    }
+//
+//    /**
+//		* Initializes the values on according to the parameters passed.
+//     *
+//     * @param p1 index of the first point.
+//     * @param p2 index of the second point.
+//     */
+//    Edge(int p1, int p2)
+//        :   point1(p1),
+//        point2(p2),
+//        midPoint(-1)
+//    {
+//    }
+//	
+//	/**
+//	 * return the common vertex index with other Edge object. If none of the
+//	 * vertex indices is common, this function returns -1;
+//	 */
+//	int commonVertex(const Edge& edge)
+//	{
+//		int ret = -1;
+//		if (point1 == edge.point1)
+//			ret = point1;
+//		else if (point2 == edge.point2)
+//			ret = point2;
+//		else if (point1 == edge.point2)
+//			ret = point1;
+//		else if (point2 == edge.point1)
+//			ret = point2;
+//		return ret;
+//	}
+//
+//    bool operator==(const Edge& val) const
+//    {
+//        return (point1 == val.point1 && point2 == val.point2)
+//        || (point2 == val.point1 && point1 == val.point2);
+//    }
+//};
 
 class EdgeContainer
 {
@@ -127,17 +128,17 @@ public:
 	}
 
 	void addFaceReference(int index, int faceIndex) {
-		m_edgeList[index].faceRef.append(faceIndex);
+		//m_edgeList[index].faceRef.append(faceIndex);
 	}
 
 	void setMidPointReference(int index, int midPointIndex) {
-		m_edgeList[index].midPoint = midPointIndex;
+		//m_edgeList[index].midPoint = midPointIndex;
 	}
 
 private:
 	EdgeContainer(){}
 
-	// undefined: class does not make copies of it self
+	// undefined: class does not make copies of itself
 	EdgeContainer(const EdgeContainer&);
 	EdgeContainer operator=(const EdgeContainer&);
 
@@ -145,14 +146,7 @@ private:
 	QHash<Edge, int> m_edgeHash;
 
 	friend class Object3D;
+	friend class Subdivision;
 };
-
-inline uint qHash(const Edge& key)
-{
-	if (key.point1 > key.point2)
-		return qHash( ((quint64)key.point1) << 32 | (quint64)key.point2 );
-	else
-		return qHash( ((quint64)key.point2) << 32 | (quint64)key.point1 );
-}
 
 #endif

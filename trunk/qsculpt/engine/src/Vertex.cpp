@@ -16,8 +16,19 @@ QAtomicInt Vertex::NEXT_ID(1);
 
 Vertex::Vertex() 
 	: _position(Point3(0, 0, 0)),
-	_normal(Vector3(0, 0, 0)),
+	_normal(Vector3(0, 1, 0)),
 	_color(Vector3(1, 1, 1)),
+	_he(NULL)
+{
+	_id = NEXT_ID.fetchAndAddRelaxed(1);
+}
+
+Vertex::Vertex(const Point3 & position, 
+			   const Vector3 & normal,
+			   const Vector3 & color)
+	: _position(position),
+	_normal(normal.normalized()),
+	_color(color),
 	_he(NULL)
 {
 	_id = NEXT_ID.fetchAndAddRelaxed(1);
@@ -45,6 +56,20 @@ Vertex & Vertex::operator=(const Vertex & v)
 	return *this;
 }
 
+bool Vertex::operator==(const Vertex& v) const
+{
+	if (this == &v)
+		return true;
+	
+	return (_position == v._position && _normal == v._normal
+			&& _color == v._color);
+}
+
+bool Vertex::operator!=(const Vertex& v) const
+{
+	return !operator==(v);
+}
+
 Vertex::VertexIterator Vertex::vertexIterator() 
 { 
 	return Vertex::VertexIterator(this);
@@ -63,12 +88,18 @@ QString Vertex::toString()
 
 // VertexIterator
 
-Vertex::VertexIterator::VertexIterator(Vertex* v) : _v(v)
+Vertex::VertexIterator::VertexIterator(Vertex* v) 
+:	_v(v),
+	_currHe(NULL)
 {
 }
 
 bool Vertex::VertexIterator::hasNext() const
 {
+	NOT_IMPLEMENTED
+	//if (!_currHe)
+	//	return false;
+	
 	return false;
 }
 
@@ -81,10 +112,28 @@ bool Vertex::VertexIterator::hasPrevious() const
 
 Vertex & Vertex::VertexIterator::next()
 {
-	return *(_v->_he->head());
+	NOT_IMPLEMENTED
+	//return *(_v->_he->head());
+	return *_v;
+}
+
+const Vertex & Vertex::VertexIterator::next() const
+{
+	NOT_IMPLEMENTED
+	//return *(_v->_he->head());
+	return *_v;
 }
 
 Vertex & Vertex::VertexIterator::previous()
 {
-	return *(_v->_he->head());
+	NOT_IMPLEMENTED
+	//return *(_v->_he->head());
+	return *_v;
+}
+
+const Vertex & Vertex::VertexIterator::previous() const
+{
+	NOT_IMPLEMENTED
+	//return *(_v->_he->head());
+	return *_v;
 }

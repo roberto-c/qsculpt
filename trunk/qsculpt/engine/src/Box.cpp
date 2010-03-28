@@ -23,7 +23,7 @@
 #include "Box.h"
 
 Box::Box()
-    : Object3D()
+    : Subdivision()
 {
     initPoints();
     initTriangles();
@@ -40,15 +40,15 @@ void Box::initPoints()
     double hh = 1.0;
     double hd = 1.0;
 
-    addVertex(Point3(-hw, hh,-hd));
-    addVertex(Point3( hw, hh,-hd));
-    addVertex(Point3( hw,-hh,-hd));
-    addVertex(Point3(-hw,-hh,-hd));
+    addVertex(new Vertex(Point3(-hw, hh,-hd), Vector3(-hw, hh,-hd)));
+    addVertex(new Vertex(Point3( hw, hh,-hd), Vector3( hw, hh,-hd)));
+    addVertex(new Vertex(Point3( hw,-hh,-hd), Vector3( hw,-hh,-hd)));
+    addVertex(new Vertex(Point3(-hw,-hh,-hd), Vector3(-hw,-hh,-hd)));
 
-    addVertex(Point3(-hw, hh, hd));
-    addVertex(Point3( hw, hh, hd));
-    addVertex(Point3( hw,-hh, hd));
-    addVertex(Point3(-hw,-hh, hd));
+    addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
+    addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
+    addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
+    addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
 }
 
 void Box::initTriangles()

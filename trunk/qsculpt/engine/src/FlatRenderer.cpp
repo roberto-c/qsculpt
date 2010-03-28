@@ -140,7 +140,7 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 		glColor3d(color.redF(), color.greenF(), color.blueF());
 
 	//qDebug() << "Draw mesh";
-	glDrawArrays(GL_QUADS, 0, obj->getFaceList().size()*4);
+	glDrawArrays(GL_QUADS, 0, obj->getNumFaces()*4);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -178,32 +178,38 @@ void FlatRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 	if (mesh == NULL || vbo->getBufferID() == 0)
 		return;
 	
-	int numFaces = mesh->getFaceList().size();
+	int numFaces = mesh->getNumFaces();
 	if (numFaces == 0)
 		return;
 	
 	int numVertices = numFaces*4;	
 	FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
 	
-	float tmp[3];
-	int vertexIndex;
-	for (int i = 0; i < numFaces; ++i)
-	{
-		for (int j = 0; j<4; ++j)
-		{
-			vertexIndex = mesh->getFaceList().at(i).point[j];
-			// TODO: clean up this
-			tmp[0] = mesh->getPointList().at(vertexIndex).x();
-			tmp[1] = mesh->getPointList().at(vertexIndex).y();
-			tmp[2] = mesh->getPointList().at(vertexIndex).z();
-			memcpy(vtxData[i*4 + j].v, tmp, SIZE_OF_VERTEX);
-			tmp[0] = mesh->getNormalList().at(vertexIndex).x();
-			tmp[1] = mesh->getNormalList().at(vertexIndex).y();
-			tmp[2] = mesh->getNormalList().at(vertexIndex).z();
-			memcpy(vtxData[i*4 + j].n, tmp, SIZE_OF_NORMAL);
-		}
+    int fcounter = 0;
+    int offset = 0;
+	Iterator<Face> it = mesh->constFaceIterator();
+	while(it.hasNext()) {
+		const Face& f = it.next();
+        qDebug() << "face " << fcounter++;
+        Iterator<Vertex> vtxIt = f.constVertexIterator();
+        while(vtxIt.hasNext()) {
+            const Vertex& v = vtxIt.next();
+            qDebug() << "Vertex:" << toString(v.position());
+            vtxData[offset].v[0] = v.position().x();
+            vtxData[offset].v[1] = v.position().y();
+            vtxData[offset].v[2] = v.position().z();
+            
+            vtxData[offset].n[0] = v.normal().x();
+            vtxData[offset].n[1] = v.normal().y();
+            vtxData[offset].n[2] = v.normal().z();
+            
+            vtxData[offset].color[0] = 0.8;
+            vtxData[offset].color[1] = 0.8;
+            vtxData[offset].color[2] = 0.8;
+            vtxData[offset].color[3] = 1.0;
+            offset++;
+        }        
 	}
-	
 	vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(FlatVtxStruct));
 	
 	delete [] vtxData;

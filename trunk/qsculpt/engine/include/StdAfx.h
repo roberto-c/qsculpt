@@ -35,5 +35,7 @@ inline bool printGlError()
 	return result;
 }
 
+#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+
 #endif
 

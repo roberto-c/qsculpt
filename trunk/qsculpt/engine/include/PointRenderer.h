@@ -30,7 +30,7 @@ private:
 	 */
 	VertexBuffer* getVBO(IObject3D* mesh);
 	
-	void fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo);
+	void fillVertexBuffer(const IObject3D* mesh, VertexBuffer* vbo);
 };
 
 #endif /*POINTRENDERER_H_*/

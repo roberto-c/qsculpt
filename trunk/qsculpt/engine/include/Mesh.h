@@ -20,12 +20,13 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Object3D.h"
-
+//#include "Object3D.h"
+#include "Subdivision.h"
 /**
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class Mesh : public Object3D
+//class Mesh : public Object3D
+class Mesh : public Subdivision
 {
 public:
     Mesh();

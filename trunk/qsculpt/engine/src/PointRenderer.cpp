@@ -90,7 +90,7 @@ void PointRenderer::renderVbo(const IObject3D* mesh)
 	
 	glPointSize(3.0f);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	glDrawArrays(GL_POINTS, 0, obj->getPointList().size());
+	glDrawArrays(GL_POINTS, 0, obj->getNumVertices());
 	
 //	glDepthFunc(GL_EQUAL);
 //	glPointSize(1.5f);
@@ -115,24 +115,32 @@ VertexBuffer* PointRenderer::getVBO(IObject3D* mesh)
 	return vbo;
 }
 
-void PointRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
+void PointRenderer::fillVertexBuffer(const IObject3D* mesh, VertexBuffer* vbo)
 {
-	int numVertices = mesh->getPointList().size();
+	int numVertices = mesh->getNumVertices();
 	if (numVertices == 0)
 		return;
 	
 	int numFloats = numVertices*6;
 	GLfloat* vtxData = new GLfloat[numFloats];
 	
-	for (int i = 0; i < numVertices; ++i)
-	{
-		vtxData[(i*6)] = mesh->getPointList().at(i).x();
-		vtxData[(i*6) + 1] = mesh->getPointList().at(i).y();
-		vtxData[(i*6) + 2] = mesh->getPointList().at(i).z();
+	Iterator<Vertex> it = mesh->constVertexIterator();
+	int offset = 0;
+	while(it.hasNext()) {
+		const Vertex& v = it.next();
+		vtxData[offset] = v.position().x();
+		offset++;
+		vtxData[offset] = v.position().y();
+		offset++;
+		vtxData[offset] = v.position().z();
+		offset++;
 		
-		vtxData[(i*6) + 3] = 0.85f;
-		vtxData[(i*6) + 4] = 0.85f;
-		vtxData[(i*6) + 5] = 0.85f;
+		vtxData[offset] = 0.85f;
+		offset++;
+		vtxData[offset] = 0.85f;
+		offset++;
+		vtxData[offset] = 0.85f;
+		offset++;
 	}
 	
 	vbo->setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));

@@ -20,14 +20,14 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "Object3D.h"
+#include "Subdivision.h"
 
 /**
  * Draw a 3D box.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class Box : public Object3D
+class Box : public Subdivision
 {
 public:
     Box();

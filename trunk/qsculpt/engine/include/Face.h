@@ -12,46 +12,161 @@
 
 #include <QAtomicInt>
 #include "Vertex.h"
-#include "HEdge.h"
+//#include "HEdge.h"
+#include "EdgeContainer.h"
+#include "IIterator.h"
 
+class Edge;
+
+/**
+ * Face class. This class contains references to points that should
+ * form a triangle.
+ *
+ * The points are indices of the Object3D point list. So, this class It's
+ * only meant to be used with the Object3D class (its not a generic triangle
+ * class).
+ *
+ * A triangle its only valid if theirs three points are different. Using the
+ * default constructor makes a non valid triangle.
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
 class Face {
 	static QAtomicInt NEXT_ID;
 	
 	int _id;
-	HEdge *_he;
+	int _depth;
+	Edge *_he;
+	Vertex* _vertex;
+	Face* _children;
 	
 public:
-	class VertexIterator;
+	QVector<int> point;   /**< Index of first point */
+	QVector<int> edge;
+	int midPoint;
+    bool isMarked;
+	qint32 hashValue;
 	
 public:
+	/**
+	 * Default constructor. Initiliazes all point to index 0.
+     */
 	Face();
+	
+	/**
+	 * Construct a new triangle. The triangle is composed by the passed
+     * points ids or references.
+     *
+     * @param p1 first point that form the triangle.
+     * @param p2 second point that form the triangle.
+     * @param p3 third point that form the triangle.
+     */
+    Face(const QVector<int>& vertexIndexList);
 	
 	~Face();
 	
-	operator Point3() {
-		return _he->head()->position();
-	}
+	/**
+	 * Get the hash code for this instance
+	 */
+	inline uint hashCode();
 	
-	operator Point3() const {
-		return _he->head()->position();
-	}
+	/**
+	 * Checks if the triangle data is valid. Triangle is valid only if
+     * the three point that compound it are different.
+     *
+     * @return true if triangle is valid. False, otherwise.
+     */
+    bool isValid();
 	
-	VertexIterator vertexIterator();
+	/**
+	 * Add a vertex to the face. This method allows adding multiple vertices
+	 * by chaining addVertex calls.
+	 */
+	Face& addEdge(Edge* he);
+	
+	/**
+	 * Adds all the vertices contained in the array.
+	 */
+	void addVertex(const QVector<Vertex*> v);
+	
+	/**
+	 * Gets/sets a reference to a half edge that forms this face.
+	 */
+	Edge* hedge() { return _he; };
+	void setHEdge(Edge* hedge);
+    
+    /**
+	 * Sets the first point index reference.
+     *
+     * @param p1 index of the first point.
+     * @param p2 index of the second point.
+     * @param p3 index of the third point.
+     */
+    void setPoints(const QVector<int>& vertexIndexList) { 
+        point = vertexIndexList;
+        //normal.resize(point.size());
+		hashValue = 0;
+		for(int i = 0; i < point.size(); ++i)
+			hashValue += point[i];
+    }
+    
+    bool hasEdge(const Edge& e) const {
+//        return hasEdge(e.head(), e.tail());
+        return false;
+    }
+    
+    bool hasEdge(int v1, int v2) const {
+        bool res = false;
+        if (int index = point.indexOf(v1) != -1)
+        {
+            if (index == point.size() - 1)
+                res = v2 == point[0];
+            else
+                res = v2 == point[index + 1];
+        }
+        return res;
+    }
+    
+    bool operator==(const Face& t) const {
+        int psize = point.size();
+        if (psize == 0 || psize != t.point.size())
+            return false;
+        
+        int elementIndex = t.point.indexOf(point[0]);
+        if (elementIndex == -1 )
+            return false;
+        
+        for (int i = 1; i < psize; ++i)
+        {
+            elementIndex = (elementIndex + 1 ) % psize;
+            if (point.at(i) != t.point.at(elementIndex) )
+                return false;
+        }
+        return true;
+    }
+	
+	operator Point3() const ;	
+	operator Point3();
+	
+	Iterator<Vertex> vertexIterator();
+	Iterator<Vertex> constVertexIterator() const;
+	
+protected:
+	void subdivide(int level);
 	
 	/* Inner classes */
-public:
-	class VertexIterator
+	class VertexIterator : public IIterator<Vertex>
 	{
 		friend class Face;
 		
-		Face* _f;
+		const Face* _f;
+		mutable Edge* _e;
 		
 	protected:
 		/**
 		 * Constructor of a vertex iterator. The vertex iterator
 		 * is only contructed by means of Vertex::vertexIterator() function
 		 */
-		VertexIterator(Face* f);
+		VertexIterator(const Face* f);
 		
 	public:
 		/**
@@ -71,10 +186,21 @@ public:
 		Vertex & next();
 		
 		/**
+		 * Returns the next element and advance the iterator by one.
+		 */
+		const Vertex & next() const;
+		
+		/**
 		 * Returns the previous elements and move the iterator one position
 		 * backwards.
 		 */
 		Vertex & previous();
+		
+		/**
+		 * Returns the previous elements and move the iterator one position
+		 * backwards.
+		 */
+		const Vertex & previous() const;
 	};
 	
 	friend class VertexIterator;

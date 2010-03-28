@@ -260,6 +260,17 @@ Point3& Object3D::getVertex(int index)
     return m_pointList.at(index);
 }
 
+Point3 Object3D::getVertex(int index) const
+{
+    return m_pointList.at(index);
+}
+
+
+int Object3D::getNumVertices() const
+{
+	return m_pointList.size();
+}
+
 Vector3& Object3D::getNormalAtPoint(int index)
 {
 	return m_normalList[index];
@@ -282,7 +293,8 @@ int Object3D::addEdge(const Edge& edge)
 
 int Object3D::addEdge(int v1, int v2)
 {
-	Edge edge(v1, v2);
+	//Edge edge(v1, v2);
+    Edge edge;
 	return addEdge(edge);
 }
 
@@ -318,8 +330,8 @@ int Object3D::addFace(const QVector<int>& vertexIndexList)
 		int edgeIndex = -1;
 		for (int i = 0; i < numFaceVertices; i++)
 		{
-			edge.point1 = t.point.at(i);
-			edge.point2 = t.point.at((i + 1) %numFaceVertices);
+			edge.setHead(t.point.at(i));
+			edge.setTail(t.point.at((i + 1) %numFaceVertices));
 			if ((edgeIndex = edgeList.indexOf(edge)) == -1)
 			{
 //				qDebug("Object3D::addFace: edge not found");
@@ -336,6 +348,8 @@ int Object3D::addFace(const QVector<int>& vertexIndexList)
 //		qDebug("Object3D::addFace: Face added");
 		return faceIndex;
     }
+	
+	//m_hedgeList.append(new HEdge());
     qDebug("Object3D::addFace: Face is not valid.");
     return -1;
 }
@@ -397,6 +411,11 @@ void Object3D::removeFace( int id)
     }
     m_faceList.remove(id);
     // TODO: remove Edges not used from edges list
+}
+
+int Object3D::getNumFaces() const
+{
+	return this->m_faceList.size();
 }
 
 void Object3D::drawBoundingBox()
@@ -704,3 +723,105 @@ int Object3D::getWorkingResolutionLevel()
 	// TODO: Implement getWorkingResolutionLevel
 	return m_currentResolutionLevel;
 }
+
+Iterator<Vertex> Object3D::vertexIterator()
+{
+	return Iterator<Vertex>(new VertexIterator(this) );
+}
+
+Iterator<Vertex> Object3D::constVertexIterator() const
+{
+	return Iterator<Vertex>(new VertexIterator(this) );
+}
+
+Iterator<Face> Object3D::faceIterator()
+{
+	return Iterator<Face>(new FaceIterator(this));
+}
+
+Iterator<Face> Object3D::constFaceIterator() const
+{
+	return Iterator<Face>(new FaceIterator(this));
+}
+
+// Inner classes implementation
+// Object3D::VertexIterator
+Object3D::VertexIterator::VertexIterator(const Object3D* v)
+{
+}
+
+bool Object3D::VertexIterator::hasNext() const
+{
+	return false;
+}
+
+bool Object3D::VertexIterator::hasPrevious() const
+{
+	return false;
+}
+
+Vertex & Object3D::VertexIterator::next()
+{
+	static Vertex v;
+	return v;
+}
+
+const Vertex & Object3D::VertexIterator::next() const
+{
+	static Vertex v;
+	return v;
+}
+
+Vertex & Object3D::VertexIterator::previous()
+{
+	static Vertex v;
+	return v;
+}
+
+const Vertex & Object3D::VertexIterator::previous() const
+{
+	static Vertex v;
+	return v;
+}
+
+
+//Object3D::FaceIterator
+Object3D::FaceIterator::FaceIterator(const Object3D* v)
+{
+}
+
+bool Object3D::FaceIterator::hasNext() const
+{
+	return false;
+}
+
+bool Object3D::FaceIterator::hasPrevious() const
+{
+	return false;
+}
+
+Face & Object3D::FaceIterator::next()
+{
+	static Face f;
+	return f;
+}
+
+const Face & Object3D::FaceIterator::next() const
+{
+	static Face f;
+	return f;
+}
+
+Face & Object3D::FaceIterator::previous()
+{
+	static Face f;
+	return f;
+}
+
+const Face & Object3D::FaceIterator::previous() const
+{
+	static Face f;
+	return f;
+}
+
+
