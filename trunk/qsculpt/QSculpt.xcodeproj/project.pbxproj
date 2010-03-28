@@ -256,6 +256,7 @@
 		02E0FEFB10F5AE1A00DE4492 /* Vertex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E0FEFA10F5AE1A00DE4492 /* Vertex.cpp */; };
 		02E0FF1910F5CA3B00DE4492 /* Face.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E0FF1810F5CA3B00DE4492 /* Face.cpp */; };
 		02E0FF7710F6B8A800DE4492 /* IIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E0FF7610F6B8A800DE4492 /* IIterator.h */; };
+		02E884C5115FC4DE0007A178 /* GlView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D85D70D6390410026C13F /* GlView.cpp */; };
 		02F4F49E0DE9190B0004A465 /* PickingFacesRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F4F49C0DE9190B0004A465 /* PickingFacesRenderer.h */; };
 		02F4F49F0DE9190B0004A465 /* PickingFacesRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F4F49D0DE9190B0004A465 /* PickingFacesRenderer.cpp */; };
 /* End PBXBuildFile section */
@@ -1695,6 +1696,7 @@
 				02B1BC0F0D6F6243008BB988 /* qrc_QSculpt.cpp in Sources */,
 				020EEE630ED121FA00F1C116 /* moc_glview.cpp in Sources */,
 				020302B210ED377500587CB6 /* Stable.cpp in Sources */,
+				02E884C5115FC4DE0007A178 /* GlView.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

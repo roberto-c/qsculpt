@@ -15,25 +15,21 @@ WireframeRenderer::~WireframeRenderer()
 
 void WireframeRenderer::renderObject(const IObject3D* mesh)
 {
-	const FaceContainer& faceList = mesh->getFaceList();
-    int size = faceList.size();
 
-    glBegin(GL_LINES);
 	glColor3f(0.0f, 0.0f, 1.0f);
-    for ( int i = 0; i < size; i++)
-    {
-        const Face& f = faceList[i];
-        int size = f.point.size();
-        for (int j = 0; j < size; ++j)
-        {
-            glVertex3f(mesh->getPointList().at(f.point[j]).x(),
-					   mesh->getPointList().at(f.point[j]).y(),
-					   mesh->getPointList().at(f.point[j]).z());
-            glVertex3f(mesh->getPointList().at(f.point[(j + 1) % size]).x(),
-					   mesh->getPointList().at(f.point[(j + 1) % size]).y(),
-					   mesh->getPointList().at(f.point[(j + 1) % size]).z()
-					   );
+    int offset = 0;
+	Iterator<Face> it = mesh->constFaceIterator();
+	while(it.hasNext()) {
+		const Face& f = it.next();
+        Iterator<Vertex> vtxIt = f.constVertexIterator();
+        glBegin(GL_LINE_LOOP);
+        while(vtxIt.hasNext()) {
+            const Vertex& v = vtxIt.next();
+            // qDebug() << "Vertex:" << toString(v.position());
+            glVertex3f(v.position().x(),
+					   v.position().y(),
+					   v.position().z());
         }
-    }
-    glEnd();
+        glEnd();
+	}
 }
