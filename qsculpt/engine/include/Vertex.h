@@ -13,8 +13,9 @@
 #include <Eigen/Core>
 #include <QAtomicInt>
 #include "Point3D.h"
+#include "IIterator.h"
 
-class HEdge;
+class Edge;
 
 class Vertex
 {
@@ -25,7 +26,7 @@ class Vertex
 	Vector3 _normal;
 	Vector3 _color;
 	
-	HEdge *_he;
+	Edge* _he;
 	
 public:
 	class VertexIterator;
@@ -38,6 +39,14 @@ public:
 	Vertex();
 	
 	/**
+	 * Construct a new vertex with the position specified
+	 */
+	Vertex(const Point3 & position, 
+		   const Vector3 & normal = Vector3(0, 1, 0),
+		   const Vector3 & color = Vector3(1, 1, 1)
+		   );
+	
+	/**
 	 * Copy constructor. Creates a new instance of a vertex
 	 * with the same attributes as another vertex.
 	 *
@@ -46,6 +55,11 @@ public:
 	 */
 	Vertex(const Vertex&);
 	
+    /**
+     * Gets the instance id of the vertex.
+     */
+    int iid() const { return _id; }
+    
 	/**
 	 * Gets / sets the position of the vertex
 	 */
@@ -68,9 +82,8 @@ public:
 	/**
 	 * Assign or returns one of the half edges associated to the vertex.
 	 */
-	void setHedge(HEdge *he) { _he = he; }
-	const HEdge* getHedge() const { return _he; }
-	HEdge* getHedge() { return _he; }
+	void setEdge(Edge* he) { _he = he; }
+	Edge* edge() const { return _he; }
 	
 	/**
 	 * Operator to treat the Vertex class as a Point3 instance. Returns
@@ -82,15 +95,26 @@ public:
 	
 	Vertex & operator=(const Vertex & v);
 	
+	/**
+	 * Equals operator.
+	 */
+	bool operator==(const Vertex& v) const;
+	
+	/**
+	 * Equals operator.
+	 */
+	bool operator!=(const Vertex& v) const;
+	
 	VertexIterator vertexIterator();
 	
 	/* Inner classes */
 public:
-	class VertexIterator
+	class VertexIterator : public IIterator<Vertex>
 	{
 		friend class Vertex;
 		
 		Vertex* _v;
+		Edge* _currHe;
 		
 	protected:
 		/**
@@ -121,6 +145,17 @@ public:
 		 * backwards.
 		 */
 		Vertex & previous();
+		
+		/**
+		 * Returns the next element and advance the iterator by one.
+		 */
+		const Vertex & next() const;
+		
+		/**
+		 * Returns the previous elements and move the iterator one position
+		 * backwards.
+		 */
+		const Vertex & previous() const;
 	};
 	
 	friend class VertexIterator;

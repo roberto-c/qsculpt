@@ -23,7 +23,7 @@
 #include <math.h>
 
 Sphere::Sphere()
-    : Object3D(),
+    : Subdivision(),
     m_pquadratic(0)
 {
     initPoints();

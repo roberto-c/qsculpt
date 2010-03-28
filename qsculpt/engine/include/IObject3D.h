@@ -28,6 +28,9 @@
 #include "PointContainer.h"
 #include "EdgeContainer.h"
 #include "FaceContainer.h"
+#include "IIterator.h"
+#include "Vertex.h"
+#include "Face.h"
 
 /*
  * Class forward declaration
@@ -208,6 +211,17 @@ public:
     virtual int addVertex(const Point3& point) = 0;
 
     /**
+     * Add vertex v to this object. The object will mantain the reference
+     * to the vertex. Do not delete the vertex while the object has a reference
+     * to it.
+     *
+     * @param v vertex to add to the object. 
+     *
+     * @return the index of the vertex inside the object.
+     */
+    virtual int addVertex(Vertex* v) = 0;
+    
+    /**
      * Remove a point from the object. If the point form part of a
      * triangle then that triangle should be removed from the object.
      *
@@ -219,7 +233,13 @@ public:
      *
      */
     virtual Point3& getVertex(int index) = 0;
+	virtual Point3 getVertex(int index) const = 0;
 
+	/**
+	 * Gets the number of vertices
+	 */
+	virtual int getNumVertices() const = 0;
+	
     /**
      *
      */
@@ -266,6 +286,18 @@ public:
      */
     virtual void removeFace( int id) =0;
 
+	/**
+	 * Returns the number of faces that the object has.
+	 *
+	 * TODO: This may not belong here as is specific to mesh surfaces.
+	 */
+	virtual int getNumFaces() const = 0;
+	
+    /**
+     * Returns the face at the position index.
+     */
+    virtual Face& getFace(int index) = 0;
+    
     /**
      *
      */
@@ -389,6 +421,18 @@ public:
 	virtual QVector<int> getSelectedPoints() const = 0;
 	virtual void setSelectedPoints(const QVector<int>& indicesArray) = 0;
 	
+	/**
+	 * Returns a vertex iterator to traverse over all the vertices in this
+	 * object.
+	 */
+	virtual Iterator<Vertex> vertexIterator() = 0;
+	virtual Iterator<Vertex> constVertexIterator() const = 0;
+	
+	/**
+	 * Returns a face iterator to traverse over all the faces of this object.
+	 */
+	virtual Iterator<Face> faceIterator() = 0;
+	virtual Iterator<Face> constFaceIterator() const = 0;
 signals:
 	void meshChanged(IObject3D* mesh);
 	

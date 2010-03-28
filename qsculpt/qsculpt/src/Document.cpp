@@ -24,6 +24,7 @@
 #include "IObject3D.h"
 #include "Box.h"
 #include "Sphere.h"
+#include "Mesh.h"
 
 Document::Document() {
 
@@ -39,7 +40,7 @@ void Document::loadFile(QString fileName)
 {
     qDebug("loadFile");
 
-	IObject3D* obj = new ::Object3D;
+	IObject3D* obj = new ::Mesh();
     if (obj)
     {
         QFile file(fileName);
@@ -161,7 +162,7 @@ void Document::addObject(ObjectType type)
             obj = new ::Sphere();
             break;
         case IDocument::Mesh:
-            obj = new ::Object3D;
+            obj = new ::Mesh();
             break;
     }
     m_objectList.append( obj );

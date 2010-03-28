@@ -77,6 +77,7 @@ private:
 	QHash<Point3, int> m_pointHash;
 
 	friend class Object3D;
+	friend class Subdivision;
 };
 
 // Inline definitions

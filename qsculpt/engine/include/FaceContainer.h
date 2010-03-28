@@ -22,140 +22,7 @@
 #define FACECONTAINER_H
 
 #include "Vertex.h"
-
-/**
-* Face class. This class contains references to points that should
- * form a triangle.
- *
- * The points are indices of the Object3D point list. So, this class It's
- * only meant to be used with the Object3D class (its not a generic triangle
- * class).
- *
- * A triangle its only valid if theirs three points are different. Using the
- * default constructor makes a non valid triangle.
- * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
- */
-struct Face
-{
-    QVector<int> point;   /**< Index of first point */
-	QVector<int> edge;
-	int midPoint;
-    bool isMarked;
-	qint32 hashValue;
-    
-    /**
-		* Default constructor. Initiliazes all point to index 0.
-     */
-    Face()
-        :   point(),
-		midPoint(-1),
-        isMarked(false),
-		hashValue(0)
-    {
-    }
-    
-    /**
-		* Construct a new triangle. The triangle is composed by the passed
-     * points ids or references.
-     *
-     * @param p1 first point that form the triangle.
-     * @param p2 second point that form the triangle.
-     * @param p3 third point that form the triangle.
-     */
-    Face(const QVector<int>& vertexIndexList)
-        :   point(vertexIndexList),
-		midPoint(-1),
-        isMarked(false),
-		hashValue(0)
-    {
-		//normal.fill(-1, point.size());
-		for(int i = 0; i < point.size(); ++i)
-			hashValue += point[i];
-    }
-    
-    /**
-		* Checks if the triangle data is valid. Triangle is valid only if
-     * the three point that compound it are different.
-     *
-     * @return true if triangle is valid. False, otherwise.
-     */
-    bool isValid() { 
-        return !point.isEmpty();
-    }
-    
-    /**
-		* Sets the first point index reference.
-     *
-     * @param p1 index of the first point.
-     * @param p2 index of the second point.
-     * @param p3 index of the third point.
-     */
-    void setPoints(const QVector<int>& vertexIndexList) { 
-        point = vertexIndexList;
-        //normal.resize(point.size());
-		hashValue = 0;
-		for(int i = 0; i < point.size(); ++i)
-			hashValue += point[i];
-    }
-    
-    bool hasEdge(const Edge& e) const {
-        return hasEdge(e.point1, e.point2);
-    }
-    
-    bool hasEdge(int v1, int v2) const {
-        bool res = false;
-        if (int index = point.indexOf(v1) != -1)
-        {
-            if (index == point.size() - 1)
-                res = v2 == point[0];
-            else
-                res = v2 == point[index + 1];
-        }
-        return res;
-    }
-    
-    bool operator==(const Face& t) const {
-        int psize = point.size();
-        if (psize == 0 || psize != t.point.size())
-            return false;
-        
-        int elementIndex = t.point.indexOf(point[0]);
-        if (elementIndex == -1 )
-            return false;
-        
-        for (int i = 1; i < psize; ++i)
-        {
-            elementIndex = (elementIndex + 1 ) % psize;
-            if (point.at(i) != t.point.at(elementIndex) )
-                return false;
-        }
-        return true;
-    }
-	
-	operator Vertex()
-	{
-		Vertex vtx;
-		return vtx;
-	}
-	
-	operator Vertex() const
-	{
-		Vertex vtx;
-		return vtx;
-	}
-	
-	operator Point3()
-	{
-		Point3 p;
-		return p;
-	}
-	
-	operator Point3() const
-	{
-		Point3 p;
-		return p;
-	}
-};
+#include "Face.h"
 
 class FaceContainer
 {
@@ -241,6 +108,7 @@ private:
 	QVector<GLuint> m_pointIndices;
 	
 	friend class Object3D;
+	friend class Subdivision;
 };
 
 inline uint qHash(const Face& key)

@@ -591,23 +591,29 @@ PointIndexList GlView::getSelectedVertices(GLint x, GLint y,
 					 width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)d);
 		
 		int faceIndex = 0;
-		int vtxIndex = 0;
-		int numPoints = 0;
+//		int vtxIndex = 0;
+//		int numPoints = 0;
 		for (int j = 0; j < width * height; ++j)
 		{
 			if (d[j] != 0)
 			{
 				faceIndex = d[j]-1;
-				numPoints =  mesh->getFaceList().at(faceIndex).point.size();
-				for (int k = 0; k < numPoints; ++k)
-				{
-					vtxIndex = mesh->getFaceList().at(faceIndex).point[k];
-					if (qBinaryFind(l, vtxIndex) == l.end())
-					{
-						l.append(vtxIndex);
-						qSort(l);
-					}
-				}
+//				numPoints =  mesh->getFaceList().at(faceIndex).point.size();
+//				for (int k = 0; k < numPoints; ++k)
+//				{
+//					vtxIndex = mesh->getFaceList().at(faceIndex).point[k];
+//					if (qBinaryFind(l, vtxIndex) == l.end())
+//					{
+//						l.append(vtxIndex);
+//						qSort(l);
+//					}
+//				}
+                Face& f = mesh->getFace(faceIndex);
+                
+                Iterator<Vertex> vtxIt = f.constVertexIterator();
+                while(vtxIt.hasNext()) {
+                    const Vertex& v = vtxIt.next();
+                }
 			}
 		}
 		

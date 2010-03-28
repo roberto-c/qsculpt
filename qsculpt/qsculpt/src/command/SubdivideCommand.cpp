@@ -146,86 +146,86 @@ void SubdivideCommand::WorkerThread::subdivide(IObject3D* obj, int rbegin, int r
 
 void SubdivideCommand::WorkerThread::subdivideFace(IObject3D* obj, int faceIndex)
 {
-#define POINT_LIST() (obj->getPointList())
-#define FACE_LIST() (obj->getFaceList())
-#define EDGE_LIST() (obj->getEdgeList())
-	
-	Q_ASSERT(obj);
-	Q_ASSERT(faceIndex >= 0 && faceIndex < obj->getFaceList().size());
-	Point3 vertex;
-	QVector<int> vtxIndices(4);
-	
-	Face f = FACE_LIST().at(faceIndex);
-	int numFaceVertices = f.point.size();
-	
-	// Find the vertex at the center of the polygon 
-	Point3 midVertex;
-	for (int j = 0; j < numFaceVertices; ++j)
-	{
-		midVertex = midVertex + POINT_LIST().at(f.point.at(j));
-	}
-	midVertex = midVertex / (float)numFaceVertices;
-	
-	// Add the new vertex to the mesh
-	int midVertexIndex = obj->addVertex(midVertex);
-	FACE_LIST()[faceIndex].midPoint = midVertexIndex;
-	
-	int edgeIndex = -1;
-	QVector<Edge> edgeList(numFaceVertices);
-	Edge edge;
-	for (int j = 0; j < numFaceVertices; ++j)
-	{
-		edgeIndex = EDGE_LIST().indexOf(
-										Edge( f.point[j], f.point[(j+1)%numFaceVertices] )
-										);
-		if (edgeIndex == -1)
-		{
-			qDebug() << "subdivide: Edge not found";
-			obj->unlock();
-			return;
-		}
-		edge = EDGE_LIST().at(edgeIndex);
-		edgeList[j] = edge;
-		
-		// If the edge has no mid point assigned, calculate the mid point
-		// and add it to the mesh
-		if (edge.midPoint == -1)
-		{
-			midVertex = POINT_LIST().at(edge.point1) + POINT_LIST().at(edge.point2);
-			midVertex = midVertex / 2.0f;
-			midVertexIndex = obj->addVertex(midVertex);
-			if (midVertexIndex == -1)
-			{
-				qDebug() << "subdivide: Edge not found";
-				obj->unlock();
-				return;
-			}
-			EDGE_LIST().setMidPointReference(edgeIndex, midVertexIndex);
-			edgeList[j] = EDGE_LIST().at(edgeIndex);
-		}
-	}
-	f = FACE_LIST().at(faceIndex);
-	vtxIndices[0] = edgeList[3].commonVertex(edgeList[0]);
-	vtxIndices[1] = edgeList[0].midPoint;
-	vtxIndices[2] = f.midPoint;
-	vtxIndices[3] = edgeList[3].midPoint;
-	obj->addFace(vtxIndices);
-	vtxIndices[0] = edgeList[0].midPoint;
-	vtxIndices[1] = edgeList[0].commonVertex(edgeList[1]);
-	vtxIndices[2] = edgeList[1].midPoint;
-	vtxIndices[3] = f.midPoint;
-	obj->addFace(vtxIndices);
-	vtxIndices[0] = f.midPoint;
-	vtxIndices[1] = edgeList[1].midPoint;
-	vtxIndices[2] = edgeList[1].commonVertex(edgeList[2]);
-	vtxIndices[3] = edgeList[2].midPoint;
-	obj->addFace(vtxIndices);
-	vtxIndices[0] = edgeList[3].midPoint;
-	vtxIndices[1] = f.midPoint;
-	vtxIndices[2] = edgeList[2].midPoint;
-	vtxIndices[3] = edgeList[2].commonVertex(edgeList[3]);
-	obj->replaceFace(faceIndex, vtxIndices);
-	FACE_LIST()[faceIndex].midPoint = -1;
+//#define POINT_LIST() (obj->getPointList())
+//#define FACE_LIST() (obj->getFaceList())
+//#define EDGE_LIST() (obj->getEdgeList())
+//	
+//	Q_ASSERT(obj);
+//	Q_ASSERT(faceIndex >= 0 && faceIndex < obj->getFaceList().size());
+//	Point3 vertex;
+//	QVector<int> vtxIndices(4);
+//	
+//	Face f = FACE_LIST().at(faceIndex);
+//	int numFaceVertices = f.point.size();
+//	
+//	// Find the vertex at the center of the polygon 
+//	Point3 midVertex;
+//	for (int j = 0; j < numFaceVertices; ++j)
+//	{
+//		midVertex = midVertex + POINT_LIST().at(f.point.at(j));
+//	}
+//	midVertex = midVertex / (float)numFaceVertices;
+//	
+//	// Add the new vertex to the mesh
+//	int midVertexIndex = obj->addVertex(midVertex);
+//	FACE_LIST()[faceIndex].midPoint = midVertexIndex;
+//	
+//	int edgeIndex = -1;
+//	QVector<Edge> edgeList(numFaceVertices);
+//	Edge edge;
+//	for (int j = 0; j < numFaceVertices; ++j)
+//	{
+//		edgeIndex = EDGE_LIST().indexOf(
+//										Edge( f.point[j], f.point[(j+1)%numFaceVertices] )
+//										);
+//		if (edgeIndex == -1)
+//		{
+//			qDebug() << "subdivide: Edge not found";
+//			obj->unlock();
+//			return;
+//		}
+//		edge = EDGE_LIST().at(edgeIndex);
+//		edgeList[j] = edge;
+//		
+//		// If the edge has no mid point assigned, calculate the mid point
+//		// and add it to the mesh
+//		if (edge.midPoint == -1)
+//		{
+//			midVertex = POINT_LIST().at(edge.point1) + POINT_LIST().at(edge.point2);
+//			midVertex = midVertex / 2.0f;
+//			midVertexIndex = obj->addVertex(midVertex);
+//			if (midVertexIndex == -1)
+//			{
+//				qDebug() << "subdivide: Edge not found";
+//				obj->unlock();
+//				return;
+//			}
+//			EDGE_LIST().setMidPointReference(edgeIndex, midVertexIndex);
+//			edgeList[j] = EDGE_LIST().at(edgeIndex);
+//		}
+//	}
+//	f = FACE_LIST().at(faceIndex);
+//	vtxIndices[0] = edgeList[3].commonVertex(edgeList[0]);
+//	vtxIndices[1] = edgeList[0].midPoint;
+//	vtxIndices[2] = f.midPoint;
+//	vtxIndices[3] = edgeList[3].midPoint;
+//	obj->addFace(vtxIndices);
+//	vtxIndices[0] = edgeList[0].midPoint;
+//	vtxIndices[1] = edgeList[0].commonVertex(edgeList[1]);
+//	vtxIndices[2] = edgeList[1].midPoint;
+//	vtxIndices[3] = f.midPoint;
+//	obj->addFace(vtxIndices);
+//	vtxIndices[0] = f.midPoint;
+//	vtxIndices[1] = edgeList[1].midPoint;
+//	vtxIndices[2] = edgeList[1].commonVertex(edgeList[2]);
+//	vtxIndices[3] = edgeList[2].midPoint;
+//	obj->addFace(vtxIndices);
+//	vtxIndices[0] = edgeList[3].midPoint;
+//	vtxIndices[1] = f.midPoint;
+//	vtxIndices[2] = edgeList[2].midPoint;
+//	vtxIndices[3] = edgeList[2].commonVertex(edgeList[3]);
+//	obj->replaceFace(faceIndex, vtxIndices);
+//	FACE_LIST()[faceIndex].midPoint = -1;
 }
 
 void SubdivideCommand::WorkerThread::adjustPointNormal(IObject3D* obj, int index)

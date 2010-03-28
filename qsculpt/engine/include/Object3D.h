@@ -24,7 +24,6 @@
 #include <QMutex>
 #include <QHash>
 #include "IObject3D.h"
-#include "PointContainer.h"
 
 class Scene;
 struct Face;
@@ -71,6 +70,8 @@ public:
     virtual int addVertex(const Point3& point);
     virtual void removeVertex(int id);
     virtual Point3& getVertex(int index);
+	virtual Point3 getVertex(int index) const;
+	virtual int getNumVertices() const;
     virtual Vector3& getNormalAtPoint(int index);
     virtual const Vector3& getNormalAtPoint(int index) const;
 	virtual int addEdge(const Edge& edge);
@@ -78,6 +79,7 @@ public:
     virtual int addFace(const QVector<int>& vertexIndexList);
 	virtual void replaceFace(int index, const QVector<int>& vertexIndexList);
     virtual void removeFace( int id);
+	virtual int getNumFaces() const;
     virtual int getFaceIndexAtPoint(const Point3& p) const;
     virtual int getClosestPointAtPoint(const Point3 &p) const;
     virtual QVector<int> getPointsInRadius(const Point3 &p, float radius) const;
@@ -111,7 +113,12 @@ public:
 	virtual void setSelectedPoints(const QVector<int>& indicesArray) {
 		m_selectedPoints = indicesArray;
 	}
-		
+	
+	virtual Iterator<Vertex> vertexIterator();
+	virtual Iterator<Vertex> constVertexIterator() const;
+	virtual Iterator<Face> faceIterator();
+	virtual Iterator<Face> constFaceIterator() const;
+	
 // End IObject3D interface
 
     //const Object3D& operator=(const Object3D& obj);
@@ -153,10 +160,10 @@ protected:
     void computeAllNormals();
 
     Scene*          m_scene;
-    Point3         m_position;
+    Point3          m_position;
     QColor          m_color,
                     m_boundingBoxColor;
-    Point3         m_boundingBoxVert[8];
+    Point3          m_boundingBoxVert[8];
     float           m_minX,
                     m_maxX,
                     m_minY,
@@ -184,6 +191,110 @@ private:
     QVector<FaceContainer*>   	m_faceList;
 	QVector<EdgeContainer*>		m_edgeList;
     mutable QMutex    			m_mutex;
+	QVector<Edge*>				m_hedgeList;
+	
+// inner classes
+public:
+	class VertexIterator : public IIterator<Vertex>
+	{	
+		friend class Object3D;
+		
+		const Object3D* _v;
+		Edge* _currHe;
+		
+	protected:
+		/**
+		 * Constructor of a vertex iterator. The vertex iterator
+		 * is only contructed by means of Vertex::vertexIterator() function
+		 */
+		VertexIterator(const Object3D* v);
+		
+	public:
+		/**
+		 * Return true if the iterator has more elements (i.e. it is not at the
+		 * end)
+		 */
+		bool hasNext() const;
+		
+		/**
+		 * Returns true if the iterator is not at the beginning of the iteration
+		 */
+		bool hasPrevious() const;
+		
+		/**
+		 * Returns the next element and advance the iterator by one.
+		 */
+		Vertex & next();
+		
+		/**
+		 * Returns the next element and advance the iterator by one.
+		 */
+		const Vertex & next() const;
+		
+		/**
+		 * Returns the previous elements and move the iterator one position
+		 * backwards.
+		 */
+		Vertex & previous();
+		
+		/**
+		 * Returns the previous elements and move the iterator one position
+		 * backwards.
+		 */
+		const Vertex & previous() const;
+	};
+	
+	class FaceIterator : public IIterator<Face>
+	{
+		friend class Object3D;
+		
+		const Object3D* _v;
+		Edge* _currHe;
+		
+	protected:
+		/**
+		 * Constructor of a vertex iterator. The vertex iterator
+		 * is only contructed by means of Vertex::vertexIterator() function
+		 */
+		FaceIterator(const Object3D* v);
+		
+	public:
+		/**
+		 * Return true if the iterator has more elements (i.e. it is not at the
+		 * end)
+		 */
+		bool hasNext() const;
+		
+		/**
+		 * Returns true if the iterator is not at the beginning of the iteration
+		 */
+		bool hasPrevious() const;
+		
+		/**
+		 * Returns the next element and advance the iterator by one.
+		 */
+		Face & next();
+		
+		/**
+		 * Returns the next element and advance the iterator by one.
+		 */
+		const Face & next() const;
+		
+		/**
+		 * Returns the previous elements and move the iterator one position
+		 * backwards.
+		 */
+		Face & previous();
+		
+		/**
+		 * Returns the previous elements and move the iterator one position
+		 * backwards.
+		 */
+		const Face & previous() const;
+	};
+	
+	friend class VertexIterator;
+	friend class FaceIterator;
 };
 
 #endif

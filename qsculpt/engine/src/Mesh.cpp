@@ -21,7 +21,7 @@
 #include "Mesh.h"
 
 Mesh::Mesh()
-    : Object3D()
+    : Subdivision()
 {
 }
 
