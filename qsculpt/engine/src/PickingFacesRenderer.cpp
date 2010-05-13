@@ -122,17 +122,18 @@ void PickingFacesRenderer::renderVbo(const IObject3D* mesh, unsigned int objId)
 }
 
 void PickingFacesRenderer::renderImmediate(const IObject3D* mesh, unsigned int objID)
-{
-	mesh->lock();
-    int size = mesh->getPointList().size();
-	
+{    
+    mesh->lock();
+    int numVertices = mesh->getNumVertices();
+	if (numVertices == 0)
+		return;
+    
     glBegin(GL_POINTS);
-    for ( int i = 0; i < size; i++)
-    {
-        glVertex3f(mesh->getPointList().at(i).x(),
-				   mesh->getPointList().at(i).y(),
-				   mesh->getPointList().at(i).z());
-    }
+	Iterator<Vertex> it = mesh->constVertexIterator();
+	while(it.hasNext()) {
+		const Vertex& v = it.next();
+        glVertex3fv(v.position().data());
+	}
     glEnd();
 	mesh->unlock();
 }
@@ -161,20 +162,22 @@ VertexBuffer* PickingFacesRenderer::getFlatVBO(IObject3D* mesh)
 		
 void PickingFacesRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo, GLuint objId)
 {
-	int numVertices = mesh->getPointList().size();
+    int numVertices = mesh->getNumVertices();
 	if (numVertices == 0)
 		return;
-	
+
 	VtxStruct* vtxData = new VtxStruct[numVertices];
 	
-	for (int i = 0; i < numVertices; ++i)
-	{
-		vtxData[i].v[0] = mesh->getPointList().at(i).x();
-		vtxData[i].v[1] = mesh->getPointList().at(i).y();
-		vtxData[i].v[2] = mesh->getPointList().at(i).z();
-		//memcpy(vtxData[i].v, mesh->getPointList().at(i).getPoint(), SIZE_OF_VERTEX);
-		memcpy((void*)vtxData[i].color, (const GLubyte*)&objId, sizeof(objId));
-		objId++;
+	Iterator<Vertex> it = mesh->constVertexIterator();
+	int offset = 0;
+	while(it.hasNext()) {
+		const Vertex& v = it.next();
+        vtxData[offset].v[0] = v.position().x();
+		vtxData[offset].v[1] = v.position().y();
+		vtxData[offset].v[2] = v.position().z();
+        memcpy((void*)vtxData[offset].color, (const GLubyte*)&objId, sizeof(objId));
+		offset++;
+        objId++;
 	}
 	
 	vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(VtxStruct));
@@ -193,27 +196,6 @@ void PickingFacesRenderer::fillFlatVertexBuffer(IObject3D* mesh, VertexBuffer* v
 	
 	int numVertices = numFaces*4;	
 	FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
-	
-//	int vertexIndex;
-//	for (int i = 0; i < numFaces; ++i)
-//	{
-//		for (int j = 0; j<4; ++j)
-//		{
-//			vertexIndex = mesh->getFaceList().at(i).point[j];
-//			vtxData[i*4 + j].v[0] = mesh->getPointList().at(vertexIndex).x();
-//			vtxData[i*4 + j].v[1] = mesh->getPointList().at(vertexIndex).y();
-//			vtxData[i*4 + j].v[2] = mesh->getPointList().at(vertexIndex).z();
-//			//memcpy(vtxData[i*4 + j].v, mesh->getPointList().at(vertexIndex).getPoint(), SIZE_OF_VERTEX);
-//			
-//			vtxData[i*4 + j].n[0] = mesh->getNormalList().at(vertexIndex).x();
-//			vtxData[i*4 + j].n[1] = mesh->getNormalList().at(vertexIndex).y();
-//			vtxData[i*4 + j].n[2] = mesh->getNormalList().at(vertexIndex).z();
-//			//memcpy(vtxData[i*4 + j].n, mesh->getNormalList().at(vertexIndex).getPoint(), SIZE_OF_NORMAL);
-//			
-//			memcpy((void*)vtxData[i*4 + j].color, (const GLubyte*)&objId, sizeof(objId));
-//		}
-//		objId++;
-//	}
     
 	int fcounter = 0;
     int offset = 0;

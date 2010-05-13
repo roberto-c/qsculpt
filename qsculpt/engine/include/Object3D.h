@@ -84,14 +84,6 @@ public:
     virtual int getClosestPointAtPoint(const Point3 &p) const;
     virtual QVector<int> getPointsInRadius(const Point3 &p, float radius) const;
     virtual void adjustPointNormal(int index);
-    virtual const NormalContainer& getNormalList() const;
-    virtual const PointContainer& getPointList() const;
-    virtual const FaceContainer& getFaceList() const;
-    virtual NormalContainer& getNormalList();
-    virtual PointContainer& getPointList();
-    virtual FaceContainer& getFaceList();
-	virtual const EdgeContainer& getEdgeList() const;
-	virtual EdgeContainer& getEdgeList();
     virtual void lock() const;
     virtual void unlock() const;
     virtual void addResolutionLevel();

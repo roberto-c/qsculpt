@@ -67,39 +67,34 @@ void FlatRenderer::renderImmediate(const IObject3D* mesh)
 	
 	// Set the depth function to the correct value
     glDepthFunc(GL_LESS);
-	
-   	QColor color;
-	const FaceContainer& faceList = mesh->getFaceList();
-    int size = faceList.size();
-    for ( int i = 0; i < size; i++)
+    
+    QColor color = Qt::white; //mesh->getPointList().at(f.normal[j]).color;
+    if (mesh->isSelected())
     {
+        glColor3d(color.redF(), color.greenF() + 0.3, color.blueF());
+    }
+    else
+    {
+        glColor3d(color.redF(), color.greenF(), color.blueF());
+    }
+    
+    float tmp[3];
+    int fcounter = 0;
+    int offset = 0;
+	Iterator<Face> it = mesh->constFaceIterator();
+	while(it.hasNext()) {
+		const Face& f = it.next();
+        qDebug() << "face " << fcounter++;
+        Iterator<Vertex> vtxIt = f.constVertexIterator();
         glBegin(GL_POLYGON);
-        const Face& f = faceList[i];
-        for (int j = 0; j < f.point.size(); ++j)
-        {
-            // Change color of the object if it is selected;
-        	color = Qt::white; //mesh->getPointList().at(f.normal[j]).color;
-        	if (mesh->isSelected())
-        	{
-        		glColor3d(color.redF(), color.greenF() + 0.3, color.blueF());
-        	}
-        	else
-        	{
-        		glColor3d(color.redF(), color.greenF(), color.blueF());
-        	}
-			// TODO: clean up this
-			float tmp[3];
-			tmp[0] = mesh->getNormalList().at(f.point[j]).x();
-			tmp[1] = mesh->getNormalList().at(f.point[j]).y();
-			tmp[2] = mesh->getNormalList().at(f.point[j]).z();
-            glNormal3fv(tmp);
-			tmp[0] = mesh->getPointList().at(f.point[j]).x();
-			tmp[1] = mesh->getPointList().at(f.point[j]).y();
-			tmp[2] = mesh->getPointList().at(f.point[j]).z();
-            glVertex3fv(tmp);
+        while(vtxIt.hasNext()) {
+            const Vertex& v = vtxIt.next();
+            qDebug() << "Vertex:" << toString(v.position());
+            glNormal3fv(v.normal().data());
+            glVertex3fv(v.position().data());
         }
         glEnd();
-    }
+	}    
 }
 
 void FlatRenderer::renderVbo(const IObject3D* mesh)
@@ -182,7 +177,7 @@ void FlatRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
 	if (numFaces == 0)
 		return;
 	
-	int numVertices = numFaces*4;	
+	int numVertices = numFaces*4;
 	FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
 	
     int fcounter = 0;

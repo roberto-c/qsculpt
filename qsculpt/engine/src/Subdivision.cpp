@@ -437,62 +437,6 @@ QVector<int> Subdivision::getPointsInRadius(const Point3 &p, float radius) const
     return results;
 }
 
-const NormalContainer& Subdivision::getNormalList() const
-{
-	NOT_IMPLEMENTED
-	static NormalContainer n;
-    return n;
-}
-
-const PointContainer& Subdivision::getPointList() const
-{
-	NOT_IMPLEMENTED
-	static PointContainer p;
-    return p;
-}
-
-const FaceContainer& Subdivision::getFaceList() const
-{
-	NOT_IMPLEMENTED
-	static FaceContainer f;
-    return f;
-}
-
-NormalContainer& Subdivision::getNormalList()
-{
-	NOT_IMPLEMENTED
-	static NormalContainer n;
-    return n;
-}
-
-PointContainer& Subdivision::getPointList()
-{
-	NOT_IMPLEMENTED
-	static PointContainer p;
-    return p;
-}
-
-FaceContainer& Subdivision::getFaceList()
-{
-	NOT_IMPLEMENTED
-	static FaceContainer f;
-    return f;
-}
-
-EdgeContainer& Subdivision::getEdgeList()
-{
-	NOT_IMPLEMENTED
-	static EdgeContainer e;
-	return e;
-}
-
-const EdgeContainer& Subdivision::getEdgeList() const
-{
-	NOT_IMPLEMENTED
-	static EdgeContainer e;
-	return e;
-}
-
 void Subdivision::lock() const
 {
 	NOT_IMPLEMENTED

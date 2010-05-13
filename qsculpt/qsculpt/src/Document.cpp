@@ -40,113 +40,113 @@ void Document::loadFile(QString fileName)
 {
     qDebug("loadFile");
 
-	IObject3D* obj = new ::Mesh();
-    if (obj)
-    {
-        QFile file(fileName);
-        if (!file.open(QIODevice::ReadOnly))
-        {
-            qWarning("File cannot be open.");
-            return;
-        }
-        QTextStream inputFile(&file);
-
-        QString str;
-        while(!inputFile.atEnd())
-        {
-            str = inputFile.readLine();
-            QTextStream lineStream(&str);
-
-            QString token;
-            lineStream >> token;
-            if (token == "v")
-            {
-                double x, y, z;
-                lineStream >> x >> y >> z;
-                obj->addVertex( Point3(x, y, z) );
-            }
-            else if (token == "f")
-            {
-                bool error = false;
-                QVector<int> vertexIndices;
-                while(!lineStream.atEnd())
-                {
-                    lineStream >> token;
-                    QStringList values;
-                    values = token.split("/");
-                    int index = values[0].toInt()  - 1;
-                    if (index >= 0 && index < obj->getPointList().size())
-                        vertexIndices.append(index);
-                    else
-                    {
-                        error = true;
-                        qDebug("Index out of rage");
-                        break;
-                    }
-                }
-                if (!error)
-                    obj->addFace( vertexIndices );
-            }
-        }
-		obj->setChanged(true);
-        addObject(IDocument::Mesh, obj);
-    }
+//	IObject3D* obj = new ::Mesh();
+//    if (obj)
+//    {
+//        QFile file(fileName);
+//        if (!file.open(QIODevice::ReadOnly))
+//        {
+//            qWarning("File cannot be open.");
+//            return;
+//        }
+//        QTextStream inputFile(&file);
+//
+//        QString str;
+//        while(!inputFile.atEnd())
+//        {
+//            str = inputFile.readLine();
+//            QTextStream lineStream(&str);
+//
+//            QString token;
+//            lineStream >> token;
+//            if (token == "v")
+//            {
+//                double x, y, z;
+//                lineStream >> x >> y >> z;
+//                obj->addVertex( Point3(x, y, z) );
+//            }
+//            else if (token == "f")
+//            {
+//                bool error = false;
+//                QVector<int> vertexIndices;
+//                while(!lineStream.atEnd())
+//                {
+//                    lineStream >> token;
+//                    QStringList values;
+//                    values = token.split("/");
+//                    int index = values[0].toInt()  - 1;
+//                    if (index >= 0 && index < obj->getPointList().size())
+//                        vertexIndices.append(index);
+//                    else
+//                    {
+//                        error = true;
+//                        qDebug("Index out of rage");
+//                        break;
+//                    }
+//                }
+//                if (!error)
+//                    obj->addFace( vertexIndices );
+//            }
+//        }
+//		obj->setChanged(true);
+//        addObject(IDocument::Mesh, obj);
+//    }
 }
 
 void Document::saveFile(QString fileName)
 {
     qDebug("Save file");
 
-    int numObjects = m_objectList.size();
-    qDebug("Number of objects to save %d", numObjects);
-
-    if (numObjects > 0 )
-    {
-        QFile file(fileName);
-        if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
-        {
-            qWarning("File cannot be open.");
-            return;
-        }
-        QTextStream out(&file);
-
-        const IObject3D* obj = NULL;
-        for (int i = 0; i < numObjects; ++i)
-        {
-            obj = m_objectList.at(i);
-            int numPoints = obj->getPointList().size();
-            out << "#Num vertices: " << numPoints << endl;
-            for (int j = 0; j < numPoints; ++j)
-            {
-                out << "v " << obj->getPointList().at(j).x()
-                        << " " << obj->getPointList().at(j).y()
-                        << " " << obj->getPointList().at(j).z() << endl;
-            }
-
-            int numNormals = obj->getNormalList().size();
-            out << "#Num normal: " << numNormals << endl;
-            for (int j = 0; j < numNormals; ++j)
-            {
-                out << "vn " << obj->getNormalList().at(j).x()
-                        << " " << obj->getNormalList().at(j).y()
-                        << " " << obj->getNormalList().at(j).z() << endl;
-            }
-
-            int numFaces = obj->getFaceList().size();
-            out << "#Num faces: " << numFaces << endl;
-            for (int j = 0; j < numFaces; ++j)
-            {
-                out << "f";
-                int numFacePoints = obj->getFaceList().at(j).point.size();
-                for (int k = 0; k < numFacePoints; ++k)
-                {
-                    out << " " << obj->getFaceList().at(j).point.at(k) + 1;
-                        //<< "//" << obj->getFaceList().at(j).normal.at(k) + 1;
-                }
-                out << endl;
-            }
-        }
-    }
+//    int numObjects = m_objectList.size();
+//    qDebug("Number of objects to save %d", numObjects);
+//
+//    if (numObjects > 0 )
+//    {
+//        QFile file(fileName);
+//        if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
+//        {
+//            qWarning("File cannot be open.");
+//            return;
+//        }
+//        QTextStream out(&file);
+//
+//        const IObject3D* obj = NULL;
+//        for (int i = 0; i < numObjects; ++i)
+//        {
+//            obj = m_objectList.at(i);
+//            int numPoints = obj->getPointList().size();
+//            out << "#Num vertices: " << numPoints << endl;
+//            for (int j = 0; j < numPoints; ++j)
+//            {
+//                out << "v " << obj->getPointList().at(j).x()
+//                        << " " << obj->getPointList().at(j).y()
+//                        << " " << obj->getPointList().at(j).z() << endl;
+//            }
+//
+//            int numNormals = obj->getNormalList().size();
+//            out << "#Num normal: " << numNormals << endl;
+//            for (int j = 0; j < numNormals; ++j)
+//            {
+//                out << "vn " << obj->getNormalList().at(j).x()
+//                        << " " << obj->getNormalList().at(j).y()
+//                        << " " << obj->getNormalList().at(j).z() << endl;
+//            }
+//
+//            int numFaces = obj->getFaceList().size();
+//            out << "#Num faces: " << numFaces << endl;
+//            for (int j = 0; j < numFaces; ++j)
+//            {
+//                out << "f";
+//                int numFacePoints = obj->getFaceList().at(j).point.size();
+//                for (int k = 0; k < numFacePoints; ++k)
+//                {
+//                    out << " " << obj->getFaceList().at(j).point.at(k) + 1;
+//                        //<< "//" << obj->getFaceList().at(j).normal.at(k) + 1;
+//                }
+//                out << endl;
+//            }
+//        }
+//    }
 }
 
 void Document::addObject(ObjectType type)

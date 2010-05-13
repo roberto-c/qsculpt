@@ -79,14 +79,14 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
     m_objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
-	QVector<int> verticesSelected = view->getSelectedVertices(e->pos().x(), e->pos().y(), 30, 30);
+	//QVector<int> verticesSelected = view->getSelectedVertices(e->pos().x(), e->pos().y(), 30, 30);
 
     if (m_objectsSelected.count() > 0)
     {
 		for (int i = 0; i < m_objectsSelected.count(); ++i)
 		{
 			m_objectsSelected[i]->setSelected(!m_objectsSelected[i]->isSelected());
-			m_objectsSelected[i]->setSelectedPoints(verticesSelected);
+			//m_objectsSelected[i]->setSelectedPoints(verticesSelected);
 		}
     }
     else
