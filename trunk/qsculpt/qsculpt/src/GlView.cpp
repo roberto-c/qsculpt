@@ -46,6 +46,15 @@ PickingFacesRenderer g_pickingVertices;
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
 
+
+struct Rect {
+    GLfloat x1, y1, x2, y2;
+    
+    Rect(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) 
+    : x1(x1), y1(y1), x2(x2), y2(y2) {
+    }
+};
+
 GlView::GlView(DocumentView* _parent)
 : QGLWidget(_parent),
 m_isGridVisible(false),
@@ -211,6 +220,15 @@ void GlView::resizeGL( int w, int h )
     glGetIntegerv(GL_VIEWPORT, m_viewport);
 }
 
+void drawRect(Rect r) {
+    glBegin(GL_LINE_LOOP);
+    glVertex2d(r.x1, r.y1);
+    glVertex2d(r.x2, r.y1);
+    glVertex2d(r.x2, r.y2);
+    glVertex2d(r.x1, r.y2);
+    glEnd();
+}
+
 void GlView::paintGL()
 {	
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -247,7 +265,7 @@ void GlView::paintGL()
     glVertex3f( 0.0f, 0.0f, 0.0f );
     glVertex3f( 0.0f, 0.0f, 1.0f );
     glEnd();
-	
+    	
     switch(m_drawingMode)
     {
         case Smooth:
@@ -265,7 +283,6 @@ void GlView::paintGL()
     }
 	
     drawObjects();
-	
     drawCursor();
 	
 	glFlush();

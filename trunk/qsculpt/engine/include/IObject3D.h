@@ -321,46 +321,6 @@ public:
     /**
      *
      */
-    virtual const NormalContainer& getNormalList() const = 0;
-
-    /**
-     *
-     */
-    virtual const PointContainer& getPointList() const = 0;
-
-    /**
-     *
-     */
-    virtual const FaceContainer& getFaceList() const = 0;
-
-    /**
-     *
-     */
-    virtual NormalContainer& getNormalList() = 0;
-
-    /**
-     *
-     */
-    virtual PointContainer& getPointList()  = 0;
-
-    /**
-     *
-     */
-    virtual FaceContainer& getFaceList()  = 0;
-
-	/**
-	 *
-	 */
-	virtual const EdgeContainer& getEdgeList() const = 0;
-
-	/**
-	 *
-	 */
-	virtual EdgeContainer& getEdgeList() = 0;
-
-    /**
-     *
-     */
     virtual void lock() const = 0;
 
     /**

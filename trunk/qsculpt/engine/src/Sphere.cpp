@@ -51,7 +51,7 @@ void Sphere::initPoints()
 			addVertex(evalCoords(s, u));
 		}
 	}
-	int num_points = this->getPointList().size();
+	int num_points = this->getNumVertices();
 	QVector<int> indexList(4);
 	for (int j = 0; j < NUM_LAT; ++j ) {
 		for (int i = 0; i < NUM_PAR-1 ; ++i) {

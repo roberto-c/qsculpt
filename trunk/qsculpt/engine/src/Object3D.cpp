@@ -651,46 +651,6 @@ void Object3D::computeAllNormals()
     qDebug("computeAllNormals: Not Implemented");
 }
 
-const NormalContainer& Object3D::getNormalList() const
-{
-    return m_normalList;
-}
-
-const PointContainer& Object3D::getPointList() const
-{
-    return m_pointList;
-}
-
-const FaceContainer& Object3D::getFaceList() const
-{
-    return *m_faceList[m_currentResolutionLevel];
-}
-
-NormalContainer& Object3D::getNormalList()
-{
-    return m_normalList;
-}
-
-PointContainer& Object3D::getPointList()
-{
-    return m_pointList;
-}
-
-FaceContainer& Object3D::getFaceList()
-{
-    return *m_faceList[m_currentResolutionLevel];
-}
-
-EdgeContainer& Object3D::getEdgeList()
-{
-	return *m_edgeList[m_currentResolutionLevel];
-}
-
-const EdgeContainer& Object3D::getEdgeList() const
-{
-	return *m_edgeList[m_currentResolutionLevel];
-}
-
 void Object3D::lock() const
 {
     m_mutex.lock();

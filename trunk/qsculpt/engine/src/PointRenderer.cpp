@@ -45,15 +45,16 @@ void PointRenderer::renderObject(const IObject3D* mesh)
 void PointRenderer::renderImmediate(const IObject3D* mesh)
 {
 	mesh->lock();
-    int size = mesh->getPointList().size();
+    int numVertices = mesh->getNumVertices();
+	if (numVertices == 0)
+		return;
 
     glBegin(GL_POINTS);
-    for ( int i = 0; i < size; i++)
-    {
-        glVertex3f(mesh->getPointList().at(i).x(),
-				   mesh->getPointList().at(i).y(),
-				   mesh->getPointList().at(i).z());
-    }
+	Iterator<Vertex> it = mesh->constVertexIterator();
+	while(it.hasNext()) {
+		const Vertex& v = it.next();
+        glVertex3fv(v.position().data());
+	}
     glEnd();
 	mesh->unlock();
 }
