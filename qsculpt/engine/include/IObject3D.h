@@ -27,7 +27,6 @@
 #include "Octree.h"
 #include "PointContainer.h"
 #include "EdgeContainer.h"
-#include "FaceContainer.h"
 #include "IIterator.h"
 #include "Vertex.h"
 #include "Face.h"

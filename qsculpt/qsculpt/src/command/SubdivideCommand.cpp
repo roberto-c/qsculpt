@@ -72,15 +72,21 @@ void SubdivideCommand::execute()
 //					 &dlg, SLOT(setValue(int)));
 
     dlg.show();
-    qDebug() << "Start time:" << QDateTime::currentDateTime();
 
     const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
     if (!doc)
         return;
-
+    
+    qDebug() << "Start time: " <<QDateTime::currentDateTime();
+    
+    QList<IObject3D*> list = doc->getSelectedObjects();
+    IObject3D* obj = list.at(0);
+    if (obj) {
+        qDebug() << "Object found";
+    }
     qDebug() << "End time:" << QDateTime::currentDateTime();
     dlg.setValue(100);
-//    g_pApp->getMainWindow()->getCurrentView()->updateView();
+    g_pApp->getMainWindow()->getCurrentView()->updateView();
 }
 

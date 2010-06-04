@@ -40,66 +40,66 @@ void Document::loadFile(QString fileName)
 {
     qDebug("loadFile");
 
-//	IObject3D* obj = new ::Mesh();
-//    if (obj)
-//    {
-//        QFile file(fileName);
-//        if (!file.open(QIODevice::ReadOnly))
-//        {
-//            qWarning("File cannot be open.");
-//            return;
-//        }
-//        QTextStream inputFile(&file);
-//
-//        QString str;
-//        while(!inputFile.atEnd())
-//        {
-//            str = inputFile.readLine();
-//            QTextStream lineStream(&str);
-//
-//            QString token;
-//            lineStream >> token;
-//            if (token == "v")
-//            {
-//                double x, y, z;
-//                lineStream >> x >> y >> z;
-//                obj->addVertex( Point3(x, y, z) );
-//            }
-//            else if (token == "f")
-//            {
-//                bool error = false;
-//                QVector<int> vertexIndices;
-//                while(!lineStream.atEnd())
-//                {
-//                    lineStream >> token;
-//                    QStringList values;
-//                    values = token.split("/");
-//                    int index = values[0].toInt()  - 1;
-//                    if (index >= 0 && index < obj->getPointList().size())
-//                        vertexIndices.append(index);
-//                    else
-//                    {
-//                        error = true;
-//                        qDebug("Index out of rage");
-//                        break;
-//                    }
-//                }
-//                if (!error)
-//                    obj->addFace( vertexIndices );
-//            }
-//        }
-//		obj->setChanged(true);
-//        addObject(IDocument::Mesh, obj);
-//    }
+	IObject3D* obj = new ::Mesh();
+    if (obj)
+    {
+        QFile file(fileName);
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            qWarning("File cannot be open.");
+            return;
+        }
+        QTextStream inputFile(&file);
+
+        QString str;
+        while(!inputFile.atEnd())
+        {
+            str = inputFile.readLine();
+            QTextStream lineStream(&str);
+
+            QString token;
+            lineStream >> token;
+            if (token == "v")
+            {
+                double x, y, z;
+                lineStream >> x >> y >> z;
+                obj->addVertex( Point3(x, y, z) );
+            }
+            else if (token == "f")
+            {
+                bool error = false;
+                QVector<int> vertexIndices;
+                while(!lineStream.atEnd())
+                {
+                    lineStream >> token;
+                    QStringList values;
+                    values = token.split("/");
+                    int index = values[0].toInt()  - 1;
+                    if (index >= 0 && index < obj->getNumVertices())
+                        vertexIndices.append(index);
+                    else
+                    {
+                        error = true;
+                        qDebug("Index out of rage");
+                        break;
+                    }
+                }
+                if (!error)
+                    obj->addFace( vertexIndices );
+            }
+        }
+		obj->setChanged(true);
+        addObject(IDocument::Mesh, obj);
+    }
 }
 
 void Document::saveFile(QString fileName)
 {
     qDebug("Save file");
 
-//    int numObjects = m_objectList.size();
-//    qDebug("Number of objects to save %d", numObjects);
-//
+    int numObjects = m_objectList.size();
+    qDebug("Number of objects to save %d", numObjects);
+
 //    if (numObjects > 0 )
 //    {
 //        QFile file(fileName);

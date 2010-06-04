@@ -330,7 +330,7 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
         assert(index != -1);
         edges.push_back(_edges->at(index));
     }
-    Face *f = new Face();
+    Face *f = new Face(this);
     f->setHEdge(edges[0]);
     for (int i = 0; i < size; ++i) {
         edges[i]->setNext(edges[(i+1)%size]);
