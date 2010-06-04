@@ -171,16 +171,16 @@
 	};
 	0211C3D010DC7A610004F001 /* Subdivision.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 3915}}";
-			sepNavSelRange = "{3815, 0}";
-			sepNavVisRange = "{145, 687}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 4335}}";
+			sepNavSelRange = "{241, 0}";
+			sepNavVisRange = "{189, 626}";
 		};
 	};
 	0211C3D210DC82B00004F001 /* Vertex.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 2520}}";
-			sepNavSelRange = "{1618, 0}";
-			sepNavVisRange = "{822, 1038}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 2505}}";
+			sepNavSelRange = "{1000, 3}";
+			sepNavVisRange = "{706, 737}";
 		};
 	};
 	021D85C30D63900F0026C13F /* BrushCommand.cpp */ = {
@@ -417,17 +417,17 @@
 	};
 	021D86020D63908B0026C13F /* Stable.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {714, 689}}";
-			sepNavSelRange = "{1465, 42}";
-			sepNavVisRange = "{246, 1739}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 825}}";
+			sepNavSelRange = "{168, 0}";
+			sepNavVisRange = "{1465, 637}";
 			sepNavWindowFrame = "{{15, 97}, {865, 776}}";
 		};
 	};
 	021D860D0D6390D90026C13F /* Box.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1014, 1365}}";
-			sepNavSelRange = "{2451, 7}";
-			sepNavVisRange = "{1532, 1007}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{2403, 684}";
 		};
 	};
 	021D860E0D6390D90026C13F /* BufferObject.cpp */ = {
@@ -568,9 +568,9 @@
 	};
 	021D86320D6390FC0026C13F /* IObject3D.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 5895}}";
-			sepNavSelRange = "{8604, 0}";
-			sepNavVisRange = "{8613, 422}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 5655}}";
+			sepNavSelRange = "{1597, 0}";
+			sepNavVisRange = "{400, 1310}";
 		};
 	};
 	021D86330D6390FC0026C13F /* IRenderer.h */ = {
@@ -638,18 +638,25 @@
 			sepNavVisRange = "{430, 345}";
 		};
 	};
+	021D863D0D6390FC0026C13F /* SpEnums.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 570}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{477, 1128}";
+		};
+	};
 	021D863E0D6390FC0026C13F /* Sphere.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 750}}";
-			sepNavSelRange = "{1652, 0}";
-			sepNavVisRange = "{1324, 485}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 735}}";
+			sepNavSelRange = "{1436, 0}";
+			sepNavVisRange = "{554, 1162}";
 		};
 	};
 	021D863F0D6390FC0026C13F /* StdAfx.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1014, 630}}";
-			sepNavSelRange = "{916, 15}";
-			sepNavVisRange = "{341, 659}";
+			sepNavSelRange = "{908, 82}";
+			sepNavVisRange = "{275, 725}";
 		};
 	};
 	021D86400D6390FC0026C13F /* Triangle.h */ = {
@@ -732,9 +739,9 @@
 	};
 	0221B3D410C9EF5B003377CD /* Face.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 2925}}";
-			sepNavSelRange = "{1538, 0}";
-			sepNavVisRange = "{1917, 815}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 2970}}";
+			sepNavSelRange = "{2255, 0}";
+			sepNavVisRange = "{0, 707}";
 		};
 	};
 	022D4C3F11AC9D7700E7A862 /* PBXTextBookmark */ = {
@@ -752,7 +759,7 @@
 		fRef = 0211C3D010DC7A610004F001 /* Subdivision.h */;
 		name = "Subdivision.h: 124";
 		rLen = 0;
-		rLoc = 3815;
+		rLoc = 3816;
 		rType = 0;
 		vrLen = 1263;
 		vrLoc = 669;
@@ -1097,7 +1104,7 @@
 		fRef = 02E0FF1810F5CA3B00DE4492 /* Face.cpp */;
 		name = "Face.cpp: 126";
 		rLen = 0;
-		rLoc = 2707;
+		rLoc = 2734;
 		rType = 0;
 		vrLen = 482;
 		vrLoc = 2207;
@@ -1295,13 +1302,6 @@
 			sepNavVisRange = "{0, 405}";
 		};
 	};
-	02D2663C10F9C7EB00E22E11 /* FaceTree.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {714, 429}}";
-			sepNavSelRange = "{342, 14}";
-			sepNavVisRange = "{0, 444}";
-		};
-	};
 	02DE301F11B73C2F008B39E7 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 02596EAB10DC731300942BDB /* HEdge.h */;
@@ -1342,9 +1342,9 @@
 	};
 	02E0FF1810F5CA3B00DE4492 /* Face.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 2850}}";
-			sepNavSelRange = "{884, 0}";
-			sepNavVisRange = "{441, 578}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 2865}}";
+			sepNavSelRange = "{2001, 0}";
+			sepNavVisRange = "{1661, 674}";
 		};
 	};
 	02E0FF7610F6B8A800DE4492 /* IIterator.h */ = {
