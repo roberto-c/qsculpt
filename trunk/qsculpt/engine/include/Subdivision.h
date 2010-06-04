@@ -11,7 +11,7 @@
 
 #include <vector>
 //#include <hash_map>
-#include "Object3D.h"
+#include "IObject3D.h"
 
 class Vertex;
 class Edge;

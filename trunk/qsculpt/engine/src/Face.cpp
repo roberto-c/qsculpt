@@ -10,11 +10,13 @@
 #include "StdAfx.h"
 #include "Face.h"
 #include "HEdge.h"
+#include "IObject3D.h"
 
 QAtomicInt Face::NEXT_ID(1);
 
-Face::Face() 
-:	_he(NULL),
+Face::Face(IObject3D *surface) 
+:	_surface(surface),
+    _he(NULL),
 	_vertex(NULL),
 	midPoint(-1),
 	isMarked(false),
@@ -24,10 +26,11 @@ Face::Face()
 	_id = NEXT_ID.fetchAndAddRelaxed(1);
 }
 
-Face::Face(const QVector<int>& vertexIndexList)
-:   _he(NULL),
+Face::Face(IObject3D *surface, const QVector<int>& vertexIndexList)
+:   _surface(surface),
+    _he(NULL),
 	_vertex(NULL),
-	point(vertexIndexList),
+//point(vertexIndexList),
 	midPoint(-1),
 	isMarked(false),
 	hashValue(0),
@@ -35,8 +38,8 @@ Face::Face(const QVector<int>& vertexIndexList)
 {
 	_id = NEXT_ID.fetchAndAddRelaxed(1);
 	//normal.fill(-1, point.size());
-	for(int i = 0; i < point.size(); ++i)
-		hashValue += point[i];
+	for(int i = 0; i < vertexIndexList.size(); ++i)
+		hashValue += vertexIndexList[i];
 }
 
 Face::~Face()
@@ -44,7 +47,7 @@ Face::~Face()
 	delete [] _children;
 }
 
-uint Face::hashCode()
+uint Face::hashCode() const
 {
 	if (!_he)
 		return qHash(_id);
@@ -58,7 +61,8 @@ uint Face::hashCode()
 }
 
 bool Face::isValid() { 
-	return !point.isEmpty();
+    return true;
+    //	return !point.isEmpty();
 }
 
 Face& Face::addEdge(Edge* he)
@@ -95,6 +99,23 @@ Face::operator Point3() const {
 	return Point3();
 }
 
+
+bool Face::operator==(const Face& t) const {
+    if (hashCode() != t.hashCode())
+        return false;
+    Iterator<Vertex> it = constVertexIterator();
+    Iterator<Vertex> it2 = t.constVertexIterator();
+    while(it.hasNext()) {
+        if (!it2.hasNext())
+            return false;
+        Vertex* v = & it.next();
+        Vertex* v2 = & it2.next();
+        if (v->iid() != v2->iid())
+            return false;
+    }
+    return true;
+}
+
 Iterator<Vertex> Face::vertexIterator() 
 { 
 	return Iterator<Vertex>(new Face::VertexIterator(this));
@@ -105,7 +126,10 @@ Iterator<Vertex> Face::constVertexIterator() const
 	return Iterator<Vertex>(new Face::VertexIterator(this));
 }
 
-
+void Face::subdivide(int level)
+{
+    
+}
 
 // VertexIterator
 

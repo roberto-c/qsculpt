@@ -20,7 +20,6 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "Object3D.h"
 #include "Subdivision.h"
 
 struct GLUquadric;

@@ -17,6 +17,7 @@
 #include "IIterator.h"
 
 class Edge;
+class IObject3D;
 
 /**
  * Face class. This class contains references to points that should
@@ -35,13 +36,12 @@ class Face {
 	
 	int _id;
 	int _depth;
+    IObject3D *_surface;
 	Edge *_he;
 	Vertex* _vertex;
 	Face* _children;
 	
 public:
-	QVector<int> point;   /**< Index of first point */
-	QVector<int> edge;
 	int midPoint;
     bool isMarked;
 	qint32 hashValue;
@@ -50,7 +50,7 @@ public:
 	/**
 	 * Default constructor. Initiliazes all point to index 0.
      */
-	Face();
+	Face(IObject3D *surface = NULL);
 	
 	/**
 	 * Construct a new triangle. The triangle is composed by the passed
@@ -60,14 +60,14 @@ public:
      * @param p2 second point that form the triangle.
      * @param p3 third point that form the triangle.
      */
-    Face(const QVector<int>& vertexIndexList);
+    Face(IObject3D *surface, const QVector<int>& vertexIndexList);
 	
 	~Face();
 	
 	/**
 	 * Get the hash code for this instance
 	 */
-	inline uint hashCode();
+	inline uint hashCode() const;
 	
 	/**
 	 * Checks if the triangle data is valid. Triangle is valid only if
@@ -102,48 +102,35 @@ public:
      * @param p3 index of the third point.
      */
     void setPoints(const QVector<int>& vertexIndexList) { 
-        point = vertexIndexList;
+        NOT_IMPLEMENTED;
         //normal.resize(point.size());
 		hashValue = 0;
-		for(int i = 0; i < point.size(); ++i)
-			hashValue += point[i];
+		for(int i = 0; i < vertexIndexList.size(); ++i)
+			hashValue += vertexIndexList[i];
     }
     
     bool hasEdge(const Edge& e) const {
+        NOT_IMPLEMENTED;
 //        return hasEdge(e.head(), e.tail());
         return false;
     }
     
     bool hasEdge(int v1, int v2) const {
-        bool res = false;
-        if (int index = point.indexOf(v1) != -1)
-        {
-            if (index == point.size() - 1)
-                res = v2 == point[0];
-            else
-                res = v2 == point[index + 1];
-        }
-        return res;
-    }
-    
-    bool operator==(const Face& t) const {
-        int psize = point.size();
-        if (psize == 0 || psize != t.point.size())
-            return false;
-        
-        int elementIndex = t.point.indexOf(point[0]);
-        if (elementIndex == -1 )
-            return false;
-        
-        for (int i = 1; i < psize; ++i)
-        {
-            elementIndex = (elementIndex + 1 ) % psize;
-            if (point.at(i) != t.point.at(elementIndex) )
-                return false;
-        }
-        return true;
+        NOT_IMPLEMENTED;
+        return false;
+//        bool res = false;
+//        if (int index = point.indexOf(v1) != -1)
+//        {
+//            if (index == point.size() - 1)
+//                res = v2 == point[0];
+//            else
+//                res = v2 == point[index + 1];
+//        }
+//        return res;
     }
 	
+    bool operator==(const Face& t) const;
+    
 	operator Point3() const ;	
 	operator Point3();
 	

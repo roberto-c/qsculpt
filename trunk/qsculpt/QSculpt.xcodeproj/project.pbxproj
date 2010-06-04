@@ -189,13 +189,11 @@
 		021D86430D6390FC0026C13F /* BufferObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862C0D6390FC0026C13F /* BufferObject.h */; };
 		021D86440D6390FC0026C13F /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862D0D6390FC0026C13F /* Camera.h */; };
 		021D86450D6390FC0026C13F /* EdgeContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862E0D6390FC0026C13F /* EdgeContainer.h */; };
-		021D86460D6390FC0026C13F /* FaceContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862F0D6390FC0026C13F /* FaceContainer.h */; };
 		021D86470D6390FC0026C13F /* FlatRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86300D6390FC0026C13F /* FlatRenderer.h */; };
 		021D86480D6390FC0026C13F /* ICamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86310D6390FC0026C13F /* ICamera.h */; };
 		021D86490D6390FC0026C13F /* IObject3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86320D6390FC0026C13F /* IObject3D.h */; };
 		021D864A0D6390FC0026C13F /* IRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86330D6390FC0026C13F /* IRenderer.h */; };
 		021D864B0D6390FC0026C13F /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86340D6390FC0026C13F /* Mesh.h */; };
-		021D864C0D6390FC0026C13F /* Object3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86350D6390FC0026C13F /* Object3D.h */; };
 		021D864D0D6390FC0026C13F /* Octree.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86360D6390FC0026C13F /* Octree.h */; };
 		021D864E0D6390FC0026C13F /* Point3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86370D6390FC0026C13F /* Point3D.h */; };
 		021D864F0D6390FC0026C13F /* PointContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86380D6390FC0026C13F /* PointContainer.h */; };
@@ -465,7 +463,6 @@
 		021D860F0D6390D90026C13F /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Camera.cpp; path = engine/src/Camera.cpp; sourceTree = "<group>"; };
 		021D86100D6390D90026C13F /* FlatRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FlatRenderer.cpp; path = engine/src/FlatRenderer.cpp; sourceTree = "<group>"; };
 		021D86110D6390D90026C13F /* Mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Mesh.cpp; path = engine/src/Mesh.cpp; sourceTree = "<group>"; };
-		021D86120D6390D90026C13F /* Object3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Object3D.cpp; path = engine/src/Object3D.cpp; sourceTree = "<group>"; };
 		021D86130D6390D90026C13F /* Octree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Octree.cpp; path = engine/src/Octree.cpp; sourceTree = "<group>"; };
 		021D86140D6390D90026C13F /* PointRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointRenderer.cpp; path = engine/src/PointRenderer.cpp; sourceTree = "<group>"; };
 		021D86150D6390D90026C13F /* RendererFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RendererFactory.cpp; path = engine/src/RendererFactory.cpp; sourceTree = "<group>"; };
@@ -479,13 +476,11 @@
 		021D862C0D6390FC0026C13F /* BufferObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferObject.h; path = engine/include/BufferObject.h; sourceTree = "<group>"; };
 		021D862D0D6390FC0026C13F /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = engine/include/Camera.h; sourceTree = "<group>"; };
 		021D862E0D6390FC0026C13F /* EdgeContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EdgeContainer.h; path = engine/include/EdgeContainer.h; sourceTree = "<group>"; };
-		021D862F0D6390FC0026C13F /* FaceContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FaceContainer.h; path = engine/include/FaceContainer.h; sourceTree = "<group>"; };
 		021D86300D6390FC0026C13F /* FlatRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlatRenderer.h; path = engine/include/FlatRenderer.h; sourceTree = "<group>"; };
 		021D86310D6390FC0026C13F /* ICamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICamera.h; path = engine/include/ICamera.h; sourceTree = "<group>"; };
 		021D86320D6390FC0026C13F /* IObject3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IObject3D.h; path = engine/include/IObject3D.h; sourceTree = "<group>"; };
 		021D86330D6390FC0026C13F /* IRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRenderer.h; path = engine/include/IRenderer.h; sourceTree = "<group>"; };
 		021D86340D6390FC0026C13F /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mesh.h; path = engine/include/Mesh.h; sourceTree = "<group>"; };
-		021D86350D6390FC0026C13F /* Object3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Object3D.h; path = engine/include/Object3D.h; sourceTree = "<group>"; };
 		021D86360D6390FC0026C13F /* Octree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Octree.h; path = engine/include/Octree.h; sourceTree = "<group>"; };
 		021D86370D6390FC0026C13F /* Point3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Point3D.h; path = engine/include/Point3D.h; sourceTree = "<group>"; };
 		021D86380D6390FC0026C13F /* PointContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointContainer.h; path = engine/include/PointContainer.h; sourceTree = "<group>"; };
@@ -1065,7 +1060,6 @@
 				021D860E0D6390D90026C13F /* BufferObject.cpp */,
 				021D860F0D6390D90026C13F /* Camera.cpp */,
 				021D86110D6390D90026C13F /* Mesh.cpp */,
-				021D86120D6390D90026C13F /* Object3D.cpp */,
 				021D86130D6390D90026C13F /* Octree.cpp */,
 				02C8B7590D872E48003063A1 /* Picking.cpp */,
 				02F4F49D0DE9190B0004A465 /* PickingFacesRenderer.cpp */,
@@ -1093,11 +1087,9 @@
 				021D862C0D6390FC0026C13F /* BufferObject.h */,
 				021D862D0D6390FC0026C13F /* Camera.h */,
 				021D862E0D6390FC0026C13F /* EdgeContainer.h */,
-				021D862F0D6390FC0026C13F /* FaceContainer.h */,
 				021D86310D6390FC0026C13F /* ICamera.h */,
 				021D86320D6390FC0026C13F /* IObject3D.h */,
 				021D86340D6390FC0026C13F /* Mesh.h */,
-				021D86350D6390FC0026C13F /* Object3D.h */,
 				021D86360D6390FC0026C13F /* Octree.h */,
 				02BEDD720E0B633D00259B3B /* Quadtree.h */,
 				02C8B73F0D862F78003063A1 /* Picking.h */,
@@ -1293,13 +1285,11 @@
 				021D86430D6390FC0026C13F /* BufferObject.h in Headers */,
 				021D86440D6390FC0026C13F /* Camera.h in Headers */,
 				021D86450D6390FC0026C13F /* EdgeContainer.h in Headers */,
-				021D86460D6390FC0026C13F /* FaceContainer.h in Headers */,
 				021D86470D6390FC0026C13F /* FlatRenderer.h in Headers */,
 				021D86480D6390FC0026C13F /* ICamera.h in Headers */,
 				021D86490D6390FC0026C13F /* IObject3D.h in Headers */,
 				021D864A0D6390FC0026C13F /* IRenderer.h in Headers */,
 				021D864B0D6390FC0026C13F /* Mesh.h in Headers */,
-				021D864C0D6390FC0026C13F /* Object3D.h in Headers */,
 				021D864D0D6390FC0026C13F /* Octree.h in Headers */,
 				021D864E0D6390FC0026C13F /* Point3D.h in Headers */,
 				021D864F0D6390FC0026C13F /* PointContainer.h in Headers */,
@@ -2000,6 +1990,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DOXYGEN_PATH = /Applications/Development/Doxygen.app/Contents/Resources/doxygen;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2007,7 +1998,6 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"\"/usr/local/Trolltech/Qt-4.4.0/lib\"",
 				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/Trolltech/Qt-4.4.0/lib\"";
 				FRAMEWORK_VERSION = A;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;

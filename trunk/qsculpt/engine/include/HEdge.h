@@ -21,10 +21,6 @@ class Edge {
 	Edge *_next, *_pair;
 	Vertex *_head, *_tail;
 	Face *_face;
-//	int _next, _pair;
-//	int _head;
-//    int _tail;
-//	int _face;
 	
 public:
 	Edge();
@@ -188,18 +184,8 @@ struct EdgePtrComparator
     }
 };
 
-//inline bool operator==(const Edge &e1, const Edge &e2)
-//{
-//    return e1.isEqual(e2);
-//}
-
 inline uint qHash(const Edge& key)
-{
-//	if (key._head > key._tail)
-//		return qHash( ((quint64)key._head) << 32 | (quint64)key._tail );
-//	else
-//		return qHash( ((quint64)key._tail) << 32 | (quint64)key._head );
-    
+{    
     if (key._head->iid() > key._tail->iid())
 		return qHash( ((quint64)key._head->iid()) << 32 |
                      (quint64)key._tail->iid() );
