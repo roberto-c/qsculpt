@@ -19,7 +19,7 @@
  ***************************************************************************/
 #include "StdAfx.h"
 #include "FlatRenderer.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 #include <QtOpenGL>
 #include <QMap>
 #include "BOManager.h"

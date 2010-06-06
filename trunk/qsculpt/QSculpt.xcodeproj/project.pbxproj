@@ -191,7 +191,7 @@
 		021D86450D6390FC0026C13F /* EdgeContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862E0D6390FC0026C13F /* EdgeContainer.h */; };
 		021D86470D6390FC0026C13F /* FlatRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86300D6390FC0026C13F /* FlatRenderer.h */; };
 		021D86480D6390FC0026C13F /* ICamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86310D6390FC0026C13F /* ICamera.h */; };
-		021D86490D6390FC0026C13F /* IObject3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86320D6390FC0026C13F /* IObject3D.h */; };
+		021D86490D6390FC0026C13F /* ISurface.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86320D6390FC0026C13F /* ISurface.h */; };
 		021D864A0D6390FC0026C13F /* IRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86330D6390FC0026C13F /* IRenderer.h */; };
 		021D864B0D6390FC0026C13F /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86340D6390FC0026C13F /* Mesh.h */; };
 		021D864D0D6390FC0026C13F /* Octree.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86360D6390FC0026C13F /* Octree.h */; };
@@ -229,7 +229,7 @@
 		025FE6B60DE20ADD00762F39 /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FE6B00DE20ADD00762F39 /* QtCore.framework */; };
 		025FE6B70DE20ADD00762F39 /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FE6B10DE20ADD00762F39 /* QtOpenGL.framework */; };
 		025FEB2D0DE5D1E500762F39 /* moc_bomanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 025FEB2C0DE5D1E500762F39 /* moc_bomanager.cpp */; };
-		025FEB4D0DE5FFF300762F39 /* moc_iobject3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 025FEB4C0DE5FFF300762F39 /* moc_iobject3d.cpp */; };
+		025FEB4D0DE5FFF300762F39 /* moc_isurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 025FEB4C0DE5FFF300762F39 /* moc_isurface.cpp */; };
 		026B6A4F0D6FF13C008701FE /* qsculpt.pro in Resources */ = {isa = PBXBuildFile; fileRef = 026B6A4E0D6FF13C008701FE /* qsculpt.pro */; };
 		026B6A520D6FF152008701FE /* engine.pro in Resources */ = {isa = PBXBuildFile; fileRef = 026B6A510D6FF152008701FE /* engine.pro */; };
 		02764F770D432535001E8A5F /* Engine.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 021DFACC0D388306007A9793 /* Engine.framework */; };
@@ -476,7 +476,7 @@
 		021D862E0D6390FC0026C13F /* EdgeContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EdgeContainer.h; path = engine/include/EdgeContainer.h; sourceTree = "<group>"; };
 		021D86300D6390FC0026C13F /* FlatRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlatRenderer.h; path = engine/include/FlatRenderer.h; sourceTree = "<group>"; };
 		021D86310D6390FC0026C13F /* ICamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICamera.h; path = engine/include/ICamera.h; sourceTree = "<group>"; };
-		021D86320D6390FC0026C13F /* IObject3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IObject3D.h; path = engine/include/IObject3D.h; sourceTree = "<group>"; };
+		021D86320D6390FC0026C13F /* ISurface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISurface.h; path = engine/include/ISurface.h; sourceTree = "<group>"; };
 		021D86330D6390FC0026C13F /* IRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRenderer.h; path = engine/include/IRenderer.h; sourceTree = "<group>"; };
 		021D86340D6390FC0026C13F /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mesh.h; path = engine/include/Mesh.h; sourceTree = "<group>"; };
 		021D86360D6390FC0026C13F /* Octree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Octree.h; path = engine/include/Octree.h; sourceTree = "<group>"; };
@@ -517,7 +517,7 @@
 		025FE6B00DE20ADD00762F39 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = /Library/Frameworks/QtCore.framework; sourceTree = "<absolute>"; };
 		025FE6B10DE20ADD00762F39 /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = /Library/Frameworks/QtOpenGL.framework; sourceTree = "<absolute>"; };
 		025FEB2C0DE5D1E500762F39 /* moc_bomanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_bomanager.cpp; path = engine/moc/moc_bomanager.cpp; sourceTree = "<group>"; };
-		025FEB4C0DE5FFF300762F39 /* moc_iobject3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_iobject3d.cpp; path = engine/moc/moc_iobject3d.cpp; sourceTree = "<group>"; };
+		025FEB4C0DE5FFF300762F39 /* moc_isurface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_isurface.cpp; path = engine/moc/moc_isurface.cpp; sourceTree = "<group>"; };
 		026B6A4E0D6FF13C008701FE /* qsculpt.pro */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = qsculpt.pro; path = qsculpt/qsculpt.pro; sourceTree = "<group>"; };
 		026B6A510D6FF152008701FE /* engine.pro */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = engine.pro; path = engine/engine.pro; sourceTree = "<group>"; };
 		02764F790D432668001E8A5F /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = qsculpt/Info.plist; sourceTree = "<group>"; };
@@ -981,7 +981,7 @@
 		025FEB2B0DE5D1BD00762F39 /* moc */ = {
 			isa = PBXGroup;
 			children = (
-				025FEB4C0DE5FFF300762F39 /* moc_iobject3d.cpp */,
+				025FEB4C0DE5FFF300762F39 /* moc_isurface.cpp */,
 				025FEB2C0DE5D1E500762F39 /* moc_bomanager.cpp */,
 			);
 			name = moc;
@@ -1083,7 +1083,7 @@
 				021D862D0D6390FC0026C13F /* Camera.h */,
 				021D862E0D6390FC0026C13F /* EdgeContainer.h */,
 				021D86310D6390FC0026C13F /* ICamera.h */,
-				021D86320D6390FC0026C13F /* IObject3D.h */,
+				021D86320D6390FC0026C13F /* ISurface.h */,
 				021D86340D6390FC0026C13F /* Mesh.h */,
 				021D86360D6390FC0026C13F /* Octree.h */,
 				02BEDD720E0B633D00259B3B /* Quadtree.h */,
@@ -1281,7 +1281,7 @@
 				021D86450D6390FC0026C13F /* EdgeContainer.h in Headers */,
 				021D86470D6390FC0026C13F /* FlatRenderer.h in Headers */,
 				021D86480D6390FC0026C13F /* ICamera.h in Headers */,
-				021D86490D6390FC0026C13F /* IObject3D.h in Headers */,
+				021D86490D6390FC0026C13F /* ISurface.h in Headers */,
 				021D864A0D6390FC0026C13F /* IRenderer.h in Headers */,
 				021D864B0D6390FC0026C13F /* Mesh.h in Headers */,
 				021D864D0D6390FC0026C13F /* Octree.h in Headers */,
@@ -1590,15 +1590,17 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/engine/include/ISurface.h",
 				"$(SRCROOT)/engine/include/BOManager.h",
 			);
 			name = "Moc stage";
 			outputPaths = (
-				"$(SRCROOT)/engine/moc/moc_boanager.cpp",
+				"$(SRCROOT)/engine/moc/moc_bomanager.cpp",
+				"$(SRCROOT)/engine/moc/moc_isurface.cpp",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "MOC=/Developer/Tools/Qt/moc\n\n$MOC -o${SRCROOT}/engine/moc/moc_iobject3d.cpp ${SRCROOT}/engine/include/IObject3D.h\n$MOC -o${SRCROOT}/engine/moc/moc_bomanager.cpp ${SRCROOT}/engine/include/BOManager.h\n";
+			shellScript = "MOC=/Developer/Tools/Qt/moc\n\n$MOC -o${SRCROOT}/engine/moc/moc_isurface.cpp ${SRCROOT}/engine/include/ISurface.h\n$MOC -o${SRCROOT}/engine/moc/moc_bomanager.cpp ${SRCROOT}/engine/include/BOManager.h\n";
 		};
 		02A3E5180D67FD5100A2CB35 /* Uic stage */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1704,7 +1706,7 @@
 				02C8B75A0D872E48003063A1 /* Picking.cpp in Sources */,
 				02C8B7660D8751F2003063A1 /* BOManager.cpp in Sources */,
 				025FEB2D0DE5D1E500762F39 /* moc_bomanager.cpp in Sources */,
-				025FEB4D0DE5FFF300762F39 /* moc_iobject3d.cpp in Sources */,
+				025FEB4D0DE5FFF300762F39 /* moc_isurface.cpp in Sources */,
 				02F4F49F0DE9190B0004A465 /* PickingFacesRenderer.cpp in Sources */,
 				02596EA910DC72E400942BDB /* HEdge.cpp in Sources */,
 				02596EAA10DC72E400942BDB /* SceneNode.cpp in Sources */,

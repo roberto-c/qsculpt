@@ -20,7 +20,7 @@
 #include "StdAfx.h"
 #include "PickingFacesRenderer.h"
 
-#include "IObject3D.h"
+#include "ISurface.h"
 #include "BOManager.h"
 
 #define BO_POOL_NAME "PickingVertexRendererPool"

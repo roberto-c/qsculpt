@@ -26,7 +26,7 @@
 #include "QSculptWindow.h"
 #include "IDocument.h"
 #include "IConfigContainer.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 #include "DocumentView.h"
 #include "Camera.h"
 #include "TransformWidget.h"

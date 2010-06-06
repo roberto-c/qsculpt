@@ -32,7 +32,7 @@
 #include "SelectCommand.h"
 #include "BrushCommand.h"
 #include "SubdivideCommand.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 
 QSculptWindow::QSculptWindow()
     : m_documentView(new DocumentView(this)),
