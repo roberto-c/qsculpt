@@ -40,7 +40,7 @@ void Document::loadFile(QString fileName)
 {
     qDebug("loadFile");
 
-	IObject3D* obj = new ::Mesh();
+	ISurface* obj = new ::Mesh();
     if (obj)
     {
         QFile file(fileName);
@@ -151,7 +151,7 @@ void Document::saveFile(QString fileName)
 
 void Document::addObject(ObjectType type)
 {
-    IObject3D* obj = NULL;
+    ISurface* obj = NULL;
 
     switch(type)
     {
@@ -169,7 +169,7 @@ void Document::addObject(ObjectType type)
     emit changed(AddObject, obj);
 }
 
-void Document::addObject(ObjectType type, IObject3D* obj)
+void Document::addObject(ObjectType type, ISurface* obj)
 {
     Q_ASSERT(obj);
 	
@@ -181,7 +181,7 @@ void Document::removeObject(int /*index*/)
 {
 }
 
-IObject3D* Document::getObject(int index) const
+ISurface* Document::getObject(int index) const
 {
     return m_objectList[index];
 }
@@ -195,9 +195,9 @@ void Document::selectObject(int /*index*/)
 {
 }
 
-QList<IObject3D*> Document::getSelectedObjects() const
+QList<ISurface*> Document::getSelectedObjects() const
 {
-    QList<IObject3D*> selectedObjectList;
+    QList<ISurface*> selectedObjectList;
     selectedObjectList.clear();
 
     int count = m_objectList.size();

@@ -25,7 +25,7 @@
 #include <QList>
 #include <QPoint>
 
-class IObject3D;
+class ISurface;
 
 // Configuration keys constants
 #define CONF_ACTION         "ACTION"
@@ -139,7 +139,7 @@ private:
                                              * movements */
     Point3             m_final;            /**< Final postion of the object. */
     QPoint              m_mousePosition;    /**< Initial mouse position */
-    QList<IObject3D*>   m_objects;          /**< Object list to move */
+    QList<ISurface*>   m_objects;          /**< Object list to move */
 };
 
 #endif

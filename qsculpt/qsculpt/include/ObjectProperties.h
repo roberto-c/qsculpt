@@ -4,7 +4,7 @@
 #include <QWidget>
 #include "../ui/ui_TransformWidget.h"
 
-class IObject3D;
+class ISurface;
 
 class ObjectProperties: public QWidget, private Ui::TransformWidget
 {

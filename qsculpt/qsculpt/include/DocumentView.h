@@ -26,7 +26,7 @@
 #include "Point3D.h"
 #include "GlView.h"
 
-class IObject3D;
+class ISurface;
 class IDocument;
 class QComboBox;
 

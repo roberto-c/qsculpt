@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-class IObject3D;
+class ISurface;
 
 /**
  * Interface that should implement every kind of document.
@@ -81,7 +81,7 @@ public:
      * @param type type of object to add.
 	 * @param obj object to add to the document.
      */
-	virtual void addObject(ObjectType type, IObject3D* obj) = 0;
+	virtual void addObject(ObjectType type, ISurface* obj) = 0;
     
     /**
      * Remove an object from the document. This does not free the memory allocated
@@ -98,7 +98,7 @@ public:
      *
      * @return an object with IObject3D interface
      */
-    virtual IObject3D* getObject(int index) const = 0;
+    virtual ISurface* getObject(int index) const = 0;
     
     /**
      * Get the objects count on this document.
@@ -115,10 +115,10 @@ public:
     /**
      * 
      */
-    virtual QList<IObject3D*> getSelectedObjects() const = 0;
+    virtual QList<ISurface*> getSelectedObjects() const = 0;
     
 signals:
-    void changed(IDocument::ChangeType type, IObject3D* object);
+    void changed(IDocument::ChangeType type, ISurface* object);
 };
 
 #endif

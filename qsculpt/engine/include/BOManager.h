@@ -26,7 +26,7 @@
 #include <QMultiHash>
 #include "BufferObject.h"
 
-class IObject3D;
+class ISurface;
 
 /**
  * Class to manage all vertex buffer objects in the application.
@@ -40,8 +40,8 @@ class BOManager : public QObject
 	Q_OBJECT
 
 	typedef QHash<GLuint, BufferObject*> IdBufferObjectMap;
-	typedef QHash<GLuint, IObject3D*> BOMeshMap;
-	typedef QHash<IObject3D*, GLuint> MeshBOMap;
+	typedef QHash<GLuint, ISurface*> BOMeshMap;
+	typedef QHash<ISurface*, GLuint> MeshBOMap;
 	typedef QHash<QString, MeshBOMap> BOPool;
 	
 public:
@@ -62,8 +62,8 @@ public:
 	 *
 	 * TODO: describe the notion of pool's on this class.
 	 */
-	VertexBuffer* createVBO(const QString& poolName, IObject3D* mesh);
-	IndexBuffer* createIBO(const QString& poolName, IObject3D* mesh);
+	VertexBuffer* createVBO(const QString& poolName, ISurface* mesh);
+	IndexBuffer* createIBO(const QString& poolName, ISurface* mesh);
 	
 	/**
 	 * Free the buffer object resources.
@@ -80,7 +80,7 @@ public:
 	 * This can be used when a mesh is deleted to unbind and free all the 
 	 * memory used by the BOs.
 	 */
-	void destroyAllMeshBO(const IObject3D* mesh);
+	void destroyAllMeshBO(const ISurface* mesh);
 	
 	/**
 	 * Free all the BOs under a named pool.
@@ -94,16 +94,16 @@ public:
 	/**
 	 * Gets the 3D object binded to the specified buffer object.
 	 */
-	IObject3D* getMesh(const BufferObject* vbo);
+	ISurface* getMesh(const BufferObject* vbo);
 	
 	/**
 	 * Gets the BO associated to the mesh inside an specific BO pool.
 	 */
-	VertexBuffer* getVBO(const QString& poolName, IObject3D* mesh);
-	IndexBuffer* getIBO(const QString& poolName, IObject3D* mesh);
+	VertexBuffer* getVBO(const QString& poolName, ISurface* mesh);
+	IndexBuffer* getIBO(const QString& poolName, ISurface* mesh);
 	
 public slots:
-	void invalidateBO(IObject3D* obj);
+	void invalidateBO(ISurface* obj);
 	
 private:
 	BOManager();

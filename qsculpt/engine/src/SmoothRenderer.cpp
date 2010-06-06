@@ -36,12 +36,12 @@ SmoothRenderer::~SmoothRenderer()
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
-void SmoothRenderer::renderObject(const IObject3D* mesh)
+void SmoothRenderer::renderObject(const ISurface* mesh)
 {
 	renderVbo(mesh);
 }
 
-void SmoothRenderer::renderImmediate(const IObject3D* mesh)
+void SmoothRenderer::renderImmediate(const ISurface* mesh)
 {	
 	if (mesh->isSelected())
 		glColor3d(0.0, 1.0, 0.0);
@@ -65,13 +65,13 @@ void SmoothRenderer::renderImmediate(const IObject3D* mesh)
     
 }
 
-void SmoothRenderer::renderVbo(const IObject3D* mesh)
+void SmoothRenderer::renderVbo(const ISurface* mesh)
 {
 	//qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
 		return;
 	
-	IObject3D* obj = const_cast<IObject3D*>(mesh);
+	ISurface* obj = const_cast<ISurface*>(mesh);
 	VertexBuffer* vbo= getVBO(obj);
 	if (vbo == NULL || vbo->getBufferID() == 0)
 	{
@@ -114,7 +114,7 @@ void SmoothRenderer::renderVbo(const IObject3D* mesh)
 	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
-VertexBuffer* SmoothRenderer::getVBO(IObject3D* mesh)
+VertexBuffer* SmoothRenderer::getVBO(ISurface* mesh)
 {
 	VertexBuffer* vbo = NULL;
 	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
@@ -125,7 +125,7 @@ VertexBuffer* SmoothRenderer::getVBO(IObject3D* mesh)
 	return vbo;	
 }
 
-void SmoothRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
+void SmoothRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 {
 	qDebug() << "SmoothRenderer::renderObject Start time:" << QDateTime::currentDateTime();
 	int numFaces = mesh->getNumFaces();

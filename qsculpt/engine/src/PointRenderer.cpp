@@ -37,12 +37,12 @@ PointRenderer::~PointRenderer()
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
-void PointRenderer::renderObject(const IObject3D* mesh)
+void PointRenderer::renderObject(const ISurface* mesh)
 {
 	renderVbo(mesh);
 }
 
-void PointRenderer::renderImmediate(const IObject3D* mesh)
+void PointRenderer::renderImmediate(const ISurface* mesh)
 {
 	mesh->lock();
     int numVertices = mesh->getNumVertices();
@@ -59,13 +59,13 @@ void PointRenderer::renderImmediate(const IObject3D* mesh)
 	mesh->unlock();
 }
 
-void PointRenderer::renderVbo(const IObject3D* mesh)
+void PointRenderer::renderVbo(const ISurface* mesh)
 {
 	//qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
 		return;
 	
-	IObject3D* obj = const_cast<IObject3D*>(mesh);
+	ISurface* obj = const_cast<ISurface*>(mesh);
 	VertexBuffer *vbo = getVBO(obj);	
 	if (vbo == NULL || vbo->getBufferID() == 0)
 	{
@@ -105,7 +105,7 @@ void PointRenderer::renderVbo(const IObject3D* mesh)
 	glPopAttrib();
 }
 
-VertexBuffer* PointRenderer::getVBO(IObject3D* mesh)
+VertexBuffer* PointRenderer::getVBO(ISurface* mesh)
 {
 	VertexBuffer* vbo = NULL;
 	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
@@ -116,7 +116,7 @@ VertexBuffer* PointRenderer::getVBO(IObject3D* mesh)
 	return vbo;
 }
 
-void PointRenderer::fillVertexBuffer(const IObject3D* mesh, VertexBuffer* vbo)
+void PointRenderer::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
 {
 	int numVertices = mesh->getNumVertices();
 	if (numVertices == 0)

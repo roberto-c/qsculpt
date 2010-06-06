@@ -17,7 +17,7 @@
 #include "IIterator.h"
 
 class Edge;
-class IObject3D;
+class ISurface;
 
 /**
  * Face class. This class contains references to points that should
@@ -36,7 +36,7 @@ class Face {
 	
 	int _id;
 	int _depth;
-    IObject3D *_surface;
+    ISurface *_surface;
 	Edge *_he;
 	Vertex* _vertex;
 	Face* _children;
@@ -50,7 +50,7 @@ public:
 	/**
 	 * Default constructor. Initiliazes all point to index 0.
      */
-	Face(IObject3D *surface = NULL);
+	Face(ISurface *surface = NULL);
 	
 	/**
 	 * Construct a new triangle. The triangle is composed by the passed
@@ -60,7 +60,7 @@ public:
      * @param p2 second point that form the triangle.
      * @param p3 third point that form the triangle.
      */
-    Face(IObject3D *surface, const QVector<int>& vertexIndexList);
+    Face(ISurface *surface, const QVector<int>& vertexIndexList);
 	
 	~Face();
 	

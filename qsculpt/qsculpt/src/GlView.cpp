@@ -285,6 +285,11 @@ void GlView::paintGL()
     drawObjects();
     drawCursor();
 	
+    ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
+    if (cmd) {
+        cmd->paintGL();
+    }
+    
 	glFlush();
     //drawOrientationAxis();
 }
@@ -294,7 +299,7 @@ void GlView::drawObjects()
 	if (m_renderer == NULL)
 		return;
 	
-	IObject3D* mesh;
+	ISurface* mesh;
     IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
     int count = doc->getObjectsCount();
     for ( int i = 0; i < count; i++ )
@@ -550,7 +555,7 @@ ObjectContainer GlView::getSelectedObjects(GLint x, GLint y)
 	
 	unsigned int objId = 1;
 	GLuint d = 0;
-	IObject3D* mesh;
+	ISurface* mesh;
     IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
     int count = doc->getObjectsCount();
     for ( int i = 0; i < count; i++ )
@@ -589,7 +594,7 @@ PointIndexList GlView::getSelectedVertices(GLint x, GLint y,
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	unsigned int objId = 1;
 	GLuint* d = new GLuint[width * height];
-	IObject3D* mesh;
+	ISurface* mesh;
     IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
     int count = doc->getObjectsCount();
     for ( int i = 0; i < count; i++ )

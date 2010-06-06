@@ -40,7 +40,7 @@
 #endif
 
 Subdivision::Subdivision()
-:	IObject3D(),
+:	ISurface(),
 	m_scene(NULL),
 	//m_drawingMode(Wireframe),
 	m_color(Qt::white),

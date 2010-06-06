@@ -53,18 +53,18 @@ PickingFacesRenderer::~PickingFacesRenderer()
 	BOManager::getInstance()->destroyPool(BO_FLAT_POOL_NAME);
 }
 		
-void PickingFacesRenderer::renderObject(const IObject3D* mesh, GLuint objId)
+void PickingFacesRenderer::renderObject(const ISurface* mesh, GLuint objId)
 {
 	renderVbo(mesh, objId);
 }
 		
-void PickingFacesRenderer::renderVbo(const IObject3D* mesh, unsigned int objId)
+void PickingFacesRenderer::renderVbo(const ISurface* mesh, unsigned int objId)
 {
 	//qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
 		return;
 	
-	IObject3D* obj = const_cast<IObject3D*>(mesh);
+	ISurface* obj = const_cast<ISurface*>(mesh);
 	//VertexBuffer *vbo = getVBO(obj);
 	VertexBuffer *flatVbo = getFlatVBO(obj);
 	if (//vbo == NULL || vbo->getBufferID() == 0 ||
@@ -121,7 +121,7 @@ void PickingFacesRenderer::renderVbo(const IObject3D* mesh, unsigned int objId)
 	glPopAttrib();
 }
 
-void PickingFacesRenderer::renderImmediate(const IObject3D* mesh, unsigned int objID)
+void PickingFacesRenderer::renderImmediate(const ISurface* mesh, unsigned int objID)
 {    
     mesh->lock();
     int numVertices = mesh->getNumVertices();
@@ -138,7 +138,7 @@ void PickingFacesRenderer::renderImmediate(const IObject3D* mesh, unsigned int o
 	mesh->unlock();
 }
 		
-VertexBuffer* PickingFacesRenderer::getVBO(IObject3D* mesh)
+VertexBuffer* PickingFacesRenderer::getVBO(ISurface* mesh)
 {
 	VertexBuffer* vbo = NULL;
 	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
@@ -149,7 +149,7 @@ VertexBuffer* PickingFacesRenderer::getVBO(IObject3D* mesh)
 	return vbo;
 }
 
-VertexBuffer* PickingFacesRenderer::getFlatVBO(IObject3D* mesh)
+VertexBuffer* PickingFacesRenderer::getFlatVBO(ISurface* mesh)
 {
 	VertexBuffer* vbo = NULL;
 	vbo = BOManager::getInstance()->getVBO(BO_FLAT_POOL_NAME, mesh);
@@ -160,7 +160,7 @@ VertexBuffer* PickingFacesRenderer::getFlatVBO(IObject3D* mesh)
 	return vbo;
 }
 		
-void PickingFacesRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo, GLuint objId)
+void PickingFacesRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo, GLuint objId)
 {
     int numVertices = mesh->getNumVertices();
 	if (numVertices == 0)
@@ -185,7 +185,7 @@ void PickingFacesRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo, 
 	delete [] vtxData;
 }
 
-void PickingFacesRenderer::fillFlatVertexBuffer(IObject3D* mesh, VertexBuffer* vbo, GLuint objId)
+void PickingFacesRenderer::fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vbo, GLuint objId)
 {
 	if (mesh == NULL || vbo->getBufferID() == 0)
 		return;

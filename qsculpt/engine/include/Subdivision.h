@@ -45,7 +45,7 @@ namespace subdivision
 /**
  * Class that implement subdivision surfaces.
  */
-class Subdivision : public IObject3D
+class Subdivision : public ISurface
 {
 	typedef std::vector<Vertex*> VertexCollection;
 	typedef std::vector<Edge*> EdgesCollection;

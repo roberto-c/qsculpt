@@ -248,7 +248,6 @@
 		02C8B7650D8751F2003063A1 /* BOManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C8B7630D8751F2003063A1 /* BOManager.h */; };
 		02C8B7660D8751F2003063A1 /* BOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C8B7640D8751F2003063A1 /* BOManager.cpp */; };
 		02D2661910F9849C00E22E11 /* Subdivision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D2661810F9849C00E22E11 /* Subdivision.cpp */; };
-		02D2663B10F9C7BF00E22E11 /* FaceTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D2663A10F9C7BF00E22E11 /* FaceTree.cpp */; };
 		02DE9FB20D355FB200D94D6F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DE9FB10D355FB200D94D6F /* OpenGL.framework */; };
 		02E0FEFB10F5AE1A00DE4492 /* Vertex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E0FEFA10F5AE1A00DE4492 /* Vertex.cpp */; };
 		02E0FF1910F5CA3B00DE4492 /* Face.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E0FF1810F5CA3B00DE4492 /* Face.cpp */; };
@@ -536,7 +535,6 @@
 		02C8B7630D8751F2003063A1 /* BOManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = BOManager.h; path = engine/include/BOManager.h; sourceTree = "<group>"; };
 		02C8B7640D8751F2003063A1 /* BOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BOManager.cpp; path = engine/src/BOManager.cpp; sourceTree = "<group>"; };
 		02D2661810F9849C00E22E11 /* Subdivision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Subdivision.cpp; path = engine/src/Subdivision.cpp; sourceTree = "<group>"; };
-		02D2663A10F9C7BF00E22E11 /* FaceTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FaceTree.cpp; path = engine/src/FaceTree.cpp; sourceTree = "<group>"; };
 		02DE9FB10D355FB200D94D6F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		02DEA3A80D35645600D94D6F /* moc_brushproperties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_brushproperties.cpp; path = qsculpt/moc/moc_brushproperties.cpp; sourceTree = "<group>"; };
 		02DEA3A90D35645600D94D6F /* moc_commandmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_commandmanager.cpp; path = qsculpt/moc/moc_commandmanager.cpp; sourceTree = "<group>"; };
@@ -1048,7 +1046,6 @@
 		02822DE00D31E059005129A8 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				02D2663A10F9C7BF00E22E11 /* FaceTree.cpp */,
 				02596EA710DC72E400942BDB /* HEdge.cpp */,
 				02596EA810DC72E400942BDB /* SceneNode.cpp */,
 				020EEDEF0ECFF41F00F1C116 /* Filters */,
@@ -1715,7 +1712,6 @@
 				02E0FEFB10F5AE1A00DE4492 /* Vertex.cpp in Sources */,
 				02E0FF1910F5CA3B00DE4492 /* Face.cpp in Sources */,
 				02D2661910F9849C00E22E11 /* Subdivision.cpp in Sources */,
-				02D2663B10F9C7BF00E22E11 /* FaceTree.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

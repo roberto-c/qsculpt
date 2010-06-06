@@ -14,7 +14,7 @@
 
 QAtomicInt Face::NEXT_ID(1);
 
-Face::Face(IObject3D *surface) 
+Face::Face(ISurface *surface) 
 :	_surface(surface),
     _he(NULL),
 	_vertex(NULL),
@@ -26,7 +26,7 @@ Face::Face(IObject3D *surface)
 	_id = NEXT_ID.fetchAndAddRelaxed(1);
 }
 
-Face::Face(IObject3D *surface, const QVector<int>& vertexIndexList)
+Face::Face(ISurface *surface, const QVector<int>& vertexIndexList)
 :   _surface(surface),
     _he(NULL),
 	_vertex(NULL),

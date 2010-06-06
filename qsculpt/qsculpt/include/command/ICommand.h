@@ -124,6 +124,11 @@ public:
      */
     virtual void mouseMoveEvent(QMouseEvent *e) = 0;
 
+    /**
+     * Used to display anything specific to the command as user feedback.
+     */
+    virtual void paintGL() = 0;
+    
 public slots:
     /**
      * Execute the command in no interactive way. This means, that once that all the

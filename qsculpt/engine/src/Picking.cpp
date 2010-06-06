@@ -71,12 +71,12 @@ char* intToHexStr(unsigned int d)
 	return output;
 }
 
-void PickingObjectRenderer::renderObject(const IObject3D* mesh, GLuint objId)
+void PickingObjectRenderer::renderObject(const ISurface* mesh, GLuint objId)
 {
 	renderVbo(mesh, objId);
 }
 
-void PickingObjectRenderer::renderImmediate(const IObject3D* mesh, unsigned int objID)
+void PickingObjectRenderer::renderImmediate(const ISurface* mesh, unsigned int objID)
 {    
     mesh->lock();
     int numVertices = mesh->getNumVertices();
@@ -93,13 +93,13 @@ void PickingObjectRenderer::renderImmediate(const IObject3D* mesh, unsigned int 
 	mesh->unlock();
 }
 
-void PickingObjectRenderer::renderVbo(const IObject3D* mesh, unsigned int objID)
+void PickingObjectRenderer::renderVbo(const ISurface* mesh, unsigned int objID)
 {
 	//qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
 		return;
 	
-	IObject3D* obj = const_cast<IObject3D*>(mesh);
+	ISurface* obj = const_cast<ISurface*>(mesh);
 	VertexBuffer *vbo = getVBO(obj);	
 	if (vbo == NULL || vbo->getBufferID() == 0)
 	{
@@ -135,7 +135,7 @@ void PickingObjectRenderer::renderVbo(const IObject3D* mesh, unsigned int objID)
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-VertexBuffer* PickingObjectRenderer::getVBO(IObject3D* mesh)
+VertexBuffer* PickingObjectRenderer::getVBO(ISurface* mesh)
 {
 	VertexBuffer* vbo = NULL;
 	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
@@ -146,7 +146,7 @@ VertexBuffer* PickingObjectRenderer::getVBO(IObject3D* mesh)
 	return vbo;	
 }
 
-void PickingObjectRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
+void PickingObjectRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 {
 	if (mesh == NULL || vbo->getBufferID() == 0)
 		return;

@@ -37,14 +37,12 @@
 class QColor;
 class Scene;
 
-typedef QVector<Vector3> NormalContainer;
-
 /**
 Interface that every 3D object should implement.
 
   @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class IObject3D : public QObject {
+class ISurface : public QObject {
 	Q_OBJECT
 	
 public:
@@ -52,9 +50,9 @@ public:
      * Default contructor. The classes that implement this interface, should
      * have a default contructor that initiliazes the object with valid values.
      */
-    IObject3D(){}
+    ISurface(){}
 
-    virtual ~IObject3D(){}
+    virtual ~ISurface(){}
 
     virtual void setScene(Scene* scene) = 0;
 
@@ -393,11 +391,11 @@ public:
 	virtual Iterator<Face> faceIterator() = 0;
 	virtual Iterator<Face> constFaceIterator() const = 0;
 signals:
-	void meshChanged(IObject3D* mesh);
+	void meshChanged(ISurface* mesh);
 	
 	void positionChanged(float x, float y, float z);
 };
 
-typedef QVector<IObject3D*> ObjectContainer;
+typedef QVector<ISurface*> ObjectContainer;
 
 #endif
