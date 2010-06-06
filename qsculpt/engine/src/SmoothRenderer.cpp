@@ -19,7 +19,7 @@
  ***************************************************************************/
 #include "StdAfx.h"
 #include "SmoothRenderer.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 #include <QtOpenGL>
 #include "BOManager.h"
 

@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "WireframeRenderer.h"
 #include <QtOpenGL>
-#include "IObject3D.h"
+#include "ISurface.h"
 #include <QPolygon>
 WireframeRenderer::WireframeRenderer()
 {

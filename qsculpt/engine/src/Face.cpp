@@ -10,7 +10,7 @@
 #include "StdAfx.h"
 #include "Face.h"
 #include "HEdge.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 
 QAtomicInt Face::NEXT_ID(1);
 

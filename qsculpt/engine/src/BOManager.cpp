@@ -19,7 +19,7 @@
  ***************************************************************************/
 #include "StdAfx.h"
 #include "BOManager.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 
 BOManager* BOManager::m_instance = NULL;
 

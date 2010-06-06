@@ -23,7 +23,7 @@
 #include <QThread>
 #include <QProgressDialog>
 #include "IDocument.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "DocumentView.h"

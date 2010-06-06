@@ -26,7 +26,7 @@
 #include "SpEnums.h"
 #include "Point3D.h"
 #include "BufferObject.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 
 class DocumentView;
 class QMouseEvent;

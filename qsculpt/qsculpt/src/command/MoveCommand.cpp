@@ -23,7 +23,7 @@
 #include <QtOpenGL>
 #include "IDocument.h"
 #include "IConfigContainer.h"
-#include "IObject3D.h"
+#include "ISurface.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 

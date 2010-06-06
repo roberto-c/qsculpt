@@ -20,7 +20,7 @@
 #include "StdAfx.h"
 #include "PointRenderer.h"
 #include <QtOpenGL>
-#include "IObject3D.h"
+#include "ISurface.h"
 #include <QMap>
 #include "BOManager.h"
 

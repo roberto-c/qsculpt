@@ -21,7 +21,7 @@
 #include "Document.h"
 #include <QFile>
 #include <QTextStream>
-#include "IObject3D.h"
+#include "ISurface.h"
 #include "Box.h"
 #include "Sphere.h"
 #include "Mesh.h"
