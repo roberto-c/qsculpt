@@ -204,7 +204,6 @@
 		021D86540D6390FC0026C13F /* SpEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863D0D6390FC0026C13F /* SpEnums.h */; };
 		021D86550D6390FC0026C13F /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863E0D6390FC0026C13F /* Sphere.h */; };
 		021D86560D6390FC0026C13F /* StdAfx.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863F0D6390FC0026C13F /* StdAfx.h */; };
-		021D86570D6390FC0026C13F /* Triangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86400D6390FC0026C13F /* Triangle.h */; };
 		021D86580D6390FC0026C13F /* WireframeRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86410D6390FC0026C13F /* WireframeRenderer.h */; };
 		021DFAA10D387FC5007A9793 /* moc_brushproperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02DEA3A80D35645600D94D6F /* moc_brushproperties.cpp */; };
 		021DFAA20D387FC5007A9793 /* moc_commandmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02DEA3A90D35645600D94D6F /* moc_commandmanager.cpp */; };
@@ -489,7 +488,6 @@
 		021D863D0D6390FC0026C13F /* SpEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpEnums.h; path = engine/include/SpEnums.h; sourceTree = "<group>"; };
 		021D863E0D6390FC0026C13F /* Sphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sphere.h; path = engine/include/Sphere.h; sourceTree = "<group>"; };
 		021D863F0D6390FC0026C13F /* StdAfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdAfx.h; path = engine/include/StdAfx.h; sourceTree = "<group>"; };
-		021D86400D6390FC0026C13F /* Triangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Triangle.h; path = engine/include/Triangle.h; sourceTree = "<group>"; };
 		021D86410D6390FC0026C13F /* WireframeRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WireframeRenderer.h; path = engine/include/WireframeRenderer.h; sourceTree = "<group>"; };
 		021DFAB50D387FC5007A9793 /* QSculpt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QSculpt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		021DFABD0D388157007A9793 /* moc_brushcommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_brushcommand.cpp; path = qsculpt/moc/moc_brushcommand.cpp; sourceTree = "<group>"; };
@@ -1096,7 +1094,6 @@
 				021D863E0D6390FC0026C13F /* Sphere.h */,
 				021D863F0D6390FC0026C13F /* StdAfx.h */,
 				02C8B7630D8751F2003063A1 /* BOManager.h */,
-				021D86400D6390FC0026C13F /* Triangle.h */,
 				0221B3D410C9EF5B003377CD /* Face.h */,
 				0211C3D010DC7A610004F001 /* Subdivision.h */,
 				0211C3D210DC82B00004F001 /* Vertex.h */,
@@ -1294,7 +1291,6 @@
 				021D86540D6390FC0026C13F /* SpEnums.h in Headers */,
 				021D86550D6390FC0026C13F /* Sphere.h in Headers */,
 				021D86560D6390FC0026C13F /* StdAfx.h in Headers */,
-				021D86570D6390FC0026C13F /* Triangle.h in Headers */,
 				021D86580D6390FC0026C13F /* WireframeRenderer.h in Headers */,
 				02C8B7400D862F78003063A1 /* Picking.h in Headers */,
 				02C8B7650D8751F2003063A1 /* BOManager.h in Headers */,
