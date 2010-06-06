@@ -23,7 +23,7 @@
 #include <QThread>
 #include "CommandBase.h"
 
-class IObject3D;
+class ISurface;
 struct Face;
 
 /**

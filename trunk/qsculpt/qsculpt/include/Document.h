@@ -23,7 +23,7 @@
 #include <QList>
 #include "IDocument.h"
 
-class IObject3D;
+class ISurface;
 
 /**
  * Holds all the document data.
@@ -42,17 +42,17 @@ public:
     virtual void loadFile(QString fileName);
     virtual void saveFile(QString fileName);
     virtual void addObject(ObjectType type);
-	virtual void addObject(ObjectType type, IObject3D* obj);
+	virtual void addObject(ObjectType type, ISurface* obj);
     virtual void removeObject(int index);
-    virtual IObject3D* getObject(int index) const;
+    virtual ISurface* getObject(int index) const;
     virtual int getObjectsCount() const;
     virtual void selectObject(int index);
-    virtual QList<IObject3D*> getSelectedObjects() const;
+    virtual QList<ISurface*> getSelectedObjects() const;
 // End IDocument interface
     
 private:
-    QList<IObject3D*> m_objectList;
-    QList<IObject3D*> m_selectedObjectList;
+    QList<ISurface*> m_objectList;
+    QList<ISurface*> m_selectedObjectList;
 };
 
 #endif

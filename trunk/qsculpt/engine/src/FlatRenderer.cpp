@@ -53,13 +53,13 @@ FlatRenderer::~FlatRenderer()
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
-void FlatRenderer::renderObject(const IObject3D* mesh)
+void FlatRenderer::renderObject(const ISurface* mesh)
 {
 	renderVbo(mesh);
 	//renderImmediate(mesh);
 }
 
-void FlatRenderer::renderImmediate(const IObject3D* mesh)
+void FlatRenderer::renderImmediate(const ISurface* mesh)
 {
     //qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
@@ -97,13 +97,13 @@ void FlatRenderer::renderImmediate(const IObject3D* mesh)
 	}    
 }
 
-void FlatRenderer::renderVbo(const IObject3D* mesh)
+void FlatRenderer::renderVbo(const ISurface* mesh)
 {
 	//qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
 		return;
 	
-	IObject3D* obj = const_cast<IObject3D*>(mesh);
+	ISurface* obj = const_cast<ISurface*>(mesh);
 	
 	VertexBuffer* vbo = getVBO(obj);
 	if (vbo == NULL || vbo->getBufferID() == 0)
@@ -156,7 +156,7 @@ void FlatRenderer::renderVbo(const IObject3D* mesh)
 	//qDebug() << "Mesh rendered";
 }
 
-VertexBuffer* FlatRenderer::getVBO(IObject3D* mesh)
+VertexBuffer* FlatRenderer::getVBO(ISurface* mesh)
 {
 	VertexBuffer* vbo = NULL;
 	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
@@ -167,7 +167,7 @@ VertexBuffer* FlatRenderer::getVBO(IObject3D* mesh)
 	return vbo;
 }
 
-void FlatRenderer::fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo)
+void FlatRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 {
 	//qDebug() << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
 	if (mesh == NULL || vbo->getBufferID() == 0)

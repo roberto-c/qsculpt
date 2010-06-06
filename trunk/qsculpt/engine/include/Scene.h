@@ -25,7 +25,7 @@
 #include "SceneNode.h"
 #include "Vertex.h"
 
-class IObject3D;
+class ISurface;
 
 /**
  * Contains all the scene data. All 3D objects reference data from the scene.
@@ -41,16 +41,16 @@ public:
     /**
      * 
      */
-    IObject3D* createObject();
+    ISurface* createObject();
 
-    IObject3D* createBox();
+    ISurface* createBox();
     
-    IObject3D* createSphere();
+    ISurface* createSphere();
     
 private:
     QVector<Vertex> mVertexList;
     QVector<Vector3> mNormalList;
-    QVector<IObject3D*> mObjectList;
+    QVector<ISurface*> mObjectList;
 };
 
 #endif

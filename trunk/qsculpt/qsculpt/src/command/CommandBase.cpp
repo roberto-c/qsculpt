@@ -109,8 +109,8 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     m_currentCamera = view->getViewCamera();
     *m_intialCameraState = *m_currentCamera;
 
-    // In prespective view, we canchange the orientation of the view, but we can't change it
-    // if we are in the other fixed view. So, in those views we can only do a pan.
+    // In prespective view, we allow the user to change the orientation of the view. 
+    // In the other views, we only allow screen panning.
     if (view->getPerspectiveViewType() == GlView::Perspective)
     {
         m_panViewMode = e->modifiers() & Qt::ControlModifier ? true : false;
@@ -167,5 +167,17 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
     }
     m_currentPoint = currPoint;
     m_currentWinPoint = currWinPoint;
+}
+
+void CommandBase::paintGL()
+{
+    if (needsUserInteraction()) {
+        glDisable(GL_LIGHTING);
+        glPointSize(30);
+        glBegin(GL_POINTS);
+        glVertex3f(0, 0, 0);
+        glEnd();
+        glEnable(GL_LIGHTING);
+    }
 }
 

@@ -9,7 +9,7 @@ public:
 	WireframeRenderer();
 	virtual ~WireframeRenderer();
 
-	virtual void renderObject(const IObject3D* mesh);
+	virtual void renderObject(const ISurface* mesh);
 };
 
 #endif /*WIREFRAMERENDERER_H_*/

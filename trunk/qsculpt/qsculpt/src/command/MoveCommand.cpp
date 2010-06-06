@@ -74,7 +74,7 @@ void TransformCommand::execute()
     const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
     Action action = (Action)m_configContainer->getInt(CONF_MOVE_AXIS);
-    QList<IObject3D*> objects = doc->getSelectedObjects();
+    QList<ISurface*> objects = doc->getSelectedObjects();
     switch(action)
     {
         default:
@@ -191,7 +191,7 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
     int count = m_objects.count();
     for (int i = 0; i < count; i++)
     {
-        IObject3D* obj = m_objects[i];
+        ISurface* obj = m_objects[i];
         obj->setPosition(obj->getPosition() + d);
     }
     m_initial = m_initial + delta;

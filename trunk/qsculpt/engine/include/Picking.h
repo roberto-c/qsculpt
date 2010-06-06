@@ -25,7 +25,7 @@
 #include "BufferObject.h"
 #include "IRenderer.h"
 
-class IObject3D;
+class ISurface;
 
 class PickingObjectRenderer
 {
@@ -33,16 +33,16 @@ public:
 	PickingObjectRenderer();
 	virtual ~PickingObjectRenderer();
 	
-	virtual void renderObject(const IObject3D* mesh, GLuint objId);
+	virtual void renderObject(const ISurface* mesh, GLuint objId);
 	
 private:
-	void renderVbo(const IObject3D* mesh, unsigned int objID);
-	void renderImmediate(const IObject3D* mesh, unsigned int objID);
+	void renderVbo(const ISurface* mesh, unsigned int objID);
+	void renderImmediate(const ISurface* mesh, unsigned int objID);
 	
-	VertexBuffer* getVBO(IObject3D* mesh);
+	VertexBuffer* getVBO(ISurface* mesh);
 	
-	void fillVertexBuffer(IObject3D* mesh, VertexBuffer* vbo);
-	void fillPointVertexBuffer(IObject3D* mesh, VertexBuffer* vbo, VertexBuffer* cbo);
+	void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
+	void fillPointVertexBuffer(ISurface* mesh, VertexBuffer* vbo, VertexBuffer* cbo);
 };
 
 #endif

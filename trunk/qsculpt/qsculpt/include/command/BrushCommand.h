@@ -60,14 +60,14 @@ public:
 	// End ICommand Interface
 
 private:
-	typedef QMap<IObject3D*, QHash<int, Point3> > DirtyFaceMap;
+	typedef QMap<ISurface*, QHash<int, Point3> > DirtyFaceMap;
 
 	void applyOperation(); 
 	
 	void selectObject();
 
     ObjectContainer		m_selectedObjects;
-    IObject3D*          m_object;
+    ISurface*          m_object;
     double              m_radius;
     double              m_depth;
     BrushAction         m_action;

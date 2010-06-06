@@ -71,7 +71,7 @@ void QSculptWindow::createWidgets()
     connect(m_showGrid, SIGNAL(toggled(bool)), m_documentView, SLOT(setGridVisible(bool)));
     connect(m_showNormals, SIGNAL(toggled(bool)), m_documentView, SLOT(setNormalsVisible(bool)));
     connect(m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
-    connect(m_document, SIGNAL(changed(IDocument::ChangeType, IObject3D*)), this, SLOT(documentChanged(IDocument::ChangeType)));
+    connect(m_document, SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(documentChanged(IDocument::ChangeType)));
 
     connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));

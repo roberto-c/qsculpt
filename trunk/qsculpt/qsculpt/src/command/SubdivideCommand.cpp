@@ -80,8 +80,8 @@ void SubdivideCommand::execute()
     
     qDebug() << "Start time: " <<QDateTime::currentDateTime();
     
-    QList<IObject3D*> list = doc->getSelectedObjects();
-    IObject3D* obj = list.at(0);
+    QList<ISurface*> list = doc->getSelectedObjects();
+    ISurface* obj = list.at(0);
     if (obj) {
         qDebug() << "Object found";
     }

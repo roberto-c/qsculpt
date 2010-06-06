@@ -13,7 +13,7 @@ WireframeRenderer::~WireframeRenderer()
 	qDebug() << "WireframeRenderer destructor";
 }
 
-void WireframeRenderer::renderObject(const IObject3D* mesh)
+void WireframeRenderer::renderObject(const ISurface* mesh)
 {
 
 	glColor3f(0.0f, 0.0f, 1.0f);
