@@ -659,13 +659,6 @@
 			sepNavVisRange = "{0, 1000}";
 		};
 	};
-	021D86400D6390FC0026C13F /* Triangle.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {714, 1495}}";
-			sepNavSelRange = "{3936, 0}";
-			sepNavVisRange = "{2775, 1169}";
-		};
-	};
 	021D86410D6390FC0026C13F /* WireframeRenderer.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {563, 622}}";
@@ -852,7 +845,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1244, 1455}}";
 			sepNavSelRange = "{1993, 9}";
-			sepNavVisRange = "{1557, 959}";
+			sepNavVisRange = "{1550, 952}";
 		};
 	};
 	026B6A4E0D6FF13C008701FE /* qsculpt.pro */ = {
