@@ -31,25 +31,25 @@
 
 CommandBase::CommandBase(ICommand* parent)
 :	ICommand(parent),
-	m_configContainer(new ConfigContainer()),
-	m_isActive(false),
-	m_rotationRadius(0.0),
-	m_currentCamera(NULL),
-	m_intialCameraState(new Camera),
-	m_panViewMode(false),
-	m_rotateViewMode(false)
+	_configContainer(new ConfigContainer()),
+	_isActive(false),
+	_rotationRadius(0.0),
+	_currentCamera(NULL),
+	_intialCameraState(new Camera),
+	_panViewMode(false),
+	_rotateViewMode(false)
 {
 }
 
 CommandBase::CommandBase(const CommandBase& cpy)
 :	ICommand(cpy),
-	m_configContainer(new ConfigContainer()),
-	m_isActive(cpy.m_isActive),
-	m_rotationRadius(cpy.m_rotationRadius),
-	m_currentCamera(new Camera),
-	m_intialCameraState(new Camera),
-	m_panViewMode(cpy.m_panViewMode),
-	m_rotateViewMode(cpy.m_rotateViewMode)
+	_configContainer(new ConfigContainer()),
+	_isActive(cpy._isActive),
+	_rotationRadius(cpy._rotationRadius),
+	_currentCamera(new Camera),
+	_intialCameraState(new Camera),
+	_panViewMode(cpy._panViewMode),
+	_rotateViewMode(cpy._rotateViewMode)
 {
 	//*m_currentCamera = *cpy.m_currentCamera;
 	//*m_intialCameraState = *cpy.m_intialCameraState;
@@ -57,13 +57,13 @@ CommandBase::CommandBase(const CommandBase& cpy)
 
 CommandBase::CommandBase(const QString& text, ICommand* parent)
 :	ICommand(text, parent),
-	m_configContainer(new ConfigContainer()),
-	m_isActive(false),
-	m_rotationRadius(0.0),
-	m_currentCamera(NULL),
-	m_intialCameraState(new Camera),
-	m_panViewMode(false),
-	m_rotateViewMode(false)
+	_configContainer(new ConfigContainer()),
+	_isActive(false),
+	_rotationRadius(0.0),
+	_currentCamera(NULL),
+	_intialCameraState(new Camera),
+	_panViewMode(false),
+	_rotateViewMode(false)
 {
 }
 
@@ -73,17 +73,17 @@ CommandBase::~CommandBase()
 
 IConfigContainer& CommandBase::getConfig() const
 {
-    return *m_configContainer;
+    return *_configContainer;
 }
 
 void CommandBase::activate(bool active)
 {
-    m_isActive = active;
+    _isActive = active;
 }
 
 bool CommandBase::isActive()
 {
-    return m_isActive;
+    return _isActive;
 }
 
 void CommandBase::mousePressEvent(QMouseEvent* e)
@@ -93,34 +93,34 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     GLdouble x, y, z;
     GLfloat wz = 0.0f;
 
-    glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
-    glGetIntegerv(GL_VIEWPORT, m_viewPort);
+    glGetDoublev(GL_MODELVIEW_MATRIX, _modelMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, _projMatrix);
+    glGetIntegerv(GL_VIEWPORT, _viewPort);
 
-    glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-    gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
+    glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
+    gluUnProject(e->x(), _viewPort[3] - e->y(), wz, _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
 
-    m_initialWinPoint = Point3(e->x(), m_viewPort[3] - e->y(), wz);
-    m_currentWinPoint = m_initialWinPoint;
-    m_intialPoint = Point3(x, y, z);
-    m_currentPoint = m_intialPoint;
+    _initialWinPoint = Point3(e->x(), _viewPort[3] - e->y(), wz);
+    _currentWinPoint = _initialWinPoint;
+    _intialPoint = Point3(x, y, z);
+    _currentPoint = _intialPoint;
     //qDebug("wz: %f %s", wz, qPrintable(m_intialPoint.toString()));
 
-    m_currentCamera = view->getViewCamera();
-    *m_intialCameraState = *m_currentCamera;
+    _currentCamera = view->getViewCamera();
+    *_intialCameraState = *_currentCamera;
 
     // In prespective view, we allow the user to change the orientation of the view. 
     // In the other views, we only allow screen panning.
     if (view->getPerspectiveViewType() == GlView::Perspective)
     {
-        m_panViewMode = e->modifiers() & Qt::ControlModifier ? true : false;
-        m_rotateViewMode = !m_panViewMode;
-        m_rotationRadius = (m_currentCamera->getPosition() - m_currentCamera->getTargetPoint()).norm();
+        _panViewMode = e->modifiers() & Qt::ControlModifier ? true : false;
+        _rotateViewMode = !_panViewMode;
+        _rotationRadius = (_currentCamera->getPosition() - _currentCamera->getTargetPoint()).norm();
     }
     else
     {
-        m_panViewMode = true;
-        m_rotateViewMode = !m_panViewMode;
+        _panViewMode = true;
+        _rotateViewMode = !_panViewMode;
     }
 
 }
@@ -140,33 +140,33 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
         z = 0.0;
     GLfloat wz = 0.0f;
 
-    glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-    gluUnProject(e->x(), m_viewPort[3] - e->y(), wz, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
+    glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
+    gluUnProject(e->x(), _viewPort[3] - e->y(), wz, _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
 
 
     Point3 currPoint = Point3(x, y, z);
-    Point3 currWinPoint = Point3(e->x(), m_viewPort[3] - e->y(), wz);
-    if (m_panViewMode)
+    Point3 currWinPoint = Point3(e->x(), _viewPort[3] - e->y(), wz);
+    if (_panViewMode)
     {
-        Point3 newPos = m_currentPoint - currPoint;
-        m_currentCamera->setPosition(newPos + m_currentCamera->getPosition());
-        m_currentCamera->setTargetPoint(newPos + m_currentCamera->getTargetPoint());
+        Point3 newPos = _currentPoint - currPoint;
+        _currentCamera->setPosition(newPos + _currentCamera->getPosition());
+        _currentCamera->setTargetPoint(newPos + _currentCamera->getTargetPoint());
         //qDebug(qPrintable(m_currentCamera->getPosition().toString()));
     }
-    else if (m_rotateViewMode)
+    else if (_rotateViewMode)
     {
         float longitude, colatitude;
-        Point3 newPos = m_currentWinPoint - currWinPoint;
+        Point3 newPos = _currentWinPoint - currWinPoint;
 
         longitude = newPos.x() / 500.0f; // m_currentCamera->getDistanceFromTarget();
         colatitude = newPos.y() / 500.0f; //m_currentCamera->getDistanceFromTarget();
-        m_currentCamera->setLongitude(longitude + m_currentCamera->getLongitude());
-        m_currentCamera->setColatitude(colatitude + m_currentCamera->getColatitude());
+        _currentCamera->setLongitude(longitude + _currentCamera->getLongitude());
+        _currentCamera->setColatitude(colatitude + _currentCamera->getColatitude());
 
         //qDebug("Longitude: %f Latitude: %f", m_currentCamera->getLongitude(), m_currentCamera->getColatitude());
     }
-    m_currentPoint = currPoint;
-    m_currentWinPoint = currWinPoint;
+    _currentPoint = currPoint;
+    _currentWinPoint = currWinPoint;
 }
 
 void CommandBase::paintGL()

@@ -95,8 +95,6 @@ public:
     virtual Point3& getVertex(int index);
 	virtual Point3 getVertex(int index) const;
 	virtual int getNumVertices() const;
-    virtual Vector3& getNormalAtPoint(int index);
-    virtual const Vector3& getNormalAtPoint(int index) const;
 	virtual int addEdge(const Edge& edge);
 	virtual int addEdge(int v1, int v2);
     virtual int addFace(const QVector<int>& vertexIndexList);

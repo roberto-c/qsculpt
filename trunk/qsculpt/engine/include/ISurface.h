@@ -236,16 +236,6 @@ public:
 	 * Gets the number of vertices
 	 */
 	virtual int getNumVertices() const = 0;
-	
-    /**
-     *
-     */
-    virtual Vector3& getNormalAtPoint(int index) = 0;
-
-    /**
-     *
-     */
-    virtual const Vector3& getNormalAtPoint(int index) const = 0;
 
 	/**
 	 *

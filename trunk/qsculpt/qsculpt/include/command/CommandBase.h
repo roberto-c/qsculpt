@@ -67,23 +67,23 @@ protected:
     virtual void initializeConfigContainer(){}
 
 protected:
-    IConfigContainer*   m_configContainer;
-    bool                m_isActive;
-    Point3             m_intialPoint;
-    Point3             m_currentPoint;
-    Point3             m_finalPoint;
-    Point3             m_initialWinPoint;
-    Point3             m_currentWinPoint;
-    Point3             m_finalWinPoint;
-    double              m_modelMatrix[16];
-    double              m_projMatrix[16];
-    GLint               m_viewPort[4];
-    bool                m_rotationRadius;
+    IConfigContainer*   _configContainer;
+    bool                _isActive;
+    Point3              _intialPoint;
+    Point3              _currentPoint;
+    Point3              _finalPoint;
+    Point3              _initialWinPoint;
+    Point3              _currentWinPoint;
+    Point3              _finalWinPoint;
+    double              _modelMatrix[16];
+    double              _projMatrix[16];
+    GLint               _viewPort[4];
+    bool                _rotationRadius;
 private:
-    Camera*             m_currentCamera;
-    Camera*             m_intialCameraState;
-    bool                m_panViewMode;
-    bool                m_rotateViewMode;
+    Camera*             _currentCamera;
+    Camera*             _intialCameraState;
+    bool                _panViewMode;
+    bool                _rotateViewMode;
 };
 
 #endif
