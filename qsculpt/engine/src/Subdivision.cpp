@@ -271,18 +271,6 @@ int Subdivision::getNumVertices() const
 	return _vertices->size();
 }
 
-Vector3& Subdivision::getNormalAtPoint(int index)
-{
-	//qWarning("%s %s", __FUNCTION__, " Not implemented");
-	return _vertices->at(index)->normal();
-}
-
-const Vector3& Subdivision::getNormalAtPoint(int index) const
-{
-	//qWarning("%s %s", __FUNCTION__, " Not implemented");
-	return _vertices->at(index)->normal();
-}
-
 int Subdivision::addEdge(const Edge& edge)
 {
 	//NOT_IMPLEMENTED

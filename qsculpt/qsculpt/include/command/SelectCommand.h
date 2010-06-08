@@ -51,11 +51,14 @@ public:
     // End ICommand interface
 
 private:
-    ObjectContainer m_objectsSelected;
+    ObjectContainer _objectsSelected;
+    bool            _boxSelection;
+    Point3          _startPoint;
+    Point3          _endPoint;
 
     void selectObject();
 
-    static QPointer<TransformWidget>	m_objectProperties;
+    static QPointer<TransformWidget>	_objectProperties;
 };
 
 #endif

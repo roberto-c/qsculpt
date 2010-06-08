@@ -132,14 +132,14 @@ public:
     }
 
 private:
-    bool                m_actionFinished;   /**< Flag to indicate that the command
+    bool                _actionFinished;   /**< Flag to indicate that the command
                                              * is modifying the object. */
-    Point3             m_initial;          /**< Initial position of the object. */
-    Point3             m_delta;            /**< Change of position between mouse
+    Point3              _initial;          /**< Initial position of the object. */
+    Point3              _delta;            /**< Change of position between mouse
                                              * movements */
-    Point3             m_final;            /**< Final postion of the object. */
-    QPoint              m_mousePosition;    /**< Initial mouse position */
-    QList<ISurface*>   m_objects;          /**< Object list to move */
+    Point3              _final;            /**< Final postion of the object. */
+    QPoint              _mousePosition;    /**< Initial mouse position */
+    QList<ISurface*>    _objects;          /**< Object list to move */
 };
 
 #endif

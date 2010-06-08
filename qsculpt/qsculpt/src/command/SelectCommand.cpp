@@ -31,10 +31,11 @@
 #include "Camera.h"
 #include "TransformWidget.h"
 
-QPointer<TransformWidget> SelectCommand::m_objectProperties = NULL;
+QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
 SelectCommand::SelectCommand(ICommand* parent)
-    : CommandBase("Select", parent)
+: CommandBase("Select", parent),
+_boxSelection(false)
 {
 	if(getOptionsWidget())
 	{
@@ -43,7 +44,8 @@ SelectCommand::SelectCommand(ICommand* parent)
 }
 
 SelectCommand::SelectCommand(const SelectCommand& cpy)
-: CommandBase(cpy)
+: CommandBase(cpy),
+_boxSelection(false)
 {
 	if(getOptionsWidget())
 	{
@@ -63,14 +65,14 @@ ICommand* SelectCommand::clone() const
 
 QWidget* SelectCommand::getOptionsWidget()
 {
-	if (m_objectProperties == NULL)
-		m_objectProperties = new TransformWidget(NULL);
-	return m_objectProperties;
+	if (_objectProperties == NULL)
+		_objectProperties = new TransformWidget(NULL);
+	return _objectProperties;
 }
 
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {
-    if (m_objectsSelected.isEmpty())
+    if (_objectsSelected.isEmpty())
         CommandBase::mouseMoveEvent(e);
 }
 
@@ -78,15 +80,13 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
-    m_objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
-	//QVector<int> verticesSelected = view->getSelectedVertices(e->pos().x(), e->pos().y(), 30, 30);
+    _objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
 
-    if (m_objectsSelected.count() > 0)
+    if (_objectsSelected.count() > 0)
     {
-		for (int i = 0; i < m_objectsSelected.count(); ++i)
+		for (int i = 0; i < _objectsSelected.count(); ++i)
 		{
-			m_objectsSelected[i]->setSelected(!m_objectsSelected[i]->isSelected());
-			//m_objectsSelected[i]->setSelectedPoints(verticesSelected);
+			_objectsSelected[i]->setSelected(!_objectsSelected[i]->isSelected());
 		}
     }
     else
@@ -97,7 +97,7 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 
 void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 {
-    if (m_objectsSelected.count() > 0)
+    if (_objectsSelected.count() > 0)
         emit executed();
     else
         CommandBase::mouseReleaseEvent(e);

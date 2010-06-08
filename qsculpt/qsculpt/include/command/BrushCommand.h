@@ -66,17 +66,17 @@ private:
 	
 	void selectObject();
 
-    ObjectContainer		m_selectedObjects;
-    ISurface*          m_object;
-    double              m_radius;
-    double              m_depth;
-    BrushAction         m_action;
-    QVector<int>        m_vertexSelected;
-    BrushProperties*    m_propertiesWindow;
-	DirtyFaceMap		m_previousState;
-	bool				m_undoCalled;
-	static QImage		m_cursorImage;
-	int					m_direction;
+    ObjectContainer		_selectedObjects;
+    ISurface*           _object;
+    double              _radius;
+    double              _depth;
+    BrushAction         _action;
+    QVector<int>        _vertexSelected;
+    BrushProperties*    _propertiesWindow;
+	DirtyFaceMap		_previousState;
+	bool				_undoCalled;
+	static QImage		_cursorImage;
+	int					_direction;
 };
 
 #endif

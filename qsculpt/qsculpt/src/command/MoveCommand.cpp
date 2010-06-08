@@ -29,22 +29,22 @@
 
 TransformCommand::TransformCommand()
     : CommandBase(),
-    m_actionFinished(false)
+    _actionFinished(false)
 {
-    m_configContainer->setInt(CONF_ACTION, Move);
-    m_configContainer->setInt(CONF_MOVE_AXIS, XYAxis);
-    m_configContainer->setInt(CONF_ROTATE_AXIS, XYAxis);
-    m_configContainer->setInt(CONF_SCALE_AXIS, XYAxis);
+    _configContainer->setInt(CONF_ACTION, Move);
+    _configContainer->setInt(CONF_MOVE_AXIS, XYAxis);
+    _configContainer->setInt(CONF_ROTATE_AXIS, XYAxis);
+    _configContainer->setInt(CONF_SCALE_AXIS, XYAxis);
 
-    m_configContainer->setDouble( CONF_MOVE_X, 0);
-    m_configContainer->setDouble( CONF_MOVE_Y, 0.2);
-    m_configContainer->setDouble( CONF_MOVE_Z, 0.4);
-    m_configContainer->setDouble( CONF_ROTATE_X, 0);
-    m_configContainer->setDouble( CONF_ROTATE_Y, 0);
-    m_configContainer->setDouble( CONF_ROTATE_Z, 0);
-    m_configContainer->setDouble( CONF_SCALE_X, 1);
-    m_configContainer->setDouble( CONF_SCALE_Y, 1);
-    m_configContainer->setDouble( CONF_SCALE_Z, 1);
+    _configContainer->setDouble( CONF_MOVE_X, 0);
+    _configContainer->setDouble( CONF_MOVE_Y, 0.2);
+    _configContainer->setDouble( CONF_MOVE_Z, 0.4);
+    _configContainer->setDouble( CONF_ROTATE_X, 0);
+    _configContainer->setDouble( CONF_ROTATE_Y, 0);
+    _configContainer->setDouble( CONF_ROTATE_Z, 0);
+    _configContainer->setDouble( CONF_SCALE_X, 1);
+    _configContainer->setDouble( CONF_SCALE_Y, 1);
+    _configContainer->setDouble( CONF_SCALE_Z, 1);
 }
 
 
@@ -59,21 +59,21 @@ void TransformCommand::execute()
     double sx = 0.0, sy = 0.0, sz = 0.0;
     int count= 0;
 
-    mx = m_configContainer->getDouble(CONF_MOVE_X);
-    my = m_configContainer->getDouble(CONF_MOVE_Y);
-    mz = m_configContainer->getDouble(CONF_MOVE_Z);
+    mx = _configContainer->getDouble(CONF_MOVE_X);
+    my = _configContainer->getDouble(CONF_MOVE_Y);
+    mz = _configContainer->getDouble(CONF_MOVE_Z);
 
-    rx = m_configContainer->getDouble(CONF_ROTATE_X);
-    ry = m_configContainer->getDouble(CONF_ROTATE_Y);
-    rz = m_configContainer->getDouble(CONF_ROTATE_Z);
+    rx = _configContainer->getDouble(CONF_ROTATE_X);
+    ry = _configContainer->getDouble(CONF_ROTATE_Y);
+    rz = _configContainer->getDouble(CONF_ROTATE_Z);
 
-    sx = m_configContainer->getDouble(CONF_SCALE_X);
-    sy = m_configContainer->getDouble(CONF_SCALE_Y);
-    sz = m_configContainer->getDouble(CONF_SCALE_Z);
+    sx = _configContainer->getDouble(CONF_SCALE_X);
+    sy = _configContainer->getDouble(CONF_SCALE_Y);
+    sz = _configContainer->getDouble(CONF_SCALE_Z);
 
     const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
-    Action action = (Action)m_configContainer->getInt(CONF_MOVE_AXIS);
+    Action action = (Action)_configContainer->getInt(CONF_MOVE_AXIS);
     QList<ISurface*> objects = doc->getSelectedObjects();
     switch(action)
     {
@@ -81,17 +81,17 @@ void TransformCommand::execute()
         case Move:
             count = objects.size();
             if (count > 0)
-                m_initial = objects[0]->getPosition();
+                _initial = objects[0]->getPosition();
             for (int i = 0; i < count; i++)
             {
-                //m_final.setPoint( mx, my, mz);
-				m_final.x() = mx;
-				m_final.y() = my;
-				m_final.z() = mz;
+                //_final.setPoint( mx, my, mz);
+				_final.x() = mx;
+				_final.y() = my;
+				_final.z() = mz;
                 if (count == 1)
-                    objects[i]->setPosition( m_final);
+                    objects[i]->setPosition( _final);
                 else
-                    objects[i]->displace(m_initial - m_final);
+                    objects[i]->displace(_initial - _final);
             }
             break;
         case Rotate:
@@ -110,28 +110,28 @@ void TransformCommand::activate(bool active)
 {
     CommandBase::activate(active);
 
-    Action action = (Action)m_configContainer->getInt(CONF_MOVE_AXIS);
-    if (m_actionFinished)
+    Action action = (Action)_configContainer->getInt(CONF_MOVE_AXIS);
+    if (_actionFinished)
     {
-        int count = m_objects.count();
+        int count = _objects.count();
         for (int i = 0; i < count; i++)
         {
             if (action == Move)
-                m_objects[i]->displace(m_initial - m_final);
+                _objects[i]->displace(_initial - _final);
             else if (action == Rotate)
-                m_objects[i]->rotate(0 ,0 ,0);
+                _objects[i]->rotate(0 ,0 ,0);
         }
     }
-    m_actionFinished = false;
+    _actionFinished = false;
 
-    m_objects.clear();
+    _objects.clear();
 
     const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
     if (doc->getObjectsCount() > 0 )
     {
-        m_objects += doc->getSelectedObjects();
-        m_initial = m_objects.first()->getPosition();
+        _objects += doc->getSelectedObjects();
+        _initial = _objects.first()->getPosition();
     }
 }
 
@@ -142,23 +142,23 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
     double dx = 0.0, dy = 0.0, dz = 0.0;
     double x = 0.0, y = 0.0, z = 0.0;
 
-    m_mousePosition = e->pos();
+    _mousePosition = e->pos();
     double modelMatrix[16], projMatrix[16];
     GLint viewPort[4];
 
     glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
     glGetIntegerv(GL_VIEWPORT, viewPort);
-    gluUnProject(m_mousePosition.x(), viewPort[3] - m_mousePosition.y(), 0, modelMatrix, projMatrix, viewPort, &x, &y, &z);
+    gluUnProject(_mousePosition.x(), viewPort[3] - _mousePosition.y(), 0, modelMatrix, projMatrix, viewPort, &x, &y, &z);
 
-    //m_final = Point3D(x, y, z);
-    Point3 delta = Point3(x, y, z) - m_initial;
+    //_final = Point3D(x, y, z);
+    Point3 delta = Point3(x, y, z) - _initial;
     //qDebug("Delta: %s", qPrintable(delta.toString()));
     dx = delta.x();
     dy = delta.y();
 
     Point3 d;
-    switch(m_configContainer->getInt(CONF_MOVE_AXIS))
+    switch(_configContainer->getInt(CONF_MOVE_AXIS))
     {
         case XAxis:
             d.x() = dx;
@@ -188,39 +188,39 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
             d.y() = dy;
             break;
     }
-    int count = m_objects.count();
+    int count = _objects.count();
     for (int i = 0; i < count; i++)
     {
-        ISurface* obj = m_objects[i];
+        ISurface* obj = _objects[i];
         obj->setPosition(obj->getPosition() + d);
     }
-    m_initial = m_initial + delta;
+    _initial = _initial + delta;
 }
 
 void TransformCommand::mousePressEvent(QMouseEvent* e)
 {
     //CommandBase::mousePressEvent(e);
 
-    m_mousePosition = e->pos();
-    m_actionFinished = true;
+    _mousePosition = e->pos();
+    _actionFinished = true;
 
     double x, y, z;
     float wz = 0.0f;
 
-    glGetDoublev(GL_MODELVIEW_MATRIX, m_modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, m_projMatrix);
-    glGetIntegerv(GL_VIEWPORT, m_viewPort);
-    glReadPixels(e->x(), m_viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-    gluUnProject(m_mousePosition.x(), m_viewPort[3] - m_mousePosition.y(), 0, m_modelMatrix, m_projMatrix, m_viewPort, &x, &y, &z);
+    glGetDoublev(GL_MODELVIEW_MATRIX, _modelMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, _projMatrix);
+    glGetIntegerv(GL_VIEWPORT, _viewPort);
+    glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
+    gluUnProject(_mousePosition.x(), _viewPort[3] - _mousePosition.y(), 0, _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
 
-    m_initial = Point3(x, y, z);
-    m_final = m_initial;
-    //qDebug("Initial position: %s", qPrintable(m_initial.toString()));
+    _initial = Point3(x, y, z);
+    _final = _initial;
+    //qDebug("Initial position: %s", qPrintable(_initial.toString()));
 
     const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (doc->getSelectedObjects().size() > 0 )
     {
-        m_objects += doc->getSelectedObjects();
+        _objects += doc->getSelectedObjects();
     }
 }
 
@@ -228,9 +228,9 @@ void TransformCommand::mouseReleaseEvent(QMouseEvent* e)
 {
     //CommandBase::mouseReleaseEvent(e);
 
-    //qDebug("Final position: %s", qPrintable(m_final.toString()));
+    //qDebug("Final position: %s", qPrintable(_final.toString()));
 
-    m_actionFinished = false;
+    _actionFinished = false;
     emit executed();
 }
 
