@@ -25,8 +25,6 @@
 #include "Point3D.h"
 #include "SpEnums.h"
 #include "Octree.h"
-#include "PointContainer.h"
-#include "EdgeContainer.h"
 #include "IIterator.h"
 #include "Vertex.h"
 #include "Face.h"

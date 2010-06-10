@@ -22,9 +22,12 @@
 
 #include <QMetaType>
 #include <QString>
+#include <QVector>
 
 typedef Eigen::Vector3f Point3;
 typedef Eigen::Vector3f Vector3;
+
+typedef QVector<int> PointIndexList;
 
 Q_DECLARE_METATYPE(Point3)
 

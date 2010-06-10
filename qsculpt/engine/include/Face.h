@@ -12,8 +12,6 @@
 
 #include <QAtomicInt>
 #include "Vertex.h"
-//#include "HEdge.h"
-#include "EdgeContainer.h"
 #include "IIterator.h"
 
 class Edge;
