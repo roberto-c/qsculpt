@@ -231,6 +231,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -268,6 +270,8 @@
 							<array>
 								<string>02822DC40D31DE1D005129A8</string>
 								<string>02489EC60EE3A828001026C3</string>
+								<string>02822E380D31E0F3005129A8</string>
+								<string>02822E050D31E082005129A8</string>
 								<string>1C37FBAC04509CD000000102</string>
 								<string>1C37FAAC04509CD000000102</string>
 								<string>1C37FABC05509CD000000102</string>
@@ -276,12 +280,14 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
+									<integer>16</integer>
+									<integer>15</integer>
 									<integer>12</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {282, 764}}</string>
+							<string>{{0, 106}, {282, 764}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -314,23 +320,13 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>02082BE90D42EC11001A1DAD</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>Subdivision.h</string>
+								<string>&lt;No Editor&gt;</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
 										<string>02082BEA0D42EC11001A1DAD</string>
-										<key>PBXProjectModuleLabel</key>
-										<string>Subdivision.h</string>
-										<key>_historyCapacity</key>
-										<integer>0</integer>
-										<key>bookmark</key>
-										<string>0213E55511C07D1400A53253</string>
-										<key>history</key>
-										<array>
-											<string>02BA7D7011C07CF8007056C0</string>
-										</array>
 									</dict>
 									<key>SplitCount</key>
 									<string>1</string>
@@ -343,18 +339,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1075, 219}}</string>
+								<string>{{0, 0}, {1075, 0}}</string>
 								<key>RubberWindowFrame</key>
 								<string>59 55 1379 823 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>219pt</string>
+							<string>0pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>558pt</string>
+							<string>777pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -368,7 +364,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {0, -27}}</string>
+										<string>{{10, 27}, {1075, 750}}</string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -390,8 +386,6 @@
 									<string>PBXProjectFindModule</string>
 								</dict>
 								<dict>
-									<key>BecomeActive</key>
-									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXCVSModuleFilterTypeKey</key>
@@ -422,12 +416,12 @@
 										<key>PBXProjectModuleLabel</key>
 										<string>SCM Results</string>
 										<key>SCMActivityViewerShowingDefaultKey</key>
-										<string>{{0, 426}, {1075, 105}}</string>
+										<string>{{0, 601}, {1075, 149}}</string>
 									</dict>
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1075, 531}}</string>
+										<string>{{10, 27}, {1075, 750}}</string>
 										<key>RubberWindowFrame</key>
 										<string>59 55 1379 823 0 0 1440 878 </string>
 									</dict>
@@ -630,14 +624,14 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>02BA7D7411C07CF8007056C0</string>
+				<string>0213E59E11C0863900A53253</string>
 				<string>1CCC7628064C1048000F2A68</string>
 				<string>1CCC7629064C1048000F2A68</string>
-				<string>02BA7D7511C07CF8007056C0</string>
-				<string>02BA7D7611C07CF8007056C0</string>
-				<string>02BA7D7711C07CF8007056C0</string>
-				<string>02BA7D7811C07CF8007056C0</string>
-				<string>02BA7D7911C07CF8007056C0</string>
+				<string>0213E59F11C0863900A53253</string>
+				<string>0213E5A011C0863900A53253</string>
+				<string>0213E5A111C0863900A53253</string>
+				<string>0213E5A211C0863900A53253</string>
+				<string>0213E5A311C0863900A53253</string>
 			</array>
 			<key>ToolbarConfigUserDefaultsMinorVersion</key>
 			<string>2</string>

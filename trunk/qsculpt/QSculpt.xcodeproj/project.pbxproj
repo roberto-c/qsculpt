@@ -134,8 +134,34 @@
 		0203029010ECA59200587CB6 /* CoreInstantiations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0203006010EC74A500587CB6 /* CoreInstantiations.cpp */; };
 		020302B210ED377500587CB6 /* Stable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 020302B110ED377500587CB6 /* Stable.cpp */; };
 		020EEE630ED121FA00F1C116 /* moc_glview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 020EEE620ED121FA00F1C116 /* moc_glview.cpp */; };
-		0211C3D110DC7A610004F001 /* Subdivision.h in Headers */ = {isa = PBXBuildFile; fileRef = 0211C3D010DC7A610004F001 /* Subdivision.h */; };
-		0211C3D310DC82B00004F001 /* Vertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 0211C3D210DC82B00004F001 /* Vertex.h */; };
+		0213E61311C0881D00A53253 /* BOManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5F411C0881C00A53253 /* BOManager.h */; };
+		0213E61411C0881D00A53253 /* Box.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5F511C0881C00A53253 /* Box.h */; };
+		0213E61511C0881D00A53253 /* BufferObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5F611C0881C00A53253 /* BufferObject.h */; };
+		0213E61611C0881D00A53253 /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5F711C0881C00A53253 /* Camera.h */; };
+		0213E61811C0881D00A53253 /* Face.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5F911C0881C00A53253 /* Face.h */; };
+		0213E61A11C0881D00A53253 /* FlatRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5FB11C0881C00A53253 /* FlatRenderer.h */; };
+		0213E61B11C0881D00A53253 /* HEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5FC11C0881C00A53253 /* HEdge.h */; };
+		0213E61C11C0881D00A53253 /* ICamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5FD11C0881C00A53253 /* ICamera.h */; };
+		0213E61D11C0881D00A53253 /* IIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5FE11C0881C00A53253 /* IIterator.h */; };
+		0213E61E11C0881D00A53253 /* IRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E5FF11C0881C00A53253 /* IRenderer.h */; };
+		0213E61F11C0881D00A53253 /* ISurface.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60011C0881C00A53253 /* ISurface.h */; };
+		0213E62011C0881D00A53253 /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60111C0881D00A53253 /* Mesh.h */; };
+		0213E62111C0881D00A53253 /* Octree.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60211C0881D00A53253 /* Octree.h */; };
+		0213E62211C0881D00A53253 /* Picking.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60311C0881D00A53253 /* Picking.h */; };
+		0213E62311C0881D00A53253 /* PickingFacesRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60411C0881D00A53253 /* PickingFacesRenderer.h */; };
+		0213E62411C0881D00A53253 /* Point3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60511C0881D00A53253 /* Point3D.h */; };
+		0213E62611C0881D00A53253 /* PointRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60711C0881D00A53253 /* PointRenderer.h */; };
+		0213E62711C0881D00A53253 /* Quadtree.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60811C0881D00A53253 /* Quadtree.h */; };
+		0213E62811C0881D00A53253 /* RendererFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60911C0881D00A53253 /* RendererFactory.h */; };
+		0213E62911C0881D00A53253 /* Scene.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60A11C0881D00A53253 /* Scene.h */; };
+		0213E62A11C0881D00A53253 /* SceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60B11C0881D00A53253 /* SceneNode.h */; };
+		0213E62B11C0881D00A53253 /* SmoothRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60C11C0881D00A53253 /* SmoothRenderer.h */; };
+		0213E62C11C0881D00A53253 /* SpEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60D11C0881D00A53253 /* SpEnums.h */; };
+		0213E62D11C0881D00A53253 /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60E11C0881D00A53253 /* Sphere.h */; };
+		0213E62E11C0881D00A53253 /* StdAfx.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E60F11C0881D00A53253 /* StdAfx.h */; };
+		0213E62F11C0881D00A53253 /* Subdivision.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E61011C0881D00A53253 /* Subdivision.h */; };
+		0213E63011C0881D00A53253 /* Vertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E61111C0881D00A53253 /* Vertex.h */; };
+		0213E63111C0881D00A53253 /* WireframeRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E61211C0881D00A53253 /* WireframeRenderer.h */; };
 		021D85CC0D63900F0026C13F /* BrushCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D85C30D63900F0026C13F /* BrushCommand.cpp */; };
 		021D85CD0D63900F0026C13F /* BrushProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D85C40D63900F0026C13F /* BrushProperties.cpp */; };
 		021D85CE0D63900F0026C13F /* CommandBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D85C50D63900F0026C13F /* CommandBase.cpp */; };
@@ -185,26 +211,6 @@
 		021D86280D6390D90026C13F /* Sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D86190D6390D90026C13F /* Sphere.cpp */; };
 		021D86290D6390D90026C13F /* StdAfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D861A0D6390D90026C13F /* StdAfx.cpp */; };
 		021D862A0D6390D90026C13F /* WireframeRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D861B0D6390D90026C13F /* WireframeRenderer.cpp */; };
-		021D86420D6390FC0026C13F /* Box.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862B0D6390FC0026C13F /* Box.h */; };
-		021D86430D6390FC0026C13F /* BufferObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862C0D6390FC0026C13F /* BufferObject.h */; };
-		021D86440D6390FC0026C13F /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862D0D6390FC0026C13F /* Camera.h */; };
-		021D86450D6390FC0026C13F /* EdgeContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D862E0D6390FC0026C13F /* EdgeContainer.h */; };
-		021D86470D6390FC0026C13F /* FlatRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86300D6390FC0026C13F /* FlatRenderer.h */; };
-		021D86480D6390FC0026C13F /* ICamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86310D6390FC0026C13F /* ICamera.h */; };
-		021D86490D6390FC0026C13F /* ISurface.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86320D6390FC0026C13F /* ISurface.h */; };
-		021D864A0D6390FC0026C13F /* IRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86330D6390FC0026C13F /* IRenderer.h */; };
-		021D864B0D6390FC0026C13F /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86340D6390FC0026C13F /* Mesh.h */; };
-		021D864D0D6390FC0026C13F /* Octree.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86360D6390FC0026C13F /* Octree.h */; };
-		021D864E0D6390FC0026C13F /* Point3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86370D6390FC0026C13F /* Point3D.h */; };
-		021D864F0D6390FC0026C13F /* PointContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86380D6390FC0026C13F /* PointContainer.h */; };
-		021D86500D6390FC0026C13F /* PointRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86390D6390FC0026C13F /* PointRenderer.h */; };
-		021D86510D6390FC0026C13F /* RendererFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863A0D6390FC0026C13F /* RendererFactory.h */; };
-		021D86520D6390FC0026C13F /* Scene.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863B0D6390FC0026C13F /* Scene.h */; };
-		021D86530D6390FC0026C13F /* SmoothRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863C0D6390FC0026C13F /* SmoothRenderer.h */; };
-		021D86540D6390FC0026C13F /* SpEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863D0D6390FC0026C13F /* SpEnums.h */; };
-		021D86550D6390FC0026C13F /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863E0D6390FC0026C13F /* Sphere.h */; };
-		021D86560D6390FC0026C13F /* StdAfx.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D863F0D6390FC0026C13F /* StdAfx.h */; };
-		021D86580D6390FC0026C13F /* WireframeRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 021D86410D6390FC0026C13F /* WireframeRenderer.h */; };
 		021DFAA10D387FC5007A9793 /* moc_brushproperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02DEA3A80D35645600D94D6F /* moc_brushproperties.cpp */; };
 		021DFAA20D387FC5007A9793 /* moc_commandmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02DEA3A90D35645600D94D6F /* moc_commandmanager.cpp */; };
 		021DFAA30D387FC5007A9793 /* moc_documentview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02DEA3AA0D35645600D94D6F /* moc_documentview.cpp */; };
@@ -216,11 +222,8 @@
 		021DFAAB0D387FC5007A9793 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DE9FB10D355FB200D94D6F /* OpenGL.framework */; };
 		021DFABE0D388157007A9793 /* moc_brushcommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021DFABD0D388157007A9793 /* moc_brushcommand.cpp */; };
 		021DFACD0D388306007A9793 /* Engine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 021DFACC0D388306007A9793 /* Engine.framework */; };
-		0221B3D510C9EF5B003377CD /* Face.h in Headers */ = {isa = PBXBuildFile; fileRef = 0221B3D410C9EF5B003377CD /* Face.h */; };
 		02596EA910DC72E400942BDB /* HEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02596EA710DC72E400942BDB /* HEdge.cpp */; };
 		02596EAA10DC72E400942BDB /* SceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02596EA810DC72E400942BDB /* SceneNode.cpp */; };
-		02596EAD10DC731300942BDB /* HEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = 02596EAB10DC731300942BDB /* HEdge.h */; };
-		02596EAE10DC731300942BDB /* SceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 02596EAC10DC731300942BDB /* SceneNode.h */; };
 		025FE6B20DE20ADD00762F39 /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FE6AF0DE20ADD00762F39 /* QtGui.framework */; };
 		025FE6B30DE20ADD00762F39 /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FE6B00DE20ADD00762F39 /* QtCore.framework */; };
 		025FE6B40DE20ADD00762F39 /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FE6B10DE20ADD00762F39 /* QtOpenGL.framework */; };
@@ -241,18 +244,13 @@
 		02B1BBE50D6F5D6E008BB988 /* select.png in Resources */ = {isa = PBXBuildFile; fileRef = 02B1BBE10D6F5D6E008BB988 /* select.png */; };
 		02B1BBE60D6F5D6E008BB988 /* sphere.png in Resources */ = {isa = PBXBuildFile; fileRef = 02B1BBE20D6F5D6E008BB988 /* sphere.png */; };
 		02B1BC0F0D6F6243008BB988 /* qrc_QSculpt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02B1BC0E0D6F6243008BB988 /* qrc_QSculpt.cpp */; };
-		02BEDD730E0B633D00259B3B /* Quadtree.h in Headers */ = {isa = PBXBuildFile; fileRef = 02BEDD720E0B633D00259B3B /* Quadtree.h */; };
-		02C8B7400D862F78003063A1 /* Picking.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C8B73F0D862F78003063A1 /* Picking.h */; };
 		02C8B75A0D872E48003063A1 /* Picking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C8B7590D872E48003063A1 /* Picking.cpp */; };
-		02C8B7650D8751F2003063A1 /* BOManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C8B7630D8751F2003063A1 /* BOManager.h */; };
 		02C8B7660D8751F2003063A1 /* BOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C8B7640D8751F2003063A1 /* BOManager.cpp */; };
 		02D2661910F9849C00E22E11 /* Subdivision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D2661810F9849C00E22E11 /* Subdivision.cpp */; };
 		02DE9FB20D355FB200D94D6F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DE9FB10D355FB200D94D6F /* OpenGL.framework */; };
 		02E0FEFB10F5AE1A00DE4492 /* Vertex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E0FEFA10F5AE1A00DE4492 /* Vertex.cpp */; };
 		02E0FF1910F5CA3B00DE4492 /* Face.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E0FF1810F5CA3B00DE4492 /* Face.cpp */; };
-		02E0FF7710F6B8A800DE4492 /* IIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E0FF7610F6B8A800DE4492 /* IIterator.h */; };
 		02E884C5115FC4DE0007A178 /* GlView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D85D70D6390410026C13F /* GlView.cpp */; };
-		02F4F49E0DE9190B0004A465 /* PickingFacesRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F4F49C0DE9190B0004A465 /* PickingFacesRenderer.h */; };
 		02F4F49F0DE9190B0004A465 /* PickingFacesRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F4F49D0DE9190B0004A465 /* PickingFacesRenderer.cpp */; };
 /* End PBXBuildFile section */
 
@@ -417,8 +415,34 @@
 		0203025910ECA1C600587CB6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = tests/main.cpp; sourceTree = "<group>"; };
 		020302B110ED377500587CB6 /* Stable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Stable.cpp; path = qsculpt/src/Stable.cpp; sourceTree = "<group>"; };
 		020EEE620ED121FA00F1C116 /* moc_glview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_glview.cpp; path = qsculpt/moc/moc_glview.cpp; sourceTree = "<group>"; };
-		0211C3D010DC7A610004F001 /* Subdivision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Subdivision.h; path = engine/include/Subdivision.h; sourceTree = "<group>"; };
-		0211C3D210DC82B00004F001 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vertex.h; path = engine/include/Vertex.h; sourceTree = "<group>"; };
+		0213E5F411C0881C00A53253 /* BOManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BOManager.h; path = engine/include/BOManager.h; sourceTree = "<group>"; };
+		0213E5F511C0881C00A53253 /* Box.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Box.h; path = engine/include/Box.h; sourceTree = "<group>"; };
+		0213E5F611C0881C00A53253 /* BufferObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferObject.h; path = engine/include/BufferObject.h; sourceTree = "<group>"; };
+		0213E5F711C0881C00A53253 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = engine/include/Camera.h; sourceTree = "<group>"; };
+		0213E5F911C0881C00A53253 /* Face.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Face.h; path = engine/include/Face.h; sourceTree = "<group>"; };
+		0213E5FB11C0881C00A53253 /* FlatRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlatRenderer.h; path = engine/include/FlatRenderer.h; sourceTree = "<group>"; };
+		0213E5FC11C0881C00A53253 /* HEdge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HEdge.h; path = engine/include/HEdge.h; sourceTree = "<group>"; };
+		0213E5FD11C0881C00A53253 /* ICamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICamera.h; path = engine/include/ICamera.h; sourceTree = "<group>"; };
+		0213E5FE11C0881C00A53253 /* IIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IIterator.h; path = engine/include/IIterator.h; sourceTree = "<group>"; };
+		0213E5FF11C0881C00A53253 /* IRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRenderer.h; path = engine/include/IRenderer.h; sourceTree = "<group>"; };
+		0213E60011C0881C00A53253 /* ISurface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISurface.h; path = engine/include/ISurface.h; sourceTree = "<group>"; };
+		0213E60111C0881D00A53253 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mesh.h; path = engine/include/Mesh.h; sourceTree = "<group>"; };
+		0213E60211C0881D00A53253 /* Octree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Octree.h; path = engine/include/Octree.h; sourceTree = "<group>"; };
+		0213E60311C0881D00A53253 /* Picking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Picking.h; path = engine/include/Picking.h; sourceTree = "<group>"; };
+		0213E60411C0881D00A53253 /* PickingFacesRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickingFacesRenderer.h; path = engine/include/PickingFacesRenderer.h; sourceTree = "<group>"; };
+		0213E60511C0881D00A53253 /* Point3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Point3D.h; path = engine/include/Point3D.h; sourceTree = "<group>"; };
+		0213E60711C0881D00A53253 /* PointRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointRenderer.h; path = engine/include/PointRenderer.h; sourceTree = "<group>"; };
+		0213E60811C0881D00A53253 /* Quadtree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Quadtree.h; path = engine/include/Quadtree.h; sourceTree = "<group>"; };
+		0213E60911C0881D00A53253 /* RendererFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RendererFactory.h; path = engine/include/RendererFactory.h; sourceTree = "<group>"; };
+		0213E60A11C0881D00A53253 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scene.h; path = engine/include/Scene.h; sourceTree = "<group>"; };
+		0213E60B11C0881D00A53253 /* SceneNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneNode.h; path = engine/include/SceneNode.h; sourceTree = "<group>"; };
+		0213E60C11C0881D00A53253 /* SmoothRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SmoothRenderer.h; path = engine/include/SmoothRenderer.h; sourceTree = "<group>"; };
+		0213E60D11C0881D00A53253 /* SpEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpEnums.h; path = engine/include/SpEnums.h; sourceTree = "<group>"; };
+		0213E60E11C0881D00A53253 /* Sphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sphere.h; path = engine/include/Sphere.h; sourceTree = "<group>"; };
+		0213E60F11C0881D00A53253 /* StdAfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdAfx.h; path = engine/include/StdAfx.h; sourceTree = "<group>"; };
+		0213E61011C0881D00A53253 /* Subdivision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Subdivision.h; path = engine/include/Subdivision.h; sourceTree = "<group>"; };
+		0213E61111C0881D00A53253 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vertex.h; path = engine/include/Vertex.h; sourceTree = "<group>"; };
+		0213E61211C0881D00A53253 /* WireframeRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WireframeRenderer.h; path = engine/include/WireframeRenderer.h; sourceTree = "<group>"; };
 		021D85C30D63900F0026C13F /* BrushCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BrushCommand.cpp; path = qsculpt/src/command/BrushCommand.cpp; sourceTree = "<group>"; };
 		021D85C40D63900F0026C13F /* BrushProperties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BrushProperties.cpp; path = qsculpt/src/command/BrushProperties.cpp; sourceTree = "<group>"; };
 		021D85C50D63900F0026C13F /* CommandBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandBase.cpp; path = qsculpt/src/command/CommandBase.cpp; sourceTree = "<group>"; };
@@ -469,30 +493,9 @@
 		021D86190D6390D90026C13F /* Sphere.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sphere.cpp; path = engine/src/Sphere.cpp; sourceTree = "<group>"; };
 		021D861A0D6390D90026C13F /* StdAfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StdAfx.cpp; path = engine/src/StdAfx.cpp; sourceTree = "<group>"; };
 		021D861B0D6390D90026C13F /* WireframeRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WireframeRenderer.cpp; path = engine/src/WireframeRenderer.cpp; sourceTree = "<group>"; };
-		021D862B0D6390FC0026C13F /* Box.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Box.h; path = engine/include/Box.h; sourceTree = "<group>"; };
-		021D862C0D6390FC0026C13F /* BufferObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferObject.h; path = engine/include/BufferObject.h; sourceTree = "<group>"; };
-		021D862D0D6390FC0026C13F /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = engine/include/Camera.h; sourceTree = "<group>"; };
-		021D862E0D6390FC0026C13F /* EdgeContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EdgeContainer.h; path = engine/include/EdgeContainer.h; sourceTree = "<group>"; };
-		021D86300D6390FC0026C13F /* FlatRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlatRenderer.h; path = engine/include/FlatRenderer.h; sourceTree = "<group>"; };
-		021D86310D6390FC0026C13F /* ICamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICamera.h; path = engine/include/ICamera.h; sourceTree = "<group>"; };
-		021D86320D6390FC0026C13F /* ISurface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISurface.h; path = engine/include/ISurface.h; sourceTree = "<group>"; };
-		021D86330D6390FC0026C13F /* IRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRenderer.h; path = engine/include/IRenderer.h; sourceTree = "<group>"; };
-		021D86340D6390FC0026C13F /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mesh.h; path = engine/include/Mesh.h; sourceTree = "<group>"; };
-		021D86360D6390FC0026C13F /* Octree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Octree.h; path = engine/include/Octree.h; sourceTree = "<group>"; };
-		021D86370D6390FC0026C13F /* Point3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Point3D.h; path = engine/include/Point3D.h; sourceTree = "<group>"; };
-		021D86380D6390FC0026C13F /* PointContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointContainer.h; path = engine/include/PointContainer.h; sourceTree = "<group>"; };
-		021D86390D6390FC0026C13F /* PointRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointRenderer.h; path = engine/include/PointRenderer.h; sourceTree = "<group>"; };
-		021D863A0D6390FC0026C13F /* RendererFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RendererFactory.h; path = engine/include/RendererFactory.h; sourceTree = "<group>"; };
-		021D863B0D6390FC0026C13F /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scene.h; path = engine/include/Scene.h; sourceTree = "<group>"; };
-		021D863C0D6390FC0026C13F /* SmoothRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SmoothRenderer.h; path = engine/include/SmoothRenderer.h; sourceTree = "<group>"; };
-		021D863D0D6390FC0026C13F /* SpEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpEnums.h; path = engine/include/SpEnums.h; sourceTree = "<group>"; };
-		021D863E0D6390FC0026C13F /* Sphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sphere.h; path = engine/include/Sphere.h; sourceTree = "<group>"; };
-		021D863F0D6390FC0026C13F /* StdAfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdAfx.h; path = engine/include/StdAfx.h; sourceTree = "<group>"; };
-		021D86410D6390FC0026C13F /* WireframeRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WireframeRenderer.h; path = engine/include/WireframeRenderer.h; sourceTree = "<group>"; };
 		021DFAB50D387FC5007A9793 /* QSculpt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QSculpt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		021DFABD0D388157007A9793 /* moc_brushcommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_brushcommand.cpp; path = qsculpt/moc/moc_brushcommand.cpp; sourceTree = "<group>"; };
 		021DFACC0D388306007A9793 /* Engine.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Engine.framework; path = build/debug/Engine.framework; sourceTree = "<group>"; };
-		0221B3D410C9EF5B003377CD /* Face.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Face.h; path = engine/include/Face.h; sourceTree = "<group>"; };
 		02489EC90EE3A828001026C3 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PkgInfo; sourceTree = "<group>"; };
 		02489ECA0EE3A828001026C3 /* droppedImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = droppedImage.tiff; sourceTree = "<group>"; };
 		02489ECB0EE3A828001026C3 /* index.xml.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; path = index.xml.gz; sourceTree = "<group>"; };
@@ -509,8 +512,6 @@
 		02489EDD0EE3A828001026C3 /* sample.doc */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.doc; sourceTree = "<group>"; };
 		02596EA710DC72E400942BDB /* HEdge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HEdge.cpp; path = engine/src/HEdge.cpp; sourceTree = "<group>"; };
 		02596EA810DC72E400942BDB /* SceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneNode.cpp; path = engine/src/SceneNode.cpp; sourceTree = "<group>"; };
-		02596EAB10DC731300942BDB /* HEdge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HEdge.h; path = engine/include/HEdge.h; sourceTree = "<group>"; };
-		02596EAC10DC731300942BDB /* SceneNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneNode.h; path = engine/include/SceneNode.h; sourceTree = "<group>"; };
 		025FE6AF0DE20ADD00762F39 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = /Library/Frameworks/QtGui.framework; sourceTree = "<absolute>"; };
 		025FE6B00DE20ADD00762F39 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = /Library/Frameworks/QtCore.framework; sourceTree = "<absolute>"; };
 		025FE6B10DE20ADD00762F39 /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = /Library/Frameworks/QtOpenGL.framework; sourceTree = "<absolute>"; };
@@ -527,10 +528,7 @@
 		02B1BBE20D6F5D6E008BB988 /* sphere.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sphere.png; path = images/sphere.png; sourceTree = "<group>"; };
 		02B1BC0E0D6F6243008BB988 /* qrc_QSculpt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = qrc_QSculpt.cpp; path = qsculpt/res/qrc_QSculpt.cpp; sourceTree = "<group>"; };
 		02B66A690EF0570A004C0222 /* Engine.xcclassmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcclassmodel; path = Engine.xcclassmodel; sourceTree = "<group>"; };
-		02BEDD720E0B633D00259B3B /* Quadtree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Quadtree.h; path = engine/include/Quadtree.h; sourceTree = "<group>"; };
-		02C8B73F0D862F78003063A1 /* Picking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Picking.h; path = engine/include/Picking.h; sourceTree = "<group>"; };
 		02C8B7590D872E48003063A1 /* Picking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Picking.cpp; path = engine/src/Picking.cpp; sourceTree = "<group>"; };
-		02C8B7630D8751F2003063A1 /* BOManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = BOManager.h; path = engine/include/BOManager.h; sourceTree = "<group>"; };
 		02C8B7640D8751F2003063A1 /* BOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BOManager.cpp; path = engine/src/BOManager.cpp; sourceTree = "<group>"; };
 		02D2661810F9849C00E22E11 /* Subdivision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Subdivision.cpp; path = engine/src/Subdivision.cpp; sourceTree = "<group>"; };
 		02DE9FB10D355FB200D94D6F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -544,8 +542,6 @@
 		02DEA3B00D35645600D94D6F /* moc_transformwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_transformwidget.cpp; path = qsculpt/moc/moc_transformwidget.cpp; sourceTree = "<group>"; };
 		02E0FEFA10F5AE1A00DE4492 /* Vertex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vertex.cpp; path = engine/src/Vertex.cpp; sourceTree = "<group>"; };
 		02E0FF1810F5CA3B00DE4492 /* Face.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Face.cpp; path = engine/src/Face.cpp; sourceTree = "<group>"; };
-		02E0FF7610F6B8A800DE4492 /* IIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IIterator.h; path = engine/include/IIterator.h; sourceTree = "<group>"; };
-		02F4F49C0DE9190B0004A465 /* PickingFacesRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickingFacesRenderer.h; path = engine/include/PickingFacesRenderer.h; sourceTree = "<group>"; };
 		02F4F49D0DE9190B0004A465 /* PickingFacesRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PickingFacesRenderer.cpp; path = engine/src/PickingFacesRenderer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -838,32 +834,11 @@
 			name = Tests;
 			sourceTree = "<group>";
 		};
-		020EEDEE0ECFF3D900F1C116 /* Filters */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Filters;
-			sourceTree = "<group>";
-		};
 		020EEDEF0ECFF41F00F1C116 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Filters;
-			sourceTree = "<group>";
-		};
-		0218B3300F4BC5DC008C1042 /* inline */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = inline;
-			sourceTree = "<group>";
-		};
-		021BB8890D790F7D0077DB0A /* Math */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Math;
 			sourceTree = "<group>";
 		};
 		021DFAD00D3884C0007A9793 /* commands */ = {
@@ -985,19 +960,6 @@
 			name = moc;
 			sourceTree = "<group>";
 		};
-		026B6A6E0D74A51A008701FE /* Renderers */ = {
-			isa = PBXGroup;
-			children = (
-				021D863A0D6390FC0026C13F /* RendererFactory.h */,
-				021D86300D6390FC0026C13F /* FlatRenderer.h */,
-				021D86330D6390FC0026C13F /* IRenderer.h */,
-				021D86390D6390FC0026C13F /* PointRenderer.h */,
-				021D863C0D6390FC0026C13F /* SmoothRenderer.h */,
-				021D86410D6390FC0026C13F /* WireframeRenderer.h */,
-			);
-			name = Renderers;
-			sourceTree = "<group>";
-		};
 		026B6A6F0D74A549008701FE /* Renderers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1070,34 +1032,34 @@
 		02822E050D31E082005129A8 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				02596EAB10DC731300942BDB /* HEdge.h */,
-				02596EAC10DC731300942BDB /* SceneNode.h */,
-				0218B3300F4BC5DC008C1042 /* inline */,
-				020EEDEE0ECFF3D900F1C116 /* Filters */,
-				021BB8890D790F7D0077DB0A /* Math */,
-				026B6A6E0D74A51A008701FE /* Renderers */,
-				021D862B0D6390FC0026C13F /* Box.h */,
-				021D862C0D6390FC0026C13F /* BufferObject.h */,
-				021D862D0D6390FC0026C13F /* Camera.h */,
-				021D862E0D6390FC0026C13F /* EdgeContainer.h */,
-				021D86310D6390FC0026C13F /* ICamera.h */,
-				021D86320D6390FC0026C13F /* ISurface.h */,
-				021D86340D6390FC0026C13F /* Mesh.h */,
-				021D86360D6390FC0026C13F /* Octree.h */,
-				02BEDD720E0B633D00259B3B /* Quadtree.h */,
-				02C8B73F0D862F78003063A1 /* Picking.h */,
-				02F4F49C0DE9190B0004A465 /* PickingFacesRenderer.h */,
-				021D86370D6390FC0026C13F /* Point3D.h */,
-				021D86380D6390FC0026C13F /* PointContainer.h */,
-				021D863B0D6390FC0026C13F /* Scene.h */,
-				021D863D0D6390FC0026C13F /* SpEnums.h */,
-				021D863E0D6390FC0026C13F /* Sphere.h */,
-				021D863F0D6390FC0026C13F /* StdAfx.h */,
-				02C8B7630D8751F2003063A1 /* BOManager.h */,
-				0221B3D410C9EF5B003377CD /* Face.h */,
-				0211C3D010DC7A610004F001 /* Subdivision.h */,
-				0211C3D210DC82B00004F001 /* Vertex.h */,
-				02E0FF7610F6B8A800DE4492 /* IIterator.h */,
+				0213E5F411C0881C00A53253 /* BOManager.h */,
+				0213E5F511C0881C00A53253 /* Box.h */,
+				0213E5F611C0881C00A53253 /* BufferObject.h */,
+				0213E5F711C0881C00A53253 /* Camera.h */,
+				0213E5F911C0881C00A53253 /* Face.h */,
+				0213E5FB11C0881C00A53253 /* FlatRenderer.h */,
+				0213E5FC11C0881C00A53253 /* HEdge.h */,
+				0213E5FD11C0881C00A53253 /* ICamera.h */,
+				0213E5FE11C0881C00A53253 /* IIterator.h */,
+				0213E5FF11C0881C00A53253 /* IRenderer.h */,
+				0213E60011C0881C00A53253 /* ISurface.h */,
+				0213E60111C0881D00A53253 /* Mesh.h */,
+				0213E60211C0881D00A53253 /* Octree.h */,
+				0213E60311C0881D00A53253 /* Picking.h */,
+				0213E60411C0881D00A53253 /* PickingFacesRenderer.h */,
+				0213E60511C0881D00A53253 /* Point3D.h */,
+				0213E60711C0881D00A53253 /* PointRenderer.h */,
+				0213E60811C0881D00A53253 /* Quadtree.h */,
+				0213E60911C0881D00A53253 /* RendererFactory.h */,
+				0213E60A11C0881D00A53253 /* Scene.h */,
+				0213E60B11C0881D00A53253 /* SceneNode.h */,
+				0213E60C11C0881D00A53253 /* SmoothRenderer.h */,
+				0213E60D11C0881D00A53253 /* SpEnums.h */,
+				0213E60E11C0881D00A53253 /* Sphere.h */,
+				0213E60F11C0881D00A53253 /* StdAfx.h */,
+				0213E61011C0881D00A53253 /* Subdivision.h */,
+				0213E61111C0881D00A53253 /* Vertex.h */,
+				0213E61211C0881D00A53253 /* WireframeRenderer.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -1272,35 +1234,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				021D86420D6390FC0026C13F /* Box.h in Headers */,
-				021D86430D6390FC0026C13F /* BufferObject.h in Headers */,
-				021D86440D6390FC0026C13F /* Camera.h in Headers */,
-				021D86450D6390FC0026C13F /* EdgeContainer.h in Headers */,
-				021D86470D6390FC0026C13F /* FlatRenderer.h in Headers */,
-				021D86480D6390FC0026C13F /* ICamera.h in Headers */,
-				021D86490D6390FC0026C13F /* ISurface.h in Headers */,
-				021D864A0D6390FC0026C13F /* IRenderer.h in Headers */,
-				021D864B0D6390FC0026C13F /* Mesh.h in Headers */,
-				021D864D0D6390FC0026C13F /* Octree.h in Headers */,
-				021D864E0D6390FC0026C13F /* Point3D.h in Headers */,
-				021D864F0D6390FC0026C13F /* PointContainer.h in Headers */,
-				021D86500D6390FC0026C13F /* PointRenderer.h in Headers */,
-				021D86510D6390FC0026C13F /* RendererFactory.h in Headers */,
-				021D86520D6390FC0026C13F /* Scene.h in Headers */,
-				021D86530D6390FC0026C13F /* SmoothRenderer.h in Headers */,
-				021D86540D6390FC0026C13F /* SpEnums.h in Headers */,
-				021D86550D6390FC0026C13F /* Sphere.h in Headers */,
-				021D86560D6390FC0026C13F /* StdAfx.h in Headers */,
-				021D86580D6390FC0026C13F /* WireframeRenderer.h in Headers */,
-				02C8B7400D862F78003063A1 /* Picking.h in Headers */,
-				02C8B7650D8751F2003063A1 /* BOManager.h in Headers */,
-				02F4F49E0DE9190B0004A465 /* PickingFacesRenderer.h in Headers */,
-				02BEDD730E0B633D00259B3B /* Quadtree.h in Headers */,
-				0221B3D510C9EF5B003377CD /* Face.h in Headers */,
-				02596EAD10DC731300942BDB /* HEdge.h in Headers */,
-				02596EAE10DC731300942BDB /* SceneNode.h in Headers */,
-				0211C3D110DC7A610004F001 /* Subdivision.h in Headers */,
-				0211C3D310DC82B00004F001 /* Vertex.h in Headers */,
 				020300D110EC74A800587CB6 /* BooleanRedux.h in Headers */,
 				020300D210EC74A800587CB6 /* CwiseOperators.h in Headers */,
 				020300D310EC74A800587CB6 /* Functors.h in Headers */,
@@ -1408,7 +1341,34 @@
 				0203013C10EC74A800587CB6 /* TriangularSolver.h in Headers */,
 				0203013D10EC74A800587CB6 /* UmfPackSupport.h in Headers */,
 				0203013E10EC74A800587CB6 /* SVD.h in Headers */,
-				02E0FF7710F6B8A800DE4492 /* IIterator.h in Headers */,
+				0213E61311C0881D00A53253 /* BOManager.h in Headers */,
+				0213E61411C0881D00A53253 /* Box.h in Headers */,
+				0213E61511C0881D00A53253 /* BufferObject.h in Headers */,
+				0213E61611C0881D00A53253 /* Camera.h in Headers */,
+				0213E61811C0881D00A53253 /* Face.h in Headers */,
+				0213E61A11C0881D00A53253 /* FlatRenderer.h in Headers */,
+				0213E61B11C0881D00A53253 /* HEdge.h in Headers */,
+				0213E61C11C0881D00A53253 /* ICamera.h in Headers */,
+				0213E61D11C0881D00A53253 /* IIterator.h in Headers */,
+				0213E61E11C0881D00A53253 /* IRenderer.h in Headers */,
+				0213E61F11C0881D00A53253 /* ISurface.h in Headers */,
+				0213E62011C0881D00A53253 /* Mesh.h in Headers */,
+				0213E62111C0881D00A53253 /* Octree.h in Headers */,
+				0213E62211C0881D00A53253 /* Picking.h in Headers */,
+				0213E62311C0881D00A53253 /* PickingFacesRenderer.h in Headers */,
+				0213E62411C0881D00A53253 /* Point3D.h in Headers */,
+				0213E62611C0881D00A53253 /* PointRenderer.h in Headers */,
+				0213E62711C0881D00A53253 /* Quadtree.h in Headers */,
+				0213E62811C0881D00A53253 /* RendererFactory.h in Headers */,
+				0213E62911C0881D00A53253 /* Scene.h in Headers */,
+				0213E62A11C0881D00A53253 /* SceneNode.h in Headers */,
+				0213E62B11C0881D00A53253 /* SmoothRenderer.h in Headers */,
+				0213E62C11C0881D00A53253 /* SpEnums.h in Headers */,
+				0213E62D11C0881D00A53253 /* Sphere.h in Headers */,
+				0213E62E11C0881D00A53253 /* StdAfx.h in Headers */,
+				0213E62F11C0881D00A53253 /* Subdivision.h in Headers */,
+				0213E63011C0881D00A53253 /* Vertex.h in Headers */,
+				0213E63111C0881D00A53253 /* WireframeRenderer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
