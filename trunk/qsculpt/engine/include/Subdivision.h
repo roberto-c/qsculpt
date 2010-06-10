@@ -137,6 +137,11 @@ public:
 	
     //const Object3D& operator=(const Object3D& obj);
 	
+    Iterator<Vertex> vertexIterator(int level);
+	Iterator<Vertex> constVertexIterator(int level) const;
+	Iterator<Face> faceIterator(int level);
+	Iterator<Face> constFaceIterator(int level) const;
+    
 protected:
     /**
      * Initializes the points vector.
@@ -169,104 +174,9 @@ protected:
 
 	
 	// inner classes
-public:
-	class VertexIterator : public IIterator<Vertex>
-	{	
-		friend class Subdivision;
-		
-		const Subdivision* _surface;
-		mutable int _index;
-		
-	protected:
-		/**
-		 * Constructor of a vertex iterator. The vertex iterator
-		 * is only contructed by means of Vertex::vertexIterator() function
-		 */
-		VertexIterator(const Subdivision* surface);
-		
-	public:
-		/**
-		 * Return true if the iterator has more elements (i.e. it is not at the
-		 * end)
-		 */
-		bool hasNext() const;
-		
-		/**
-		 * Returns true if the iterator is not at the beginning of the iteration
-		 */
-		bool hasPrevious() const;
-		
-		/**
-		 * Returns the next element and advance the iterator by one.
-		 */
-		Vertex & next();
-		
-		/**
-		 * Returns the next element and advance the iterator by one.
-		 */
-		const Vertex & next() const;
-		
-		/**
-		 * Returns the previous elements and move the iterator one position
-		 * backwards.
-		 */
-		Vertex & previous();
-		
-		/**
-		 * Returns the previous elements and move the iterator one position
-		 * backwards.
-		 */
-		const Vertex & previous() const;
-	};
-	
-	class FaceIterator : public IIterator<Face>
-	{
-		friend class Subdivision;
-		
-		const Subdivision* _surface;
-		mutable int _index;
-		
-	protected:
-		/**
-		 * Constructor of a vertex iterator. The vertex iterator
-		 * is only contructed by means of Vertex::vertexIterator() function
-		 */
-		FaceIterator(const Subdivision* v);
-		
-	public:
-		/**
-		 * Return true if the iterator has more elements (i.e. it is not at the
-		 * end)
-		 */
-		bool hasNext() const;
-		
-		/**
-		 * Returns true if the iterator is not at the beginning of the iteration
-		 */
-		bool hasPrevious() const;
-		
-		/**
-		 * Returns the next element and advance the iterator by one.
-		 */
-		Face & next();
-		
-		/**
-		 * Returns the next element and advance the iterator by one.
-		 */
-		const Face & next() const;
-		
-		/**
-		 * Returns the previous elements and move the iterator one position
-		 * backwards.
-		 */
-		Face & previous();
-		
-		/**
-		 * Returns the previous elements and move the iterator one position
-		 * backwards.
-		 */
-		const Face & previous() const;
-	};
+protected:
+    class VertexIterator;
+    class FaceIterator;
 	
 	friend class VertexIterator;
 	friend class FaceIterator;

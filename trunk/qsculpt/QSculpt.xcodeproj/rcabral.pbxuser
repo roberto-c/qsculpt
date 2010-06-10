@@ -171,9 +171,10 @@
 	};
 	0211C3D010DC7A610004F001 /* Subdivision.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 4110}}";
-			sepNavSelRange = "{1420, 0}";
-			sepNavVisRange = "{1157, 828}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 2715}}";
+			sepNavSelRange = "{1362, 0}";
+			sepNavVisRange = "{3573, 317}";
+			sepNavWindowFrame = "{{71, 0}, {903, 876}}";
 		};
 	};
 	0211C3D210DC82B00004F001 /* Vertex.h */ = {
@@ -183,11 +184,21 @@
 			sepNavVisRange = "{446, 1236}";
 		};
 	};
+	0213E55511C07D1400A53253 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 0211C3D010DC7A610004F001 /* Subdivision.h */;
+		name = "Subdivision.h: 61";
+		rLen = 0;
+		rLoc = 1362;
+		rType = 0;
+		vrLen = 317;
+		vrLoc = 3573;
+	};
 	021D85C30D63900F0026C13F /* BrushCommand.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 4950}}";
-			sepNavSelRange = "{1873, 0}";
-			sepNavVisRange = "{1713, 707}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 4935}}";
+			sepNavSelRange = "{7905, 0}";
+			sepNavVisRange = "{7616, 1034}";
 			sepNavWindowFrame = "{{15, 97}, {865, 776}}";
 		};
 	};
@@ -200,9 +211,9 @@
 	};
 	021D85C50D63900F0026C13F /* CommandBase.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 2925}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 2805}}";
 			sepNavSelRange = "{4223, 0}";
-			sepNavVisRange = "{3254, 1596}";
+			sepNavVisRange = "{3649, 1013}";
 		};
 	};
 	021D85C60D63900F0026C13F /* CommandManager.cpp */ = {
@@ -231,7 +242,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1014, 1590}}";
 			sepNavSelRange = "{2786, 0}";
-			sepNavVisRange = "{2142, 1030}";
+			sepNavVisRange = "{2142, 791}";
 			sepNavWindowFrame = "{{15, 97}, {865, 776}}";
 		};
 	};
@@ -306,7 +317,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1014, 1260}}";
 			sepNavSelRange = "{2762, 0}";
-			sepNavVisRange = "{1938, 847}";
+			sepNavVisRange = "{1867, 919}";
 		};
 	};
 	021D85E70D6390690026C13F /* CommandBase.h */ = {
@@ -356,7 +367,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1014, 990}}";
 			sepNavSelRange = "{2305, 0}";
-			sepNavVisRange = "{1170, 1230}";
+			sepNavVisRange = "{1495, 893}";
 		};
 	};
 	021D85EE0D6390690026C13F /* SubdivideCommand.h */ = {
@@ -568,9 +579,9 @@
 	};
 	021D86320D6390FC0026C13F /* ISurface.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 5565}}";
-			sepNavSelRange = "{1135, 0}";
-			sepNavVisRange = "{323, 1275}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 5535}}";
+			sepNavSelRange = "{6679, 0}";
+			sepNavVisRange = "{6382, 880}";
 		};
 	};
 	021D86330D6390FC0026C13F /* IRenderer.h */ = {
@@ -737,46 +748,6 @@
 			sepNavVisRange = "{0, 993}";
 		};
 	};
-	023720FF11BEE52D00CDAA9A /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 021D85ED0D6390690026C13F /* SelectCommand.h */;
-		name = "SelectCommand.h: 58";
-		rLen = 0;
-		rLoc = 2305;
-		rType = 0;
-		vrLen = 1230;
-		vrLoc = 1170;
-	};
-	0237210011BEE52D00CDAA9A /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 021D85C90D63900F0026C13F /* SelectCommand.cpp */;
-		name = "SelectCommand.cpp: 85";
-		rLen = 0;
-		rLoc = 2786;
-		rType = 0;
-		vrLen = 1030;
-		vrLoc = 2142;
-	};
-	0237210111BEE52D00CDAA9A /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 021D85C50D63900F0026C13F /* CommandBase.cpp */;
-		name = "CommandBase.cpp: 52";
-		rLen = 0;
-		rLoc = 2206;
-		rType = 0;
-		vrLen = 1151;
-		vrLoc = 1570;
-	};
-	0237210211BEE52D00CDAA9A /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 021D85C50D63900F0026C13F /* CommandBase.cpp */;
-		name = "CommandBase.cpp: 127";
-		rLen = 0;
-		rLoc = 4223;
-		rType = 0;
-		vrLen = 1596;
-		vrLoc = 3254;
-	};
 	02489ECE0EE3A828001026C3 /* QSculpt SRD.rtf */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {633, 696}}";
@@ -800,9 +771,9 @@
 	};
 	02596EAB10DC731300942BDB /* HEdge.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 3000}}";
-			sepNavSelRange = "{628, 0}";
-			sepNavVisRange = "{1112, 1059}";
+			sepNavIntBoundsRect = "{{0, 0}, {1014, 3015}}";
+			sepNavSelRange = "{1384, 0}";
+			sepNavVisRange = "{1112, 816}";
 		};
 	};
 	02596EAC10DC731300942BDB /* SceneNode.h */ = {
@@ -964,7 +935,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					836,
+					10,
 					20,
 					48,
 					43,
@@ -1057,15 +1028,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 297727781;
-			PBXWorkspaceStateSaveDate = 297727781;
+			PBXPerProjectTemplateStateSaveDate = 297827592;
+			PBXWorkspaceStateSaveDate = 297827592;
 			com.apple.ide.smrt.PBXUserSmartGroupsKey.Rev10 = <040b73747265616d747970656481e8038401408484840e4e534d757461626c654172726179008484074e534172726179008484084e534f626a65637400858401690292848484134e534d757461626c6544696374696f6e6172790084840c4e5344696374696f6e6172790095960792848484084e53537472696e67019584012b046e616d658692849a9a036d6f638692849a9a146162736f6c75746550617468546f42756e646c658692849a9a008692849a9a195042585472616e7369656e744c6f636174696f6e4174546f708692849a9a06626f74746f6d8692849a9a03636c7a8692849a9a1550425846696c656e616d65536d61727447726f75708692849a9a0b6465736372697074696f6e8692849a9a103c6e6f206465736372697074696f6e3e8692849a9a0b707265666572656e63657386928497960892849a9a07666e6d617463688692849a9a096d6f635f2a2e6e69628692849a9a04726f6f748692849a9a183032383232453338304433314530463330303531323941388692849a9a05696d6167658692849a9a0b536d617274466f6c6465728692849a9a05726567657886929d92849a9a097265637572736976658692848484084e534e756d626572008484074e5356616c7565009584012a849696018692849a9a0669734c656166869284af9db196008692849a9a0763616e536176658692ae92849a9a1250425850726f6a65637453636f70654b65798692849a9a03594553868692849a9a08676c6f62616c49448692849a9a183032444539464133304433353545323030304439344436468686928497960792849a9a046e616d658692849a9a036d6f638692849a9a146162736f6c75746550617468546f42756e646c658692849a9a008692849a9a195042585472616e7369656e744c6f636174696f6e4174546f708692849a9a06626f74746f6d8692849a9a03636c7a8692849a9a1550425846696c656e616d65536d61727447726f75708692849a9a0b6465736372697074696f6e8692849a9a103c6e6f206465736372697074696f6e3e8692849a9a0b707265666572656e63657386928497960892849a9a07666e6d617463688692849a9a096d6f635f2a2e6e69628692a892849a9a183032444541334137304433353634333730304439344436468692aa92849a9a0b536d617274466f6c6465728692849a9a0572656765788692849a9a008692849a9a09726563757273697665869284af9d848401639e018692849a9a0669734c656166869284af9dce9e008692849a9a0763616e536176658692cd92849a9a1250425850726f6a65637453636f70654b65798692849a9a03594553868692849a9a08676c6f62616c49448692849a9a18303244454133463930443336463146303030443934443646868686>;
 		};
 		perUserProjectItems = {
-			023720FF11BEE52D00CDAA9A = 023720FF11BEE52D00CDAA9A /* PBXTextBookmark */;
-			0237210011BEE52D00CDAA9A = 0237210011BEE52D00CDAA9A /* PBXTextBookmark */;
-			0237210111BEE52D00CDAA9A = 0237210111BEE52D00CDAA9A /* PBXTextBookmark */;
-			0237210211BEE52D00CDAA9A = 0237210211BEE52D00CDAA9A /* PBXTextBookmark */;
+			0213E55511C07D1400A53253 /* PBXTextBookmark */ = 0213E55511C07D1400A53253 /* PBXTextBookmark */;
+			02BA7D6F11C07CF8007056C0 = 02BA7D6F11C07CF8007056C0 /* PBXTextBookmark */;
+			02BA7D7011C07CF8007056C0 = 02BA7D7011C07CF8007056C0 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 02822DCA0D31DE1D005129A8 /* Source Control */;
 		userBuildSettings = {
@@ -1231,6 +1201,26 @@
 			sepNavWindowFrame = "{{405, 308}, {865, 776}}";
 		};
 	};
+	02BA7D6F11C07CF8007056C0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 0211C3D010DC7A610004F001 /* Subdivision.h */;
+		name = "Subdivision.h: 61";
+		rLen = 0;
+		rLoc = 1362;
+		rType = 0;
+		vrLen = 320;
+		vrLoc = 3573;
+	};
+	02BA7D7011C07CF8007056C0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 0211C3D010DC7A610004F001 /* Subdivision.h */;
+		name = "Subdivision.h: 61";
+		rLen = 0;
+		rLoc = 1362;
+		rType = 0;
+		vrLen = 320;
+		vrLoc = 3573;
+	};
 	02BEDD720E0B633D00259B3B /* Quadtree.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {714, 5668}}";
@@ -1269,9 +1259,9 @@
 	};
 	02D2661810F9849C00E22E11 /* Subdivision.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1014, 8445}}";
-			sepNavSelRange = "{7854, 0}";
-			sepNavVisRange = "{9079, 920}";
+			sepNavIntBoundsRect = "{{0, 0}, {844, 10785}}";
+			sepNavSelRange = "{13900, 0}";
+			sepNavVisRange = "{13210, 1257}";
 			sepNavWindowFrame = "{{69, 0}, {903, 876}}";
 		};
 	};

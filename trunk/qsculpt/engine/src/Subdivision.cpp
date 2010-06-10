@@ -39,6 +39,109 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
+// Iterator classes declarations
+class Subdivision::VertexIterator : public IIterator<Vertex>
+{	
+    friend class Subdivision;
+    
+    const Subdivision*  _surface;
+    int                 _level;
+    mutable int         _index;
+    
+protected:
+    /**
+     * Constructor of a vertex iterator. The vertex iterator
+     * is only contructed by means of Vertex::vertexIterator() function
+     */
+    VertexIterator(const Subdivision* surface, int level = -1);
+    
+public:
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    bool hasNext() const;
+    
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    bool hasPrevious() const;
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    Vertex & next();
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Vertex & next() const;
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    Vertex & previous();
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    const Vertex & previous() const;
+};
+
+class Subdivision::FaceIterator : public IIterator<Face>
+{
+    friend class Subdivision;
+    
+    const Subdivision*  _surface;
+    int                 _level;
+    mutable int         _index;
+    
+protected:
+    /**
+     * Constructor of a vertex iterator. The vertex iterator
+     * is only contructed by means of Vertex::vertexIterator() function
+     */
+    FaceIterator(const Subdivision* v, int level = -1);
+    
+public:
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    bool hasNext() const;
+    
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    bool hasPrevious() const;
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    Face & next();
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Face & next() const;
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    Face & previous();
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    const Face & previous() const;
+};
+
+
+
 Subdivision::Subdivision()
 :	ISurface(),
 	m_scene(NULL),
@@ -489,10 +592,31 @@ Iterator<Face> Subdivision::constFaceIterator() const
 	return Iterator<Face>(new FaceIterator(this));
 }
 
+Iterator<Vertex> Subdivision::vertexIterator(int level)
+{
+	return Iterator<Vertex>(new VertexIterator(this, level) );
+}
+
+Iterator<Vertex> Subdivision::constVertexIterator(int level) const
+{
+	return Iterator<Vertex>(new VertexIterator(this, level) );
+}
+
+Iterator<Face> Subdivision::faceIterator(int level)
+{
+	return Iterator<Face>(new FaceIterator(this, level));
+}
+
+Iterator<Face> Subdivision::constFaceIterator(int level) const
+{
+	return Iterator<Face>(new FaceIterator(this, level));
+}
+
 // Inner classes implementation
 // Subdivision::VertexIterator
-Subdivision::VertexIterator::VertexIterator(const Subdivision* surface)
+Subdivision::VertexIterator::VertexIterator(const Subdivision* surface, int level)
 :	_surface(surface),
+    _level(level),
 	_index(-1)
 {
 }
@@ -500,14 +624,17 @@ Subdivision::VertexIterator::VertexIterator(const Subdivision* surface)
 bool Subdivision::VertexIterator::hasNext() const
 {
 	//NOT_IMPLEMENTED
-	int n = _surface->getNumVertices();
+	int n = _level == -1 ? _surface->getNumVertices() 
+            : _surface->_vertLevelCollections[_level].size();
 	return n > 0 && _index < n-1;
 }
 
 bool Subdivision::VertexIterator::hasPrevious() const
 {
 	//NOT_IMPLEMENTED
-	int n = _surface->getNumVertices();
+	//int n = _surface->getNumVertices();
+    int n = _level == -1 ? _surface->getNumVertices() 
+            : _surface->_vertLevelCollections[_level].size();
 	return _index > 0 && n > 0 && _index <= n;
 }
 
@@ -537,8 +664,9 @@ const Vertex & Subdivision::VertexIterator::previous() const
 
 
 //Subdivision::FaceIterator
-Subdivision::FaceIterator::FaceIterator(const Subdivision* surface)
+Subdivision::FaceIterator::FaceIterator(const Subdivision* surface, int level)
 :	_surface(surface),
+    _level(level),
 	_index(-1)
 {
 }
