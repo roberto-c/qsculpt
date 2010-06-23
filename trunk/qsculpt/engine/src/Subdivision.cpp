@@ -143,7 +143,8 @@ public:
 
 
 Subdivision::Subdivision()
-:	ISurface(),
+:	SceneNode(NULL),
+    ISurface(),
 	m_scene(NULL),
 	//m_drawingMode(Wireframe),
 	m_color(Qt::white),

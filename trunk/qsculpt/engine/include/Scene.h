@@ -20,37 +20,30 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <QVector>
-#include "Point3D.h"
-#include "SceneNode.h"
-#include "Vertex.h"
+#include <QObject>
+#include <string>
 
 class ISurface;
+class SceneNode;
 
 /**
  * Contains all the scene data. All 3D objects reference data from the scene.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class Scene{
+class Scene : public QObject {
 public:
-    Scene();
+    Scene(const std::string& name);
 
     ~Scene();
 
     /**
-     * 
+     *
      */
-    ISurface* createObject();
-
-    ISurface* createBox();
-    
-    ISurface* createSphere();
+    SceneNode* findByName(const std::string& name);
     
 private:
-    QVector<Vertex> mVertexList;
-    QVector<Vector3> mNormalList;
-    QVector<ISurface*> mObjectList;
+    SceneNode* root;
 };
 
 #endif

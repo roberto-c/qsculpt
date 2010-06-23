@@ -18,6 +18,7 @@ Vertex::Vertex()
 	: _position(Point3(0, 0, 0)),
 	_normal(Vector3(0, 1, 0)),
 	_color(Vector3(1, 1, 1)),
+    _flags(VF_None),
 	_he(NULL)
 {
 	_id = NEXT_ID.fetchAndAddRelaxed(1);
@@ -29,6 +30,7 @@ Vertex::Vertex(const Point3 & position,
 	: _position(position),
 	_normal(normal.normalized()),
 	_color(color),
+    _flags(VF_None),
 	_he(NULL)
 {
 	_id = NEXT_ID.fetchAndAddRelaxed(1);
@@ -40,6 +42,7 @@ Vertex::Vertex(const Vertex& v)
 	_position = v._position;
 	_normal = v._normal;
 	_color = v._color;
+    _flags = v._flags;
 	_he = v._he;
 }
 

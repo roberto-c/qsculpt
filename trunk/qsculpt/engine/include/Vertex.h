@@ -17,16 +17,22 @@
 
 class Edge;
 
+enum VertexFlags {
+    VF_None = 0,
+    VF_Selected = 1,
+    VF_ALL = 0xFFFFFFFF
+};
+
 class Vertex
 {
 	static QAtomicInt NEXT_ID;
 	
-	int _id;
-	Point3 _position;
-	Vector3 _normal;
-	Vector3 _color;
-	
-	Edge* _he;
+	int         _id;
+	Point3      _position;
+	Vector3     _normal;
+	Vector3     _color;
+	VertexFlags _flags;
+	Edge*       _he;
 	
 public:
 	class VertexIterator;
@@ -85,12 +91,18 @@ public:
 	void setEdge(Edge* he) { _he = he; }
 	Edge* edge() const { return _he; }
 	
+    /**
+     * Set / get attribute flags to the vertex.
+     */
+    void setFlags(VertexFlags flags) { _flags = flags; }
+    VertexFlags flags() { return _flags; }
+    
 	/**
 	 * Operator to treat the Vertex class as a Point3 instance. Returns
 	 * the position of the vertex.
 	 */
 	operator Point3() { return _position; };
-	
+    
 	QString toString();
 	
 	Vertex & operator=(const Vertex & v);

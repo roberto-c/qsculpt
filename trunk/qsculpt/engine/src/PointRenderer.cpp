@@ -89,6 +89,7 @@ void PointRenderer::renderVbo(const ISurface* mesh)
 	glEnableClientState(GL_VERTEX_ARRAY);
 	//glEnableClientState(GL_COLOR_ARRAY);
 	
+    glEnable(GL_POINT_SMOOTH);
 	glPointSize(3.0f);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glDrawArrays(GL_POINTS, 0, obj->getNumVertices());

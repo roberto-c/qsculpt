@@ -28,6 +28,7 @@
 #include "ISurface.h"
 #include "DocumentView.h"
 #include "Camera.h"
+#include "GlView.h"
 
 CommandBase::CommandBase(ICommand* parent)
 :	ICommand(parent),
@@ -111,7 +112,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
 
     // In prespective view, we allow the user to change the orientation of the view. 
     // In the other views, we only allow screen panning.
-    if (view->getPerspectiveViewType() == GlView::Perspective)
+    if (view->getPerspectiveViewType() == GlCanvas::Perspective)
     {
         _panViewMode = e->modifiers() & Qt::ControlModifier ? true : false;
         _rotateViewMode = !_panViewMode;
@@ -169,15 +170,8 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
     _currentWinPoint = currWinPoint;
 }
 
-void CommandBase::paintGL()
+void CommandBase::paintGL(GlCanvas *c)
 {
-    if (needsUserInteraction()) {
-        glDisable(GL_LIGHTING);
-        glPointSize(30);
-        glBegin(GL_POINTS);
-        glVertex3f(0, 0, 0);
-        glEnd();
-        glEnable(GL_LIGHTING);
-    }
+
 }
 

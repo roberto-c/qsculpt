@@ -12,40 +12,16 @@
 #include <vector>
 //#include <hash_map>
 #include "ISurface.h"
+#include "SceneNode.h"
 
 class Vertex;
 class Edge;
 class SubdivisionScheme;
 
-namespace subdivision
-{
-    struct Edge {
-        int h1;
-        int h2;
-        
-        bool operator==(const Edge& e) const {
-            if (&e == this) return true;
-            if ((e.h1 == h1 && e.h2 == h2) ||
-                (e.h1 == h2 && e.h2 == h1))
-                return true;
-            return false;
-        }
-    };
-}
-
-//using subdivision::Edge;
-
-//template<typename T>
-//class hash<subdivision::Edge> {
-//    size_t operator(const subdivision::Edge& e) {
-//        return hash(e.h1 ^ e.h2);
-//    }
-//};
-
 /**
  * Class that implement subdivision surfaces.
  */
-class Subdivision : public ISurface
+class Subdivision : public ISurface, public SceneNode
 {
 	typedef std::vector<Vertex*> VertexCollection;
 	typedef std::vector<Edge*> EdgesCollection;

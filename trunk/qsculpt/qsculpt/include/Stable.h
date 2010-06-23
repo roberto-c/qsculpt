@@ -27,6 +27,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
+#include <Eigen/StdVector>
 
 unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
 
