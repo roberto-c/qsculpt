@@ -25,6 +25,7 @@
 #include "Box.h"
 #include "Sphere.h"
 #include "Mesh.h"
+#include "Quad.h"
 
 Document::Document() {
 
@@ -156,7 +157,7 @@ void Document::addObject(ObjectType type)
     switch(type)
     {
         case IDocument::Box:
-            obj = new ::Box();
+            obj = new ::Quad();
             break;
         case IDocument::Sphere:
             obj = new ::Sphere();

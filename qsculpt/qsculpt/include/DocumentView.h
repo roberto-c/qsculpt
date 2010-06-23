@@ -102,7 +102,7 @@ public:
     /**
      * getViewType
      */
-    GlView::PerspectiveType getPerspectiveViewType() {
+    GlCanvas::PerspectiveType getPerspectiveViewType() {
         return m_display->getPerspectiveView();
     };
 
@@ -113,11 +113,11 @@ public:
         return m_display->getViewCamera();
     };
 
-    void set3DCursorShape(GlView::CursorShapeType shape) {
+    void set3DCursorShape(GlCanvas::CursorShapeType shape) {
         m_display->set3DCursorShape(shape);
     };
 
-    GlView::CursorShapeType getCursorShape() {
+    GlCanvas::CursorShapeType getCursorShape() {
         return m_display->getCursorShape();
     };
 
@@ -145,6 +145,9 @@ public:
     	return m_display->getCursorImage();
     }
 
+    bool getDrawVertices();
+    
+    GlCanvas* getCanvas() { return m_display; } ;
 public slots:
     /**
      * Turn the visibility of the grid on/off.
@@ -184,11 +187,14 @@ public slots:
     	}
     }
 
+    void setDrawVertices(bool drawVertices);
+    
 protected:
     IDocument* m_document;
-    GlView* m_display;
+    GlCanvas* m_display;
     QComboBox* m_viewPerspective;
     QComboBox* m_drawingMode;
+    bool        _drawVertices;
 };
 
 #endif

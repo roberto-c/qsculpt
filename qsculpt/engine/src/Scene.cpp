@@ -20,7 +20,7 @@
 #include "StdAfx.h"
 #include "Scene.h"
 
-Scene::Scene()
+Scene::Scene(const std::string& /*name*/)
 {
 }
 

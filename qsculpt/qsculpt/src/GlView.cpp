@@ -55,80 +55,87 @@ struct Rect {
     }
 };
 
-GlView::GlView(DocumentView* _parent)
+
+GlCanvas::GlCanvas(DocumentView* _parent)
 : QGLWidget(_parent),
-m_isGridVisible(false),
-m_areNormalsVisible(false),
-m_selectBuffer(NULL),
-m_aspectRatio(1.0),
-m_viewType(Front),
-m_drawingMode(Points),
-m_renderer(NULL),
-m_selectionRenderer(NULL),
-m_cursorShape(None),
-m_zoomFactor(1.0),
-m_textureId(0)
+_isGridVisible(false),
+_areNormalsVisible(false),
+_selectBuffer(NULL),
+_aspectRatio(1.0),
+_viewType(Front),
+_drawingMode(Points),
+_renderer(NULL),
+_selectionRenderer(NULL),
+_editVertexRenderer(NULL),
+_cursorShape(None),
+_zoomFactor(1.0),
+_textureId(0),
+_pen(QPen(QColor(Qt::white))),
+_brush(QBrush(Qt::transparent))
 {
 	// Type of renderer used for displaying objects on the screen
-	m_renderer = RendererFactory::getRenderer(m_drawingMode);
+	_renderer = RendererFactory::getRenderer(_drawingMode);
 	
 	// Type of renderer used for user object picking
-	m_selectionRenderer = RendererFactory::getRenderer(Points);
+	_selectionRenderer = RendererFactory::getRenderer(Points);
     
-	m_selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
+    // Type of renderer used for vertex edition mode
+    _editVertexRenderer = RendererFactory::getRenderer(Points);
+    
+	_selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
 	
     Camera* camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector(Point3( 0, 1, 0) );
     camera->setPosition( Point3( 0, 0, 1));
-    m_cameraList[Front] = camera;
+    _cameraList[Front] = camera;
 	
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 1, 0) );
     camera->setPosition( Point3( 0, 0, -1));
-    m_cameraList[Back] = camera;
+    _cameraList[Back] = camera;
 	
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 0, -1) );
     camera->setPosition( Point3( 0, 1, 0) );
-    m_cameraList[Top] = camera;
+    _cameraList[Top] = camera;
 	
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 0, 1) );
     camera->setPosition( Point3( 0, -1, 0) );
-    m_cameraList[Bottom] = camera;
+    _cameraList[Bottom] = camera;
 	
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 1, 0) );
     camera->setPosition( Point3(-1, 0, 0) );
-    m_cameraList[Left] = camera;
+    _cameraList[Left] = camera;
 	
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 1, 0) );
     camera->setPosition( Point3( 1, 0, 0) );
-    m_cameraList[Right] = camera;
+    _cameraList[Right] = camera;
 	
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 0, 1) );
     camera->setPosition( Point3( 0.75, 0.75, 0.75) );
-    m_cameraList[Perspective] = camera;
+    _cameraList[Perspective] = camera;
 	
     setCursor(Qt::CrossCursor);
 }
 
 
-GlView::~GlView()
+GlCanvas::~GlCanvas()
 {
-    if (m_selectBuffer)
-        delete [] m_selectBuffer;
+    if (_selectBuffer)
+        delete [] _selectBuffer;
 	
-    QMutableMapIterator<int, Camera*> it(m_cameraList);
+    QMutableMapIterator<int, Camera*> it(_cameraList);
     while(it.hasNext())
     {
         it.next();
@@ -136,53 +143,54 @@ GlView::~GlView()
         it.remove();
     }
 	
-    delete m_renderer;
-    m_renderer = NULL;
+    delete _renderer;
+    _renderer = NULL;
 	
-	delete m_selectionRenderer;
-	m_selectionRenderer = NULL;
+	delete _selectionRenderer;
+	_selectionRenderer = NULL;
 }
 
-void GlView::setGridVisible(bool value)
+void GlCanvas::setGridVisible(bool value)
 {
-    m_isGridVisible = value;
+    _isGridVisible = value;
     updateGL();
 }
 
-bool GlView::isGridVisible()
+bool GlCanvas::isGridVisible()
 {
-    return m_isGridVisible;
+    return _isGridVisible;
 }
 
-bool GlView::areNormalsVisible()
+bool GlCanvas::areNormalsVisible()
 {
-    return m_areNormalsVisible;
+    return _areNormalsVisible;
 }
 
-void GlView::setNormalsVisible(bool visible)
+void GlCanvas::setNormalsVisible(bool visible)
 {
-    m_areNormalsVisible = visible;
+    _areNormalsVisible = visible;
 }
 
-void GlView::setDrawingMode(DrawingMode mode){
-    m_drawingMode = mode;
-    delete m_renderer;
-    m_renderer = RendererFactory::getRenderer(m_drawingMode);
+void GlCanvas::setDrawingMode(DrawingMode mode){
+    _drawingMode = mode;
+    delete _renderer;
+    _renderer = RendererFactory::getRenderer(_drawingMode);
 }
 
-void GlView::initializeGL()
+void GlCanvas::initializeGL()
 {
     // Set up the rendering context, define display lists etc.:
 	
     //glClearColor( 0.4, 0.4, 0.4, 1.0 );
 	glClearColor( 0.0, 0.0, 0.0, 1.0 );
     glClearDepth(1.0f);
-    glEnable( GL_DEPTH_TEST);
-    glEnable( GL_LINE_SMOOTH);
+    enable( GL_DEPTH_TEST);
+    enable( GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glShadeModel(GL_SMOOTH);
-    glEnable(GL_LIGHT0);
-    glSelectBuffer(SELECT_BUFFER_SIZE, m_selectBuffer);
-	
+    enable(GL_LIGHT0);
+    glSelectBuffer(SELECT_BUFFER_SIZE, _selectBuffer);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     if (glIsEnabled(GL_DEPTH_TEST) == GL_FALSE)
         qDebug("Depth buffer not enabled.");
     else
@@ -191,7 +199,7 @@ void GlView::initializeGL()
     }
 	
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
+    enable(GL_COLOR_MATERIAL);
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -199,43 +207,34 @@ void GlView::initializeGL()
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 }
 
-void GlView::resizeGL( int w, int h )
+void GlCanvas::resizeGL( int w, int h )
 {
     if ( h > 0 )
-        m_aspectRatio = GLdouble( w ) / GLdouble( h );
+        _aspectRatio = GLdouble( w ) / GLdouble( h );
 	
     // setup viewport, projection etc.:
     glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    glOrtho( -DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
-			DEFAULT_HEIGHT / 2 * m_zoomFactor * m_aspectRatio,
-			-DEFAULT_HEIGHT / 2 * m_zoomFactor,
-			DEFAULT_HEIGHT / 2 * m_zoomFactor,
+    glOrtho( -DEFAULT_HEIGHT / 2 * _zoomFactor * _aspectRatio,
+			DEFAULT_HEIGHT / 2 * _zoomFactor * _aspectRatio,
+			-DEFAULT_HEIGHT / 2 * _zoomFactor,
+			DEFAULT_HEIGHT / 2 * _zoomFactor,
 			-1000.0,
 			1000.0 );
 	
     glMatrixMode( GL_MODELVIEW );
 	
-    glGetIntegerv(GL_VIEWPORT, m_viewport);
+    glGetIntegerv(GL_VIEWPORT, _viewport);
 }
 
-void drawRect(Rect r) {
-    glBegin(GL_LINE_LOOP);
-    glVertex2d(r.x1, r.y1);
-    glVertex2d(r.x2, r.y1);
-    glVertex2d(r.x2, r.y2);
-    glVertex2d(r.x1, r.y2);
-    glEnd();
-}
-
-void GlView::paintGL()
+void GlCanvas::paintGL()
 {	
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glBindTexture(GL_TEXTURE_2D, 0);
     glLoadIdentity();
 	
-    Camera* camera = m_cameraList.contains(m_viewType) ? m_cameraList[m_viewType] : NULL;
+    Camera* camera = _cameraList.contains(_viewType) ? _cameraList[_viewType] : NULL;
     if (camera)
     {
         gluLookAt( camera->getPosition().x(), camera->getPosition().y(),
@@ -249,7 +248,7 @@ void GlView::paintGL()
     //glTranslatef(-100, -100, 0);
     glDisable(GL_LIGHTING);
 	
-    if (m_isGridVisible)
+    if (_isGridVisible)
         drawGrid();
 	
     glBegin( GL_LINES );
@@ -266,7 +265,7 @@ void GlView::paintGL()
     glVertex3f( 0.0f, 0.0f, 1.0f );
     glEnd();
     	
-    switch(m_drawingMode)
+    switch(_drawingMode)
     {
         case Smooth:
 		case Wireframe:
@@ -287,16 +286,16 @@ void GlView::paintGL()
 	
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
     if (cmd) {
-        cmd->paintGL();
+        cmd->paintGL(this);
     }
     
 	glFlush();
     //drawOrientationAxis();
 }
 
-void GlView::drawObjects()
+void GlCanvas::drawObjects()
 {
-	if (m_renderer == NULL)
+	if (_renderer == NULL)
 		return;
 	
 	ISurface* mesh;
@@ -310,15 +309,21 @@ void GlView::drawObjects()
 		float x = 0.0f, y = 0.0f, z = 0.0f;
 		mesh->getPosition(&x, &y, &z);
 		glTranslatef(x, y, z);
-		m_renderer->renderObject(mesh);
+		_renderer->renderObject(mesh);
+        _editVertexRenderer->renderObject(mesh);
 		glPopMatrix();
     }
 }
 
-void GlView::drawGrid()
+void GlCanvas::drawGrid()
 {
     const double GRID_PLANE_Z = 0.0;
-    glLineWidth(1.0);
+    glLineWidth(0.5);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    enable(GL_BLEND);
+    enable(GL_LINE_SMOOTH);
+    disable(GL_DEPTH_TEST);
+    
     glBegin(GL_LINES);
 	
     glColor3f(0.3, 0.3, 0.3);
@@ -348,14 +353,15 @@ void GlView::drawGrid()
     }
     glEnd();
     glLineWidth(1.0);
+    enable(GL_DEPTH_TEST);
 }
 
-void GlView::drawCursor()
+void GlCanvas::drawCursor()
 {
-    if (m_cursorShape == None)
+    if (_cursorShape == None)
         return;
 	
-    switch(m_cursorShape)
+    switch(_cursorShape)
     {
 		case None:
 		case Cross:
@@ -384,18 +390,18 @@ void GlView::drawCursor()
 	        glLoadIdentity();
 	        
 	        // Setup the texture and color
-	        glBindTexture(GL_TEXTURE_2D, m_textureId);
+	        glBindTexture(GL_TEXTURE_2D, _textureId);
 	        glColor3f(1.0f, 1.0f, 0.0f);
 			
 	        // Calculate the coordinates of the box to paint the bitmap
 	        double wx1, wy1, wz1;
-	        mapScreenCoordsToWorldCoords(m_cursorPosition.x() - m_cursorImage.width()/2,
-										 m_cursorPosition.y() - m_cursorImage.height() / 2,
-										 m_cursorPosition.z(), &wx1, &wy1, &wz1);
+	        mapScreenCoordsToWorldCoords(_cursorPosition.x() - _cursorImage.width()/2,
+										 _cursorPosition.y() - _cursorImage.height() / 2,
+										 _cursorPosition.z(), &wx1, &wy1, &wz1);
 	        double wx2, wy2, wz2;
-	        mapScreenCoordsToWorldCoords(m_cursorPosition.x() + m_cursorImage.width()/2,
-										 m_cursorPosition.y() + m_cursorImage.height() / 2,
-										 m_cursorPosition.z(), &wx2, &wy2, &wz2);
+	        mapScreenCoordsToWorldCoords(_cursorPosition.x() + _cursorImage.width()/2,
+										 _cursorPosition.y() + _cursorImage.height() / 2,
+										 _cursorPosition.z(), &wx2, &wy2, &wz2);
 			
 	        // Draw Bitmap cursor as a textured quad
 	        glBegin(GL_QUADS);
@@ -422,7 +428,7 @@ void GlView::drawCursor()
     }
 }
 
-void GlView::drawOrientationAxis()
+void GlCanvas::drawOrientationAxis()
 {
     bool lightEnabled = glIsEnabled(GL_LIGHTING);
 	
@@ -434,12 +440,12 @@ void GlView::drawOrientationAxis()
     glMatrixMode( GL_PROJECTION );
     glPushMatrix();
     glLoadIdentity();
-    glOrtho( -1.5 * m_aspectRatio, 1.5 * m_aspectRatio, 1.5, -1.5, 2.0, -2.0 );
+    glOrtho( -1.5 * _aspectRatio, 1.5 * _aspectRatio, 1.5, -1.5, 2.0, -2.0 );
 	
 	
     glMatrixMode( GL_MODELVIEW );
 	
-    Camera* camera = m_cameraList.contains(m_viewType) ? m_cameraList[m_viewType] : NULL;
+    Camera* camera = _cameraList.contains(_viewType) ? _cameraList[_viewType] : NULL;
     if (camera)
     {
         gluLookAt( camera->getPosition().x(), camera->getPosition().y(),
@@ -469,13 +475,13 @@ void GlView::drawOrientationAxis()
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
 	
-    glViewport( m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3] );
+    glViewport( _viewport[0], _viewport[1], _viewport[2], _viewport[3] );
 	
     if (lightEnabled)
         glEnable(GL_LIGHTING);
 }
 
-void GlView::mouseMoveEvent ( QMouseEvent * e )
+void GlCanvas::mouseMoveEvent ( QMouseEvent * e )
 {
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
 	
@@ -485,12 +491,12 @@ void GlView::mouseMoveEvent ( QMouseEvent * e )
         cmd->mouseMoveEvent( e );
         needUpdate = true;
     }
-    if (m_cursorShape != None)
+    if (_cursorShape != None)
     {
-    	//m_cursorPosition.setPoint(e->x(), e->y(), 0);
-    	m_cursorPosition.x() = e->x();
-		m_cursorPosition.y() = e->y();
-		m_cursorPosition.z() = 0;
+    	//_cursorPosition.setPoint(e->x(), e->y(), 0);
+    	_cursorPosition.x() = e->x();
+		_cursorPosition.y() = e->y();
+		_cursorPosition.z() = 0;
 		needUpdate = true;
     }
     if (needUpdate)
@@ -499,7 +505,7 @@ void GlView::mouseMoveEvent ( QMouseEvent * e )
     }
 }
 
-void GlView::mousePressEvent ( QMouseEvent * e )
+void GlCanvas::mousePressEvent ( QMouseEvent * e )
 {
     //qDebug("MousePress");
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
@@ -510,12 +516,12 @@ void GlView::mousePressEvent ( QMouseEvent * e )
         cmd->mousePressEvent( e );
         needUpdate = true;
     }
-	m_cursorPosition.x() = e->x();
-	m_cursorPosition.y() = e->y();
-    if (m_cursorShape != None)
+	_cursorPosition.x() = e->x();
+	_cursorPosition.y() = e->y();
+    if (_cursorShape != None)
     {
-		m_cursorPosition.x() = e->x();
-		m_cursorPosition.y() = e->y();
+		_cursorPosition.x() = e->x();
+		_cursorPosition.y() = e->y();
     	needUpdate = true;
     }
     if (needUpdate)
@@ -524,7 +530,7 @@ void GlView::mousePressEvent ( QMouseEvent * e )
     }
 }
 
-void GlView::mouseReleaseEvent ( QMouseEvent * e )
+void GlCanvas::mouseReleaseEvent ( QMouseEvent * e )
 {
     //qDebug("MouseRelease");
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
@@ -536,21 +542,21 @@ void GlView::mouseReleaseEvent ( QMouseEvent * e )
     }
 }
 
-void GlView::wheelEvent ( QWheelEvent * e )
+void GlCanvas::wheelEvent ( QWheelEvent * e )
 {
     int numDegrees = e->delta() / 8;
     int numSteps = numDegrees / 15;
 	
-    m_zoomFactor += numSteps * 0.01;
+    _zoomFactor += numSteps * 0.01;
 	
     resizeGL( width(), height() );
     updateGL();
 }
 
-ObjectContainer GlView::getSelectedObjects(GLint x, GLint y)
+ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
 {
 	ObjectContainer l;
-	if (m_renderer == NULL)
+	if (_renderer == NULL)
 		return l;
 	
 	unsigned int objId = 1;
@@ -569,7 +575,7 @@ ObjectContainer GlView::getSelectedObjects(GLint x, GLint y)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		g_picking.renderObject(mesh, objId);
-		glReadPixels(x, m_viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
+		glReadPixels(x, _viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
 		
 		if (d == objId)
 			l.append(mesh);
@@ -582,11 +588,11 @@ ObjectContainer GlView::getSelectedObjects(GLint x, GLint y)
 	return l;
 }
 
-PointIndexList GlView::getSelectedVertices(GLint x, GLint y,
+PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
 											  GLint width, GLint height)
 {
 	PointIndexList l;
-	if (m_renderer == NULL || width == 0 || height == 0)
+	if (_renderer == NULL || width == 0 || height == 0)
 		return l;
 	
 	int halfWidth = width / 2;
@@ -609,27 +615,15 @@ PointIndexList GlView::getSelectedVertices(GLint x, GLint y,
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		g_pickingVertices.renderObject(mesh, objId);
-		glReadPixels(x - halfWidth, m_viewport[3]- (y + halfHeight), 
+		glReadPixels(x - halfWidth, _viewport[3]- (y + halfHeight), 
 					 width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)d);
 		
 		int faceIndex = 0;
-//		int vtxIndex = 0;
-//		int numPoints = 0;
 		for (int j = 0; j < width * height; ++j)
 		{
 			if (d[j] != 0)
 			{
 				faceIndex = d[j]-1;
-//				numPoints =  mesh->getFaceList().at(faceIndex).point.size();
-//				for (int k = 0; k < numPoints; ++k)
-//				{
-//					vtxIndex = mesh->getFaceList().at(faceIndex).point[k];
-//					if (qBinaryFind(l, vtxIndex) == l.end())
-//					{
-//						l.append(vtxIndex);
-//						qSort(l);
-//					}
-//				}
                 Face& f = mesh->getFace(faceIndex);
                 
                 Iterator<Vertex> vtxIt = f.constVertexIterator();
@@ -650,25 +644,25 @@ PointIndexList GlView::getSelectedVertices(GLint x, GLint y,
 	return l;
 }
 
-Camera* GlView::getViewCamera()
+Camera* GlCanvas::getViewCamera()
 {
-    if (!m_cameraList.contains(m_viewType))
+    if (!_cameraList.contains(_viewType))
     {
-        //qDebug("camera %d does not exists. Returning perspective camera.", m_viewType);
-        return m_cameraList[Perspective];
+        //qDebug("camera %d does not exists. Returning perspective camera.", _viewType);
+        return _cameraList[Perspective];
     }
-    return m_cameraList[m_viewType];
+    return _cameraList[_viewType];
 }
 
-void GlView::set3DCursorShape(CursorShapeType shape)
+void GlCanvas::set3DCursorShape(CursorShapeType shape)
 {
-    m_cursorShape = shape;
+    _cursorShape = shape;
 	
     // Turn on mouse tracking only if we are going to draw a cursor
-    setMouseTracking(m_cursorShape != None);
+    setMouseTracking(_cursorShape != None);
 }
 
-void GlView::setCursorImage(const QImage& image)
+void GlCanvas::setCursorImage(const QImage& image)
 {
     if (image.isNull())
     {
@@ -677,12 +671,12 @@ void GlView::setCursorImage(const QImage& image)
     else
     {
     	// Delete any texture loaded before.
-    	deleteTexture(m_textureId);
-    	m_textureId = 0;
+    	deleteTexture(_textureId);
+    	_textureId = 0;
 		
-	    m_cursorImage = image;
-    	m_textureId = bindTexture(m_cursorImage);
-    	if (m_textureId == 0)
+	    _cursorImage = image;
+    	_textureId = bindTexture(_cursorImage);
+    	if (_textureId == 0)
     	{
     		qDebug("texture id is not valid");
     	}
@@ -693,27 +687,41 @@ void GlView::setCursorImage(const QImage& image)
 /**
  * Returns a copy of the image used as cursor.
  */
-QImage GlView::getCursorImage()
+QImage GlCanvas::getCursorImage()
 {
-	return m_cursorImage;
+	return _cursorImage;
 }
 
-void GlView::mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx,
-											 double *wy, double *wz)
+void GlCanvas::mapScreenCoordsToWorldCoords(double x, double y, double z, 
+                                            double *wx, double *wy, double *wz)
 {
     double modelMatrix[16], projMatrix[16];
     glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
 	
 	GLdouble dx = GLdouble(x);
-	GLdouble dy = GLdouble(m_viewport[3] - y);
+	GLdouble dy = GLdouble(_viewport[3] - y);
 	GLdouble dz = GLdouble(z);
-    gluUnProject( dx, dy, dz, modelMatrix, projMatrix, m_viewport,
+    gluUnProject( dx, dy, dz, modelMatrix, projMatrix, _viewport,
 				 (GLdouble*)wx, (GLdouble*)wy, (GLdouble*)wz);
 }
 
-void GlView::mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
-											 int *x, int *y, int *z)
+void GlCanvas::mapScreenCoordsToWorldCoords(const Point3& winCoords, 
+                                            Point3& world)
+{
+    double x, y, z;
+    double wx, wy, wz;
+    x = winCoords.x();
+    y = winCoords.y();
+    z = winCoords.z();
+    mapScreenCoordsToWorldCoords(x, y, z, &wx, &wy, &wz);
+    world.x() = float(wx);
+    world.y() = float(wy);
+    world.z() = float(wz);
+}
+
+void GlCanvas::mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
+                                            double *x, double *y, double *z)
 {
     double modelMatrix[16], projMatrix[16];
     glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
@@ -721,10 +729,122 @@ void GlView::mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
 	
     double dx, dy, dz;
     gluProject( (GLdouble)wx, (GLdouble)wy, (GLdouble)wz, 
-			   modelMatrix, projMatrix, m_viewport, &dx, &dy, &dz);
+			   modelMatrix, projMatrix, _viewport, &dx, &dy, &dz);
     if (x) *x = (int)dx;
     if (y) *y = (int)dy;
     if (z) *z = (int)dz;
 }
 
+void GlCanvas::mapWorldCoordsToScreenCoords(const Point3& world,
+                                            Point3& winCoords)
+{
+    double x, y, z;
+    double wx, wy, wz;
+    x = world.x();
+    y = world.y();
+    z = world.z();
+    mapWorldCoordsToScreenCoords(wx, wy, wz, &x, &y, &z);
+    winCoords.x() = float(x);
+    winCoords.y() = float(y);
+    winCoords.z() = float(z);
+}
 
+/**
+ *
+ */
+void GlCanvas::setPen(const QPen& pen)
+{
+    _pen = pen;
+}
+
+/**
+ *
+ */
+const QPen& GlCanvas::pen() const
+{
+    return _pen;
+}
+
+/**
+ *
+ */
+void GlCanvas::setBrush(const QBrush& brush)
+{
+    _brush = brush;
+}
+
+/**
+ *
+ */
+const QBrush& GlCanvas::brush() const
+{
+    return _brush;
+}
+
+/**
+ *
+ */
+void GlCanvas::drawLine(const Point3& p1, const Point3& p2)
+{
+    double c[4];
+    _pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+    if (c[3] > 0) {
+        glColor4dv(c);
+        glBegin(GL_LINES);
+        glVertex3fv(p1.data());
+        glVertex3fv(p2.data());
+        glEnd();
+    }
+}
+
+void GlCanvas::drawRect(const Point3& p1, const Point3& p2, int mode)
+{
+    switch(mode) {
+        case 0:
+            _drawRectWinCoord(p1, p2);
+            break;
+    }
+}
+
+void GlCanvas::_drawRectWinCoord(const Point3& c1, const Point3& c2)
+{
+    double c[4];
+    Point3 p1, p2, p3, p4;
+    Point3 a1 = c1;
+    Point3 a3 = c2;
+    Point3 a2 = Point3(a3.x(), a1.y(), a1.z());
+    Point3 a4 = Point3(a1.x(), a3.y(), a1.z());
+    mapScreenCoordsToWorldCoords(a1, p1);
+    mapScreenCoordsToWorldCoords(a2, p2);
+    mapScreenCoordsToWorldCoords(a3, p3);
+    mapScreenCoordsToWorldCoords(a4, p4);
+    _brush.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+    if (c[3] > 0) {
+        glColor4dv(c);
+        glBegin(GL_QUADS);
+        glVertex3fv(p1.data());
+        glVertex3fv(p2.data());
+        glVertex3fv(p3.data());
+        glVertex3fv(p4.data());
+        glEnd();
+    }
+    
+    _pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+    if (c[3] > 0 ) {
+        glColor4dv(c);
+        glBegin(GL_LINE_LOOP);
+        glVertex3fv(p1.data());
+        glVertex3fv(p2.data());
+        glVertex3fv(p3.data());
+        glVertex3fv(p4.data());
+        glVertex3fv(p1.data());
+        glEnd();
+    }
+}
+
+/**
+ *
+ */
+void GlCanvas::drawEllipse(const Point3& center, float axis1, float axis2)
+{
+}

@@ -23,6 +23,8 @@
 #include <QGLWidget>
 #include <QPoint>
 #include <QVector>
+#include <QPen>
+#include <QBrush>
 #include "SpEnums.h"
 #include "Point3D.h"
 #include "BufferObject.h"
@@ -51,7 +53,7 @@ struct HitRecord
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class GlView : public QGLWidget
+class GlCanvas : public QGLWidget
 {
     Q_OBJECT
 public:
@@ -80,12 +82,12 @@ public:
      *
      * @param parent the parent view of the widget.
      */
-    GlView(DocumentView* parent = 0);
+    GlCanvas(DocumentView* parent = 0);
 
     /**
      * Default destructor
      */
-    ~GlView();
+    ~GlCanvas();
 
     /**
      * Return the state of the visibility of the grid.
@@ -112,35 +114,57 @@ public:
 	PointIndexList getSelectedVertices(GLint x, GLint y,
 									   GLint width, GLint height);
     /**
+     *
      */
     Camera* getViewCamera();
 
     /**
+     *
+     */
+    void mapScreenCoordsToWorldCoords(double x, double y, double z,
+                                      double *wx, double *wy, double *wz);
+    /**
+     *
+     */
+    void mapScreenCoordsToWorldCoords(const Point3&, Point3&);
+    
+    /**
+     *
+     */
+    void mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
+                                      double *x, double *y, double *z);
+    /**
+     *
+     */
+    void mapWorldCoordsToScreenCoords(const Point3&, Point3&);
+    
+    /**
+     *
      */
     PerspectiveType getPerspectiveView() {
-        return m_viewType;
+        return _viewType;
     };
 
     void set3DCursorShape(CursorShapeType shape);
 
     CursorShapeType getCursorShape() {
-        return m_cursorShape;
+        return _cursorShape;
     };
 
     void setCursorPosition(Point3 p) {
-        m_cursorPosition = p;
+        _cursorPosition = p;
     };
 
     Point3 getCursorPosition() {
-        return m_cursorPosition;
+        return _cursorPosition;
     };
 
     void setCursorOrientation(Point3 n) {
-        m_cursorOrientation = n;
+        _cursorOrientation = n;
     };
 
     Point3 getCursorOrientation() {
-        return m_cursorOrientation;
+        return _cursorOrientation;
     };
 
     /**
@@ -154,6 +178,53 @@ public:
      */
     QImage getCursorImage();
 
+    /**
+     *
+     */
+    void enable(GLenum flag) { glEnable(flag); } ;
+    
+    /**
+     *
+     */
+    void disable(GLenum flag) { glDisable(flag); } ;
+    
+    /**
+     *
+     */
+    void setPen(const QPen& pen);
+    
+    /**
+     *
+     */
+    const QPen& pen() const;
+    
+    /**
+     *
+     */
+    void setBrush(const QBrush& pen);
+    
+    /**
+     *
+     */
+    const QBrush& brush() const;
+    
+    
+    /**
+     *
+     */
+    void drawLine(const Point3& p1, const Point3& p2);
+    
+    /**
+     * Draw a rectangle into the canvas. The z coordinatinate is assumed to be
+     * equal between both points.
+     */
+    void drawRect(const Point3& p1, const Point3& p2, int mode = 0);
+    
+    /**
+     *
+     */
+    void drawEllipse(const Point3& center, float axis1, float axis2); 
+    
 public slots:
     /**
      * Set the drawing mode of the display.
@@ -168,7 +239,7 @@ public slots:
      * @param type new view to use
      */
     void setPerspectiveView(PerspectiveType type) {
-        m_viewType = type;
+        _viewType = type;
     };
 
     /**
@@ -192,8 +263,8 @@ protected:
     void mouseReleaseEvent ( QMouseEvent * e );
     void wheelEvent ( QWheelEvent * e );
 
-    bool m_mousePressed;
-    QPoint m_mousePosition;
+    bool _mousePressed;
+    QPoint _mousePosition;
 
 private:
     /**
@@ -206,27 +277,29 @@ private:
     void drawCursor();
 
     void drawOrientationAxis();
-
-    void mapScreenCoordsToWorldCoords(int x, int y, int z, double *wx, double *wy, double *wz);
-    void mapWorldCoordsToScreenCoords(double wx, double wy, double wz, int *x, int *y, int *z);
+    
+    void _drawRectWinCoord(const Point3&, const Point3& );
 	
-    bool            m_isGridVisible;        /**< Grid visibility flag */
-    bool            m_areNormalsVisible;    /**< Normals visibility flag */
-    GLuint*         m_selectBuffer;         /**< Selection buffer */
-    double          m_aspectRatio;
-    PerspectiveType m_viewType;             /**< Kind of view to display */
-    DrawingMode     m_drawingMode;          /**< Object drawing mode */
-    IRenderer*		m_renderer;				/**< Rendering engine for the objects */
-	IRenderer*		m_selectionRenderer;	/**< Renderer used for selection. */
-    CameraContainer m_cameraList;           /**< Cameras for the differents view types */
+    bool            _isGridVisible;        /**< Grid visibility flag */
+    bool            _areNormalsVisible;    /**< Normals visibility flag */
+    GLuint*         _selectBuffer;         /**< Selection buffer */
+    double          _aspectRatio;
+    PerspectiveType _viewType;             /**< Kind of view to display */
+    DrawingMode     _drawingMode;          /**< Object drawing mode */
+    IRenderer*		_renderer;				/**< Rendering engine for the objects */
+	IRenderer*		_selectionRenderer;	/**< Renderer used for selection. */
+    IRenderer*      _editVertexRenderer;    /**< Renderer used for vertex edition */
+    CameraContainer _cameraList;           /**< Cameras for the differents view types */
 
-    CursorShapeType     m_cursorShape;
-    Point3             m_cursorPosition;
-    Point3             m_cursorOrientation;
-    GLint               m_viewport[4];
-    GLfloat             m_zoomFactor;
-    GLuint				m_textureId;
-    QImage				m_cursorImage;
+    CursorShapeType     _cursorShape;
+    Point3              _cursorPosition;
+    Point3              _cursorOrientation;
+    GLint               _viewport[4];
+    GLfloat             _zoomFactor;
+    GLuint				_textureId;
+    QImage				_cursorImage;
+    QPen                _pen;
+    QBrush              _brush;
 };
 
 #endif

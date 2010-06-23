@@ -61,7 +61,7 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
     virtual void execute() {}
-    virtual void paintGL();
+    virtual void paintGL(GlCanvas *c);
 
 protected:
     virtual void initializeConfigContainer(){}

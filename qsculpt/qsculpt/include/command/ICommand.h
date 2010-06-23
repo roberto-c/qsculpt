@@ -25,6 +25,7 @@
 
 class IConfigContainer;
 class QMouseEvent;
+class GlCanvas;
 
 /**
  * Command interface. Every application command should implement this
@@ -127,7 +128,7 @@ public:
     /**
      * Used to display anything specific to the command as user feedback.
      */
-    virtual void paintGL() = 0;
+    virtual void paintGL(GlCanvas *c) = 0;
     
 public slots:
     /**

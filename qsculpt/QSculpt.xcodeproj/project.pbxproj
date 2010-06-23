@@ -162,6 +162,12 @@
 		0213E62F11C0881D00A53253 /* Subdivision.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E61011C0881D00A53253 /* Subdivision.h */; };
 		0213E63011C0881D00A53253 /* Vertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E61111C0881D00A53253 /* Vertex.h */; };
 		0213E63111C0881D00A53253 /* WireframeRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E61211C0881D00A53253 /* WireframeRenderer.h */; };
+		0213E63D11C08E8F00A53253 /* Quad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0213E63C11C08E8F00A53253 /* Quad.cpp */; };
+		0213E63F11C08EAB00A53253 /* Quad.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E63E11C08EAB00A53253 /* Quad.h */; };
+		0213E66311C1B98400A53253 /* SurfaceViewController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0213E66211C1B98400A53253 /* SurfaceViewController.cpp */; };
+		0213E66511C1B9A400A53253 /* SurfaceViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E66411C1B9A400A53253 /* SurfaceViewController.h */; };
+		0213E66711C1C70800A53253 /* IRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E66611C1C70800A53253 /* IRenderable.h */; };
+		0213E66911C1CBF800A53253 /* globalDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = 0213E66811C1CBF800A53253 /* globalDefs.h */; };
 		021D85CC0D63900F0026C13F /* BrushCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D85C30D63900F0026C13F /* BrushCommand.cpp */; };
 		021D85CD0D63900F0026C13F /* BrushProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D85C40D63900F0026C13F /* BrushProperties.cpp */; };
 		021D85CE0D63900F0026C13F /* CommandBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 021D85C50D63900F0026C13F /* CommandBase.cpp */; };
@@ -443,6 +449,12 @@
 		0213E61011C0881D00A53253 /* Subdivision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Subdivision.h; path = engine/include/Subdivision.h; sourceTree = "<group>"; };
 		0213E61111C0881D00A53253 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vertex.h; path = engine/include/Vertex.h; sourceTree = "<group>"; };
 		0213E61211C0881D00A53253 /* WireframeRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WireframeRenderer.h; path = engine/include/WireframeRenderer.h; sourceTree = "<group>"; };
+		0213E63C11C08E8F00A53253 /* Quad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Quad.cpp; path = engine/src/Quad.cpp; sourceTree = "<group>"; };
+		0213E63E11C08EAB00A53253 /* Quad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Quad.h; path = engine/include/Quad.h; sourceTree = "<group>"; };
+		0213E66211C1B98400A53253 /* SurfaceViewController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SurfaceViewController.cpp; path = qsculpt/src/SurfaceViewController.cpp; sourceTree = "<group>"; };
+		0213E66411C1B9A400A53253 /* SurfaceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SurfaceViewController.h; path = qsculpt/include/SurfaceViewController.h; sourceTree = "<group>"; };
+		0213E66611C1C70800A53253 /* IRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRenderable.h; path = qsculpt/include/IRenderable.h; sourceTree = "<group>"; };
+		0213E66811C1CBF800A53253 /* globalDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = globalDefs.h; path = qsculpt/include/globalDefs.h; sourceTree = "<group>"; };
 		021D85C30D63900F0026C13F /* BrushCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BrushCommand.cpp; path = qsculpt/src/command/BrushCommand.cpp; sourceTree = "<group>"; };
 		021D85C40D63900F0026C13F /* BrushProperties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BrushProperties.cpp; path = qsculpt/src/command/BrushProperties.cpp; sourceTree = "<group>"; };
 		021D85C50D63900F0026C13F /* CommandBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandBase.cpp; path = qsculpt/src/command/CommandBase.cpp; sourceTree = "<group>"; };
@@ -1025,6 +1037,7 @@
 				02E0FEFA10F5AE1A00DE4492 /* Vertex.cpp */,
 				02E0FF1810F5CA3B00DE4492 /* Face.cpp */,
 				02D2661810F9849C00E22E11 /* Subdivision.cpp */,
+				0213E63C11C08E8F00A53253 /* Quad.cpp */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -1060,6 +1073,7 @@
 				0213E61011C0881D00A53253 /* Subdivision.h */,
 				0213E61111C0881D00A53253 /* Vertex.h */,
 				0213E61211C0881D00A53253 /* WireframeRenderer.h */,
+				0213E63E11C08EAB00A53253 /* Quad.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -1100,6 +1114,7 @@
 				021D85DB0D6390410026C13F /* QSculptWindow.cpp */,
 				021D85DC0D6390410026C13F /* TransformWidget.cpp */,
 				020302B110ED377500587CB6 /* Stable.cpp */,
+				0213E66211C1B98400A53253 /* SurfaceViewController.cpp */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -1117,6 +1132,9 @@
 				021D86010D63908B0026C13F /* QSculptWindow.h */,
 				021D86020D63908B0026C13F /* Stable.h */,
 				021D86030D63908B0026C13F /* TransformWidget.h */,
+				0213E66411C1B9A400A53253 /* SurfaceViewController.h */,
+				0213E66611C1C70800A53253 /* IRenderable.h */,
+				0213E66811C1CBF800A53253 /* globalDefs.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -1227,6 +1245,9 @@
 				021D860A0D63908B0026C13F /* QSculptWindow.h in Headers */,
 				021D860B0D63908B0026C13F /* Stable.h in Headers */,
 				021D860C0D63908B0026C13F /* TransformWidget.h in Headers */,
+				0213E66511C1B9A400A53253 /* SurfaceViewController.h in Headers */,
+				0213E66711C1C70800A53253 /* IRenderable.h in Headers */,
+				0213E66911C1CBF800A53253 /* globalDefs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1369,6 +1390,7 @@
 				0213E62F11C0881D00A53253 /* Subdivision.h in Headers */,
 				0213E63011C0881D00A53253 /* Vertex.h in Headers */,
 				0213E63111C0881D00A53253 /* WireframeRenderer.h in Headers */,
+				0213E63F11C08EAB00A53253 /* Quad.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1556,7 +1578,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "MOC=/Developer/Tools/Qt/moc\n\n$MOC -o${SRCROOT}/engine/moc/moc_isurface.cpp ${SRCROOT}/engine/include/ISurface.h\n$MOC -o${SRCROOT}/engine/moc/moc_bomanager.cpp ${SRCROOT}/engine/include/BOManager.h\n";
+			shellScript = "MOC=/Developer/Tools/Qt/moc\n\n$MOC -o${SRCROOT}/engine/moc/moc_isurface.cpp ${SRCROOT}/engine/include/ISurface.h\n$MOC -o${SRCROOT}/engine/moc/moc_bomanager.cpp ${SRCROOT}/engine/include/BOManager.h\n# $MOC -o${SRCROOT}/engine/moc/moc_scenenode.cpp ${SRCROOT}/engine/include/SceneNode.h\n";
 		};
 		02A3E5180D67FD5100A2CB35 /* Uic stage */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1638,6 +1660,7 @@
 				020EEE630ED121FA00F1C116 /* moc_glview.cpp in Sources */,
 				020302B210ED377500587CB6 /* Stable.cpp in Sources */,
 				02E884C5115FC4DE0007A178 /* GlView.cpp in Sources */,
+				0213E66311C1B98400A53253 /* SurfaceViewController.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1670,6 +1693,7 @@
 				02E0FEFB10F5AE1A00DE4492 /* Vertex.cpp in Sources */,
 				02E0FF1910F5CA3B00DE4492 /* Face.cpp in Sources */,
 				02D2661910F9849C00E22E11 /* Subdivision.cpp in Sources */,
+				0213E63D11C08E8F00A53253 /* Quad.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

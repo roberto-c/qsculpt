@@ -41,7 +41,8 @@ DocumentView::DocumentView( QWidget *_parent )
         : QWidget( _parent ),
         m_document(NULL),
         m_viewPerspective(NULL),
-        m_drawingMode(NULL)
+        m_drawingMode(NULL),
+        _drawVertices(false)
 {
     createWidgets();
 }
@@ -52,7 +53,7 @@ void DocumentView::createWidgets()
 {
     QGridLayout* gridLayout = new QGridLayout(this);
 	QHBoxLayout* hboxLayout = new QHBoxLayout();
-	m_display = new GlView(this);
+	m_display = new GlCanvas(this);
 	
 	Q_CHECK_PTR(gridLayout);
 	Q_CHECK_PTR(m_display);
@@ -95,15 +96,15 @@ void DocumentView::createWidgets()
     gridLayout->setColumnStretch(3,0);
     gridLayout->setColumnStretch(4,4);
 
-    m_viewPerspective->addItem("Front", GlView::Front);
-    m_viewPerspective->addItem("Back", GlView::Back);
-    m_viewPerspective->addItem("Top", GlView::Top);
-    m_viewPerspective->addItem("Bottom", GlView::Bottom);
-    m_viewPerspective->addItem("Left", GlView::Left);
-    m_viewPerspective->addItem("Right", GlView::Right);
-    m_viewPerspective->addItem("Perspective", GlView::Perspective);
+    m_viewPerspective->addItem("Front", GlCanvas::Front);
+    m_viewPerspective->addItem("Back", GlCanvas::Back);
+    m_viewPerspective->addItem("Top", GlCanvas::Top);
+    m_viewPerspective->addItem("Bottom", GlCanvas::Bottom);
+    m_viewPerspective->addItem("Left", GlCanvas::Left);
+    m_viewPerspective->addItem("Right", GlCanvas::Right);
+    m_viewPerspective->addItem("Perspective", GlCanvas::Perspective);
     m_viewPerspective->setCurrentIndex(6);
-    m_display->setPerspectiveView( GlView::Perspective );
+    m_display->setPerspectiveView( GlCanvas::Perspective );
 
     m_drawingMode->addItem("Points", Points);
     m_drawingMode->addItem("Wireframe", Wireframe);
@@ -150,9 +151,9 @@ void DocumentView::viewPerspectiveChanged(int index)
 	Q_ASSERT(m_display);
 	Q_ASSERT(m_viewPerspective);
 	
-    GlView::PerspectiveType type;
+    GlCanvas::PerspectiveType type;
 
-    type = (GlView::PerspectiveType)m_viewPerspective->itemData(index).toInt();
+    type = (GlCanvas::PerspectiveType)m_viewPerspective->itemData(index).toInt();
     m_display->setPerspectiveView( type );
     updateView();
 }
@@ -175,3 +176,12 @@ void DocumentView::setNormalsVisible(bool value)
     m_display->setNormalsVisible(value);
 }
 
+void DocumentView::setDrawVertices(bool drawVertices)
+{
+    _drawVertices = drawVertices;
+}
+
+bool DocumentView::getDrawVertices()
+{
+    return _drawVertices;
+}

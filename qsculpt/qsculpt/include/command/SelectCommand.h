@@ -47,12 +47,14 @@ public:
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
+    virtual void paintGL(GlCanvas *c);
     virtual QWidget* getOptionsWidget();
     // End ICommand interface
 
 private:
     ObjectContainer _objectsSelected;
     bool            _boxSelection;
+    bool            _drawBox;
     Point3          _startPoint;
     Point3          _endPoint;
 

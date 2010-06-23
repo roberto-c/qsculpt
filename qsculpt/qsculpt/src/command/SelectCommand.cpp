@@ -35,7 +35,8 @@ QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
 SelectCommand::SelectCommand(ICommand* parent)
 : CommandBase("Select", parent),
-_boxSelection(false)
+_boxSelection(true),
+_drawBox(false)
 {
 	if(getOptionsWidget())
 	{
@@ -45,7 +46,8 @@ _boxSelection(false)
 
 SelectCommand::SelectCommand(const SelectCommand& cpy)
 : CommandBase(cpy),
-_boxSelection(false)
+_boxSelection(cpy._boxSelection),
+_drawBox(false)
 {
 	if(getOptionsWidget())
 	{
@@ -72,34 +74,72 @@ QWidget* SelectCommand::getOptionsWidget()
 
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {
-    if (_objectsSelected.isEmpty())
-        CommandBase::mouseMoveEvent(e);
+    if (_boxSelection) 
+    {
+        _endPoint = Point3(e->pos().x(), e->pos().y(), 0.5f);
+        _drawBox = true;
+    } 
+    else 
+    {
+        if (_objectsSelected.isEmpty())
+            CommandBase::mouseMoveEvent(e);
+    }
 }
 
 void SelectCommand::mousePressEvent(QMouseEvent* e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
-    _objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
+    if (_boxSelection) 
+    {
+        _startPoint = Point3(e->pos().x(), e->pos().y(), 0.5f);
+    } 
+    else 
+    {
+        _objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
 
-    if (_objectsSelected.count() > 0)
-    {
-		for (int i = 0; i < _objectsSelected.count(); ++i)
-		{
-			_objectsSelected[i]->setSelected(!_objectsSelected[i]->isSelected());
-		}
-    }
-    else
-    {
-        CommandBase::mousePressEvent(e);
+        if (_objectsSelected.count() > 0)
+        {
+            for (int i = 0; i < _objectsSelected.count(); ++i)
+            {
+                _objectsSelected[i]->setSelected(!_objectsSelected[i]->isSelected());
+            }
+        }
+        else
+        {
+            CommandBase::mousePressEvent(e);
+        }
     }
 }
 
 void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 {
-    if (_objectsSelected.count() > 0)
+    if (_boxSelection) 
+    {
+        _endPoint = Point3(e->pos().x(), e->pos().y(), 0.5f);
+        _drawBox = false;
         emit executed();
-    else
-        CommandBase::mouseReleaseEvent(e);
+    } 
+    else 
+    {
+        if (_objectsSelected.count() > 0)
+            emit executed();
+        else
+            CommandBase::mouseReleaseEvent(e);
+    }
 }
 
+void SelectCommand::paintGL(GlCanvas *c)
+{
+    if (_drawBox) {
+        c->disable(GL_LIGHTING);
+        c->enable(GL_BLEND);
+        c->disable(GL_DEPTH_TEST);
+        c->setPen(QPen(QColor(49, 122, 255, 255)));
+        c->setBrush(QBrush(QColor(49, 122, 255, 100)));
+        c->drawRect(_startPoint, _endPoint);
+        c->enable(GL_LIGHTING);
+        c->disable(GL_BLEND);
+        c->enable(GL_DEPTH_TEST);
+    }
+}
