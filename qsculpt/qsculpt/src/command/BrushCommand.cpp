@@ -20,7 +20,6 @@
 #include "Stable.h"
 #include "BrushCommand.h"
 
-#include "Stable.h"
 #include <QtOpenGL>
 #include <QMouseEvent>
 #include "QSculptApp.h"

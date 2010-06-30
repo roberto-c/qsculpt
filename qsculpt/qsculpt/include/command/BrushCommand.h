@@ -42,41 +42,41 @@ public:
         Pull
     };
 
-	BrushCommand(ICommand* parent=0);
+    BrushCommand(ICommand* parent=0);
 
-	BrushCommand(const BrushCommand& cpy);
+    BrushCommand(const BrushCommand& cpy);
 
     virtual ~BrushCommand();
 
     // ICommand Interface
-	virtual ICommand* clone() const;
-	virtual void activate(bool active);
+    virtual ICommand* clone() const;
+    virtual void activate(bool active);
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
-	virtual void undo();
-	virtual void redo();
-	virtual QWidget* getOptionsWidget();
-	// End ICommand Interface
+    virtual void undo();
+    virtual void redo();
+    virtual QWidget* getOptionsWidget();
+    // End ICommand Interface
 
 private:
-	typedef QMap<ISurface*, QHash<int, Point3> > DirtyFaceMap;
+    typedef QMap<ISurface*, QHash<int, Point3> > DirtyFaceMap;
 
-	void applyOperation(); 
-	
-	void selectObject();
+    void applyOperation();
 
-    ObjectContainer		_selectedObjects;
+    void selectObject();
+
+    ObjectContainer     _selectedObjects;
     ISurface*           _object;
     double              _radius;
     double              _depth;
     BrushAction         _action;
     QVector<int>        _vertexSelected;
     BrushProperties*    _propertiesWindow;
-	DirtyFaceMap		_previousState;
-	bool				_undoCalled;
-	static QImage		_cursorImage;
-	int					_direction;
+    DirtyFaceMap        _previousState;
+    bool                _undoCalled;
+    static QImage       _cursorImage;
+    int                 _direction;
 };
 
 #endif

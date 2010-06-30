@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "StdAfx.h"
+#include "Point3D.h"
 #include "Camera.h"
 #include <QString>
 #include <math.h>
