@@ -42,6 +42,7 @@ TransformWidget::~TransformWidget()
 
 void TransformWidget::enable(bool enable)
 {
+    Q_UNUSED(enable);
     //m_apply->setEnabled(enable);
 }
 

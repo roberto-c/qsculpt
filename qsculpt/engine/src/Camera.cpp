@@ -23,8 +23,7 @@
 #include <math.h>
 
 Camera::Camera()
- :  ICamera(),
-    m_colatitude(0.0),
+ :  m_colatitude(0.0),
     m_longitude(0.0)
 {
 }
@@ -123,7 +122,7 @@ void Camera::setDistanceFromTarget(double distance)
     m_position = m_target + Point3(x, y, z);
 }
 
-QString Camera::toString()
+QString Camera::toString() const
 {
     QString str;
     

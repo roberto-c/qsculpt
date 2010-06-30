@@ -10,7 +10,6 @@
 #define SUBDIVISION_H
 
 #include <vector>
-//#include <hash_map>
 #include "ISurface.h"
 #include "SceneNode.h"
 
@@ -23,28 +22,28 @@ class SubdivisionScheme;
  */
 class Subdivision : public ISurface, public SceneNode
 {
-	typedef std::vector<Vertex*> VertexCollection;
-	typedef std::vector<Edge*> EdgesCollection;
-	typedef std::vector<Face*> FacesCollection;
-	
-	/** Vertices by each subdivision level */
-	std::vector<VertexCollection> _vertLevelCollections;
-	/** Edges by each subdivision level */
-	std::vector<EdgesCollection> _edgesLevelCollections;
-	std::vector<FacesCollection> _facesLevelCollections;
-	
-	VertexCollection *_vertices;
-	EdgesCollection *_edges;
-	FacesCollection *_faces;
-	
-	SubdivisionScheme* scheme;
-	
+    typedef std::vector<Vertex*> VertexCollection;
+    typedef std::vector<Edge*> EdgesCollection;
+    typedef std::vector<Face*> FacesCollection;
+
+    /** Vertices by each subdivision level */
+    std::vector<VertexCollection> _vertLevelCollections;
+    /** Edges by each subdivision level */
+    std::vector<EdgesCollection> _edgesLevelCollections;
+    std::vector<FacesCollection> _facesLevelCollections;
+
+    VertexCollection *_vertices;
+    EdgesCollection *_edges;
+    FacesCollection *_faces;
+
+    SubdivisionScheme* scheme;
+
 public:
-	Subdivision();
-	virtual ~Subdivision();
-	/******************************************************************************
-	 * IObject3D interface
-	 */
+    Subdivision();
+    virtual ~Subdivision();
+    /******************************************************************************
+     * IObject3D interface
+     */
     virtual void setScene(Scene* scene) ;
     virtual Scene* getScene() const;
     virtual Point3 getPosition() const;
@@ -69,14 +68,14 @@ public:
     virtual int addVertex(Vertex* v);
     virtual void removeVertex(int id);
     virtual Point3& getVertex(int index);
-	virtual Point3 getVertex(int index) const;
-	virtual int getNumVertices() const;
-	virtual int addEdge(const Edge& edge);
-	virtual int addEdge(int v1, int v2);
+    virtual Point3 getVertex(int index) const;
+    virtual int getNumVertices() const;
+    virtual int addEdge(const Edge& edge);
+    virtual int addEdge(int v1, int v2);
     virtual int addFace(const QVector<int>& vertexIndexList);
-	virtual void replaceFace(int index, const QVector<int>& vertexIndexList);
+    virtual void replaceFace(int index, const QVector<int>& vertexIndexList);
     virtual void removeFace( int id);
-	virtual int getNumFaces() const;
+    virtual int getNumFaces() const;
     virtual Face& getFace(int index);
     virtual int getFaceIndexAtPoint(const Point3& p) const;
     virtual int getClosestPointAtPoint(const Point3 &p) const;
@@ -88,74 +87,74 @@ public:
     virtual void removeResolutionLevel(int level);
     virtual void setWorkingResolutionLevel(int level);
     virtual int getWorkingResolutionLevel();
-	virtual bool hasChanged() {
-		return m_hasChanged;
-	};
-	virtual void setChanged(bool val) {
-		m_hasChanged = val;
-		if (val) {
-			emit meshChanged(this);
-		}
-	};
-	virtual QVector<int> getSelectedPoints() const {
-		return m_selectedPoints;
-	}
-	virtual void setSelectedPoints(const QVector<int>& indicesArray) {
-		m_selectedPoints = indicesArray;
-	}
-	
-	virtual Iterator<Vertex> vertexIterator();
-	virtual Iterator<Vertex> constVertexIterator() const;
-	virtual Iterator<Face> faceIterator();
-	virtual Iterator<Face> constFaceIterator() const;
-	
-	// End IObject3D interface
-	
+    virtual bool hasChanged() {
+        return m_hasChanged;
+    };
+    virtual void setChanged(bool val) {
+        m_hasChanged = val;
+        if (val) {
+            emit meshChanged(this);
+        }
+    };
+    virtual QVector<int> getSelectedPoints() const {
+        return m_selectedPoints;
+    }
+    virtual void setSelectedPoints(const QVector<int>& indicesArray) {
+        m_selectedPoints = indicesArray;
+    }
+
+    virtual Iterator<Vertex> vertexIterator();
+    virtual Iterator<Vertex> constVertexIterator() const;
+    virtual Iterator<Face> faceIterator();
+    virtual Iterator<Face> constFaceIterator() const;
+
+    // End IObject3D interface
+
     //const Object3D& operator=(const Object3D& obj);
-	
+
     Iterator<Vertex> vertexIterator(int level);
-	Iterator<Vertex> constVertexIterator(int level) const;
-	Iterator<Face> faceIterator(int level);
-	Iterator<Face> constFaceIterator(int level) const;
-    
+    Iterator<Vertex> constVertexIterator(int level) const;
+    Iterator<Face> faceIterator(int level);
+    Iterator<Face> constFaceIterator(int level) const;
+
 protected:
     /**
      * Initializes the points vector.
      */
     virtual void initPoints();
-	
+
     /**
      * Draw a bounding box around the object.
      */
     void drawBoundingBox();
-	
+
     Scene*          m_scene;
     Point3          m_position;
-    QColor          m_color,
-	m_boundingBoxColor;
+    QColor          m_color;
+    QColor          m_boundingBoxColor;
     Point3          m_boundingBoxVert[8];
-    float           m_minX,
-					m_maxX,
-					m_minY,
-					m_maxY,
-					m_minZ,
-					m_maxZ;
+    float           m_minX;
+    float           m_maxX;
+    float           m_minY;
+    float           m_maxY;
+    float           m_minZ;
+    float           m_maxZ;
     float           m_rotX, m_rotY, m_rotZ;
     bool            m_selected;
     int             m_callListId;
     bool            m_genereateCallList;
-    int				m_currentResolutionLevel;
-	bool			m_hasChanged;
-	QVector<int>	m_selectedPoints;
+    int             m_currentResolutionLevel;
+    bool            m_hasChanged;
+    QVector<int>    m_selectedPoints;
 
-	
-	// inner classes
+
+    // inner classes
 protected:
     class VertexIterator;
     class FaceIterator;
-	
-	friend class VertexIterator;
-	friend class FaceIterator;
+
+    friend class VertexIterator;
+    friend class FaceIterator;
 };
 
 #endif

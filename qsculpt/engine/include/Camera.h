@@ -23,44 +23,105 @@
 #include "ICamera.h"
 
 /**
- * Implements the ICamera interface
+ * @class Camera
+ *
+ * The Camera class provides methods to create the different matrices used
+ * to transform the vertices in world space to screen space.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class Camera : public ICamera
+class Camera
 {
 public:
     Camera();
 
     virtual ~Camera();
 
-    virtual void setPosition(const Point3& p);
+    void setPosition(const Point3& p);
 
-    virtual Point3 getPosition();
+    Point3 getPosition();
     
-    virtual void setTargetPoint(const Point3 & target);
+    void setTargetPoint(const Point3 & target);
     
-    virtual Point3 getTargetPoint();
+    Point3 getTargetPoint();
+
+    void setOrientationVector(const Point3& v);
+
+    Point3 getOrientationVector();
+
+    void setLongitude(double longitude);
+
+    double getLongitude();
+
+    void setColatitude(double colatitude);
+
+    double getColatitude();
+
+    void setDistanceFromTarget(double distance);
+
+    double getDistanceFromTarget();
+
+    /**
+     * Set the transformation matrix to use for the camera or eye transformation.
+     *
+     * If this function is used, then position, target and orientation vectors
+     * are not valid anymore as those paramater are used to construct this matrix.
+     *
+     */
+    void setModelView(const Eigen::Matrix4f& m);
     
-    virtual void setOrientationVector(const Point3& v);
+    const Eigen::Matrix4f& modelView();
     
-    virtual Point3 getOrientationVector();
+    void setProjectionMatrix(const Eigen::Matrix4f& m);
+    
+    const Eigen::Matrix4f& projection();
+    
+    /**
+     * Set the viewport transformation matrix.
+     *
+     * This transformation matrix is applied after the projection transformation
+     * to map from the projection canonical view volume to screen space or 
+     * window space.
+     *
+     * This is similar to calling glViewpot in OpenGL.
+     */
+    void setViewport(const Eigen::Matrix4f& m);
 
-    virtual void setLongitude(double longitude);
-
-    virtual double getLongitude();
-
-    virtual void setColatitude(double colatitude);
-
-    virtual double getColatitude();
-
-    virtual void setDistanceFromTarget(double distance);
-
-    virtual double getDistanceFromTarget();
-
-    QString toString();
+    /**
+     * Returns the viewport transformation matrix.
+     *
+     * @see Camera::setViewport
+     */
+    const Eigen::Matrix4f& viewport() const;
+    
+    /**
+     * Maps a point from screen space to world space.
+     *
+     * This method is similar in purpose to gluUnproject function call.
+     */
+    Vector3 screenToWorld(const Vector3& p) const;
+    
+    /**
+     * Maps a point from world space to screen space.
+     *
+     * This method is similar in purpose to gluProject function call.
+     */
+    Vector3 worldToScreen(const Vector3& p) const;
+    
+    
+    /**
+     * Create a string representation of the object. 
+     *
+     * Outputs each attribute this class contains.
+     */
+    QString toString() const;
 
 private:
+    void updateMatrix();
+    
+    Eigen::Matrix4f     _projMat;
+    Eigen::Matrix4f     _viewPort;
+    
     Point3 m_position;
     Point3 m_target;
     Point3 m_orientation;

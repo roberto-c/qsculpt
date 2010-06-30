@@ -46,6 +46,9 @@ PickingFacesRenderer g_pickingVertices;
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
 
+QGLShaderProgram    *g_shaderProgram = NULL;
+QGLShader           *g_shaderVertex = NULL;
+QGLShader           *g_shaderFragment = NULL;
 
 struct Rect {
     GLfloat x1, y1, x2, y2;
@@ -205,6 +208,42 @@ void GlCanvas::initializeGL()
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    
+    qDebug() << "hasOGL Shaders: " << QGLShaderProgram::hasOpenGLShaderPrograms();
+    g_shaderProgram = new QGLShaderProgram(this);
+    g_shaderVertex = new QGLShader(QGLShader::Vertex, this);
+    g_shaderFragment = new QGLShader(QGLShader::Fragment, this);
+    
+    g_shaderProgram->addShader(g_shaderVertex);
+    g_shaderProgram->addShader(g_shaderFragment);
+    
+    QString path = g_pApp->applicationDirPath();
+  
+    qDebug() << "shaderId: " << g_shaderVertex->shaderId();
+    if (!printGlError()) qDebug() << __LINE__;
+    do {
+        if (!g_shaderVertex->compileSourceFile(path + "/../Resources/phong.vs"))
+        {
+            qDebug() << "Failed to compile vertex shader";
+            qDebug() << g_shaderVertex->log();
+            break;
+        } 
+        if (!printGlError()) qDebug() << __LINE__;
+        if (!g_shaderFragment->compileSourceFile(path + "/../Resources/phong.fs"))
+        {
+            qDebug() << "Failed to compile fragment shader";
+            qDebug() << g_shaderFragment->log();
+            break;
+        }
+        if (!printGlError()) qDebug() << __LINE__;
+        if (!g_shaderProgram->link())
+        {
+            qDebug() << "Failed to link shaders";
+            qDebug() << g_shaderProgram->log();
+            break;
+        }
+        if (!printGlError()) qDebug() << __LINE__;
+    } while (false);
 }
 
 void GlCanvas::resizeGL( int w, int h )
@@ -281,7 +320,39 @@ void GlCanvas::paintGL()
             break;
     }
 	
+    Eigen::Vector4f eyePosition, lightPosition(-1, 2, -2, 1);
+    if (camera) {
+        eyePosition.x() = camera->getPosition().x();
+        eyePosition.y() = camera->getPosition().y();
+        eyePosition.z() = camera->getPosition().z();
+        eyePosition.w() = 1.0f;
+    }
+
+    g_shaderProgram->bind();
+    printGlError();
+    uint loc = g_shaderProgram->uniformLocation("eyePosition");
+    g_shaderProgram->setUniformValue(loc, eyePosition.x(), 
+                                    eyePosition.y(), eyePosition.z(),
+                                    eyePosition.w());
+    printGlError();
+    loc = g_shaderProgram->uniformLocation("lightPosition");
+    g_shaderProgram->setUniformValue(loc, lightPosition.x(), 
+                                    lightPosition.y(), lightPosition.z(),
+                                    lightPosition.w());
+    printGlError();
+    loc = g_shaderProgram->uniformLocation("diffuseColor");
+    g_shaderProgram->setUniformValue(loc, 0.5f, 0.2f, 1.0f, 1.0f);
+    printGlError();
+    loc = g_shaderProgram->uniformLocation("specularColor");
+    g_shaderProgram->setUniformValue(loc, 1.0f, 1.0f, 1.0f, 1.0f);
+    printGlError();
+    loc = g_shaderProgram->uniformLocation("exponent");
+    g_shaderProgram->setUniformValue(loc, 220.0f);
+    printGlError();
+    
     drawObjects();
+    g_shaderProgram->release();
+    
     drawCursor();
 	
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
@@ -486,19 +557,28 @@ void GlCanvas::mouseMoveEvent ( QMouseEvent * e )
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
 	
     bool needUpdate = false;
-    if (cmd)
+    if (e->modifiers() & Qt::AltModifier) 
     {
-        cmd->mouseMoveEvent( e );
-        needUpdate = true;
+        qDebug() << "Alt pressed";
+        //this->getViewCamera()->
     }
-    if (_cursorShape != None)
+    else
     {
-    	//_cursorPosition.setPoint(e->x(), e->y(), 0);
-    	_cursorPosition.x() = e->x();
-		_cursorPosition.y() = e->y();
-		_cursorPosition.z() = 0;
-		needUpdate = true;
+        if (cmd)
+        {
+            cmd->mouseMoveEvent( e );
+            needUpdate = true;
+        }
+        if (_cursorShape != None)
+        {
+            //_cursorPosition.setPoint(e->x(), e->y(), 0);
+            _cursorPosition.x() = e->x();
+            _cursorPosition.y() = e->y();
+            _cursorPosition.z() = 0;
+            needUpdate = true;
+        }
     }
+    
     if (needUpdate)
     {
     	updateGL();
@@ -509,24 +589,31 @@ void GlCanvas::mousePressEvent ( QMouseEvent * e )
 {
     //qDebug("MousePress");
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
-	
-    bool needUpdate = false;
-    if (cmd)
+	bool needUpdate = false;
+    
+    if (e->modifiers() & Qt::AltModifier) 
     {
-        cmd->mousePressEvent( e );
-        needUpdate = true;
+        qDebug() << "Alt pressed";
     }
-	_cursorPosition.x() = e->x();
-	_cursorPosition.y() = e->y();
-    if (_cursorShape != None)
+    else
     {
-		_cursorPosition.x() = e->x();
-		_cursorPosition.y() = e->y();
-    	needUpdate = true;
+        if (cmd)
+        {
+            cmd->mousePressEvent( e );
+            needUpdate = true;
+        }
+        _cursorPosition.x() = e->x();
+        _cursorPosition.y() = e->y();
+        if (_cursorShape != None)
+        {
+            _cursorPosition.x() = e->x();
+            _cursorPosition.y() = e->y();
+            needUpdate = true;
+        }
     }
     if (needUpdate)
     {
-    	updateGL();
+        updateGL();
     }
 }
 
@@ -535,10 +622,17 @@ void GlCanvas::mouseReleaseEvent ( QMouseEvent * e )
     //qDebug("MouseRelease");
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
 	
-    if (cmd)
+    if (e->modifiers() & Qt::AltModifier) 
     {
-        cmd->mouseReleaseEvent( e );
-        updateGL();
+        qDebug() << "Alt pressed";
+    }
+    else 
+    {
+        if (cmd)
+        {
+            cmd->mouseReleaseEvent( e );
+            updateGL();
+        }
     }
 }
 
@@ -628,7 +722,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
                 
                 Iterator<Vertex> vtxIt = f.constVertexIterator();
                 while(vtxIt.hasNext()) {
-                    const Vertex& v = vtxIt.next();
+                    //const Vertex& v = vtxIt.next();
                 }
 			}
 		}
@@ -845,6 +939,6 @@ void GlCanvas::_drawRectWinCoord(const Point3& c1, const Point3& c2)
 /**
  *
  */
-void GlCanvas::drawEllipse(const Point3& center, float axis1, float axis2)
+void GlCanvas::drawEllipse(const Point3& /*center*/, float /*axis1*/, float /*axis2*/)
 {
 }

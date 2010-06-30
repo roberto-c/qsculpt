@@ -172,6 +172,6 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
 
 void CommandBase::paintGL(GlCanvas *c)
 {
-
+    Q_UNUSED(c);
 }
 
