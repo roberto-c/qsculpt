@@ -26,56 +26,60 @@ INCLUDEPATH += . \
  PRECOMPILED_HEADER  = include/StdAfx.h
 
 # Input
-HEADERS += include/WireframeRenderer.h \
-    include/Vertex.h \
-    include/Triangle.h \
-    include/Subdivision.h \
-    include/StdAfx.h \
-    include/Sphere.h \
-    include/SpEnums.h \
-    include/SmoothRenderer.h \
-    include/SceneNode.h \
-    include/Scene.h \
-    include/RendererFactory.h \
-    include/Quaternion.h \
-    include/Quadtree.h \
-    include/PointRenderer.h \
-    include/PointContainer.h \
-    include/Point3D.h \
-    include/PickingFacesRenderer.h \
-    include/Picking.h \
-    include/Octree.h \
-    include/Object3D.h \
-    include/Mesh.h \
-    include/IRenderer.h \
-    include/IObject3D.h \
-    include/ICamera.h \
-    include/HEdge.h \
-    include/FlatRenderer.h \
-    include/FaceContainer.h \
-    include/Face.h \
-    include/EdgeContainer.h \
-    include/Camera.h \
-    include/BufferObject.h \
+HEADERS += \
+    include/Aabb.h \
+    include/BOManager.h \
     include/Box.h \
-    include/BOManager.h
-SOURCES += src/Box.cpp \
+    include/BufferObject.h \
+    include/Camera.h \
+    include/Face.h \
+    include/FlatRenderer.h \
+    include/HEdge.h \
+    include/ICamera.h \
+    include/IIterator.h \
+    include/IRenderer.h \
+    include/ISurface.h \
+    include/Material.h \
+    include/Mesh.h \
+    include/Octree.h \
+    include/Picking.h \
+    include/PickingFacesRenderer.h \
+    include/Point3D.h \
+    include/PointRenderer.h \
+    include/Quad.h \
+    include/Quadtree.h \
+    include/RendererFactory.h \
+    include/Scene.h \
+    include/SceneNode.h \
+    include/SmoothRenderer.h \
+    include/SpEnums.h \
+    include/Sphere.h \
+    include/StdAfx.h \
+    include/Subdivision.h \
+    include/Vertex.h \
+    include/WireframeRenderer.h
+
+SOURCES += src/BOManager.cpp \
+    src/Box.cpp \
+    src/BufferObject.cpp \
     src/Camera.cpp \
-    src/Mesh.cpp \
-    src/Object3D.cpp \
-    src/Octree.cpp \
-    src/Scene.cpp \
-    src/Sphere.cpp \
-    src/StdAfx.cpp \
-    src/RendererFactory.cpp \
+    src/Face.cpp \
     src/FlatRenderer.cpp \
-    src/PointRenderer.cpp \
-    src/WireframeRenderer.cpp \
-    src/SmoothRenderer.cpp \
-    src/BOManager.cpp \
+    src/HEdge.cpp \
+    src/Material.cpp \
+    src/Mesh.cpp \
+    src/Octree.cpp \
     src/Picking.cpp \
     src/PickingFacesRenderer.cpp \
-    src/SpEnums.cpp \
+    src/PointRenderer.cpp \
+    src/Quad.cpp \
+    src/RendererFactory.cpp \
+    src/Scene.cpp \
     src/SceneNode.cpp \
-    src/HEdge.cpp \
-    src/BufferObject.cpp
+    src/SmoothRenderer.cpp \
+    src/SpEnums.cpp \
+    src/Sphere.cpp \
+    src/StdAfx.cpp \
+    src/Subdivision.cpp \
+    src/Vertex.cpp \
+    src/WireframeRenderer.cpp

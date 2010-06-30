@@ -29,15 +29,15 @@ class SceneNode
     //Q_OBJECT
     
 	SceneNode* _parent;
-	Eigen::Transform3f _transform;
+        Eigen::Transform3f _transform;
 	
 public:
-    SceneNode(SceneNode* parent){};
-    virtual ~SceneNode(){};
+    SceneNode(SceneNode* /*parent*/){}
+    virtual ~SceneNode(){}
     
-    const Eigen::Transform3f& transform() const { return _transform; };
-    Eigen::Transform3f& transform() { return _transform; };
-    void setTransform(const Eigen::Transform3f& t) {};
+    const Eigen::Transform3f& transform() const { return _transform; }
+    Eigen::Transform3f& transform() { return _transform; }
+    void setTransform(const Eigen::Transform3f& /*t*/) {}
     
     
 };

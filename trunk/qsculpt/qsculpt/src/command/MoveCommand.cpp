@@ -226,6 +226,7 @@ void TransformCommand::mousePressEvent(QMouseEvent* e)
 
 void TransformCommand::mouseReleaseEvent(QMouseEvent* e)
 {
+    Q_UNUSED(e);
     //CommandBase::mouseReleaseEvent(e);
 
     //qDebug("Final position: %s", qPrintable(_final.toString()));

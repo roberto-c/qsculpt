@@ -82,7 +82,7 @@ void PointRenderer::renderVbo(const ISurface* mesh)
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
 	glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
-	glColorPointer(3, GL_FLOAT, 6*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
+	//glColorPointer(3, GL_FLOAT, 6*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
 	
 	glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT);
 	

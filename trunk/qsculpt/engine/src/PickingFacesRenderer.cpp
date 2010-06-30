@@ -28,15 +28,15 @@
 
 typedef struct tagVtxStruct 
 {
-	GLfloat v[3];
-	GLubyte color[4];
+    GLfloat v[3];
+    GLubyte color[4];
 } VtxStruct;
 
 typedef struct tagFlatVtxStruct 
 {
-	GLfloat v[3];
-	GLfloat n[3];
-	GLubyte color[4];
+    GLfloat v[3];
+    GLfloat n[3];
+    GLubyte color[4];
 } FlatVtxStruct;
 
 #define SIZE_OF_VERTEX (3*sizeof(GLfloat))
@@ -49,159 +49,159 @@ PickingFacesRenderer::PickingFacesRenderer()
 }
 PickingFacesRenderer::~PickingFacesRenderer()
 {
-	//BOManager::getInstance()->destroyPool(BO_POOL_NAME);
-	BOManager::getInstance()->destroyPool(BO_FLAT_POOL_NAME);
-}
-		
-void PickingFacesRenderer::renderObject(const ISurface* mesh, GLuint objId)
-{
-	renderVbo(mesh, objId);
-}
-		
-void PickingFacesRenderer::renderVbo(const ISurface* mesh, unsigned int objId)
-{
-	//qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
-	if (mesh == NULL)
-		return;
-	
-	ISurface* obj = const_cast<ISurface*>(mesh);
-	//VertexBuffer *vbo = getVBO(obj);
-	VertexBuffer *flatVbo = getFlatVBO(obj);
-	if (//vbo == NULL || vbo->getBufferID() == 0 ||
-		 flatVbo == NULL || flatVbo->getBufferID() == 0)
-	{
-		qDebug() << "Failed to create VBO. Fallback to immediate mode" ;
-		renderImmediate(mesh, objId);
-		return;
-	}
-	
-	if (/*vbo->needUpdate() || */flatVbo->needUpdate())
-	{
-		//fillVertexBuffer(obj, vbo, objId);
-		fillFlatVertexBuffer(obj, flatVbo, objId);
-		//vbo->setNeedUpdate(false);
-		flatVbo->setNeedUpdate(false);
-	}
-	
-	glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, flatVbo->getBufferID());
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(FlatVtxStruct),
-				   BUFFER_OFFSET(SIZE_OF_VERTEX + SIZE_OF_NORMAL));
-	glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), BUFFER_OFFSET(SIZE_OF_VERTEX));
-	glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), NULL);
-	
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	
-	//glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-	glDrawArrays(GL_QUADS, 0, obj->getNumFaces()*4);
-	
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	
-//	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
-//	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VtxStruct), BUFFER_OFFSET(SIZE_OF_VERTEX));
-//	glVertexPointer(3, GL_FLOAT, sizeof(VtxStruct), NULL);
-//	
-//	glEnableClientState(GL_VERTEX_ARRAY);
-//	glEnableClientState(GL_COLOR_ARRAY);
-//	
-//	glPointSize(1.0f);
-//	//glColor3f(1.0f, 1.0f, 1.0f);
-//	glDepthFunc(GL_LEQUAL);
-//	glDrawArrays(GL_POINTS, 0, obj->getPointList().size());
-//	
-//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-//	glDisableClientState(GL_VERTEX_ARRAY);
-//	glDisableClientState(GL_COLOR_ARRAY);
-	
-	glPopAttrib();
+    //BOManager::getInstance()->destroyPool(BO_POOL_NAME);
+    BOManager::getInstance()->destroyPool(BO_FLAT_POOL_NAME);
 }
 
-void PickingFacesRenderer::renderImmediate(const ISurface* mesh, unsigned int objID)
+void PickingFacesRenderer::renderObject(const ISurface* mesh, GLuint objId)
+{
+    renderVbo(mesh, objId);
+}
+
+void PickingFacesRenderer::renderVbo(const ISurface* mesh, unsigned int objId)
+{
+    //qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
+    if (mesh == NULL)
+        return;
+
+    ISurface* obj = const_cast<ISurface*>(mesh);
+    //VertexBuffer *vbo = getVBO(obj);
+    VertexBuffer *flatVbo = getFlatVBO(obj);
+    if (//vbo == NULL || vbo->getBufferID() == 0 ||
+            flatVbo == NULL || flatVbo->getBufferID() == 0)
+    {
+        qDebug() << "Failed to create VBO. Fallback to immediate mode" ;
+        renderImmediate(mesh, objId);
+        return;
+    }
+
+    if (/*vbo->needUpdate() || */flatVbo->needUpdate())
+    {
+        //fillVertexBuffer(obj, vbo, objId);
+        fillFlatVertexBuffer(obj, flatVbo, objId);
+        //vbo->setNeedUpdate(false);
+        flatVbo->setNeedUpdate(false);
+    }
+
+    glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT);
+
+    glBindBuffer(GL_ARRAY_BUFFER, flatVbo->getBufferID());
+    glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(FlatVtxStruct),
+                   BUFFER_OFFSET(SIZE_OF_VERTEX + SIZE_OF_NORMAL));
+    glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), BUFFER_OFFSET(SIZE_OF_VERTEX));
+    glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), NULL);
+
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    //glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
+    glDrawArrays(GL_QUADS, 0, obj->getNumFaces()*4);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+
+    //	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
+    //	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VtxStruct), BUFFER_OFFSET(SIZE_OF_VERTEX));
+    //	glVertexPointer(3, GL_FLOAT, sizeof(VtxStruct), NULL);
+    //
+    //	glEnableClientState(GL_VERTEX_ARRAY);
+    //	glEnableClientState(GL_COLOR_ARRAY);
+    //
+    //	glPointSize(1.0f);
+    //	//glColor3f(1.0f, 1.0f, 1.0f);
+    //	glDepthFunc(GL_LEQUAL);
+    //	glDrawArrays(GL_POINTS, 0, obj->getPointList().size());
+    //
+    //	glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //	glDisableClientState(GL_VERTEX_ARRAY);
+    //	glDisableClientState(GL_COLOR_ARRAY);
+
+    glPopAttrib();
+}
+
+void PickingFacesRenderer::renderImmediate(const ISurface* mesh, unsigned int /*objID*/)
 {    
     mesh->lock();
     int numVertices = mesh->getNumVertices();
-	if (numVertices == 0)
-		return;
+    if (numVertices == 0)
+        return;
     
     glBegin(GL_POINTS);
-	Iterator<Vertex> it = mesh->constVertexIterator();
-	while(it.hasNext()) {
-		const Vertex& v = it.next();
+    Iterator<Vertex> it = mesh->constVertexIterator();
+    while(it.hasNext()) {
+        const Vertex& v = it.next();
         glVertex3fv(v.position().data());
-	}
+    }
     glEnd();
-	mesh->unlock();
+    mesh->unlock();
 }
-		
+
 VertexBuffer* PickingFacesRenderer::getVBO(ISurface* mesh)
 {
-	VertexBuffer* vbo = NULL;
-	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
-	if (vbo == NULL)
-	{
-		vbo = BOManager::getInstance()->createVBO(BO_POOL_NAME, mesh);
-	}
-	return vbo;
+    VertexBuffer* vbo = NULL;
+    vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
+    if (vbo == NULL)
+    {
+        vbo = BOManager::getInstance()->createVBO(BO_POOL_NAME, mesh);
+    }
+    return vbo;
 }
 
 VertexBuffer* PickingFacesRenderer::getFlatVBO(ISurface* mesh)
 {
-	VertexBuffer* vbo = NULL;
-	vbo = BOManager::getInstance()->getVBO(BO_FLAT_POOL_NAME, mesh);
-	if (vbo == NULL)
-	{
-		vbo = BOManager::getInstance()->createVBO(BO_FLAT_POOL_NAME, mesh);
-	}
-	return vbo;
+    VertexBuffer* vbo = NULL;
+    vbo = BOManager::getInstance()->getVBO(BO_FLAT_POOL_NAME, mesh);
+    if (vbo == NULL)
+    {
+        vbo = BOManager::getInstance()->createVBO(BO_FLAT_POOL_NAME, mesh);
+    }
+    return vbo;
 }
-		
+
 void PickingFacesRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo, GLuint objId)
 {
     int numVertices = mesh->getNumVertices();
-	if (numVertices == 0)
-		return;
+    if (numVertices == 0)
+        return;
 
-	VtxStruct* vtxData = new VtxStruct[numVertices];
-	
-	Iterator<Vertex> it = mesh->constVertexIterator();
-	int offset = 0;
-	while(it.hasNext()) {
-		const Vertex& v = it.next();
+    VtxStruct* vtxData = new VtxStruct[numVertices];
+
+    Iterator<Vertex> it = mesh->constVertexIterator();
+    int offset = 0;
+    while(it.hasNext()) {
+        const Vertex& v = it.next();
         vtxData[offset].v[0] = v.position().x();
-		vtxData[offset].v[1] = v.position().y();
-		vtxData[offset].v[2] = v.position().z();
+        vtxData[offset].v[1] = v.position().y();
+        vtxData[offset].v[2] = v.position().z();
         memcpy((void*)vtxData[offset].color, (const GLubyte*)&objId, sizeof(objId));
-		offset++;
+        offset++;
         objId++;
-	}
-	
-	vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(VtxStruct));
-	
-	delete [] vtxData;
+    }
+
+    vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(VtxStruct));
+
+    delete [] vtxData;
 }
 
 void PickingFacesRenderer::fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vbo, GLuint objId)
 {
-	if (mesh == NULL || vbo->getBufferID() == 0)
-		return;
-	
-	int numFaces = mesh->getNumFaces(); //getFaceList().size();
-	if (numFaces == 0)
-		return;
-	
-	int numVertices = numFaces*4;	
-	FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
+    if (mesh == NULL || vbo->getBufferID() == 0)
+        return;
+
+    int numFaces = mesh->getNumFaces(); //getFaceList().size();
+    if (numFaces == 0)
+        return;
+
+    int numVertices = numFaces*4;
+    FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
     
-	int fcounter = 0;
+    int fcounter = 0;
     int offset = 0;
-	Iterator<Face> it = mesh->constFaceIterator();
-	while(it.hasNext()) {
-		const Face& f = it.next();
+    Iterator<Face> it = mesh->constFaceIterator();
+    while(it.hasNext()) {
+        const Face& f = it.next();
         qDebug() << "face " << fcounter++;
         Iterator<Vertex> vtxIt = f.constVertexIterator();
         while(vtxIt.hasNext()) {
@@ -219,9 +219,9 @@ void PickingFacesRenderer::fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vb
             offset++;
         }
         objId++;
-	}
+    }
     
-	vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(FlatVtxStruct));
-	
-	delete [] vtxData;
+    vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(FlatVtxStruct));
+
+    delete [] vtxData;
 }

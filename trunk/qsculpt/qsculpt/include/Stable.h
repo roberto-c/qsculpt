@@ -37,14 +37,12 @@ unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
 
 inline bool printGlError()
 {
-	bool result = false;
-	GLenum error = glGetError();
-	while( error != GL_NO_ERROR )
+    GLuint error = glGetError();
+	bool result = (error == GL_NO_ERROR);
+	for(;error != GL_NO_ERROR; error = glGetError())
 	{
-		result = true;
 		const GLubyte* strError = gluErrorString(error);
 		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-		error = glGetError();
 	}
 	return result;
 }

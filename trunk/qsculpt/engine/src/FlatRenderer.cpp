@@ -78,12 +78,11 @@ void FlatRenderer::renderImmediate(const ISurface* mesh)
         glColor3d(color.redF(), color.greenF(), color.blueF());
     }
     
-    float tmp[3];
+
     int fcounter = 0;
-    int offset = 0;
-	Iterator<Face> it = mesh->constFaceIterator();
-	while(it.hasNext()) {
-		const Face& f = it.next();
+    Iterator<Face> it = mesh->constFaceIterator();
+    while(it.hasNext()) {
+        const Face& f = it.next();
         qDebug() << "face " << fcounter++;
         Iterator<Vertex> vtxIt = f.constVertexIterator();
         glBegin(GL_POLYGON);
@@ -94,7 +93,7 @@ void FlatRenderer::renderImmediate(const ISurface* mesh)
             glVertex3fv(v.position().data());
         }
         glEnd();
-	}    
+    }
 }
 
 void FlatRenderer::renderVbo(const ISurface* mesh)
@@ -126,7 +125,7 @@ void FlatRenderer::renderVbo(const ISurface* mesh)
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
 	glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), BUFFER_OFFSET(SIZE_OF_VERTEX));
-	glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), NULL);
+	glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), 0);
 	
 	QColor color = Qt::white;
 	if (mesh->isSelected())

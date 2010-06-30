@@ -240,25 +240,29 @@ Error:
 inline bool BufferObject::setBufferSubData(GLint offset, GLuint size, GLvoid* buffer)
 {
 	GLuint error = GL_NO_ERROR;
-	
+	bool result = (error == GL_NO_ERROR);
+    
 	glBindBuffer(m_boTarget, m_vboID);
+#ifdef DEBUG
 	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
-	
+#endif // DEBUG
 	m_bufferSize = size;
 	
 	glBufferSubData(m_boTarget,
 					offset,
 					m_bufferSize,
 					buffer);
+#ifdef DEBUG
 	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
 	
 Error:
-	bool result = (error == GL_NO_ERROR);
+	result = (error == GL_NO_ERROR);
 	for(;error != GL_NO_ERROR; error = glGetError())
 	{
 		const GLubyte* strError = gluErrorString(error);
 		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
 	}
+#endif // DEBUG
 	return result;
 };
 

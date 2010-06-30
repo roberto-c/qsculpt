@@ -30,6 +30,7 @@
 #include "Point3D.h"
 #include "Scene.h"
 #include "HEdge.h"
+#include "Aabb.h"
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -143,29 +144,29 @@ public:
 
 
 Subdivision::Subdivision()
-:	SceneNode(NULL),
-    ISurface(),
-	m_scene(NULL),
-	//m_drawingMode(Wireframe),
-	m_color(Qt::white),
-	m_boundingBoxColor(Qt::red),
-	m_minX(0.0),
-	m_maxX(0.0),
-	m_minY(0.0),
-	m_maxY(0.0),
-	m_minZ(0.0),
-	m_maxZ(0.0),
-	m_rotX(0.0),
-	m_rotY(0.0),
-	m_rotZ(0.0),
-	m_selected(false),
-	m_callListId(0),
-	m_genereateCallList(true),
-	m_currentResolutionLevel(0),
-	m_hasChanged(true),
-	_vertices(NULL),
-	_edges(NULL),
-	_faces(NULL)
+    :   ISurface(),
+    SceneNode(NULL),
+    _vertices(NULL),
+    _edges(NULL),
+    _faces(NULL),
+    m_scene(NULL),
+    //m_drawingMode(Wireframe),
+    m_color(Qt::white),
+    m_boundingBoxColor(Qt::red),
+    m_minX(0.0),
+    m_maxX(0.0),
+    m_minY(0.0),
+    m_maxY(0.0),
+    m_minZ(0.0),
+    m_maxZ(0.0),
+    m_rotX(0.0),
+    m_rotY(0.0),
+    m_rotZ(0.0),
+    m_selected(false),
+    m_callListId(0),
+    m_genereateCallList(true),
+    m_currentResolutionLevel(0),
+    m_hasChanged(true)
 {
     initPoints();
     //updateBoundingBox();
@@ -173,27 +174,27 @@ Subdivision::Subdivision()
 
 Subdivision::~Subdivision()
 {
-	_vertices = NULL;
-	_edges = NULL;
-	_faces = NULL;
-	
-	std::vector<VertexCollection>::iterator it = _vertLevelCollections.begin();
-	for (; it != _vertLevelCollections.end(); ++it)
-	{
-		_vertices = &(*it);
-		//Vertex
-	}
+    _vertices = NULL;
+    _edges = NULL;
+    _faces = NULL;
+
+    std::vector<VertexCollection>::iterator it = _vertLevelCollections.begin();
+    for (; it != _vertLevelCollections.end(); ++it)
+    {
+        _vertices = &(*it);
+        //Vertex
+    }
 }
 
 void Subdivision::initPoints()
 {
-	_vertices = new VertexCollection;
-	_edges = new EdgesCollection;
-	_faces = new FacesCollection;
-	
-	_vertLevelCollections.push_back(*_vertices);
-	_edgesLevelCollections.push_back(*_edges);
-	_facesLevelCollections.push_back(*_faces);
+    _vertices = new VertexCollection;
+    _edges = new EdgesCollection;
+    _faces = new FacesCollection;
+
+    _vertLevelCollections.push_back(*_vertices);
+    _edgesLevelCollections.push_back(*_edges);
+    _facesLevelCollections.push_back(*_faces);
 }
 
 void Subdivision::setScene(Scene* scene)
@@ -208,13 +209,13 @@ Scene* Subdivision::getScene() const
 
 Point3 Subdivision::getPosition() const
 {
-	return m_position;
+    return m_position;
 }
 
 void Subdivision::displace(const Point3& delta)
 {
-	m_position = m_position + delta;
-	emit positionChanged(m_position.x(), m_position.y(), m_position.z());
+    m_position = m_position + delta;
+    emit positionChanged(m_position.x(), m_position.y(), m_position.z());
 }
 
 void Subdivision::getPosition(float *x, float *y, float *z) const
@@ -233,17 +234,17 @@ void Subdivision::rotate(float rotX, float rotY, float rotZ)
 
 void Subdivision::setPosition(float x, float y, float z)
 {
-	m_position.x() = x;
-	m_position.y() = y;
-	m_position.z() = z;
-	
-	emit positionChanged(x, y, z);
+    m_position.x() = x;
+    m_position.y() = y;
+    m_position.z() = z;
+
+    emit positionChanged(x, y, z);
 }
 
 void Subdivision::setPosition(const Point3& position)
 {
-	m_position = position;
-	emit positionChanged(m_position.x(), m_position.y(), m_position.z());
+    m_position = position;
+    emit positionChanged(m_position.x(), m_position.y(), m_position.z());
 }
 
 float Subdivision::getDepth()
@@ -317,22 +318,22 @@ QColor Subdivision::getBoundingBoxColor() const
 
 int Subdivision::addVertex(const Point3& point)
 {
-	assert(_vertices != NULL );
-	//qWarning("%s %s", __FUNCTION__, " Not implemented");
+    assert(_vertices != NULL );
+    //qWarning("%s %s", __FUNCTION__, " Not implemented");
     float x = point[0];
     float y = point[1];
     float z = point[2];
-	
+
     m_minX = MIN(x , m_minX);
     m_minY = MIN(y , m_minY);
     m_minZ = MIN(z , m_minZ);
-	
+
     m_maxX = MAX(x , m_maxX);
     m_maxY = MAX(y , m_maxY);
     m_maxZ = MAX(z , m_maxZ);
-	
-	Vertex* vertex = new Vertex(point);
-	this->_vertices->push_back(vertex);
+
+    Vertex* vertex = new Vertex(point);
+    this->_vertices->push_back(vertex);
     return _vertices->size() - 1;
 }
 
@@ -341,27 +342,27 @@ int Subdivision::addVertex(Vertex* v)
     float x = v->getPosition().x();
     float y = v->getPosition().y();
     float z = v->getPosition().z();
-	
+
     m_minX = MIN(x , m_minX);
     m_minY = MIN(y , m_minY);
     m_minZ = MIN(z , m_minZ);
-	
+
     m_maxX = MAX(x , m_maxX);
     m_maxY = MAX(y , m_maxY);
     m_maxZ = MAX(z , m_maxZ);
-	
+
     _vertices->push_back(v);
     return _vertices->size() - 1;
 }
 
-void Subdivision::removeVertex(int id)
+void Subdivision::removeVertex(int /*id*/)
 {
-	qWarning("%s %s", __FUNCTION__, " Not implemented");
+    qWarning("%s %s", __FUNCTION__, " Not implemented");
 }
 
 Point3& Subdivision::getVertex(int index)
 {
-	//qWarning("%s %s", __FUNCTION__, " Not implemented");
+    //qWarning("%s %s", __FUNCTION__, " Not implemented");
     return _vertices->at(index)->position();
 }
 
@@ -372,13 +373,13 @@ Point3 Subdivision::getVertex(int index) const
 
 int Subdivision::getNumVertices() const
 {
-	return _vertices->size();
+    return _vertices->size();
 }
 
 int Subdivision::addEdge(const Edge& edge)
 {
-	//NOT_IMPLEMENTED
-	int indexOf = -1; 
+    //NOT_IMPLEMENTED
+    int indexOf = -1;
     
     std::vector<Edge*>::iterator it;
     it = std::find_if(_edges->begin(), _edges->end(), EdgePtrComparator(edge));
@@ -397,14 +398,14 @@ int Subdivision::addEdge(const Edge& edge)
         _edges->push_back(h2);
     }
     
-	return indexOf;
+    return indexOf;
 }
 
 int Subdivision::addEdge(int v1, int v2)
 {
-	Edge edge(_vertices->at(v1), _vertices->at(v2));
+    Edge edge(_vertices->at(v1), _vertices->at(v2));
     
-	return addEdge(edge);
+    return addEdge(edge);
 }
 
 int Subdivision::addFace(const QVector<int>& vertexIndexList)
@@ -433,47 +434,47 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
     return _faces->size() - 1;
 }
 
-void Subdivision::replaceFace(int faceIndex, const QVector<int>& vertexIndexList)
+void Subdivision::replaceFace(int /*faceIndex*/, const QVector<int>& /*vertexIndexList*/)
 {
     NOT_IMPLEMENTED
 }
 
-void Subdivision::removeFace( int id)
+void Subdivision::removeFace( int /*id*/)
 {
-	NOT_IMPLEMENTED
+    NOT_IMPLEMENTED
 }
 
 Face& Subdivision::getFace(int index)
 {
-    assert(index < _faces->size());
+    assert(index > 0 && (unsigned int)index < _faces->size());
     return *_faces->at(index);
 }
 
 int Subdivision::getNumFaces() const
 {
-	assert( _faces!= NULL );
-	return _faces->size();
+    assert( _faces!= NULL );
+    return _faces->size();
 }
 
 void Subdivision::drawBoundingBox()
 {
     GLboolean lightEnabled = GL_FALSE;
     lightEnabled = glIsEnabled(GL_LIGHTING);
-	
+
     if (lightEnabled == GL_TRUE)
         glDisable(GL_LIGHTING);
-	
+
     glColor3f(0.0, 1.0, 0.0);
-	
+
     float minX = m_minX - 0.1;
     float maxX = m_maxX + 0.1;
     float minY = m_minY - 0.1;
     float maxY = m_maxY + 0.1;
     float minZ = m_minZ - 0.1;
     float maxZ = m_maxZ + 0.1;
-	
+
     glColor3f(0.0, 1.0, 0.0);
-	
+
     glBegin(GL_LINE_LOOP);
     glVertex3f(minX, minY, minZ);
     glVertex3f(maxX, minY, minZ);
@@ -486,229 +487,228 @@ void Subdivision::drawBoundingBox()
     glVertex3f(maxX, maxY, maxZ);
     glVertex3f(minX, maxY, maxZ);
     glEnd();
-	
+
     glBegin(GL_LINES);
     glVertex3f(minX, minY, minZ);
     glVertex3f(minX, minY, maxZ);
-	
+
     glVertex3f(maxX, minY, minZ);
     glVertex3f(maxX, minY, maxZ);
-	
+
     glVertex3f(maxX, maxY, minZ);
     glVertex3f(maxX, maxY, maxZ);
-	
+
     glVertex3f(minX, maxY, minZ);
     glVertex3f(minX, maxY, maxZ);
     glEnd();
-	
+
     if (lightEnabled == GL_TRUE)
         glEnable(GL_LIGHTING);
 }
 
-int Subdivision::getFaceIndexAtPoint(const Point3& p) const
+int Subdivision::getFaceIndexAtPoint(const Point3& /*p*/) const
 {
     NOT_IMPLEMENTED
-	
     return -1;
 }
 
-int Subdivision::getClosestPointAtPoint(const Point3 &p) const
+int Subdivision::getClosestPointAtPoint(const Point3 &/*p*/) const
 {
     NOT_IMPLEMENTED
-	
+
     return -1;
 }
 
-QVector<int> Subdivision::getPointsInRadius(const Point3 &p, float radius) const
+QVector<int> Subdivision::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
 {
-	//qDebug() << "Subdivision::getPointsInRadius()";
+    //qDebug() << "Subdivision::getPointsInRadius()";
     QVector<int> results;
-	
+
     NOT_IMPLEMENTED
-	
+
     return results;
 }
 
 void Subdivision::lock() const
 {
-	NOT_IMPLEMENTED
-    //m_mutex.lock();
+    NOT_IMPLEMENTED
+            //m_mutex.lock();
 }
 
 void Subdivision::unlock() const
 {
-	NOT_IMPLEMENTED
-    //m_mutex.unlock();
+    NOT_IMPLEMENTED
+            //m_mutex.unlock();
 }
 
 void Subdivision::addResolutionLevel()
 {
-	//TODO: Implement addResolutionLevel
-	NOT_IMPLEMENTED
+    //TODO: Implement addResolutionLevel
+    NOT_IMPLEMENTED
 }
 
 void Subdivision::removeResolutionLevel(int level)
 {
-	// TODO: Implement removeResolutionLevel
-	Q_UNUSED(level);
-	NOT_IMPLEMENTED
+    // TODO: Implement removeResolutionLevel
+    Q_UNUSED(level);
+    NOT_IMPLEMENTED
 }
 
 void Subdivision::setWorkingResolutionLevel(int level)
 {
-	// TODO: Implement setWorkingResolutionLevel
-	Q_UNUSED(level);
-	NOT_IMPLEMENTED
+    // TODO: Implement setWorkingResolutionLevel
+    Q_UNUSED(level);
+    NOT_IMPLEMENTED
 }
 
 int Subdivision::getWorkingResolutionLevel()
 {
-	// TODO: Implement getWorkingResolutionLevel
-	NOT_IMPLEMENTED
-	return m_currentResolutionLevel;
+    // TODO: Implement getWorkingResolutionLevel
+    NOT_IMPLEMENTED
+    return m_currentResolutionLevel;
 }
 
-void Subdivision::adjustPointNormal(int index)
+void Subdivision::adjustPointNormal(int /*index*/)
 {
-	NOT_IMPLEMENTED
+    NOT_IMPLEMENTED
 }
 
 Iterator<Vertex> Subdivision::vertexIterator()
 {
-	return Iterator<Vertex>(new VertexIterator(this) );
+    return Iterator<Vertex>(new VertexIterator(this) );
 }
 
 Iterator<Vertex> Subdivision::constVertexIterator() const
 {
-	return Iterator<Vertex>(new VertexIterator(this) );
+    return Iterator<Vertex>(new VertexIterator(this) );
 }
 
 Iterator<Face> Subdivision::faceIterator()
 {
-	return Iterator<Face>(new FaceIterator(this));
+    return Iterator<Face>(new FaceIterator(this));
 }
 
 Iterator<Face> Subdivision::constFaceIterator() const
 {
-	return Iterator<Face>(new FaceIterator(this));
+    return Iterator<Face>(new FaceIterator(this));
 }
 
 Iterator<Vertex> Subdivision::vertexIterator(int level)
 {
-	return Iterator<Vertex>(new VertexIterator(this, level) );
+    return Iterator<Vertex>(new VertexIterator(this, level) );
 }
 
 Iterator<Vertex> Subdivision::constVertexIterator(int level) const
 {
-	return Iterator<Vertex>(new VertexIterator(this, level) );
+    return Iterator<Vertex>(new VertexIterator(this, level) );
 }
 
 Iterator<Face> Subdivision::faceIterator(int level)
 {
-	return Iterator<Face>(new FaceIterator(this, level));
+    return Iterator<Face>(new FaceIterator(this, level));
 }
 
 Iterator<Face> Subdivision::constFaceIterator(int level) const
 {
-	return Iterator<Face>(new FaceIterator(this, level));
+    return Iterator<Face>(new FaceIterator(this, level));
 }
 
 // Inner classes implementation
 // Subdivision::VertexIterator
 Subdivision::VertexIterator::VertexIterator(const Subdivision* surface, int level)
-:	_surface(surface),
+    :	_surface(surface),
     _level(level),
-	_index(-1)
+    _index(-1)
 {
 }
 
 bool Subdivision::VertexIterator::hasNext() const
 {
-	//NOT_IMPLEMENTED
-	int n = _level == -1 ? _surface->getNumVertices() 
-            : _surface->_vertLevelCollections[_level].size();
-	return n > 0 && _index < n-1;
+    //NOT_IMPLEMENTED
+    int n = _level == -1 ? _surface->getNumVertices()
+        : _surface->_vertLevelCollections[_level].size();
+    return n > 0 && _index < n-1;
 }
 
 bool Subdivision::VertexIterator::hasPrevious() const
 {
-	//NOT_IMPLEMENTED
-	//int n = _surface->getNumVertices();
+    //NOT_IMPLEMENTED
+    //int n = _surface->getNumVertices();
     int n = _level == -1 ? _surface->getNumVertices() 
-            : _surface->_vertLevelCollections[_level].size();
-	return _index > 0 && n > 0 && _index <= n;
+        : _surface->_vertLevelCollections[_level].size();
+    return _index > 0 && n > 0 && _index <= n;
 }
 
 Vertex & Subdivision::VertexIterator::next()
 {
-	//NOT_IMPLEMENTED
-	return *_surface->_vertices->at(++_index);
+    //NOT_IMPLEMENTED
+    return *_surface->_vertices->at(++_index);
 }
 
 const Vertex & Subdivision::VertexIterator::next() const
 {
-	//NOT_IMPLEMENTED
-	return *_surface->_vertices->at(++_index);
+    //NOT_IMPLEMENTED
+    return *_surface->_vertices->at(++_index);
 }
 
 Vertex & Subdivision::VertexIterator::previous()
 {
-	//NOT_IMPLEMENTED
-	return *_surface->_vertices->at(_index--);
+    //NOT_IMPLEMENTED
+    return *_surface->_vertices->at(_index--);
 }
 
 const Vertex & Subdivision::VertexIterator::previous() const
 {
-	//NOT_IMPLEMENTED
-	return *_surface->_vertices->at(_index--);
+    //NOT_IMPLEMENTED
+    return *_surface->_vertices->at(_index--);
 }
 
 
 //Subdivision::FaceIterator
 Subdivision::FaceIterator::FaceIterator(const Subdivision* surface, int level)
-:	_surface(surface),
+    :	_surface(surface),
     _level(level),
-	_index(-1)
+    _index(-1)
 {
 }
 
 bool Subdivision::FaceIterator::hasNext() const
 {
-	//NOT_IMPLEMENTED
-	int n = _surface->getNumFaces();
-	return n > 0 && _index < n-1;
+    //NOT_IMPLEMENTED
+    int n = _surface->getNumFaces();
+    return n > 0 && _index < n-1;
 }
 
 bool Subdivision::FaceIterator::hasPrevious() const
 {
-	NOT_IMPLEMENTED
-	return false;
+    NOT_IMPLEMENTED
+            return false;
 }
 
 Face & Subdivision::FaceIterator::next()
 {
-	//NOT_IMPLEMENTED
-	return *_surface->_faces->at(++_index);
+    //NOT_IMPLEMENTED
+    return *_surface->_faces->at(++_index);
 }
 
 const Face & Subdivision::FaceIterator::next() const
 {
-	//NOT_IMPLEMENTED
-	return *_surface->_faces->at(++_index);
+    //NOT_IMPLEMENTED
+    return *_surface->_faces->at(++_index);
 }
 
 Face & Subdivision::FaceIterator::previous()
 {
-	NOT_IMPLEMENTED
-	static Face f;
-	return f;
+    NOT_IMPLEMENTED
+            static Face f;
+    return f;
 }
 
 const Face & Subdivision::FaceIterator::previous() const
 {
-	NOT_IMPLEMENTED
-	static Face f;
-	return f;
+    NOT_IMPLEMENTED
+            static Face f;
+    return f;
 }
 
 

@@ -55,17 +55,10 @@ CONFIG += precompile_header
  PRECOMPILED_HEADER  = include/Stable.h
 
 # Input
-HEADERS += include/Document.h \
-    include/DocumentView.h \
-    include/GlView.h \
-    include/IDocument.h \
-    include/QSculptWindow.h \
-    include/QSculptApp.h \
-    include/Stable.h \
-    include/TransformWidget.h \
-    include/command/BrushCommand.h \
+HEADERS += include/command/BrushCommand.h \
     include/command/BrushProperties.h \
     include/command/CommandBase.h \
+    include/command/CommandManager.h \
     include/command/ConfigContainer.h \
     include/command/ICommand.h \
     include/command/IConfigContainer.h \
@@ -73,26 +66,41 @@ HEADERS += include/Document.h \
     include/command/SelectCommand.h \
     include/command/SubdivideCommand.h \
     include/command/TransformCameraCommand.h \
-    include/command/CommandManager.h \
-    include/ObjectProperties.h
+    include/Document.h \
+    include/DocumentView.h \
+    include/globalDefs.h \
+    include/GlView.h \
+    include/IDocument.h \
+    include/IRenderable.h \
+    include/ObjectProperties.h \
+    include/QSculptApp.h \
+    include/QSculptWindow.h \
+    include/Stable.h \
+    include/SurfaceViewController.h \
+    include/TransformWidget.h
+
 FORMS += ui/BrushProperties.ui \
+    ui/ConsoleWindow.ui \
     ui/MainWindow.ui \
     ui/TransformWidget.ui
-SOURCES += src/Document.cpp \
-    src/DocumentView.cpp \
-    src/GlView.cpp \
-    src/QSculptWindow.cpp \
-    src/QSculptApp.cpp \
-    src/TransformWidget.cpp \
-    src/command/BrushCommand.cpp \
+
+SOURCES += src/command/BrushCommand.cpp \
     src/command/BrushProperties.cpp \
     src/command/CommandBase.cpp \
+    src/command/CommandManager.cpp \
     src/command/ConfigContainer.cpp \
     src/command/MoveCommand.cpp \
     src/command/SelectCommand.cpp \
     src/command/SubdivideCommand.cpp \
     src/command/TransformCameraCommand.cpp \
-    src/command/CommandManager.cpp \
+    src/Document.cpp \
+    src/DocumentView.cpp \
+    src/GlView.cpp \
+    src/ObjectProperties.cpp \
+    src/QSculptApp.cpp \
+    src/QSculptWindow.cpp \
     src/Stable.cpp \
-    src/ObjectProperties.cpp
+    src/SurfaceViewController.cpp \
+    src/TransformWidget.cpp
+
 RESOURCES += resources/QSculpt.qrc

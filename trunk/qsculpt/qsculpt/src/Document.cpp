@@ -96,6 +96,7 @@ void Document::loadFile(QString fileName)
 
 void Document::saveFile(QString fileName)
 {
+    Q_UNUSED(fileName);
     qDebug("Save file");
 
     int numObjects = m_objectList.size();
@@ -173,7 +174,7 @@ void Document::addObject(ObjectType type)
 void Document::addObject(ObjectType type, ISurface* obj)
 {
     Q_ASSERT(obj);
-	
+    Q_UNUSED(type);
     m_objectList.append( obj );
     emit changed(AddObject, obj);
 }
