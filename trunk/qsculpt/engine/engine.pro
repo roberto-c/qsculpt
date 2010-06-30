@@ -35,7 +35,6 @@ HEADERS += \
     include/Face.h \
     include/FlatRenderer.h \
     include/HEdge.h \
-    include/ICamera.h \
     include/IIterator.h \
     include/IRenderer.h \
     include/ISurface.h \

@@ -20,8 +20,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "ICamera.h"
-
 /**
  * @class Camera
  *
