@@ -17,38 +17,39 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
 
-#if defined __cplusplus
+#ifndef ORBITCOMMAND_H
+#define ORBITCOMMAND_H
 
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
+#include "CommandBase.h"
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
-
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-
-inline bool printGlError()
+/**
+ * Command to move around the view.
+ *
+ * Note: Should this be a capability of GLCanvas instead of a command?
+ */
+class OrbitCommand : public CommandBase
 {
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
-}
+public:
+    /**
+     * Constructor for commands.
+     */
+    OrbitCommand(ICommand* parent = 0);
 
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+    /**
+     * Copy constructor. Makes a copy of the command.
+     */
+    OrbitCommand(const OrbitCommand& cpy);
 
-#endif /* defined __cplusplus */
+    virtual ~OrbitCommand();
 
-#endif /* STABLE_H_ */
+    // ICommand interface
+    /**
+     * Makes a deep copy of the command.
+     */
+    virtual ICommand* clone() const;
+
+    virtual QWidget* getOptionsWidget();
+};
+
+#endif // ORBITCOMMAND_H

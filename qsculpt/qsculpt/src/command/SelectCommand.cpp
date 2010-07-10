@@ -34,25 +34,25 @@
 QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
 SelectCommand::SelectCommand(ICommand* parent)
-: CommandBase("Select", parent),
-_boxSelection(true),
-_drawBox(false)
+    : CommandBase("Select", parent),
+    _boxSelection(true),
+    _drawBox(false)
 {
-	if(getOptionsWidget())
-	{
-		// TODO: initialize object properties window
-	}
+    if(getOptionsWidget())
+    {
+        // TODO: initialize object properties window
+    }
 }
 
 SelectCommand::SelectCommand(const SelectCommand& cpy)
-: CommandBase(cpy),
-_boxSelection(cpy._boxSelection),
-_drawBox(false)
+    : CommandBase(cpy),
+    _boxSelection(cpy._boxSelection),
+    _drawBox(false)
 {
-	if(getOptionsWidget())
-	{
-		// TODO: initialize object properties window
-	}
+    if(getOptionsWidget())
+    {
+        // TODO: initialize object properties window
+    }
 }
 
 SelectCommand::~SelectCommand()
@@ -62,21 +62,23 @@ SelectCommand::~SelectCommand()
 
 ICommand* SelectCommand::clone() const
 {
-	return new SelectCommand(*this);
+    return new SelectCommand(*this);
 }
 
 QWidget* SelectCommand::getOptionsWidget()
 {
-	if (_objectProperties == NULL)
-		_objectProperties = new TransformWidget(NULL);
-	return _objectProperties;
+    if (_objectProperties == NULL)
+        _objectProperties = new TransformWidget(NULL);
+    return _objectProperties;
 }
 
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     if (_boxSelection) 
     {
-        _endPoint = Point3(e->pos().x(), e->pos().y(), 0.5f);
+        _endPointWin = Point3(e->pos().x(), e->pos().y(), 1.0f);
+        view->getCanvas()->mapScreenCoordsToWorldCoords(_endPointWin, _endPoint);
         _drawBox = true;
     } 
     else 
@@ -92,7 +94,8 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 
     if (_boxSelection) 
     {
-        _startPoint = Point3(e->pos().x(), e->pos().y(), 0.5f);
+        _startPointWin = Point3(e->pos().x(), e->pos().y(), 0.0f);
+        view->getCanvas()->mapScreenCoordsToWorldCoords(_startPointWin, _startPoint);
     } 
     else 
     {
@@ -114,9 +117,11 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 
 void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 {
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     if (_boxSelection) 
     {
-        _endPoint = Point3(e->pos().x(), e->pos().y(), 0.5f);
+        _endPointWin = Point3(e->pos().x(), e->pos().y(), 1.0f);
+        view->getCanvas()->mapScreenCoordsToWorldCoords(_endPointWin, _endPoint);
         _drawBox = false;
         emit executed();
     } 
@@ -137,7 +142,7 @@ void SelectCommand::paintGL(GlCanvas *c)
         c->disable(GL_DEPTH_TEST);
         c->setPen(QPen(QColor(49, 122, 255, 255)));
         c->setBrush(QBrush(QColor(49, 122, 255, 100)));
-        c->drawRect(_startPoint, _endPoint);
+        c->drawRect(_startPointWin, _endPointWin);
         c->enable(GL_LIGHTING);
         c->disable(GL_BLEND);
         c->enable(GL_DEPTH_TEST);

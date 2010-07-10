@@ -109,10 +109,10 @@ public:
      *
      * @return HitRecord vector
      */
-	ObjectContainer getSelectedObjects(GLint x, GLint y);
-	
-	PointIndexList getSelectedVertices(GLint x, GLint y,
-									   GLint width, GLint height);
+    ObjectContainer getSelectedObjects(GLint x, GLint y);
+
+    PointIndexList getSelectedVertices(GLint x, GLint y,
+                                       GLint width, GLint height);
     /**
      *
      */
@@ -143,29 +143,29 @@ public:
      */
     PerspectiveType getPerspectiveView() {
         return _viewType;
-    };
+    }
 
     void set3DCursorShape(CursorShapeType shape);
 
     CursorShapeType getCursorShape() {
         return _cursorShape;
-    };
+    }
 
     void setCursorPosition(Point3 p) {
         _cursorPosition = p;
-    };
+    }
 
     Point3 getCursorPosition() {
         return _cursorPosition;
-    };
+    }
 
     void setCursorOrientation(Point3 n) {
         _cursorOrientation = n;
-    };
+    }
 
     Point3 getCursorOrientation() {
         return _cursorOrientation;
-    };
+    }
 
     /**
      * Sets the image to show as the cursor. The image is copied to a new
@@ -181,12 +181,12 @@ public:
     /**
      *
      */
-    void enable(GLenum flag) { glEnable(flag); } ;
+    void enable(GLenum flag) { glEnable(flag); }
     
     /**
      *
      */
-    void disable(GLenum flag) { glDisable(flag); } ;
+    void disable(GLenum flag) { glDisable(flag); }
     
     /**
      *
@@ -240,7 +240,7 @@ public slots:
      */
     void setPerspectiveView(PerspectiveType type) {
         _viewType = type;
-    };
+    }
 
     /**
      * Turn the visibility of the grid on/off.
@@ -287,7 +287,7 @@ private:
     PerspectiveType _viewType;             /**< Kind of view to display */
     DrawingMode     _drawingMode;          /**< Object drawing mode */
     IRenderer*		_renderer;				/**< Rendering engine for the objects */
-	IRenderer*		_selectionRenderer;	/**< Renderer used for selection. */
+    IRenderer*		_selectionRenderer;	/**< Renderer used for selection. */
     IRenderer*      _editVertexRenderer;    /**< Renderer used for vertex edition */
     CameraContainer _cameraList;           /**< Cameras for the differents view types */
 
@@ -296,8 +296,8 @@ private:
     Point3              _cursorOrientation;
     GLint               _viewport[4];
     GLfloat             _zoomFactor;
-    GLuint				_textureId;
-    QImage				_cursorImage;
+    GLuint              _textureId;
+    QImage              _cursorImage;
     QPen                _pen;
     QBrush              _brush;
 };

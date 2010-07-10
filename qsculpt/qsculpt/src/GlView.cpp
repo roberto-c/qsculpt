@@ -222,14 +222,14 @@ void GlCanvas::initializeGL()
     qDebug() << "shaderId: " << g_shaderVertex->shaderId();
     if (!printGlError()) qDebug() << __LINE__;
     do {
-        if (!g_shaderVertex->compileSourceFile(path + "/../Resources/phong.vs"))
+        if (!g_shaderVertex->compileSourceFile(":shaders/phong.vs"))
         {
             qDebug() << "Failed to compile vertex shader";
             qDebug() << g_shaderVertex->log();
             break;
         } 
         if (!printGlError()) qDebug() << __LINE__;
-        if (!g_shaderFragment->compileSourceFile(path + "/../Resources/phong.fs"))
+        if (!g_shaderFragment->compileSourceFile(":shaders/phong.fs"))
         {
             qDebug() << "Failed to compile fragment shader";
             qDebug() << g_shaderFragment->log();

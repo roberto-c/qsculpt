@@ -32,7 +32,10 @@
 #include "SelectCommand.h"
 #include "BrushCommand.h"
 #include "SubdivideCommand.h"
+#include "orbitcommand.h"
 #include "ISurface.h"
+#include "Console.h"
+#include "ConsoleWindow.h"
 
 QSculptWindow::QSculptWindow()
     : m_documentView(new DocumentView(this)),
@@ -42,9 +45,9 @@ QSculptWindow::QSculptWindow()
     m_dockCommandOptions(NULL),
     m_toolsToolbar(NULL)
 {
-	Q_CHECK_PTR(m_documentView);
-	Q_CHECK_PTR(m_document);
-	
+    Q_CHECK_PTR(m_documentView);
+    Q_CHECK_PTR(m_document);
+
     createWidgets();
 
     readSettings();
@@ -63,7 +66,7 @@ void QSculptWindow::createWidgets()
     setCentralWidget(m_documentView);
 
     m_dockCommandOptions = new QDockWidget("Options", NULL);
-	Q_CHECK_PTR(m_dockCommandOptions);
+    Q_CHECK_PTR(m_dockCommandOptions);
     m_dockCommandOptions->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, m_dockCommandOptions);
 
@@ -76,73 +79,82 @@ void QSculptWindow::createWidgets()
     connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
 
-	QAction *action = m_commandManager.createUndoAction(this);
-	Q_CHECK_PTR(action);
-	action->setShortcut(QKeySequence::Undo);
-	menuEdit->addAction(action);
-	action = m_commandManager.createRedoAction(this);
-	Q_CHECK_PTR(action);
-	action->setShortcut(QKeySequence::Redo);
-	menuEdit->addAction(action);
+    QAction *action = m_commandManager.createUndoAction(this);
+    Q_CHECK_PTR(action);
+    action->setShortcut(QKeySequence::Undo);
+    menuEdit->addAction(action);
+    action = m_commandManager.createRedoAction(this);
+    Q_CHECK_PTR(action);
+    action->setShortcut(QKeySequence::Redo);
+    menuEdit->addAction(action);
 
-	m_toolActionGroup = new QActionGroup(this);
-	Q_CHECK_PTR(m_toolActionGroup);
-	m_toolsToolbar = addToolBar("Tools");
+    m_toolActionGroup = new QActionGroup(this);
+    Q_CHECK_PTR(m_toolActionGroup);
+    m_toolsToolbar = addToolBar("Tools");
 
     ICommand* cmd = NULL;
-	action = new QAction("Select", this);
-	cmd = new SelectCommand;
-	Q_CHECK_PTR(action);
-	Q_CHECK_PTR(cmd);
-	
-	action->setToolTip("Select an object.");
-    action->setCheckable(true);
-	action->setIcon(QIcon(":/img_select.png"));
-	menuTools->addAction(action);
-	m_toolActionGroup->addAction(action);
-	m_toolsToolbar->addAction(action);
-	m_commandManager.registerCommand("Select", action, cmd);
+    action = new QAction("Select", this);
+    cmd = new SelectCommand;
+    Q_CHECK_PTR(action);
+    Q_CHECK_PTR(cmd);
 
-//	action = new QAction("Transform", this);
-//	cmd = new TransformCommand;
-//	Q_CHECK_PTR(action);
-//	Q_CHECK_PTR(cmd);
-//	action->setToolTip("Move, rotate or scale an object.");
-//    action->setCheckable(true);
-//	//action->setEnabled(false);
-//	menuTools->addAction(action);
-//	m_toolActionGroup->addAction(action);
-//	m_toolsToolbar->addAction(action);
-//	m_commandManager.registerCommand("Transform", action, cmd);
+    action->setToolTip("Select an object.");
+    action->setCheckable(true);
+    action->setIcon(QIcon(":/img_select.png"));
+    menuTools->addAction(action);
+    m_toolActionGroup->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("Select", action, cmd);
+
+    cmd = new OrbitCommand;
+    action = new QAction("Orbit", this);
+    action->setCheckable(true);
+    action->setToolTip("Orbit view");
+    menuTools->addAction(action);
+    m_toolActionGroup->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("Orbit", action, cmd);
+
+    //	action = new QAction("Transform", this);
+    //	cmd = new TransformCommand;
+    //	Q_CHECK_PTR(action);
+    //	Q_CHECK_PTR(cmd);
+    //	action->setToolTip("Move, rotate or scale an object.");
+    //    action->setCheckable(true);
+    //	//action->setEnabled(false);
+    //	menuTools->addAction(action);
+    //	m_toolActionGroup->addAction(action);
+    //	m_toolsToolbar->addAction(action);
+    //	m_commandManager.registerCommand("Transform", action, cmd);
 
     action = new QAction("Brush", this);
-	cmd = new BrushCommand;
-	Q_CHECK_PTR(action);
-	Q_CHECK_PTR(cmd);
-	action->setText("Brush");
-	action->setToolTip("Deform the object using different kinds of brushes.");
+    cmd = new BrushCommand;
+    Q_CHECK_PTR(action);
+    Q_CHECK_PTR(cmd);
+    action->setText("Brush");
+    action->setToolTip("Deform the object using different kinds of brushes.");
     action->setCheckable(true);
-	action->setIcon(QIcon(":/img_brush.png"));
-	menuTools->addAction(action);
-	m_toolActionGroup->addAction(action);
-	m_toolsToolbar->addAction(action);
-	m_commandManager.registerCommand("Brush", action, cmd);
+    action->setIcon(QIcon(":/img_brush.png"));
+    menuTools->addAction(action);
+    m_toolActionGroup->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("Brush", action, cmd);
 
-	menuTools->addSeparator();
-	m_toolsToolbar->addSeparator();
+    menuTools->addSeparator();
+    m_toolsToolbar->addSeparator();
 
-	action = new QAction("Subdivide", this);
-	cmd = new SubdivideCommand;
-	Q_CHECK_PTR(action);
-	Q_CHECK_PTR(cmd);
-	action->setToolTip("Subdivides each object face.");
-	action->setIcon(QIcon(":/img_subdivide.png"));
-	menuTools->addAction(action);
-	m_toolsToolbar->addAction(action);
-	m_commandManager.registerCommand("Subdivide", action, cmd);
+    action = new QAction("Subdivide", this);
+    cmd = new SubdivideCommand;
+    Q_CHECK_PTR(action);
+    Q_CHECK_PTR(cmd);
+    action->setToolTip("Subdivides each object face.");
+    action->setIcon(QIcon(":/img_subdivide.png"));
+    menuTools->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("Subdivide", action, cmd);
 
-	connect(&m_commandManager, SIGNAL(commandActivated(QString)),
-			this, SLOT(commandActivated(QString)));
+    connect(&m_commandManager, SIGNAL(commandActivated(QString)),
+            this, SLOT(commandActivated(QString)));
 
     // Activate default tool
     m_commandManager.setActiveCommand("Select");
@@ -156,6 +168,9 @@ void QSculptWindow::createWidgets()
     	layout()->setContentsMargins(0, 0, 0, 0);
     	layout()->setSpacing(0);
     }
+
+    _console = Console::instance();
+    _console->consoleWindow()->show();
 }
 
 const IDocument* QSculptWindow::getCurrentDocument()
@@ -170,12 +185,12 @@ DocumentView* QSculptWindow::getCurrentView() const
 
 void QSculptWindow::closeEvent(QCloseEvent *event)
 {
-     if (maybeSave()) {
-         writeSettings();
-         event->accept();
-     } else {
-         event->ignore();
-     }
+    if (maybeSave()) {
+        writeSettings();
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }
 
 
@@ -217,9 +232,9 @@ bool QSculptWindow::saveAs()
 void QSculptWindow::about()
 {
     QMessageBox::about(this, tr("About Application"),
-            tr("The <b>Application</b> example demonstrates how to "
-                "write modern GUI applications using Qt, with a menu bar, "
-                "toolbars, and a status bar."));
+                       tr("The <b>Application</b> example demonstrates how to "
+                          "write modern GUI applications using Qt, with a menu bar, "
+                          "toolbars, and a status bar."));
 }
 
 void QSculptWindow::documentWasModified()
@@ -244,7 +259,7 @@ void QSculptWindow::writeSettings()
 
 bool QSculptWindow::maybeSave()
 {
-  /*
+    /*
     if (textEdit->document()->isModified()) {
         int ret = QMessageBox::warning(this, tr("Application"),
                       tr("The document has been modified.\n"
@@ -315,26 +330,26 @@ void QSculptWindow::addBox()
 void QSculptWindow::addSphere()
 {
     m_document->addObject( IDocument::Sphere );
-//	QList<IObject3D*> objects = m_document->getSelectedObjects();
-//	if (objects.size() > 0)
-//	{
-//		IObject3D* mesh = objects[0];
-//		int numVertices = mesh->getPointList().size();
-//		for (int i = 0; i < numVertices; ++i)
-//		{
-//			qDebug("Vertex %s - Normal %s", 
-//				   qPrintable(mesh->getPointList().at(i).toString()),
-//				   qPrintable(mesh->getNormalList().at(i).toString())
-//				   ); 
-//		}
-//		int numFaces = mesh->getFaceList().size();
-//		for (int i = 0; i < numFaces; ++i)
-//		{
-//			Face f = mesh->getFaceList().at(i);
-//			qDebug("Face Index %d (%d, %d, %d, %d)", i, f.point[0],
-//				   f.point[1], f.point[2], f.point[3]);
-//		}
-//	}
+    //	QList<IObject3D*> objects = m_document->getSelectedObjects();
+    //	if (objects.size() > 0)
+    //	{
+    //		IObject3D* mesh = objects[0];
+    //		int numVertices = mesh->getPointList().size();
+    //		for (int i = 0; i < numVertices; ++i)
+    //		{
+    //			qDebug("Vertex %s - Normal %s",
+    //				   qPrintable(mesh->getPointList().at(i).toString()),
+    //				   qPrintable(mesh->getNormalList().at(i).toString())
+    //				   );
+    //		}
+    //		int numFaces = mesh->getFaceList().size();
+    //		for (int i = 0; i < numFaces; ++i)
+    //		{
+    //			Face f = mesh->getFaceList().at(i);
+    //			qDebug("Face Index %d (%d, %d, %d, %d)", i, f.point[0],
+    //				   f.point[1], f.point[2], f.point[3]);
+    //		}
+    //	}
 }
 
 void QSculptWindow::showGrid(bool val)
@@ -353,57 +368,57 @@ void QSculptWindow::documentChanged(IDocument::ChangeType /*type*/)
 
 void QSculptWindow::setOptionsWidget(QWidget* widget)
 {
-	qDebug() << "QSculptWindow::setOptionsWidget";
+    qDebug() << "QSculptWindow::setOptionsWidget";
 
-	if (widget)
-	{
-		// Get the current widget on the dock and hide it
-		QWidget* wid = m_dockCommandOptions->widget();
-		if (wid)
-		{
-			wid->hide();
-		}
-		// Set the new widget on the dock and be sure
-		// it's visible
-		m_dockCommandOptions->setWidget(widget);
-		if (widget)
-		{
-			widget->show();
-			m_dockCommandOptions->show();
-		}
-	}
+    if (widget)
+    {
+        // Get the current widget on the dock and hide it
+        QWidget* wid = m_dockCommandOptions->widget();
+        if (wid)
+        {
+            wid->hide();
+        }
+        // Set the new widget on the dock and be sure
+        // it's visible
+        m_dockCommandOptions->setWidget(widget);
+        if (widget)
+        {
+            widget->show();
+            m_dockCommandOptions->show();
+        }
+    }
 }
 
 void QSculptWindow::commandActivated(QString name)
 {
-	qDebug() << "QSculptWindow::commandActivated";
-	Q_UNUSED(name);
-	ICommand* cmd = m_commandManager.getActiveCommand();
-	if (cmd)
-	{
+    qDebug() << "QSculptWindow::commandActivated";
+    Q_UNUSED(name);
+    ICommand* cmd = m_commandManager.getActiveCommand();
+    if (cmd)
+    {
 
-		setOptionsWidget(cmd->getOptionsWidget());
-	}
+        setOptionsWidget(cmd->getOptionsWidget());
+    }
 }
 
 void QSculptWindow::viewFullscreen(bool value)
 {
-	if (value)
-	{
-		showFullScreen();
-		if (m_dockCommandOptions)
-		{
-			m_dockCommandOptions->setWindowOpacity(0.75);
-			m_documentView->grabMouse(true);
-		}
-	}
-	else
-	{
-		showNormal();
-		if (m_dockCommandOptions)
-		{
-			m_dockCommandOptions->setWindowOpacity(1.0);
-			m_documentView->grabMouse(false);
-		}
-	}
+    if (value)
+    {
+        showFullScreen();
+        if (m_dockCommandOptions)
+        {
+            m_dockCommandOptions->setWindowOpacity(0.75);
+            m_documentView->grabMouse(true);
+        }
+    }
+    else
+    {
+        showNormal();
+        if (m_dockCommandOptions)
+        {
+            m_dockCommandOptions->setWindowOpacity(1.0);
+            m_documentView->grabMouse(false);
+        }
+    }
 }

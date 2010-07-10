@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +17,35 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
+#include "StdAfx.h"
+#include "ray.h"
+#include "Plane.h"
 
-#if defined __cplusplus
-
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
-
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-
-inline bool printGlError()
+namespace geometry
 {
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
+
+    float      Ray::DEFAULT_EPSILON= 0.0001;
+    Point3     Ray::DEFAULT_ORIGIN = Point3(0, 0, 0);
+    Vector3    Ray::DEFAULT_DIR    = Vector3(1, 0, 0);
+
+    Ray::Ray(const Point3 &o, const Vector3 &d)
+        : Eigen::ParametrizedLine<float, 3>(o, d)
+    {
+    }
+
+    float Ray::intersect(const Ray &ray, Point3 *p, float /*ep*/) const
+    {
+        return -1.0f;
+    }
+
+    float Ray::intersect(const Plane &plane, Point3 *p, float /*ep*/) const
+    {
+        // TODO: ugly. modify Eigen::ParamtrizedLine class
+        float t = const_cast<Ray*>(this)->intersection(plane);
+        if (p && t >= 0) {
+            *p = origin() + direction() * t;
+        }
+        return t;
+    }
+
 }
-
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
-
-#endif /* defined __cplusplus */
-
-#endif /* STABLE_H_ */

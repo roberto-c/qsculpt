@@ -5,4 +5,5 @@
 TEMPLATE = subdirs
 CONFIG += debug
 # Directories
-SUBDIRS += engine qsculpt
+SUBDIRS += engine qsculpt enginetest enginetestapp
+#SUBDIRS += enginetestapp

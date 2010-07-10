@@ -20,7 +20,7 @@ class SubdivisionScheme;
 /**
  * Class that implement subdivision surfaces.
  */
-class Subdivision : public ISurface, public SceneNode
+class Subdivision : public ISurface
 {
     typedef std::vector<Vertex*> VertexCollection;
     typedef std::vector<Edge*> EdgesCollection;

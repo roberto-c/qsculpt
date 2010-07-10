@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +17,29 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
 
-#if defined __cplusplus
+#ifndef PLANE_H
+#define PLANE_H
 
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
-
-#include <Eigen/Core>
 #include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
+#include "Point3D.h"
 
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-
-inline bool printGlError()
+namespace geometry
 {
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
+    class Ray;
+    /**
+     * Class that represent a 3d plane.
+     */
+    class Plane : public Eigen::Hyperplane<float, 3>
+    {
+        static float DEFAULT_TOL;
+        static Point3 DEFAULT_POSITION;
+        static Vector3 DEFAULT_ORIENTATION;
+
+    public:
+        Plane(const Point3 &center = DEFAULT_POSITION, const Vector3 &normal = DEFAULT_ORIENTATION);
+
+        float intersect(const Ray& ray, Point3 *p = NULL, float ep = DEFAULT_TOL) const;
+    };
 }
-
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
-
-#endif /* defined __cplusplus */
-
-#endif /* STABLE_H_ */
+#endif // PLANE_H

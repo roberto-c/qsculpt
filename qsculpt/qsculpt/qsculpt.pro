@@ -77,12 +77,17 @@ HEADERS += include/command/BrushCommand.h \
     include/QSculptWindow.h \
     include/Stable.h \
     include/SurfaceViewController.h \
-    include/TransformWidget.h
+    include/TransformWidget.h \
+    include/command/orbitcommand.h \
+    include/glitem.h \
+    include/ConsoleWindow.h \
+    include/Console.h
 
 FORMS += ui/BrushProperties.ui \
     ui/ConsoleWindow.ui \
     ui/MainWindow.ui \
-    ui/TransformWidget.ui
+    ui/TransformWidget.ui \
+    ui/ConsoleWindow.ui
 
 SOURCES += src/command/BrushCommand.cpp \
     src/command/BrushProperties.cpp \
@@ -101,6 +106,14 @@ SOURCES += src/command/BrushCommand.cpp \
     src/QSculptWindow.cpp \
     src/Stable.cpp \
     src/SurfaceViewController.cpp \
-    src/TransformWidget.cpp
+    src/TransformWidget.cpp \
+    src/command/orbitcommand.cpp \
+    src/glitem.cpp \
+    src/ConsoleWindow.cpp \
+    src/Console.cpp
 
 RESOURCES += resources/QSculpt.qrc
+
+OTHER_FILES += \
+    resources/shaders/phong.vs \
+    resources/shaders/phong.fs
