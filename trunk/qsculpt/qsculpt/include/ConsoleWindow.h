@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +17,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
 
-#if defined __cplusplus
+#ifndef CONSOLEWINDOW_H
+#define CONSOLEWINDOW_H
 
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
+#include <QDialog>
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
-
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-
-inline bool printGlError()
-{
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
+namespace Ui {
+    class ConsoleWindow;
 }
 
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+class ConsoleWindow : public QDialog
+{
+    Q_OBJECT
 
-#endif /* defined __cplusplus */
+public:
+    explicit ConsoleWindow(QWidget *parent = 0);
+    ~ConsoleWindow();
 
-#endif /* STABLE_H_ */
+public slots:
+    void executeLine();
+
+protected:
+    void changeEvent(QEvent *e);
+
+private:
+    Ui::ConsoleWindow *ui;
+};
+
+#endif // CONSOLEWINDOW_H

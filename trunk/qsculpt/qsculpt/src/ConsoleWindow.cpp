@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +17,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
+#include "Stable.h"
+#include "ConsoleWindow.h"
+#include "ui_ConsoleWindow.h"
+#include "Console.h"
 
-#if defined __cplusplus
-
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
-
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-
-inline bool printGlError()
+ConsoleWindow::ConsoleWindow(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::ConsoleWindow)
 {
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
+    ui->setupUi(this);
 }
 
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+ConsoleWindow::~ConsoleWindow()
+{
+    delete ui;
+}
 
-#endif /* defined __cplusplus */
+void ConsoleWindow::changeEvent(QEvent *e)
+{
+    QDialog::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
+}
 
-#endif /* STABLE_H_ */
+void ConsoleWindow::executeLine()
+{
+    Console::instance()->evaluate(ui->input->text());
+}

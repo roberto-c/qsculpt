@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +17,50 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef QUADTREE_H
-#define QUADTREE_H
+
+#ifndef ICOLLECTION_H
+#define ICOLLECTION_H
 
 #include <vector>
+#include <set>
+#include "IIterator.h"
 #include "Point3D.h"
-#include "ICollection.h"
+
+namespace geometry
+{
+class Ray;
+class AABB;
+}
+//class Sphere;
+//class Box;
 
 namespace data
 {
-    template< typename T >
-    class QuadTree : public ICollection<T>
+    using geometry::Ray;
+    using geometry::AABB;
+
+
+    /**
+     * Interface for collection of 3d primitives that respond to basic search
+     * queries like find a primitive closest to a point, finding primitives which
+     * intersects other primitives, and more.
+     */
+    template<typename T>
+    class ICollection
     {
-    public:
-        QuadTree() ;
-
-        QuadTree(const QuadTree<T>& cpy) ;
-
-        ~QuadTree() ;
-
         /**
          * Add a new element to the collection.
          *
          * @param element element to add to the collection.
          */
-        void add(T *element);
+        virtual void add(T *element) = 0;
 
         /**
          * Removes a new element from the collection.
          *
          * @param element element to remove from the collection.
          */
-        void remove(T *element);
+        virtual void remove(T *element) = 0;
 
         /**
          * Find the closest element to the point p.
@@ -62,12 +74,12 @@ namespace data
          * maxDistance is negative, just look for the closest point, no matter at what
          * distance it is.
          */
-        T* findClosest(const Point3& p, float maxDistance = 0);
+        virtual T* findClosest(const Point3& p, float maxDistance = 0) = 0;
 
         /**
          * Overload method @see findClosest
          */
-        const T* findClosest(const Point3& p, float maxDistance = 0) const;
+        virtual const T* findClosest(const Point3& p, float maxDistance = 0) const = 0;
 
         /**
          * Find an element that a given ray intersects it.
@@ -78,7 +90,7 @@ namespace data
          * @param ray Ray to use for intersection test against every element.
          * @param bag A ICollection object to insert the element found.
          */
-        T* findFirstIntersect(const Ray& ray);
+        virtual  T* findFirstIntersect(const Ray& ray) = 0;
 
         /**
          * Find all the elements that intersects a given ray.
@@ -92,29 +104,18 @@ namespace data
          *
          * @returns a boolean value stating if an intersection acurred.
          */
-        bool findIntersect(const Ray& ray, ICollection<T*> bag = NULL);
+        virtual bool findIntersect(const Ray& ray, ICollection<T*> bag = NULL) = 0;
 
         /**
          *
          */
-        T* findIntersect(const AABB& box, ICollection<T*> bag = NULL);
+        virtual T* findIntersect(const AABB& box, ICollection<T*> bag = NULL) = 0;
 
-        Iterator<T> iterator();
+        virtual Iterator<T> iterator();
 
-        std::vector<T *> toStdVector();
+        virtual std::vector<T *> toStdVector();
 
-        std::set<T *> toStdSet();
-
-    private:
-        template< typename D >
-        class QuadTreeNode;
-
-        // Do not allow copying semantincs
-        QuadTree& operator=(const QuadTree<T>&);
-
-        QuadTreeNode<T>*    _rootNode;
-        std::vector<T>      _data;
+        virtual std::set<T *> toStdSet();
     };
 }
-#endif
-
+#endif // ICOLLECTION_H

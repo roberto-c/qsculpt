@@ -32,6 +32,7 @@ class QTextEdit;
 class QDockWidget;
 class DocumentView;
 class ICommand;
+class Console;
 
 /**
  * SolidPaint3D main window.
@@ -129,7 +130,7 @@ private:
     QString strippedName(const QString &fullFileName);
 
     DocumentView*   m_documentView;
-	CommandManager	m_commandManager;
+    CommandManager  m_commandManager;
     QString         m_curFile;
     IDocument*      m_document;
     ICommand*       m_currentCommand;
@@ -137,6 +138,7 @@ private:
     QActionGroup*   m_toolActionGroup;
     QDockWidget*    m_dockCommandOptions;
     QToolBar*       m_toolsToolbar;
+    Console*         _console;
 };
 
 

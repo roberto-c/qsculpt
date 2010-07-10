@@ -1,8 +1,10 @@
-<!DOCTYPE RCC><RCC version="1.0">
-    <qresource>
+<RCC>
+    <qresource prefix="/">
         <file alias="img_select.png">../../images/select.png</file>
         <file alias="img_brush.png">../../images/brush.png</file>
         <file alias="img_box.png">../../images/box.png</file>
-		<file alias="img_subdivide.png">../../images/subdivide.png</file>
+        <file alias="img_subdivide.png">../../images/subdivide.png</file>
+        <file>shaders/phong.fs</file>
+        <file>shaders/phong.vs</file>
     </qresource>
-    </RCC>
+</RCC>

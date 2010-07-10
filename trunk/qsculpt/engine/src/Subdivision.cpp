@@ -145,7 +145,6 @@ public:
 
 Subdivision::Subdivision()
     :   ISurface(),
-    SceneNode(NULL),
     _vertices(NULL),
     _edges(NULL),
     _faces(NULL),

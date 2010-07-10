@@ -97,14 +97,14 @@ public:
      *
      * This method is similar in purpose to gluUnproject function call.
      */
-    Vector3 screenToWorld(const Vector3& p) const;
+    Vector3 eyeToWorld(const Vector3& p) const;
     
     /**
      * Maps a point from world space to screen space.
      *
      * This method is similar in purpose to gluProject function call.
      */
-    Vector3 worldToScreen(const Vector3& p) const;
+    Vector3 worldToEye(const Vector3& p) const;
     
     
     /**
@@ -118,7 +118,8 @@ private:
     void updateMatrix();
     
     Eigen::Matrix4f     _projMat;
-    Eigen::Matrix4f     _viewPort;
+    Eigen::Matrix4f     _modelMat;
+    Eigen::Matrix4f     _viewportMat;
     
     Point3 m_position;
     Point3 m_target;

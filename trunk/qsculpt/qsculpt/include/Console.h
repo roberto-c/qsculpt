@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +17,60 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
 
-#if defined __cplusplus
+#ifndef CONSOLE_H
+#define CONSOLE_H
 
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
+#include <string>
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
+class ICommand;
+class ConsoleWindow;
 
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-
-inline bool printGlError()
+/**
+  * Execute a given command entered by keyboard by using the ConsoleWindow.
+  */
+class Console
 {
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
-}
+public:
+    static Console* instance() ;
 
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+    /**
+      * Destructor
+      */
+    virtual ~Console();
 
-#endif /* defined __cplusplus */
+    /**
+      * Register a command into the console. This makes the command available
+      * to the console interpreter.
+      */
+    bool registerCommand(const std::string& name, ICommand* cmd);
 
-#endif /* STABLE_H_ */
+    /**
+      * Unregister the command from the console.
+      */
+    bool unregisterCommand(const std::string& name);
+
+    /**
+      * Execute the command
+      *
+      * @param command a text string stating the command to execute.
+      *
+      */
+    bool evaluate(const std::string& command);
+
+    /**
+      * Get the console window.
+      */
+    ConsoleWindow* consoleWindow();
+
+private:
+    /**
+      * Default constructor of the console.
+      */
+    Console();
+
+    class Impl;
+    Impl *_impl;
+};
+
+#endif // CONSOLE_H

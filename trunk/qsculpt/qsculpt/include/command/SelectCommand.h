@@ -36,14 +36,14 @@ class TransformWidget;
 class SelectCommand : public CommandBase
 {
 public:
-	SelectCommand(ICommand* parent = 0);
+    SelectCommand(ICommand* parent = 0);
 
-	SelectCommand(const SelectCommand& cpy);
+    SelectCommand(const SelectCommand& cpy);
 
     virtual ~SelectCommand();
 
     // ICommand interface
-	virtual ICommand* clone() const;
+    virtual ICommand* clone() const;
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
@@ -57,6 +57,8 @@ private:
     bool            _drawBox;
     Point3          _startPoint;
     Point3          _endPoint;
+    Point3          _startPointWin;
+    Point3          _endPointWin;
 
     void selectObject();
 

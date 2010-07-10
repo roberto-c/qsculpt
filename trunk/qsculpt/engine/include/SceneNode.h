@@ -21,6 +21,8 @@
 #include <vector>
 #include <QObject>
 
+class ISurface;
+
 /**
  * Basic scene graph node class. 
  */
@@ -28,9 +30,9 @@ class SceneNode
 {
     //Q_OBJECT
     
-	SceneNode* _parent;
-        Eigen::Transform3f _transform;
-	
+    SceneNode* _parent;
+    Eigen::Transform3f _transform;
+
 public:
     SceneNode(SceneNode* /*parent*/){}
     virtual ~SceneNode(){}
@@ -52,4 +54,13 @@ public:
     
     void add(SceneNode *n);
     void remove(SceneNode *n);
+};
+
+class SurfaceNode : public SceneNode
+{
+    ISurface *_surface;
+
+public:
+    SurfaceNode(ISurface *surface, SceneNode *parent);
+    ~SurfaceNode();
 };

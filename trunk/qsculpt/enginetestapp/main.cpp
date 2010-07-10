@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +17,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
+//#include <Eigen/Core>
+//#include <Eigen/NewStdVector>
+//#include <QtCore/QCoreApplication>
 
-#if defined __cplusplus
+#include <ext/hash_map>
+#include <string>
+#include <iostream>
+#include "command/ICommand.h"
 
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
-
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-
-inline bool printGlError()
+namespace __gnu_cxx
 {
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
+        template<> struct hash< std::string >
+        {
+                size_t operator()( const std::string& x ) const
+                {
+                        return hash< const char* >()( x.c_str() );
+                }
+        };
 }
 
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+using namespace std;
+using namespace __gnu_cxx;
 
-#endif /* defined __cplusplus */
+typedef hash_map<string, ICommand*> MyMap;
 
-#endif /* STABLE_H_ */
+int main(int argc, char *argv[])
+{
+    QCoreApplication a(argc, argv);
+
+    vector<Eigen::Vector3f> v;
+
+    MyMap m;
+    m["2"] = NULL;
+
+    cout << m["2"] << endl;
+
+    //return a.exec();
+}

@@ -56,7 +56,10 @@ HEADERS += \
     include/StdAfx.h \
     include/Subdivision.h \
     include/Vertex.h \
-    include/WireframeRenderer.h
+    include/WireframeRenderer.h \
+    include/ICollection.h \
+    include/ray.h \
+    include/Plane.h
 
 SOURCES += src/BOManager.cpp \
     src/Box.cpp \
@@ -81,4 +84,7 @@ SOURCES += src/BOManager.cpp \
     src/StdAfx.cpp \
     src/Subdivision.cpp \
     src/Vertex.cpp \
-    src/WireframeRenderer.cpp
+    src/WireframeRenderer.cpp \
+    src/ray.cpp \
+    src/Plane.cpp \
+    src/QuadTree.cpp

@@ -43,40 +43,40 @@ public:
     /**
      * Default contructor.
      */
-	ICommand(ICommand* parent=0) : QUndoCommand(parent) {
-	}
+    ICommand(ICommand* parent=0) : QUndoCommand(parent) {
+    }
 
-	ICommand(const QString& text, ICommand* parent=0)
-		: QUndoCommand(text, parent) {
-	}
+    ICommand(const QString& text, ICommand* parent=0)
+        : QUndoCommand(text, parent) {
+    }
 
-	ICommand(const ICommand& cpy) : QObject(cpy.parent()), QUndoCommand(){}
+    ICommand(const ICommand& cpy) : QObject(cpy.parent()), QUndoCommand(){}
     /**
      * Default destructor.
      */
     virtual ~ICommand(){}
 
-	/**
-	 * Creates a new instance of the command. The new command instance should
-	 * have, at least, the same configuration parameters as the original one.
-	 */
-	virtual ICommand* clone() const = 0;
+    /**
+     * Creates a new instance of the command. The new command instance should
+     * have, at least, the same configuration parameters as the original one.
+     */
+    virtual ICommand* clone() const = 0;
 
-	/**
-	 * States if the command needs the user interaction for its execution.
-	 *
-	 * This should return TRUE if the command depends on user input like 
-	 * mouse movement. This function should return false if the command
-	 * does not require user intervention (its action is done immediatly).
-	 */
-	virtual bool needsUserInteraction() const = 0;
-	
-	/**
-	 * This method returns the options or configuration widget of the command.
-	 * The widget returned should contain all the controls necesary to allow
-	 * the user to change configuration parameters of the command.
-	 */
-	virtual QWidget* getOptionsWidget() = 0;
+    /**
+     * States if the command needs the user interaction for its execution.
+     *
+     * This should return TRUE if the command depends on user input like
+     * mouse movement. This function should return false if the command
+     * does not require user intervention (its action is done immediatly).
+     */
+    virtual bool needsUserInteraction() const = 0;
+
+    /**
+     * This method returns the options or configuration widget of the command.
+     * The widget returned should contain all the controls necesary to allow
+     * the user to change configuration parameters of the command.
+     */
+    virtual QWidget* getOptionsWidget() = 0;
 
     /**
      * Set the command as the active one. This is called with the
@@ -140,7 +140,7 @@ public slots:
 
 
 signals:
-	/**
+    /**
 	 * Serves as a way to indicate when the command has finished its execution.
 	 * This signal should be sent at the end of the undo() method implementation.
 	 */

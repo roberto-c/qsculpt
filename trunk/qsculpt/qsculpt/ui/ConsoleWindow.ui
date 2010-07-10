@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConsoleWindow</class>
+ <widget class="QDialog" name="ConsoleWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>358</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QPlainTextEdit" name="output"/>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="input"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>input</sender>
+   <signal>returnPressed()</signal>
+   <receiver>ConsoleWindow</receiver>
+   <slot>executeLine()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>299</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>178</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>executeLine()</slot>
+ </slots>
+</ui>

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +17,52 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
 
-#if defined __cplusplus
+#ifndef RAY_H
+#define RAY_H
 
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
-
-#include <Eigen/Core>
 #include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
+#include "Point3D.h"
 
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
 
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
 
-inline bool printGlError()
+namespace geometry
 {
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
+    class AABB;
+    class Plane;
+
+    class Ray : public Eigen::ParametrizedLine<float, 3>
+    {
+        static float      DEFAULT_EPSILON;
+        static Point3     DEFAULT_ORIGIN;
+        static Vector3    DEFAULT_DIR;
+
+    public:
+        /**
+         * Empty constructor. Origin is (0, 0, 0) and direction is (1, 0, 0)
+         */
+        Ray(const Point3& o = DEFAULT_ORIGIN, const Vector3& d = DEFAULT_DIR);
+
+        /**
+         * Check if the ray intersects another ray and stores the intersection
+         * point in p.
+         *
+         * @param ray ray to test intersection with.
+         * @param p an output paramter to store the point where the intersection
+         * happened. If null, not output is given.
+         * @param ep is the tolerance value to use to say if there is an
+         * intersection or not.
+         *
+         * @return a float value stating the time t in which the intersection
+         * ocurs
+         */
+        float intersect(const Ray& ray, Point3 *p = NULL, float ep = DEFAULT_EPSILON) const;
+
+        /**
+         *
+         */
+        float intersect(const Plane& plane, Point3 *p = NULL, float ep = DEFAULT_EPSILON) const;
+    };
 }
 
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
-
-#endif /* defined __cplusplus */
-
-#endif /* STABLE_H_ */
+#endif // RAY_H

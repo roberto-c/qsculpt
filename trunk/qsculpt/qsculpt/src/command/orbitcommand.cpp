@@ -17,38 +17,28 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STABLE_H_
-#define STABLE_H_ 
+#include "Stable.h"
+#include "orbitcommand.h"
 
-#if defined __cplusplus
-
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
-
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-
-inline bool printGlError()
+OrbitCommand::OrbitCommand(ICommand *parent)
+    : CommandBase(parent)
 {
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
 }
 
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+OrbitCommand::OrbitCommand(const OrbitCommand &cpy)
+    : CommandBase(cpy)
+{
+}
 
-#endif /* defined __cplusplus */
+OrbitCommand::~OrbitCommand()
+{
+}
 
-#endif /* STABLE_H_ */
+ICommand* OrbitCommand::clone() const
+{
+    return new OrbitCommand(*this);
+}
+
+QWidget* OrbitCommand::getOptionsWidget() {
+    return NULL;
+}
