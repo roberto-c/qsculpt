@@ -89,6 +89,14 @@ public:
      * backwards.
      */
     const Vertex & previous() const;
+
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    bool seek(int pos, IteratorOrigin origin) const ;
 };
 
 class Subdivision::FaceIterator : public IIterator<Face>
@@ -139,6 +147,14 @@ public:
      * backwards.
      */
     const Face & previous() const;
+
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    bool seek(int pos, IteratorOrigin origin) const ;
 };
 
 
@@ -662,6 +678,35 @@ const Vertex & Subdivision::VertexIterator::previous() const
     return *_surface->_vertices->at(_index--);
 }
 
+bool Subdivision::VertexIterator::seek(int pos, IteratorOrigin origin) const
+{
+    int n = _surface->getNumFaces();
+    int nindex = 0;
+    switch(origin)
+    {
+    case Iter_Current:
+        nindex = _index + pos;
+
+        break;
+    case Iter_End:
+        nindex = n + pos;
+        break;
+
+    case Iter_Start:
+    default:
+        nindex = pos;
+        break;
+    }
+
+    // check the new pos is valid
+    if (nindex >= n || nindex < 0)
+        return false;
+
+    // go to the new pos
+    _index += pos;
+
+    return true;
+}
 
 //Subdivision::FaceIterator
 Subdivision::FaceIterator::FaceIterator(const Subdivision* surface, int level)
@@ -680,8 +725,8 @@ bool Subdivision::FaceIterator::hasNext() const
 
 bool Subdivision::FaceIterator::hasPrevious() const
 {
-    NOT_IMPLEMENTED
-            return false;
+    int n = _surface->getNumFaces();
+    return n > 0 && _index < n && _index >= 0;
 }
 
 Face & Subdivision::FaceIterator::next()
@@ -693,21 +738,52 @@ Face & Subdivision::FaceIterator::next()
 const Face & Subdivision::FaceIterator::next() const
 {
     //NOT_IMPLEMENTED
+    assert(_surface->getNumFaces() > _index);
     return *_surface->_faces->at(++_index);
 }
 
 Face & Subdivision::FaceIterator::previous()
 {
-    NOT_IMPLEMENTED
-            static Face f;
-    return f;
+    assert(_index >= 0);
+    Face* f = _surface->_faces->at(_index);
+    --_index;
+    return *f;
 }
 
 const Face & Subdivision::FaceIterator::previous() const
 {
-    NOT_IMPLEMENTED
-            static Face f;
-    return f;
+    assert(_index >= 0);
+    Face* f = _surface->_faces->at(_index);
+    --_index;
+    return *f;
 }
 
+bool Subdivision::FaceIterator::seek(int pos, IteratorOrigin origin) const
+{
+    int n = _surface->getNumFaces();
+    int nindex = 0;
+    switch(origin)
+    {
+    case Iter_Current:
+        nindex = _index + pos;
 
+        break;
+    case Iter_End:
+        nindex = n + pos;
+        break;
+
+    case Iter_Start:
+    default:
+        nindex = pos;
+        break;
+    }
+
+    // check the new pos is valid
+    if (nindex >= n || nindex < 0)
+        return false;
+
+    // go to the new pos
+    _index += pos;
+
+    return true;
+}

@@ -68,6 +68,11 @@ public:
     inline uint hashCode() const;
 
     /**
+     * Gets the instance id of the vertex.
+     */
+    int iid() const { return _id; }
+
+    /**
      * Checks if the triangle data is valid. Triangle is valid only if
      * the three point that compose it are different.
      *
@@ -76,24 +81,24 @@ public:
     bool isValid();
 
     /**
-         * Add a vertex to the face. This method allows adding multiple vertices
-         * by chaining addVertex calls.
-         */
+     * Add a vertex to the face. This method allows adding multiple vertices
+     * by chaining addVertex calls.
+     */
     Face& addEdge(Edge* he);
 
     /**
-         * Adds all the vertices contained in the array.
-         */
+     * Adds all the vertices contained in the array.
+     */
     void addVertex(const QVector<Vertex*> v);
 
     /**
-         * Gets/sets a reference to a half edge that forms this face.
-         */
-    Edge* hedge() { return _he; };
+     * Gets/sets a reference to a half edge that forms this face.
+     */
+    Edge* hedge() { return _he; }
     void setHEdge(Edge* hedge);
 
     /**
-         * Sets the first point index reference.
+     * Sets the first point index reference.
      *
      * @param p1 index of the first point.
      * @param p2 index of the second point.
@@ -139,54 +144,7 @@ protected:
     void subdivide(int level);
 
     /* Inner classes */
-    class VertexIterator : public IIterator<Vertex>
-    {
-        friend class Face;
-
-        const Face* _f;
-        mutable Edge* _e;
-
-    protected:
-        /**
-         * Constructor of a vertex iterator. The vertex iterator
-         * is only contructed by means of Vertex::vertexIterator() function
-         */
-        VertexIterator(const Face* f);
-
-    public:
-        /**
-         * Return true if the iterator has more elements (i.e. it is not at the
-         * end)
-         */
-        bool hasNext() const;
-
-        /**
-         * Returns true if the iterator is not at the beginning of the iteration
-         */
-        bool hasPrevious() const;
-
-        /**
-         * Returns the next element and advance the iterator by one.
-         */
-        Vertex & next();
-
-        /**
-         * Returns the next element and advance the iterator by one.
-         */
-        const Vertex & next() const;
-
-        /**
-         * Returns the previous elements and move the iterator one position
-         * backwards.
-         */
-        Vertex & previous();
-
-        /**
-         * Returns the previous elements and move the iterator one position
-         * backwards.
-         */
-        const Vertex & previous() const;
-    };
+    class VertexIterator;
 
     friend class VertexIterator;
 };

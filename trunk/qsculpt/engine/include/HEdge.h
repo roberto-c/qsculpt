@@ -33,31 +33,31 @@ public:
 	 * Gets / sets a pointer to the next HEdge structure.
 	 */
 	Edge* next() const { return _next; }
-	void setNext(Edge* he) { _next = he; };
+        void setNext(Edge* he) { _next = he; }
 	
 	/**
 	 * Gets / sets a pointer to the pair of this HEdge structure.
 	 */
-	Edge* pair() const { return _pair; };
-	void setPair(Edge* he) { _pair = he; };
+        Edge* pair() const { return _pair; }
+        void setPair(Edge* he) { _pair = he; }
 
 	/**
 	 * Gets / sets a pointer to the vertex this structure points to.
 	 */
-	Vertex* head() const { return _head; };
-	void setHead(Vertex* v) { _head = v; };
+        Vertex* head() const { return _head; }
+        void setHead(Vertex* v) { _head = v; }
     
     /**
 	 * Gets / sets a pointer to the vertex this structure points to.
 	 */
-	Vertex* tail() const { return _tail; };
-	void setTail(Vertex* v) { _tail = v; };
+        Vertex* tail() const { return _tail; }
+        void setTail(Vertex* v) { _tail = v; }
 	
 	/**
 	 * Gets / sets a pointer to a face this half edge belongs to.
 	 */
-	Face* face() const { return _face; };
-	void setFace(Face* f) { _face = f; };
+        Face* face() const { return _face; }
+        void setFace(Face* f) { _face = f; }
 	
     bool isEqual(const Edge& he) const;
 	bool operator==(const Edge& he) const;
@@ -68,104 +68,9 @@ public:
 	Iterator<Edge> hedgeIterator();
 	
 	/* Inner classes */
-public:
-	class VertexIterator : public IIterator<Vertex>
-	{
-		friend class Edge;
-		
-		Edge* _he;
-		Edge* _currHe;
-		
-	protected:
-		/**
-		 * Constructor of a vertex iterator. The vertex iterator
-		 * is only contructed by means of Vertex::vertexIterator() function
-		 */
-		VertexIterator(Edge* he);
-		
-	public:
-		/**
-		 * Return true if the iterator has more elements (i.e. it is not at the
-		 * end)
-		 */
-		bool hasNext() const;
-		
-		/**
-		 * Returns true if the iterator is not at the beginning of the iteration
-		 */
-		bool hasPrevious() const;
-		
-		/**
-		 * Returns the next element and advance the iterator by one.
-		 */
-		Vertex & next();
-		
-		/**
-		 * Returns the next element and advance the iterator by one.
-		 */
-		const Vertex & next() const;
-		
-		/**
-		 * Returns the previous elements and move the iterator one position
-		 * backwards.
-		 */
-		Vertex & previous();
-		
-		/**
-		 * Returns the previous elements and move the iterator one position
-		 * backwards.
-		 */
-		const Vertex & previous() const;
-	};
-	
-	class HEdgeIterator : public IIterator<Edge>
-	{
-		friend class Edge;
-		
-		Edge* _he;
-		Edge* _currHe;
-		
-	protected:
-		/**
-		 * Constructor of a vertex iterator. The vertex iterator
-		 * is only contructed by means of Vertex::vertexIterator() function
-		 */
-		HEdgeIterator(Edge* he);
-		
-	public:
-		/**
-		 * Return true if the iterator has more elements (i.e. it is not at the
-		 * end)
-		 */
-		bool hasNext() const;
-		
-		/**
-		 * Returns true if the iterator is not at the beginning of the iteration
-		 */
-		bool hasPrevious() const;
-		
-		/**
-		 * Returns the next element and advance the iterator by one.
-		 */
-		Edge & next();
-		
-		/**
-		 * Returns the next element and advance the iterator by one.
-		 */
-		const Edge & next() const;
-		
-		/**
-		 * Returns the previous elements and move the iterator one position
-		 * backwards.
-		 */
-		Edge & previous();
-		
-		/**
-		 * Returns the previous elements and move the iterator one position
-		 * backwards.
-		 */
-		const Edge & previous() const;
-	};
+    private:
+        class VertexIterator;
+        class HEdgeIterator;
 	
 	friend class VertexIterator;
 	friend class HEdgeIterator;
