@@ -79,6 +79,8 @@ void QSculptWindow::createWidgets()
     connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
 
+    _console = Console::instance();
+
     QAction *action = m_commandManager.createUndoAction(this);
     Q_CHECK_PTR(action);
     action->setShortcut(QKeySequence::Undo);
@@ -169,7 +171,6 @@ void QSculptWindow::createWidgets()
     	layout()->setSpacing(0);
     }
 
-    _console = Console::instance();
     _console->consoleWindow()->show();
 }
 

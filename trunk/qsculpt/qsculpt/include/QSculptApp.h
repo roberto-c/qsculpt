@@ -54,14 +54,14 @@ public:
      */
     QSculptWindow* getMainWindow();
     
-	/**
-	 * Get the current document.
-	 *
-	 * This function is used to retreive the document where the operations
-	 * are being executed on.
-	 */
-	IDocument* getCurrentDocument();
-	
+    /**
+     * Get the current document.
+     *
+     * This function is used to retreive the document where the operations
+     * are being executed on.
+     */
+    IDocument* getCurrentDocument();
+
 private:
     QSculptWindow* m_mainWindow; /**< main widget of the application. */
 };

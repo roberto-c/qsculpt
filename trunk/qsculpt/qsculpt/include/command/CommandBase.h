@@ -33,20 +33,20 @@
 class CommandBase : public ICommand
 {
 public:
-	/**
-	 *
-	 */
-	CommandBase(ICommand* parent=0);
+    /**
+     *
+     */
+    CommandBase(ICommand* parent=0);
 
-	/**
-	 *
-	 */
-	CommandBase(const CommandBase&);
+    /**
+     *
+     */
+    CommandBase(const CommandBase&);
 
-	/**
-	 *
-	 */
-	CommandBase(const QString& text, ICommand* parent=0);
+    /**
+     *
+     */
+    CommandBase(const QString& text, ICommand* parent=0);
 
     virtual ~CommandBase();
 
@@ -54,7 +54,7 @@ public:
      * ICommand interface implementation
      */
     virtual IConfigContainer& getConfig()const;
-	virtual bool needsUserInteraction() const { return true; };
+    virtual bool needsUserInteraction() const { return true; }
     virtual void activate(bool active);
     virtual bool isActive();
     virtual void mousePressEvent(QMouseEvent *e);

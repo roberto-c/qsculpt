@@ -21,14 +21,14 @@
 #include "Console.h"
 #include "ConsoleWindow.h"
 
-#include <map>
+#include <QHash>
 #include <string>
 #include <iostream>
 #include "command/ICommand.h"
 
 using namespace std;
 
-typedef map< string, ICommand* > CommandMap;
+typedef QHash< QString, ICommand* > CommandMap;
 
 
 class Console::Impl
@@ -38,7 +38,7 @@ public:
       * Parses a command line and constructs a new command, ready to execute
       * the command.
       */
-    bool parseCommandLine(std::string line, ICommand** cmd);
+    bool parseCommandLine(const QString& line, ICommand** cmd);
 
 
     CommandMap commands; /*< list of command registered*/
@@ -63,7 +63,7 @@ Console* Console::instance()
     return console;
 }
 
-bool Console::registerCommand(const std::string& name, ICommand* cmd)
+bool Console::registerCommand(const QString& name, ICommand* cmd)
 {
     bool res = false;
     // add command to list of commands
@@ -75,19 +75,21 @@ bool Console::registerCommand(const std::string& name, ICommand* cmd)
     return res;
 }
 
-bool Console::unregisterCommand(const std::string& name)
+bool Console::unregisterCommand(const QString& name)
 {
     _impl->commands.erase(_impl->commands.find(name));
     return true;
 }
 
-bool Console::evaluate(const std::string& command)
+bool Console::evaluate(const QString& command)
 {
     ICommand* cmd = NULL;
     _impl->parseCommandLine(command, &cmd);
     if (cmd)
     {
+        qDebug() << "Command found: " << cmd->text();
         cmd->execute();
+        return true;
     }
     return false;
 }
@@ -97,9 +99,25 @@ ConsoleWindow* Console::consoleWindow()
     return _impl->window;
 }
 
-bool Console::Impl::parseCommandLine(std::string line, ICommand** cmd)
+bool Console::Impl::parseCommandLine(const QString& line, ICommand** cmd)
 {
+    bool res = false;
     // just set the command to NULL. this is work in progress.
-    if (cmd) *cmd = NULL;
-    return false;
+    if (cmd)
+    {
+        *cmd = NULL;
+
+        // Extract the command name
+        QStringList tokens = line.trimmed().split(" \t");
+        // Check if the command name is registered
+        if (commands.find(tokens[0]) != commands.end())
+        {
+            *cmd = commands[tokens[0]]->clone();
+            if (*cmd)
+            {
+                res = true;
+            }
+        }
+    }
+    return res;
 }

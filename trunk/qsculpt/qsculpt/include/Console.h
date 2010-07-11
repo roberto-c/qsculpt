@@ -21,7 +21,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <string>
+#include <QString>
 
 class ICommand;
 class ConsoleWindow;
@@ -43,12 +43,12 @@ public:
       * Register a command into the console. This makes the command available
       * to the console interpreter.
       */
-    bool registerCommand(const std::string& name, ICommand* cmd);
+    bool registerCommand(const QString& name, ICommand* cmd);
 
     /**
       * Unregister the command from the console.
       */
-    bool unregisterCommand(const std::string& name);
+    bool unregisterCommand(const QString& name);
 
     /**
       * Execute the command
@@ -56,7 +56,7 @@ public:
       * @param command a text string stating the command to execute.
       *
       */
-    bool evaluate(const std::string& command);
+    bool evaluate(const QString& command);
 
     /**
       * Get the console window.
