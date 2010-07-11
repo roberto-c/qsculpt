@@ -12,6 +12,65 @@
 #include "HEdge.h"
 #include "ISurface.h"
 
+
+
+class Face::VertexIterator : public IIterator<Vertex>
+{
+    friend class Face;
+
+    const Face* _f;
+    mutable Edge* _e;
+
+protected:
+    /**
+     * Constructor of a vertex iterator. The vertex iterator
+     * is only contructed by means of Vertex::vertexIterator() function
+     */
+    VertexIterator(const Face* f);
+
+public:
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    bool hasNext() const;
+
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    bool hasPrevious() const;
+
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    Vertex & next();
+
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Vertex & next() const;
+
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    Vertex & previous();
+
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    const Vertex & previous() const;
+
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    bool seek(int pos, IteratorOrigin origin) const ;
+};
+
 QAtomicInt Face::NEXT_ID(1);
 
 Face::Face(ISurface *surface)
@@ -183,4 +242,10 @@ const Vertex & Face::VertexIterator::previous() const
     NOT_IMPLEMENTED
     static Vertex v;
     return v;
+}
+
+bool Face::VertexIterator::seek(int pos, IteratorOrigin origin) const
+{
+    NOT_IMPLEMENTED;
+    return false;
 }
