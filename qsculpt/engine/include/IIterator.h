@@ -10,6 +10,9 @@
 #ifndef IITERATOR_H_
 #define IITERATOR_H_
 
+
+// TODO: Check if it the need to optimize iterator design. To many indirections?
+
 /**
  * Used for the seek method in the iterators.
  */
@@ -27,6 +30,13 @@ template< typename T >
 class IIterator
 {
 public:
+    //virtual ~IIterator(){}
+
+    /**
+     * Function to copy iterators of the same type.
+     */
+    virtual IIterator<T>* clone() const = 0;
+
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
@@ -70,13 +80,43 @@ public:
 };
 
 
+/**
+ * Wrapper class around classes derived from IIterator.
+ *
+ * Offers copy / clone semantics between iterators. It is a small class
+ * and is meant to be be used as a variables stored in the stack.
+ */
 template< typename T>
 class Iterator
 {
     IIterator<T> *_it;
 
 public:
+    /**
+     * Iterator constructor. Sets up this iterator wrapper around the
+     * passed iterator implementation class.
+     */
     Iterator(IIterator<T>* it) : _it(it) {}
+
+    /**
+     * Contructor to make a copy of another iterator.
+     */
+    Iterator(const Iterator<T>& cpy) : _it(cpy._it->clone()) {}
+
+    /**
+     * Deletes the iterator implementation instance.
+     */
+    ~Iterator() { delete _it; _it = NULL;}
+
+    /**
+     * Assignment operator.
+     */
+    Iterator& operator=(const Iterator<T>& it) {
+        if (this == &it) return *this;
+
+        this->_it = it._it->clone();
+        return *this;
+    }
 
     /**
      * Return true if the iterator has more elements (i.e. it is not at the

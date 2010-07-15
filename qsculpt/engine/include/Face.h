@@ -137,16 +137,39 @@ public:
     operator Point3() const ;
     operator Point3();
 
+    /**
+     * Gets an iterator object to traverse all the vertices that form part
+     * of this face.
+     */
     Iterator<Vertex> vertexIterator();
+
+    /**
+     * Gets an iterator object to traverse all the vertices that form part
+     * of this face.
+     */
     Iterator<Vertex> constVertexIterator() const;
+
+    /**
+     * Gets an iterator object to traverse all the edges that form part
+     * of this face.
+     */
+    Iterator<Edge> edgeIterator();
+
+    /**
+     * Gets an iterator object to traverse all the edges that form part
+     * of this face.
+     */
+    Iterator<Edge> constEdgeIterator() const;
 
 protected:
     void subdivide(int level);
 
     /* Inner classes */
     class VertexIterator;
+    class EdgeIterator;
 
     friend class VertexIterator;
+    friend class EdgeIterator;
 };
 
 #endif

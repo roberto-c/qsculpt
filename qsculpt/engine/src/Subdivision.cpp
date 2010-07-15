@@ -44,10 +44,12 @@
 class Subdivision::VertexIterator : public IIterator<Vertex>
 {	
     friend class Subdivision;
-    
+public:
+    typedef Subdivision::VertexCollection::iterator iterator;
+
     const Subdivision*  _surface;
     int                 _level;
-    mutable int         _index;
+    mutable iterator    _index;
     
 protected:
     /**
@@ -57,6 +59,11 @@ protected:
     VertexIterator(const Subdivision* surface, int level = -1);
     
 public:
+    /**
+     *
+     */
+    IIterator<Vertex>* clone() const;
+
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
@@ -102,10 +109,13 @@ public:
 class Subdivision::FaceIterator : public IIterator<Face>
 {
     friend class Subdivision;
-    
+
+    typedef Subdivision::FacesCollection::iterator iterator;
+
+    char tmp[4];
     const Subdivision*  _surface;
     int                 _level;
-    mutable int         _index;
+    mutable iterator    _index;
     
 protected:
     /**
@@ -116,10 +126,15 @@ protected:
     
 public:
     /**
+     *
+     */
+    IIterator<Face>* clone() const;
+
+    /**
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
      */
-    bool hasNext() const;
+    virtual bool hasNext() const;
     
     /**
      * Returns true if the iterator is not at the beginning of the iteration
@@ -210,6 +225,25 @@ void Subdivision::initPoints()
     _vertLevelCollections.push_back(*_vertices);
     _edgesLevelCollections.push_back(*_edges);
     _facesLevelCollections.push_back(*_faces);
+}
+
+bool Subdivision::hasChanged() {
+    return m_hasChanged;
+}
+
+void Subdivision::setChanged(bool val) {
+    m_hasChanged = val;
+    if (val) {
+        emit meshChanged(this);
+    }
+}
+
+QVector<int> Subdivision::getSelectedPoints() const {
+    return m_selectedPoints;
+}
+
+void Subdivision::setSelectedPoints(const QVector<int>& indicesArray) {
+    m_selectedPoints = indicesArray;
 }
 
 void Subdivision::setScene(Scene* scene)
@@ -348,8 +382,11 @@ int Subdivision::addVertex(const Point3& point)
     m_maxZ = MAX(z , m_maxZ);
 
     Vertex* vertex = new Vertex(point);
-    this->_vertices->push_back(vertex);
-    return _vertices->size() - 1;
+//    this->_vertices->push_back(vertex);
+//    return _vertices->size() - 1;
+    this->_vertices->insert(vertex->iid(), vertex);
+    return vertex->iid();
+
 }
 
 int Subdivision::addVertex(Vertex* v)
@@ -366,24 +403,29 @@ int Subdivision::addVertex(Vertex* v)
     m_maxY = MAX(y , m_maxY);
     m_maxZ = MAX(z , m_maxZ);
 
-    _vertices->push_back(v);
-    return _vertices->size() - 1;
+//    _vertices->push_back(v);
+//    return _vertices->size() - 1;
+    this->_vertices->insert(v->iid(), v);
+    return v->iid();
 }
 
-void Subdivision::removeVertex(int /*id*/)
-{
-    qWarning("%s %s", __FUNCTION__, " Not implemented");
-}
-
-Point3& Subdivision::getVertex(int index)
+void Subdivision::removeVertex(int iid)
 {
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
-    return _vertices->at(index)->position();
+    _vertices->remove(iid);
 }
 
-Point3 Subdivision::getVertex(int index) const
+Vertex* Subdivision::getVertex(int iid)
 {
-    return _vertices->at(index)->position();
+    //qWarning("%s %s", __FUNCTION__, " Not implemented");
+//    return _vertices->at(index);
+    return _vertices->contains(iid) ? _vertices->value(iid) : NULL;
+}
+
+const Vertex* Subdivision::getVertex(int iid) const
+{
+//    return _vertices->at(index);
+    return _vertices->contains(iid) ? _vertices->value(iid) : NULL;
 }
 
 int Subdivision::getNumVertices() const
@@ -394,33 +436,62 @@ int Subdivision::getNumVertices() const
 int Subdivision::addEdge(const Edge& edge)
 {
     //NOT_IMPLEMENTED
-    int indexOf = -1;
+//    int indexOf = -1;
     
-    std::vector<Edge*>::iterator it;
-    it = std::find_if(_edges->begin(), _edges->end(), EdgePtrComparator(edge));
-    if (it != _edges->end()) {
-        indexOf = it - _edges->begin();
-    } else {
-        Edge *h1 = new Edge(edge.tail(), edge.head());
-        Edge *h2 = new Edge(edge.head(), edge.tail());
-        h1->setPair(h2);
-        h2->setPair(h1);
+//    std::vector<Edge*>::iterator it;
+//    it = std::find_if(_edges->begin(), _edges->end(), EdgePtrComparator(edge));
+//    if (it != _edges->end()) {
+//        indexOf = it - _edges->begin();
+//    } else {
+//        Edge *h1 = new Edge(edge.tail(), edge.head());
+//        Edge *h2 = new Edge(edge.head(), edge.tail());
+//        h1->setPair(h2);
+//        h2->setPair(h1);
         
-        h1->head()->setEdge(h2);
+//        h1->head()->setEdge(h2);
         
-        indexOf = _edges->size();
-        _edges->push_back(h1);
-        _edges->push_back(h2);
-    }
+//        indexOf = _edges->size();
+//        _edges->push_back(h1);
+//        _edges->push_back(h2);
+//    }
     
-    return indexOf;
+//    return indexOf;
+    return addEdge(edge.tail(), edge.head());
 }
 
 int Subdivision::addEdge(int v1, int v2)
 {
-    Edge edge(_vertices->at(v1), _vertices->at(v2));
+    //Edge edge(_vertices->at(v1), _vertices->at(v2));
     
-    return addEdge(edge);
+    return addEdge(_vertices->value(v1), _vertices->value(v2));
+}
+
+int Subdivision::addEdge(Vertex* tail, Vertex* head)
+{
+    int iid = -1;
+
+    EdgesCollection::iterator it;
+    it = std::find_if(_edges->begin(), _edges->end(), EdgePtrComparator2(tail, head));
+    if (it != _edges->end()) {
+//        iid = it - _edges->begin();
+        iid = it.key();
+    } else {
+        Edge *h1 = new Edge(tail, head);
+        Edge *h2 = new Edge(head, tail);
+        h1->setPair(h2);
+        h2->setPair(h1);
+
+        h1->head()->setEdge(h2);
+
+//        iid = _edges->size();
+//        _edges->push_back(h1);
+//        _edges->push_back(h2);
+        iid = h1->iid();
+        _edges->insert(h1->iid(), h1);
+        _edges->insert(h2->iid(), h2);
+    }
+
+    return iid;
 }
 
 int Subdivision::addFace(const QVector<int>& vertexIndexList)
@@ -435,8 +506,8 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
     
     for (int i = 0; i < size; ++i) {
         int index = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
-        assert(index != -1);
-        edges.push_back(_edges->at(index));
+        assert(index > 0);
+        edges.push_back(_edges->value(index));
     }
     Face *f = new Face(this);
     f->setHEdge(edges[0]);
@@ -445,8 +516,10 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
         edges[i]->setFace(f);
         //_edges[edgesIndices[i]].setNext(edgesIndices[(i+1)%size]);
     }
-    _faces->push_back(f);
-    return _faces->size() - 1;
+//    _faces->push_back(f);
+//    return _faces->size() - 1;
+    _faces->insert(f->iid(), f);
+    return f->iid();
 }
 
 void Subdivision::replaceFace(int /*faceIndex*/, const QVector<int>& /*vertexIndexList*/)
@@ -459,10 +532,10 @@ void Subdivision::removeFace( int /*id*/)
     NOT_IMPLEMENTED
 }
 
-Face& Subdivision::getFace(int index)
+Face* Subdivision::getFace(int iid)
 {
-    assert(index > 0 && (unsigned int)index < _faces->size());
-    return *_faces->at(index);
+    assert(iid > 0 && (unsigned int)iid < _faces->size());
+    return _faces->contains(iid) ? _faces->value(iid) : NULL;
 }
 
 int Subdivision::getNumFaces() const
@@ -632,158 +705,266 @@ Iterator<Face> Subdivision::constFaceIterator(int level) const
 // Subdivision::VertexIterator
 Subdivision::VertexIterator::VertexIterator(const Subdivision* surface, int level)
     :	_surface(surface),
-    _level(level),
-    _index(-1)
+    _level(level)
 {
+    _index = _surface->_vertices->begin();
+}
+
+
+IIterator<Vertex>* Subdivision::VertexIterator::clone() const
+{
+    VertexIterator *it = new VertexIterator(_surface, _level);
+    it->_index = this->_index;
+    return it;
 }
 
 bool Subdivision::VertexIterator::hasNext() const
 {
     //NOT_IMPLEMENTED
-    int n = _level == -1 ? _surface->getNumVertices()
-        : _surface->_vertLevelCollections[_level].size();
-    return n > 0 && _index < n-1;
+    int n = _surface->getNumVertices();
+//    int n = _level == -1 ? _surface->getNumVertices()
+//        : _surface->_vertLevelCollections[_level].size();
+//    return n > 0 && _index >= -1 && _index < n-1;
+    return n >0 && _index != _surface->_vertices->end();
 }
 
 bool Subdivision::VertexIterator::hasPrevious() const
 {
     //NOT_IMPLEMENTED
-    //int n = _surface->getNumVertices();
-    int n = _level == -1 ? _surface->getNumVertices() 
-        : _surface->_vertLevelCollections[_level].size();
-    return _index > 0 && n > 0 && _index <= n;
+    int n = _surface->getNumVertices();
+//    int n = _level == -1 ? _surface->getNumVertices()
+//        : _surface->_vertLevelCollections[_level].size();
+//    return _index > 0 && n > 0 && _index <= n;
+    return n > 0 &&
+            (_index == _surface->_vertices->end() ||
+             _index != _surface->_vertices->begin());
 }
 
 Vertex & Subdivision::VertexIterator::next()
 {
     //NOT_IMPLEMENTED
-    return *_surface->_vertices->at(++_index);
+    //return *_surface->_vertices->at(++_index);
+    Vertex *v = _index.value();
+    ++_index;
+    return *v;
 }
 
 const Vertex & Subdivision::VertexIterator::next() const
 {
     //NOT_IMPLEMENTED
-    return *_surface->_vertices->at(++_index);
+//    return *_surface->_vertices->at(++_index);
+    Vertex *v = _index.value();
+    ++_index;
+    return *v;
 }
 
 Vertex & Subdivision::VertexIterator::previous()
 {
     //NOT_IMPLEMENTED
-    return *_surface->_vertices->at(_index--);
+//    return *_surface->_vertices->at(_index--);
+    --_index;
+    return *_index.value();
 }
 
 const Vertex & Subdivision::VertexIterator::previous() const
 {
     //NOT_IMPLEMENTED
-    return *_surface->_vertices->at(_index--);
+//    return *_surface->_vertices->at(_index--);
+    --_index;
+    return *_index.value();
 }
 
 bool Subdivision::VertexIterator::seek(int pos, IteratorOrigin origin) const
 {
-    int n = _surface->getNumFaces();
-    int nindex = 0;
+//    int n = _surface->getNumVertices();
+//    int nindex = 0;
+//    switch(origin)
+//    {
+//    case Iter_Current:
+//        nindex = _index + pos;
+
+//        break;
+//    case Iter_End:
+//        nindex = n + pos - 1;
+//        break;
+
+//    case Iter_Start:
+//    default:
+//        nindex = pos - 1;
+//        break;
+//    }
+
+//    // check the new pos is valid
+//    if (nindex >= n || nindex < 0)
+//        return false;
+
+//    // go to the new pos
+//    _index = nindex;
+
     switch(origin)
     {
     case Iter_Current:
-        nindex = _index + pos;
-
+        // nothing
         break;
     case Iter_End:
-        nindex = n + pos;
+        _index = _surface->_vertices->end();
         break;
 
     case Iter_Start:
     default:
-        nindex = pos;
+        _index = _surface->_vertices->begin();
         break;
     }
 
-    // check the new pos is valid
-    if (nindex >= n || nindex < 0)
-        return false;
-
-    // go to the new pos
-    _index += pos;
-
+    if (pos > 0) {
+        while(--pos && _index != _surface->_vertices->end()) {
+            ++_index;
+        }
+        if (_index == _surface->_vertices->end())
+            return false;
+    } else if (pos < 0 ) {
+        while(++pos && _index != _surface->_vertices->end()) {
+            --_index;
+        }
+        if (_index == _surface->_vertices->end())
+            return false;
+    }
     return true;
 }
 
 //Subdivision::FaceIterator
 Subdivision::FaceIterator::FaceIterator(const Subdivision* surface, int level)
     :	_surface(surface),
-    _level(level),
-    _index(-1)
+    _level(level)
 {
+    assert(surface);
+    this->tmp[0] = 'a';
+    this->tmp[1] = 'b';
+    _index = _surface->_faces->begin();
+}
+
+IIterator<Face>* Subdivision::FaceIterator::clone() const
+{
+    FaceIterator *it = new FaceIterator(_surface, _level);
+    it->_index = this->_index;
+    return it;
 }
 
 bool Subdivision::FaceIterator::hasNext() const
 {
     //NOT_IMPLEMENTED
     int n = _surface->getNumFaces();
-    return n > 0 && _index < n-1;
+//    return n > 0 && _index < n-1;
+    return n > 0 && _index != _surface->_faces->end();
 }
 
 bool Subdivision::FaceIterator::hasPrevious() const
 {
     int n = _surface->getNumFaces();
-    return n > 0 && _index < n && _index >= 0;
+//    return n > 0 && _index < n && _index >= 0;
+    return n > 0 &&
+            (_index == _surface->_faces->end() ||
+             _index != _surface->_faces->begin());
 }
 
 Face & Subdivision::FaceIterator::next()
 {
     //NOT_IMPLEMENTED
-    return *_surface->_faces->at(++_index);
+//    return *_surface->_faces->at(++_index);
+    Face *f = _index.value();
+
+    assert(f);
+    ++_index;
+    return *f;
 }
 
 const Face & Subdivision::FaceIterator::next() const
 {
     //NOT_IMPLEMENTED
-    assert(_surface->getNumFaces() > _index);
-    return *_surface->_faces->at(++_index);
+//    assert(_surface->getNumFaces() > _index);
+//    return *_surface->_faces->at(++_index);
+    Face *f = _index.value();
+    assert(f);
+    ++_index;
+    return *f;
 }
 
 Face & Subdivision::FaceIterator::previous()
 {
-    assert(_index >= 0);
-    Face* f = _surface->_faces->at(_index);
+//    assert(_index >= 0);
+//    Face* f = _surface->_faces->at(_index);
+//    --_index;
+//    return *f;
     --_index;
-    return *f;
+    return *_index.value();
 }
 
 const Face & Subdivision::FaceIterator::previous() const
 {
-    assert(_index >= 0);
-    Face* f = _surface->_faces->at(_index);
+//    assert(_index >= 0);
+//    Face* f = _surface->_faces->at(_index);
+//    --_index;
+//    return *f;
     --_index;
-    return *f;
+    return *_index.value();
 }
 
 bool Subdivision::FaceIterator::seek(int pos, IteratorOrigin origin) const
 {
-    int n = _surface->getNumFaces();
-    int nindex = 0;
+//    int n = _surface->getNumFaces();
+//    int nindex = 0;
+//    switch(origin)
+//    {
+//    case Iter_Current:
+//        nindex = _index + pos;
+
+//        break;
+//    case Iter_End:
+//        nindex = n + pos - 1;
+//        break;
+
+//    case Iter_Start:
+//    default:
+//        nindex = pos - 1;
+//        break;
+//    }
+
+//    // check the new pos is valid
+//    if (nindex >= n || nindex < -1)
+//        return false;
+
+//    // go to the new pos
+//    _index = nindex;
+
+//    return true;
+
     switch(origin)
     {
     case Iter_Current:
-        nindex = _index + pos;
-
+        // nothing
         break;
     case Iter_End:
-        nindex = n + pos;
+        _index = _surface->_faces->end();
         break;
 
     case Iter_Start:
     default:
-        nindex = pos;
+        _index = _surface->_faces->begin();
         break;
     }
 
-    // check the new pos is valid
-    if (nindex >= n || nindex < 0)
-        return false;
-
-    // go to the new pos
-    _index += pos;
-
+    if (pos > 0) {
+        while(--pos && _index != _surface->_faces->end()) {
+            ++_index;
+        }
+        if (_index == _surface->_faces->end())
+            return false;
+    } else if (pos < 0 ) {
+        while(++pos && _index != _surface->_faces->end()) {
+            --_index;
+        }
+        if (_index == _surface->_faces->end())
+            return false;
+    }
     return true;
 }

@@ -12,6 +12,7 @@
 #include <vector>
 #include "ISurface.h"
 #include "SceneNode.h"
+#include <QHash>
 
 class Vertex;
 class Edge;
@@ -22,9 +23,9 @@ class SubdivisionScheme;
  */
 class Subdivision : public ISurface
 {
-    typedef std::vector<Vertex*> VertexCollection;
-    typedef std::vector<Edge*> EdgesCollection;
-    typedef std::vector<Face*> FacesCollection;
+    typedef QHash<int, Vertex*> VertexCollection;
+    typedef QHash<int, Edge*> EdgesCollection;
+    typedef QHash<int, Face*> FacesCollection;
 
     /** Vertices by each subdivision level */
     std::vector<VertexCollection> _vertLevelCollections;
@@ -44,6 +45,8 @@ public:
     /******************************************************************************
      * IObject3D interface
      */
+    virtual bool hasChanged();
+    virtual void setChanged(bool val);
     virtual void setScene(Scene* scene) ;
     virtual Scene* getScene() const;
     virtual Point3 getPosition() const;
@@ -67,8 +70,8 @@ public:
     virtual int addVertex(const Point3& point);
     virtual int addVertex(Vertex* v);
     virtual void removeVertex(int id);
-    virtual Point3& getVertex(int index);
-    virtual Point3 getVertex(int index) const;
+    virtual Vertex* getVertex(int index);
+    virtual const Vertex* getVertex(int index) const;
     virtual int getNumVertices() const;
     virtual int addEdge(const Edge& edge);
     virtual int addEdge(int v1, int v2);
@@ -76,7 +79,7 @@ public:
     virtual void replaceFace(int index, const QVector<int>& vertexIndexList);
     virtual void removeFace( int id);
     virtual int getNumFaces() const;
-    virtual Face& getFace(int index);
+    virtual Face* getFace(int index);
     virtual int getFaceIndexAtPoint(const Point3& p) const;
     virtual int getClosestPointAtPoint(const Point3 &p) const;
     virtual QVector<int> getPointsInRadius(const Point3 &p, float radius) const;
@@ -87,21 +90,9 @@ public:
     virtual void removeResolutionLevel(int level);
     virtual void setWorkingResolutionLevel(int level);
     virtual int getWorkingResolutionLevel();
-    virtual bool hasChanged() {
-        return m_hasChanged;
-    };
-    virtual void setChanged(bool val) {
-        m_hasChanged = val;
-        if (val) {
-            emit meshChanged(this);
-        }
-    };
-    virtual QVector<int> getSelectedPoints() const {
-        return m_selectedPoints;
-    }
-    virtual void setSelectedPoints(const QVector<int>& indicesArray) {
-        m_selectedPoints = indicesArray;
-    }
+
+    virtual QVector<int> getSelectedPoints() const;
+    virtual void setSelectedPoints(const QVector<int>& indicesArray);
 
     virtual Iterator<Vertex> vertexIterator();
     virtual Iterator<Vertex> constVertexIterator() const;
@@ -127,6 +118,11 @@ protected:
      * Draw a bounding box around the object.
      */
     void drawBoundingBox();
+
+    /**
+      *
+      */
+    int addEdge(Vertex* v1, Vertex* v2);
 
     Scene*          m_scene;
     Point3          m_position;

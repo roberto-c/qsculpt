@@ -227,8 +227,8 @@ public:
     /**
      *
      */
-    virtual Point3& getVertex(int index) = 0;
-	virtual Point3 getVertex(int index) const = 0;
+    virtual Vertex* getVertex(int index) = 0;
+    virtual const Vertex* getVertex(int index) const = 0;
 
 	/**
 	 * Gets the number of vertices
@@ -281,7 +281,7 @@ public:
     /**
      * Returns the face at the position index.
      */
-    virtual Face& getFace(int index) = 0;
+    virtual Face* getFace(int index) = 0;
     
     /**
      *

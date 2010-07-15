@@ -27,6 +27,11 @@ protected:
 
 public:
     /**
+     *
+     */
+    IIterator<Vertex>* clone() const;
+
+    /**
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
      */
@@ -83,6 +88,11 @@ protected:
     HEdgeIterator(Edge* he);
 
 public:
+    /**
+     *
+     */
+    IIterator<Edge>* clone() const;
+
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
@@ -145,6 +155,7 @@ Edge::Edge(Vertex* tail, Vertex* head)
     _face(NULL)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
+    assert(tail && head && tail->iid() != head->iid());
 }
 
 Edge::~Edge()
@@ -195,6 +206,13 @@ Edge::VertexIterator::VertexIterator(Edge* he)
     : _he(he)
 {
     _currHe = _he;
+}
+
+IIterator<Vertex>* Edge::VertexIterator::clone() const
+{
+    VertexIterator *it = new VertexIterator(_he);
+    it->_currHe = _currHe;
+
 }
 
 bool Edge::VertexIterator::hasNext() const
@@ -254,6 +272,13 @@ Edge::HEdgeIterator::HEdgeIterator(Edge* he)
     : _he(he)
 {
     _currHe = _he;
+}
+
+IIterator<Edge>* Edge::HEdgeIterator::clone() const
+{
+    HEdgeIterator *it = new HEdgeIterator(_he);
+    it->_currHe = _he;
+    return it;
 }
 
 bool Edge::HEdgeIterator::hasNext() const
