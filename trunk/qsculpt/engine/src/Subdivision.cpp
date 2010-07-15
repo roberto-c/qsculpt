@@ -505,9 +505,9 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
     }
     
     for (int i = 0; i < size; ++i) {
-        int index = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
-        assert(index > 0);
-        edges.push_back(_edges->value(index));
+        int iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
+        assert(iid > 0);
+        edges.push_back(_edges->value(iid));
     }
     Face *f = new Face(this);
     f->setHEdge(edges[0]);

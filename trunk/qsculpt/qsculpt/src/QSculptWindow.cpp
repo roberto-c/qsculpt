@@ -188,6 +188,7 @@ void QSculptWindow::closeEvent(QCloseEvent *event)
 {
     if (maybeSave()) {
         writeSettings();
+        _console->consoleWindow()->close();
         event->accept();
     } else {
         event->ignore();

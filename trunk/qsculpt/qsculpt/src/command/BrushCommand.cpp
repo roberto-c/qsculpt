@@ -34,80 +34,80 @@
 QImage BrushCommand::_cursorImage;
 
 BrushCommand::BrushCommand(ICommand* parent)
-	: CommandBase("Brush", parent),
-	_object(NULL),
-	_radius(0.5),
-	_depth( 0.1),
-	_action(Push),
-	_propertiesWindow(NULL),
-	_undoCalled(false),
-	_direction(-1)
+    : CommandBase("Brush", parent),
+    _object(NULL),
+    _radius(0.5),
+    _depth( 0.1),
+    _action(Push),
+    _propertiesWindow(NULL),
+    _undoCalled(false),
+    _direction(-1)
 {
-	if (getOptionsWidget())
-	{
-		_propertiesWindow->setBrushRadius(_radius);
-		_propertiesWindow->setBrushStrength(_depth);
-		_propertiesWindow->setBrushAction(Push);
-	}
-	if (_cursorImage.isNull())
-	{
-		_cursorImage.load("/Users/rcabral/images/test.png");
-	}
+    if (getOptionsWidget())
+    {
+        _propertiesWindow->setBrushRadius(_radius);
+        _propertiesWindow->setBrushStrength(_depth);
+        _propertiesWindow->setBrushAction(Push);
+    }
+    if (_cursorImage.isNull())
+    {
+        _cursorImage.load("/Users/rcabral/images/test.png");
+    }
 }
 
 BrushCommand::BrushCommand(const BrushCommand& cpy)
-	: CommandBase(cpy),
-	_object(cpy._object),
-	_radius(cpy._radius),
-	_depth(cpy._depth),
-	_action(cpy._action),
-	_propertiesWindow(cpy._propertiesWindow),
-	_undoCalled(cpy._undoCalled)
+    : CommandBase(cpy),
+    _object(cpy._object),
+    _radius(cpy._radius),
+    _depth(cpy._depth),
+    _action(cpy._action),
+    _propertiesWindow(cpy._propertiesWindow),
+    _undoCalled(cpy._undoCalled)
 {
-	qDebug() << "BrushCommand::BrushCommand(cpy)";
-	if (getOptionsWidget())
-	{
-		_propertiesWindow->setBrushRadius(_radius);
-		_propertiesWindow->setBrushStrength(_depth);
-		_propertiesWindow->setBrushAction(cpy._action);
-	}
-	if (_cursorImage.isNull())
-	{
-		_cursorImage.load("/Users/rcabral/images/test.png");
-	}
+    qDebug() << "BrushCommand::BrushCommand(cpy)";
+    if (getOptionsWidget())
+    {
+        _propertiesWindow->setBrushRadius(_radius);
+        _propertiesWindow->setBrushStrength(_depth);
+        _propertiesWindow->setBrushAction(cpy._action);
+    }
+    if (_cursorImage.isNull())
+    {
+        _cursorImage.load("/Users/rcabral/images/test.png");
+    }
 }
 
 BrushCommand::~BrushCommand()
 {
-	qDebug() << "BrushCommand::~BrushCommand()";
+    qDebug() << "BrushCommand::~BrushCommand()";
 }
 
 ICommand* BrushCommand::clone() const
 {
-	qDebug() << "BrushCommand::clone()";
-	return new BrushCommand(*this);
+    qDebug() << "BrushCommand::clone()";
+    return new BrushCommand(*this);
 }
 
 QWidget* BrushCommand::getOptionsWidget()
 {
-	if (_propertiesWindow == NULL)
-		_propertiesWindow = new BrushProperties(NULL);
-	return _propertiesWindow;
+    if (_propertiesWindow == NULL)
+        _propertiesWindow = new BrushProperties(NULL);
+    return _propertiesWindow;
 }
 
 void BrushCommand::activate(bool active)
 {
-	DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-	if (active)
-	{
-		view->setCursorImage(_cursorImage);
-		view->set3DCursorShape(GlCanvas::Image);
-	}
-	else
-	{
-		view->set3DCursorShape(GlCanvas::None);
-	}
-	CommandBase::activate(active);
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    if (active)
+    {
+        view->setCursorImage(_cursorImage);
+        view->set3DCursorShape(GlCanvas::Image);
+    }
+    else
+    {
+        view->set3DCursorShape(GlCanvas::None);
+    }
+    CommandBase::activate(active);
 }
 
 /**
@@ -116,28 +116,28 @@ void BrushCommand::activate(bool active)
  */
 void BrushCommand::undo()
 {
-	qDebug() << "BrushCommand::undo()";
-	if (_object)
-	{
-		QHash<int, Point3> hash = _previousState[_object];
-		QHash<int, Point3>::iterator it, end = hash.end();
-		for (it = hash.begin(); it != end; ++it)
-		{
-			Point3 v = _object->getVertex(it.key());
-			_object->getVertex(it.key()) = it.value();
-			it.value() = v;
-		}
-		for (it = hash.begin(); it != end; ++it)
-		{
-			_object->adjustPointNormal(it.key());
-		}
-		_object->setChanged(true);
-		
-		DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-		if (view)
-			view->updateView();
-	}
-	_undoCalled = true;
+    qDebug() << "BrushCommand::undo()";
+    if (_object)
+    {
+        QHash<int, Point3> hash = _previousState[_object];
+        QHash<int, Point3>::iterator it, end = hash.end();
+        for (it = hash.begin(); it != end; ++it)
+        {
+            Point3 v = _object->getVertex(it.key())->position();
+            _object->getVertex(it.key())->position() = it.value();
+            it.value() = v;
+        }
+        for (it = hash.begin(); it != end; ++it)
+        {
+            _object->adjustPointNormal(it.key());
+        }
+        _object->setChanged(true);
+
+        DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+        if (view)
+            view->updateView();
+    }
+    _undoCalled = true;
 }
 
 /**
@@ -147,36 +147,36 @@ void BrushCommand::undo()
  */
 void BrushCommand::redo()
 {
-	qDebug() << "BrushCommand::redo()";
-	if (_object && _undoCalled)
-	{
-		QHash<int, Point3> hash = _previousState[_object];
-		QHash<int, Point3>::iterator it, end = hash.end();
-		for (it = hash.begin(); it != end; ++it)
-		{
-			Point3 v = _object->getVertex(it.key());
-			_object->getVertex(it.key()) = it.value();
-			it.value() = v;
-		}
-		for (it = hash.begin(); it != end; ++it)
-		{
-			_object->adjustPointNormal(it.key());
-		}
-		_object->setChanged(true);
-		
-		DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-		if (view)
-			view->updateView();
-	}
+    qDebug() << "BrushCommand::redo()";
+    if (_object && _undoCalled)
+    {
+        QHash<int, Point3> hash = _previousState[_object];
+        QHash<int, Point3>::iterator it, end = hash.end();
+        for (it = hash.begin(); it != end; ++it)
+        {
+            Point3 v = _object->getVertex(it.key())->position();
+            _object->getVertex(it.key())->position() = it.value();
+            it.value() = v;
+        }
+        for (it = hash.begin(); it != end; ++it)
+        {
+            _object->adjustPointNormal(it.key());
+        }
+        _object->setChanged(true);
+
+        DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+        if (view)
+            view->updateView();
+    }
 }
 
 void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 {
-	if (e->buttons() == Qt::NoButton)
-	{
-		CommandBase::mouseMoveEvent(e);
-		return;
-	}
+    if (e->buttons() == Qt::NoButton)
+    {
+        CommandBase::mouseMoveEvent(e);
+        return;
+    }
 
     if (_selectedObjects.count() > 0)
     {
@@ -186,7 +186,7 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
         // Use the same z depth to move in the plane parallel to the screen.
         wz = _currentWinPoint.z();
         gluUnProject(e->x(), _viewPort[3] - e->y(), wz,
-            _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
+                     _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
 
         Point3 currPoint = Point3(x, y, z);
         Point3 currWinPoint = Point3(e->x(), e->y(), wz);
@@ -207,8 +207,8 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
             _vertexSelected.clear();
             selectObject();
         }
-		if (view)
-			view->updateView();
+        if (view)
+            view->updateView();
     }
     else
     {
@@ -220,9 +220,9 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
-	_vertexSelected.clear();
-	_selectedObjects.clear();
-	_previousState.clear();
+    _vertexSelected.clear();
+    _selectedObjects.clear();
+    _previousState.clear();
     _radius = _propertiesWindow->getBrushRadius();
     _action = _propertiesWindow->getBrushAction();
     _depth = _propertiesWindow->getBrushStrength();
@@ -240,22 +240,22 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
 
         glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
         gluUnProject(e->x(), _viewPort[3] - e->y(), wz,
-            _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
+                     _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
 
         _initialWinPoint = Point3(e->x(), e->y(), wz);
         _currentWinPoint = _initialWinPoint;
         _intialPoint = Point3(x, y, z);
         _currentPoint = _intialPoint;
 
-		selectObject();
+        selectObject();
     }
     else
     {
         CommandBase::mousePressEvent(e);
     }
 
-	if (view)
-		view->updateView();
+    if (view)
+        view->updateView();
 }
 
 void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
@@ -264,55 +264,55 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
     if (_selectedObjects.count() > 0)
     {
         _selectedObjects.clear();
-		_object->setChanged(true);
+        _object->setChanged(true);
         emit executed();
     }
     else
     {
         CommandBase::mouseReleaseEvent(e);
     }
-	DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-	if (view)
-		view->updateView();
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    if (view)
+        view->updateView();
 }
 
 void BrushCommand::applyOperation()
 {
-	GLdouble winX, winY, winZ;
-	Point3 wv;
-	if (_vertexSelected.size() > 0)
-	{
-		//Vector3& n = _object->getNormalAtPoint(_vertexSelected[_vertexSelected.count()/2]);
+    GLdouble winX, winY, winZ;
+    Point3 wv;
+    if (_vertexSelected.size() > 0)
+    {
+        //Vector3& n = _object->getNormalAtPoint(_vertexSelected[_vertexSelected.count()/2]);
         Vector3 n;
-		for (int i = 0; i < _vertexSelected.size(); i++)
-		{
-			
-			Point3& v = _object->getVertex(_vertexSelected[i]);
-			gluProject(v.x(), v.y(), v.z(),
-					   _modelMatrix, _projMatrix, _viewPort,
-					   &winX, &winY, &winZ);
-			//wv.setPoint(winX, winY, winZ);
-			wv.x() = winX;
-			wv.y() = winY;
-			wv.z() = winZ;
-			//if ( n != Normal::null())
-			{
-				//float factor =  (_radius - (_currentWinPoint - wv).length()) / _radius;
-				float factor =  (_radius - (_currentPoint - v).norm()) / _radius;
-				factor = factor * _depth * _direction;
-				Point3 disp = n * factor;
-				v = v + disp;
-				_object->adjustPointNormal(_vertexSelected[i]);
-			}
-		}
-		_object->setChanged(true);
-	}
+        for (int i = 0; i < _vertexSelected.size(); i++)
+        {
+
+            Point3& v = _object->getVertex(_vertexSelected[i])->position();
+            gluProject(v.x(), v.y(), v.z(),
+                       _modelMatrix, _projMatrix, _viewPort,
+                       &winX, &winY, &winZ);
+            //wv.setPoint(winX, winY, winZ);
+            wv.x() = winX;
+            wv.y() = winY;
+            wv.z() = winZ;
+            //if ( n != Normal::null())
+            {
+                //float factor =  (_radius - (_currentWinPoint - wv).length()) / _radius;
+                float factor =  (_radius - (_currentPoint - v).norm()) / _radius;
+                factor = factor * _depth * _direction;
+                Point3 disp = n * factor;
+                v = v + disp;
+                _object->adjustPointNormal(_vertexSelected[i]);
+            }
+        }
+        _object->setChanged(true);
+    }
 }
 
 void BrushCommand::selectObject()
 {
-	qDebug() << "BrushCommand::selectObject()";
-	DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    qDebug() << "BrushCommand::selectObject()";
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
     if (!view)
         return;
@@ -320,29 +320,29 @@ void BrushCommand::selectObject()
     qDebug() << "recordCount =" << recordCount;
     for (int i = 0; i < recordCount; i++)
     {
-		_object = _selectedObjects[i];
-		if (_object)
-		{
-//			_vertexSelected = view->getSelectedVertices(_currentWinPoint.getX(), 
-//														_currentWinPoint.getY(),
-//														_radius, _radius);
-			_vertexSelected = _object->getPointsInRadius(_currentPoint, _radius);
-			int counter = _vertexSelected.size();
-			//qDebug() << "currentPoint: " << qPrintable(_currentPoint.toString()) << " points selected: " << counter;
-			for (int j = 0; j < counter; j++)
-			{
-				int index = _vertexSelected[j];
-				if (!_previousState[_object].contains(_vertexSelected[j]))
-				{
-					//_object->getPointList().at(index).color = QColor(255, 0, 0);
-					_previousState[_object].insert(index, _object->getVertex(index));
-				}
-			}
-		}
-		else
-		{
-			qDebug() << "_object is null";
-		}
+        _object = _selectedObjects[i];
+        if (_object)
+        {
+            //			_vertexSelected = view->getSelectedVertices(_currentWinPoint.getX(),
+            //														_currentWinPoint.getY(),
+            //														_radius, _radius);
+            _vertexSelected = _object->getPointsInRadius(_currentPoint, _radius);
+            int counter = _vertexSelected.size();
+            //qDebug() << "currentPoint: " << qPrintable(_currentPoint.toString()) << " points selected: " << counter;
+            for (int j = 0; j < counter; j++)
+            {
+                int index = _vertexSelected[j];
+                if (!_previousState[_object].contains(_vertexSelected[j]))
+                {
+                    //_object->getPointList().at(index).color = QColor(255, 0, 0);
+                    _previousState[_object].insert(index, _object->getVertex(index)->position());
+                }
+            }
+        }
+        else
+        {
+            qDebug() << "_object is null";
+        }
     }
 }
 

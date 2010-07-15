@@ -111,6 +111,9 @@ namespace data
          */
         virtual T* findIntersect(const AABB& box, ICollection<T*> bag = NULL) = 0;
 
+        /**
+         * Creates
+         */
         virtual Iterator<T> iterator();
 
         virtual std::vector<T *> toStdVector();
@@ -118,4 +121,5 @@ namespace data
         virtual std::set<T *> toStdSet();
     };
 }
+
 #endif // ICOLLECTION_H

@@ -188,7 +188,6 @@ void FlatRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
         Iterator<Vertex> vtxIt = f.constVertexIterator();
         while(vtxIt.hasNext()) {
             const Vertex& v = vtxIt.next();
-            qDebug() << "Vertex:" << toString(v.position());
             vtxData[offset].v[0] = v.position().x();
             vtxData[offset].v[1] = v.position().y();
             vtxData[offset].v[2] = v.position().z();
