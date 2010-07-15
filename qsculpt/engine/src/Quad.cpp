@@ -36,25 +36,20 @@ Quad::~Quad()
 void Quad::initPoints()
 {
     //qDebug("Box::initPoints()");
-    double hw = 1.0;
-    double hh = 1.0;
-    double hd = 0.0;
-        
-    addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
-    addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
-    addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
-    addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
 }
 
 void Quad::initTriangles()
 {
     //qDebug("Box::initTriangles()");
-    
+    double hw = 1.0;
+    double hh = 1.0;
+    double hd = 0.0;
+
     QVector<int> indexList(4);
-    indexList[0] = 0;
-    indexList[1] = 1;
-    indexList[2] = 2;
-    indexList[3] = 3;
+    indexList[0] = addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
+    indexList[1] = addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
+    indexList[2] = addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
+    indexList[3] = addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
     addFace( indexList );
     //qDebug("Box::initTriangles() end");
 }

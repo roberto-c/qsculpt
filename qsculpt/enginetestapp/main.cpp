@@ -21,10 +21,13 @@
 //#include <Eigen/NewStdVector>
 //#include <QtCore/QCoreApplication>
 
+#include <ext/hash_set>
 #include <ext/hash_map>
+#include <QHash>
 #include <string>
 #include <iostream>
 #include "command/ICommand.h"
+#include "Vertex.h"
 
 namespace __gnu_cxx
 {
@@ -46,12 +49,40 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    vector<Eigen::Vector3f> v;
+    QHash<int, Vertex*> table;
+    hash_map<int, Vertex*> hashmap;
+    cout << "QHash size: "  << sizeof(table) << endl;
+    cout << "hash_map size: "  << sizeof(hashmap) << endl;
 
-    MyMap m;
-    m["2"] = NULL;
-
-    cout << m["2"] << endl;
-
+    time_t delta = 0;
+    time_t t0, t1;
+    t0 = t1 = time(NULL);
+    delta = abs(t1 - t0);
+    cout << delta << endl;
+    for (int i = 0; i < 10000000; ++i) {
+        Vertex *v = new Vertex;
+        table.insert(v->iid(), v);
+        hashmap[v->iid()] = v;
+    }
+    t0 = time(NULL);
+    delta = abs( t0 - t1);
+    cout << delta << endl;
+    for (int i = 0; i < 10000000; ++i) {
+        table.contains( (i % 100) + 3);
+    }
+    t1 = time(NULL);
+    delta = abs( t1 - t0);
+    cout << delta << endl;
+    for (int i = 0; i < 10000000; ++i) {
+        hashmap.find((i % 100) + 3);
+    }
+    t0 = time(NULL);
+    delta = abs( t0 - t1);
+    cout << delta << endl;
+    foreach(Vertex* v, table) {
+        delete v;
+    }
+    table.clear();
+    hashmap.clear();
     //return a.exec();
 }
