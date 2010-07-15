@@ -24,11 +24,16 @@ class Face::VertexIterator : public IIterator<Vertex>
 protected:
     /**
      * Constructor of a vertex iterator. The vertex iterator
-     * is only contructed by means of Vertex::vertexIterator() function
+     * is only contructed by means of Face::vertexIterator() function
      */
     VertexIterator(const Face* f);
 
 public:
+    /**
+     *
+     */
+    IIterator<Vertex>* clone() const;
+
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
@@ -71,7 +76,70 @@ public:
     bool seek(int pos, IteratorOrigin origin) const ;
 };
 
-QAtomicInt Face::NEXT_ID(1);
+
+class Face::EdgeIterator : public IIterator<Edge>
+{
+    friend class Face;
+
+    const Face* _f;
+    mutable Edge* _e;
+
+protected:
+    /**
+     * Constructor of a vertex iterator. The Edge iterator
+     * is only contructed by means of Face::edgeIterator() function
+     */
+    EdgeIterator(const Face* f);
+
+public:
+    /**
+     *
+     */
+    IIterator<Edge>* clone() const;
+
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    bool hasNext() const;
+
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    bool hasPrevious() const;
+
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    Edge & next();
+
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Edge & next() const;
+
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    Edge & previous();
+
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    const Edge & previous() const;
+
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    bool seek(int pos, IteratorOrigin origin) const ;
+};
+
+QAtomicInt Face::NEXT_ID(0);
 
 Face::Face(ISurface *surface)
     :   _surface(surface),
@@ -186,6 +254,16 @@ Iterator<Vertex> Face::constVertexIterator() const
     return Iterator<Vertex>(new Face::VertexIterator(this));
 }
 
+Iterator<Edge> Face::edgeIterator()
+{
+    return Iterator<Edge>(new Face::EdgeIterator(this));
+}
+
+Iterator<Edge> Face::constEdgeIterator() const
+{
+    return Iterator<Edge>(new Face::EdgeIterator(this));
+}
+
 void Face::subdivide(int /*level*/)
 {
 
@@ -197,6 +275,13 @@ Face::VertexIterator::VertexIterator(const Face* f)
     :	_f(f),
     _e(NULL)
 {
+}
+
+IIterator<Vertex>* Face::VertexIterator::clone() const
+{
+    VertexIterator *it = new VertexIterator(_f);
+    it->_e = _e;
+    return it;
 }
 
 bool Face::VertexIterator::hasNext() const
@@ -245,6 +330,76 @@ const Vertex & Face::VertexIterator::previous() const
 }
 
 bool Face::VertexIterator::seek(int pos, IteratorOrigin origin) const
+{
+    NOT_IMPLEMENTED;
+    return false;
+}
+
+
+
+// EdgeIterator
+
+Face::EdgeIterator::EdgeIterator(const Face* f)
+    :	_f(f),
+    _e(NULL)
+{
+}
+
+IIterator<Edge>* Face::EdgeIterator::clone() const
+{
+    EdgeIterator* it = new EdgeIterator(_f);
+    it->_e = _e;
+    return it;
+}
+
+bool Face::EdgeIterator::hasNext() const
+{
+    // true if the face has an edge assigned and
+    // _e pointer hasn't been set yet (next() hasn't been called)
+    // or _e has been set and _e is different to the initial
+    // edget pointer (_f->_he)
+    return _f->_he && (!_e || (_e->next() && _e->next() != _f->_he));
+}
+
+
+bool Face::EdgeIterator::hasPrevious() const
+{
+    return false;
+}
+
+
+Edge & Face::EdgeIterator::next()
+{
+    //NOT_IMPLEMENTED
+    _e = _e == NULL ? _f->_he : _e->next();
+    assert(_e != NULL);
+    return *_e;
+}
+
+const Edge & Face::EdgeIterator::next() const
+{
+    //NOT_IMPLEMENTED
+
+    _e = _e == NULL ? _f->_he : _e->next();
+    assert(_e != NULL);
+    return *_e;
+}
+
+Edge & Face::EdgeIterator::previous()
+{
+    NOT_IMPLEMENTED
+    static Edge e;
+    return e;
+}
+
+const Edge & Face::EdgeIterator::previous() const
+{
+    NOT_IMPLEMENTED
+    static Edge e;
+    return e;
+}
+
+bool Face::EdgeIterator::seek(int pos, IteratorOrigin origin) const
 {
     NOT_IMPLEMENTED;
     return false;

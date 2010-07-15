@@ -29,6 +29,11 @@ protected:
 
 public:
     /**
+     *
+     */
+    IIterator<Vertex>* clone() const;
+
+    /**
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
      */
@@ -153,6 +158,13 @@ Vertex::VertexIterator::VertexIterator(Vertex* v)
     :	_v(v),
     _currHe(NULL)
 {
+}
+
+IIterator<Vertex>* Vertex::VertexIterator::clone() const
+{
+    VertexIterator *it = new VertexIterator(_v);
+    it->_currHe = _currHe;
+    return it;
 }
 
 bool Vertex::VertexIterator::hasNext() const
