@@ -20,6 +20,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "Point3D.h"
+
 /**
  * @class Camera
  *
@@ -60,20 +62,51 @@ public:
     double getDistanceFromTarget();
 
     /**
-     * Set the transformation matrix to use for the camera or eye transformation.
+     * Set the transformation matrix to use for the camera or eye
+     * transformation.
      *
      * If this function is used, then position, target and orientation vectors
-     * are not valid anymore as those paramater are used to construct this matrix.
+     * are not valid anymore as those paramater are used to construct this
+     * matrix.
      *
      */
     void setModelView(const Eigen::Matrix4f& m);
-    
+
+    /**
+     * Returns the model view matrix used by this camera.
+     */
     const Eigen::Matrix4f& modelView();
     
+    /**
+     * Set the projection matrix to use for the perspective projection
+     * transformation.
+     *
+     * @param m projection matrix to use
+     *
+     */
     void setProjectionMatrix(const Eigen::Matrix4f& m);
-    
+
+    /**
+     * Returns the projection matrix used by the camera
+     */
     const Eigen::Matrix4f& projection();
-    
+
+    /**
+     * Constructs a new perspective projection matrix based in the specified
+     * planes values.
+     */
+    void setPerspectiveMatrix(float left, float right,
+                              float bottom, float top,
+                              float near, float far);
+
+    /**
+     * Constructs a new orthographic projection matrix based in the specified
+     * planes values.
+     */
+    void setOrthoMatrix(float left, float right,
+                        float bottom, float top,
+                        float near, float far);
+
     /**
      * Set the viewport transformation matrix.
      *
@@ -84,6 +117,16 @@ public:
      * This is similar to calling glViewpot in OpenGL.
      */
     void setViewport(const Eigen::Matrix4f& m);
+
+    /**
+     * Set the viewport matrix.
+     *
+     * @param x the initial x window coordinate
+     * @param y the initial y window coordinate
+     * @param w the width of the viewport
+     * @param h the height of the viewport
+     */
+    void setViewport(int x, int y, int w, int h);
 
     /**
      * Returns the viewport transformation matrix.
@@ -115,10 +158,10 @@ public:
     QString toString() const;
 
 private:
-    void updateMatrix();
+    void updateViewMatrix();
     
     Eigen::Matrix4f     _projMat;
-    Eigen::Matrix4f     _modelMat;
+    Eigen::Matrix4f     _viewMat;
     Eigen::Matrix4f     _viewportMat;
     
     Point3 m_position;

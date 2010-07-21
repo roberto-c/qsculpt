@@ -235,3 +235,7 @@ void TransformCommand::mouseReleaseEvent(QMouseEvent* e)
     emit executed();
 }
 
+void TransformCommand::paintGL(GlCanvas *c)
+{
+    Q_UNUSED(c);
+}

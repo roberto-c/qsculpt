@@ -138,7 +138,8 @@ public:
 QAtomicInt Edge::NEXT_ID(1);
 
 Edge::Edge()
-    : _next(NULL),
+    : _flags(EF_None),
+    _next(NULL),
     _pair(NULL),
     _head(NULL),
     _tail(NULL),
@@ -148,7 +149,8 @@ Edge::Edge()
 }
 
 Edge::Edge(Vertex* tail, Vertex* head)
-    : _next(NULL),
+    : _flags(EF_None),
+    _next(NULL),
     _pair(NULL),
     _head(head),
     _tail(tail),
@@ -212,7 +214,7 @@ IIterator<Vertex>* Edge::VertexIterator::clone() const
 {
     VertexIterator *it = new VertexIterator(_he);
     it->_currHe = _currHe;
-
+    return it;
 }
 
 bool Edge::VertexIterator::hasNext() const

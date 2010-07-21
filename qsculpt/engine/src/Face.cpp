@@ -142,25 +142,23 @@ public:
 QAtomicInt Face::NEXT_ID(0);
 
 Face::Face(ISurface *surface)
-    :   _surface(surface),
+    :   _flags(FF_None),
+    _surface(surface),
     _he(NULL),
     _vertex(NULL),
     _children(NULL),
-    midPoint(-1),
-    isMarked(false),
     hashValue(0)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
 }
 
 Face::Face(ISurface *surface, const QVector<int>& vertexIndexList)
-    :   _surface(surface),
+    :   _flags(FF_None),
+    _surface(surface),
     _he(NULL),
     _vertex(NULL),
     //point(vertexIndexList),
     _children(NULL),
-    midPoint(-1),
-    isMarked(false),
     hashValue(0)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
@@ -214,11 +212,26 @@ void Face::setHEdge(Edge* hedge)
     _he = hedge;
 }
 
+
+void Face::setPoints(const QVector<int>& vertexIndexList) {
+    throw std::runtime_error("Not implemented");
+}
+
+bool Face::hasEdge(const Edge& /*e*/) const {
+    NOT_IMPLEMENTED;
+    return false;
+}
+
+bool Face::hasEdge(int /*v1*/, int /*v2*/) const {
+    NOT_IMPLEMENTED;
+    return false;
+}
+
 Face::operator Point3()
 {
-    NOT_IMPLEMENTED
-            //return _he->head()->position();
-            return Point3();
+    NOT_IMPLEMENTED;
+
+    return Point3();
 }
 
 Face::operator Point3() const
@@ -317,22 +330,33 @@ const Vertex & Face::VertexIterator::next() const
 
 Vertex & Face::VertexIterator::previous()
 {
-    NOT_IMPLEMENTED
-    static Vertex v;
-    return v;
+    throw std::logic_error("Not implemented");
 }
 
 const Vertex & Face::VertexIterator::previous() const
 {
-    NOT_IMPLEMENTED
-    static Vertex v;
-    return v;
+    throw std::logic_error("Not implemented");
 }
 
 bool Face::VertexIterator::seek(int pos, IteratorOrigin origin) const
 {
-    NOT_IMPLEMENTED;
-    return false;
+    bool res = false;
+    switch(origin)
+    {
+    case Iter_Start:
+        {
+            _e = NULL;
+            while(pos && hasNext()){
+                next();
+                --pos;
+            }
+            res = true;
+        }
+        break;
+    default:
+        res = false;
+    }
+    return res;
 }
 
 
@@ -387,20 +411,31 @@ const Edge & Face::EdgeIterator::next() const
 
 Edge & Face::EdgeIterator::previous()
 {
-    NOT_IMPLEMENTED
-    static Edge e;
-    return e;
+    throw std::logic_error("Not implemented");
 }
 
 const Edge & Face::EdgeIterator::previous() const
 {
-    NOT_IMPLEMENTED
-    static Edge e;
-    return e;
+    throw std::logic_error("Not implemented");
 }
 
 bool Face::EdgeIterator::seek(int pos, IteratorOrigin origin) const
 {
-    NOT_IMPLEMENTED;
-    return false;
+    bool res = false;
+    switch(origin)
+    {
+    case Iter_Start:
+        {
+            _e = NULL;
+            while(pos && hasNext()){
+                next();
+                --pos;
+            }
+            res = true;
+        }
+        break;
+    default:
+        res = false;
+    }
+    return res;
 }

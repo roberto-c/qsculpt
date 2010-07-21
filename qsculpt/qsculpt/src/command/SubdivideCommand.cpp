@@ -80,40 +80,79 @@ void SubdivideCommand::execute()
     if (!doc)
         return;
 
+    _edgeMidPoint.clear();
     qDebug() << "Start time: " <<QDateTime::currentDateTime();
 
     QList<ISurface*> list = doc->getSelectedObjects();
-    ISurface* obj = NULL;
-
-    if (!list.empty()) {
-        obj = list.at(0);
-    } else {
-        obj = doc->getObject(0);
-    }
-    if (obj) {
+    foreach(ISurface* obj, list)
+    {
         qDebug() << "Object found";
+        QVector<Face*> facesToDelete;
         Iterator<Face> it = obj->faceIterator();
         it.seek(0, Iter_End);
         while(it.hasPrevious()){
-            Iterator<Edge> edgeIt = it.previous().edgeIterator();
-            Point3 avg;
-            QVector<int> vtxIndex;
-            while(edgeIt.hasNext()){
-                Edge& e = edgeIt.next();
-                Point3 p = (e.tail()->position() + e.head()->position()) * 0.5f;
-                vtxIndex.append(obj->addVertex(p));
-                avg += p;
-            }
-            int faceCenter = obj->addVertex(avg);
-            edgeIt.seek(0);
-            while(edgeIt.hasNext()){
-                edgeIt.next();
-            }
+            Face* f = &it.previous();
+            subdivideFace(*obj, *f);
+            facesToDelete.append(f);
         }
+        foreach(Face* f, facesToDelete) {
+            obj->removeFace(f->iid());
+            delete f;
+        }
+        facesToDelete.clear();
         obj->setChanged(true);
+        qDebug() << "Num Faces: " << obj->getNumFaces();
     }
     qDebug() << "End time:" << QDateTime::currentDateTime();
     dlg.setValue(100);
     g_pApp->getMainWindow()->getCurrentView()->updateView();
 }
 
+void SubdivideCommand::subdivideFace(ISurface& obj, Face& f)
+{
+    typedef std::pair<int, int> VertexPair;
+    Point3 avg, p;
+    QVector<int> vtxIndex, newFace;
+    int counter = 0, nVtx = 0;
+    Iterator<Edge> edgeIt = f.edgeIterator();
+    // Create new vertices at the mid point of each edge
+    while(edgeIt.hasNext()){
+        Edge& e = edgeIt.next();
+        VertexPair pair(e.tail()->iid(), e.head()->iid());
+        // Check if we have subdivided this edge already.
+        // If so, get the vertex of that subdvision
+        // If not, create the edge mid point vertex
+        if (_edgeMidPoint.contains(pair))
+        {
+            Vertex* v = _edgeMidPoint.value(pair);
+            vtxIndex.append(v->iid());
+            p = v->position();
+        }
+        else
+        {
+            p = (e.tail()->position() + e.head()->position()) * 0.5f;
+            Vertex* v = obj.getVertex(obj.addVertex(p));
+            vtxIndex.append(v->iid());
+            _edgeMidPoint.insert(pair, v);
+        }
+        // Accumulate the position. Used to compute the face mid point
+        avg += p;
+        nVtx++;
+    }
+    // Add the mid point of the face to the surface object
+    Vertex* faceCenter = obj.getVertex(obj.addVertex(avg / nVtx));
+    // Create the faces
+    edgeIt.seek(0);
+    Edge *e = NULL;
+    while(edgeIt.hasNext()){
+        e = &edgeIt.next();
+        newFace.clear();
+        newFace.append(vtxIndex[counter % nVtx]);
+        newFace.append(e->head()->iid());
+        newFace.append(vtxIndex[(counter+1) % nVtx]);
+        newFace.append(faceCenter->iid());
+        obj.addFace(newFace);
+        ++counter;
+    }
+    //qDebug() << "Num edges: " << nVtx << " Conter: " << counter;
+}

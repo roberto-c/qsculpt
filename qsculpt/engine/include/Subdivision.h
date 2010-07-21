@@ -99,6 +99,10 @@ public:
     virtual Iterator<Face> faceIterator();
     virtual Iterator<Face> constFaceIterator() const;
 
+    Point3 localToWorldCoords(const Point3& p) const;
+
+    Point3 worldToLocalCoords(const Point3& p) const;
+
     // End IObject3D interface
 
     //const Object3D& operator=(const Object3D& obj);

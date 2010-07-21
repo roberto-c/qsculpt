@@ -17,6 +17,9 @@
 #include <Eigen/LU>
 unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
 
+#include <exception>
+#include <stdexcept>
+
 #include <QtDebug>
 #include <QtOpenGL>
 #include <QString>

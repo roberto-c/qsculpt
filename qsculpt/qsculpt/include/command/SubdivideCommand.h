@@ -21,10 +21,12 @@
 #define SUBDIVIDECOMMAND_H
 
 #include <QThread>
+#include <utility>
 #include "CommandBase.h"
 
 class ISurface;
 struct Face;
+class Vertex;
 
 /**
  * Subdivision command. Subdvide the selected object.
@@ -33,26 +35,31 @@ struct Face;
  */
 class SubdivideCommand : public CommandBase
 {
+    typedef QHash< std::pair<int, int>, Vertex*> MidEdgeMap;
+
     Q_OBJECT
 
 public:
     SubdivideCommand();
 
-	SubdivideCommand(const SubdivideCommand& cpy);
+    SubdivideCommand(const SubdivideCommand& cpy);
 
     ~SubdivideCommand();
 
     // ICommand Interface
-	virtual ICommand* clone() const;
-	virtual bool needsUserInteraction() const { return false; };
+    virtual ICommand* clone() const;
+    virtual bool needsUserInteraction() const { return false; }
     virtual void execute();
-	virtual void undo();
-	virtual void redo();
-	virtual QWidget* getOptionsWidget(){return NULL;}
-	// End ICommand Interface
+    virtual void undo();
+    virtual void redo();
+    virtual QWidget* getOptionsWidget(){return NULL;}
+    // End ICommand Interface
 
+private:
+    void subdivideFace(ISurface & obj, Face& f);
+
+    MidEdgeMap _edgeMidPoint;
 };
-
 
 #endif
 

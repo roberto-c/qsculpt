@@ -30,6 +30,7 @@
 #include "DocumentView.h"
 #include "Camera.h"
 #include "TransformWidget.h"
+#include "Aabb.h"
 
 QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
@@ -77,9 +78,10 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     if (_boxSelection) 
     {
-        _endPointWin = Point3(e->pos().x(), e->pos().y(), 1.0f);
+        _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
         view->getCanvas()->mapScreenCoordsToWorldCoords(_endPointWin, _endPoint);
         _drawBox = true;
+        selectObject();
     } 
     else 
     {
@@ -94,7 +96,7 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 
     if (_boxSelection) 
     {
-        _startPointWin = Point3(e->pos().x(), e->pos().y(), 0.0f);
+        _startPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 0.0f);
         view->getCanvas()->mapScreenCoordsToWorldCoords(_startPointWin, _startPoint);
     } 
     else 
@@ -120,9 +122,10 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     if (_boxSelection) 
     {
-        _endPointWin = Point3(e->pos().x(), e->pos().y(), 1.0f);
+        _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
         view->getCanvas()->mapScreenCoordsToWorldCoords(_endPointWin, _endPoint);
         _drawBox = false;
+        selectObject();
         emit executed();
     } 
     else 
@@ -146,5 +149,79 @@ void SelectCommand::paintGL(GlCanvas *c)
         c->enable(GL_LIGHTING);
         c->disable(GL_BLEND);
         c->enable(GL_DEPTH_TEST);
+    }
+}
+
+void SelectCommand::selectVertices()
+{
+    using namespace geometry;
+    using namespace std;
+
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    assert(view);
+
+    AABB box;
+    box.extend(_startPointWin).extend(_endPointWin);
+//    qDebug() << toString(_startPointWin) << toString(_endPointWin);
+//    Camera *c = view->getCanvas()->getViewCamera();
+//    qDebug() << c->toString();
+//    cout << "Projection: " << endl << c->projection() << endl;
+//    cout << "View: " << endl << c->modelView() << endl;
+//    cout << "Viewport: " << endl << c->viewport() << endl;
+
+    Point3 p;
+    ISurface *surface = NULL;
+    if (view->getDocument()->getObjectsCount() > 0) {
+        surface = view->getDocument()->getObject(0);
+    }
+    if(surface) {
+        Iterator<Vertex> it = surface->vertexIterator();
+        while(it.hasNext()) {
+            Vertex* v = &it.next();
+            view->getCanvas()->mapWorldCoordsToScreenCoords(v->position(), p);
+            //qDebug() << toString(v->position()) << toString(p);
+            v->removeFlag(VF_Selected);
+            if (box.contains(p)) {
+                v->addFlag(VF_Selected);
+            }
+        }
+        surface->setChanged(true);
+    }
+}
+
+void SelectCommand::selectObject()
+{
+    using namespace geometry;
+    using namespace std;
+
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    assert(view);
+
+    AABB box;
+    box.extend(_startPointWin).extend(_endPointWin);
+//    qDebug() << toString(_startPointWin) << toString(_endPointWin);
+//    Camera *c = view->getCanvas()->getViewCamera();
+//    qDebug() << c->toString();
+//    cout << "Projection: " << endl << c->projection() << endl;
+//    cout << "View: " << endl << c->modelView() << endl;
+//    cout << "Viewport: " << endl << c->viewport() << endl;
+
+    Point3 p;
+    ISurface *surface = NULL;
+    if (view->getDocument()->getObjectsCount() > 0) {
+        surface = view->getDocument()->getObject(0);
+    }
+    if(surface) {
+        surface->setSelected(false);
+        Iterator<Vertex> it = surface->vertexIterator();
+        while(it.hasNext()) {
+            Vertex* v = &it.next();
+            view->getCanvas()->mapWorldCoordsToScreenCoords(v->position(), p);
+            //qDebug() << toString(v->position()) << toString(p);
+            if (box.contains(p)) {
+                surface->setSelected(true);
+            }
+        }
+        surface->setChanged(true);
     }
 }

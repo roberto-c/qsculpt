@@ -17,6 +17,13 @@
 class Edge;
 class ISurface;
 
+enum FaceFlags {
+    FF_None     = 0,
+    FF_Selected = 1 << 0,   /*< Face is selected */
+    FF_Deleted  = 1 << 31,  /*< Face is marked as deleted */
+    FF_All      = 0xFFFFFFFF
+};
+
 /**
  * Face class. This class contains references to points that should
  * form a triangle.
@@ -34,14 +41,13 @@ class Face {
 
     int _id;
     int _depth;
+    FaceFlags _flags;
     ISurface *_surface;
     Edge *_he;
     Vertex* _vertex;
     Face* _children;
 
 public:
-    int midPoint;
-    bool isMarked;
     qint32 hashValue;
 
 public:
@@ -71,6 +77,14 @@ public:
      * Gets the instance id of the vertex.
      */
     int iid() const { return _id; }
+
+    /**
+     * Set / get attribute flags to the face.
+     */
+    void addFlag(FaceFlags flag) { _flags = (FaceFlags)(_flags | flag); }
+    void removeFlag(FaceFlags flag) { _flags = (FaceFlags)(_flags & ~flag); }
+    FaceFlags flags() const { return _flags; }
+    void setFlags(FaceFlags flags) {_flags = flags; }
 
     /**
      * Checks if the triangle data is valid. Triangle is valid only if
@@ -104,33 +118,11 @@ public:
      * @param p2 index of the second point.
      * @param p3 index of the third point.
      */
-    void setPoints(const QVector<int>& vertexIndexList) {
-        NOT_IMPLEMENTED;
-        //normal.resize(point.size());
-        hashValue = 0;
-        for(int i = 0; i < vertexIndexList.size(); ++i)
-            hashValue += vertexIndexList[i];
-    }
+    void setPoints(const QVector<int>& vertexIndexList);
 
-    bool hasEdge(const Edge& /*e*/) const {
-        NOT_IMPLEMENTED;
-        //        return hasEdge(e.head(), e.tail());
-        return false;
-    }
+    bool hasEdge(const Edge& /*e*/) const;
 
-    bool hasEdge(int /*v1*/, int /*v2*/) const {
-        NOT_IMPLEMENTED;
-        return false;
-        //        bool res = false;
-        //        if (int index = point.indexOf(v1) != -1)
-        //        {
-        //            if (index == point.size() - 1)
-        //                res = v2 == point[0];
-        //            else
-        //                res = v2 == point[index + 1];
-        //        }
-        //        return res;
-    }
+    bool hasEdge(int /*v1*/, int /*v2*/) const ;
 
     bool operator==(const Face& t) const;
 

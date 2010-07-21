@@ -41,8 +41,8 @@ Interface that every 3D object should implement.
   @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
 class ISurface : public QObject {
-	Q_OBJECT
-	
+        Q_OBJECT
+
 public:
     /**
      * Default contructor. The classes that implement this interface, should
@@ -210,12 +210,12 @@ public:
      * to the vertex. Do not delete the vertex while the object has a reference
      * to it.
      *
-     * @param v vertex to add to the object. 
+     * @param v vertex to add to the object.
      *
-     * @return the index of the vertex inside the object.
+     * @return the id of the vertex inside the object.
      */
     virtual int addVertex(Vertex* v) = 0;
-    
+
     /**
      * Remove a point from the object. If the point form part of a
      * triangle then that triangle should be removed from the object.
@@ -230,21 +230,21 @@ public:
     virtual Vertex* getVertex(int index) = 0;
     virtual const Vertex* getVertex(int index) const = 0;
 
-	/**
-	 * Gets the number of vertices
-	 */
-	virtual int getNumVertices() const = 0;
+        /**
+         * Gets the number of vertices
+         */
+        virtual int getNumVertices() const = 0;
 
-	/**
-	 *
-	 */
-	virtual int addEdge(const Edge& edge) = 0;
-	
-	/**
-	 *
-	 */
-	virtual int addEdge(int v1, int v2) = 0;
-	
+        /**
+         *
+         */
+        virtual int addEdge(const Edge& edge) = 0;
+
+        /**
+         *
+         */
+        virtual int addEdge(int v1, int v2) = 0;
+
     /**
      * Add a triangle to the object. The triangle is formed by the vertices
      * passed as arguments. The vertices are passed by means of their ID
@@ -257,10 +257,10 @@ public:
      */
     virtual int addFace( const QVector<int>& vertexIndexes )=0;
 
-	/**
-	 * Replace a triangle with new indices to existing points.
-	 */
-	virtual void replaceFace(int index, const QVector<int>& vertexIndexList)=0;
+        /**
+         * Replace a triangle with new indices to existing points.
+         */
+        virtual void replaceFace(int index, const QVector<int>& vertexIndexList)=0;
 
     /**
      * Remove the triangle from the object. The points or vertices that
@@ -271,18 +271,18 @@ public:
      */
     virtual void removeFace( int id) =0;
 
-	/**
-	 * Returns the number of faces that the object has.
-	 *
-	 * TODO: This may not belong here as is specific to mesh surfaces.
-	 */
-	virtual int getNumFaces() const = 0;
-	
+        /**
+         * Returns the number of faces that the object has.
+         *
+         * TODO: This may not belong here as is specific to mesh surfaces.
+         */
+        virtual int getNumFaces() const = 0;
+
     /**
      * Returns the face at the position index.
      */
     virtual Face* getFace(int index) = 0;
-    
+
     /**
      *
      */
@@ -358,30 +358,55 @@ public:
      * The function also returns the number of vertices contained in the buffer.
      */
     //virtual bool getNormalBuffer(float **buffer, int* size) = 0;
-	
-	virtual bool hasChanged()=0;
-	
-	virtual void setChanged(bool val)=0;
-	
-	virtual QVector<int> getSelectedPoints() const = 0;
-	virtual void setSelectedPoints(const QVector<int>& indicesArray) = 0;
-	
-	/**
-	 * Returns a vertex iterator to traverse over all the vertices in this
-	 * object.
-	 */
-	virtual Iterator<Vertex> vertexIterator() = 0;
-	virtual Iterator<Vertex> constVertexIterator() const = 0;
-	
-	/**
-	 * Returns a face iterator to traverse over all the faces of this object.
-	 */
-	virtual Iterator<Face> faceIterator() = 0;
-	virtual Iterator<Face> constFaceIterator() const = 0;
+
+    virtual bool hasChanged()=0;
+
+    virtual void setChanged(bool val)=0;
+
+    virtual QVector<int> getSelectedPoints() const = 0;
+    virtual void setSelectedPoints(const QVector<int>& indicesArray) = 0;
+
+    /**
+         * Returns a vertex iterator to traverse over all the vertices in this
+         * object.
+         */
+    virtual Iterator<Vertex> vertexIterator() = 0;
+    virtual Iterator<Vertex> constVertexIterator() const = 0;
+
+    /**
+     * Returns a face iterator to traverse over all the faces of this object.
+     */
+    virtual Iterator<Face> faceIterator() = 0;
+
+    /**
+     * Return a const iterator over the faces that contained in this object.
+     */
+    virtual Iterator<Face> constFaceIterator() const = 0;
+
+    /**
+     * This function applies a transformation to convert a coordinate in
+     * the local coordinate system to the world coordinate system.
+     *
+     * @param p point to convert to world coordinate system.
+     *
+     * @return a point in the world coornidate system.
+     */
+    virtual Point3 localToWorldCoords(const Point3& p) const = 0;
+
+    /**
+     * This function applies a transformation to convert a coordinate in
+     * the world coordinate system to the local coordinate system.
+     *
+     * @param p point to convert to local coordinate system.
+     *
+     * @return a point in the local coordinate system.
+     */
+    virtual Point3 worldToLocalCoords(const Point3& p) const = 0;
+
 signals:
-	void meshChanged(ISurface* mesh);
-	
-	void positionChanged(float x, float y, float z);
+    void meshChanged(ISurface* mesh);
+
+    void positionChanged(float x, float y, float z);
 };
 
 typedef QVector<ISurface*> ObjectContainer;

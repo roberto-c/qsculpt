@@ -131,6 +131,8 @@ public:
     	return NULL;
     }
 
+    virtual void paintGL(GlCanvas *c);
+
 private:
     bool                _actionFinished;   /**< Flag to indicate that the command
                                              * is modifying the object. */

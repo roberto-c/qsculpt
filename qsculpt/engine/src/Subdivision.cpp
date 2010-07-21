@@ -516,8 +516,6 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
         edges[i]->setFace(f);
         //_edges[edgesIndices[i]].setNext(edgesIndices[(i+1)%size]);
     }
-//    _faces->push_back(f);
-//    return _faces->size() - 1;
     _faces->insert(f->iid(), f);
     return f->iid();
 }
@@ -527,14 +525,26 @@ void Subdivision::replaceFace(int /*faceIndex*/, const QVector<int>& /*vertexInd
     NOT_IMPLEMENTED
 }
 
-void Subdivision::removeFace( int /*id*/)
+void Subdivision::removeFace( int iid)
 {
-    NOT_IMPLEMENTED
+//    Face* f = NULL;
+//    if (_faces->contains(iid))
+//        f = _faces->value(iid);
+//    if (f) {
+//        f->addFlag(FF_Deleted);
+//        Edge *e = f->hedge();
+//        do {
+//            e->setFace(NULL);
+//            e = e->next();
+//            // TODO: Check edges for deletion?
+//        }while(e != f->hedge());
+//    }
+    _faces->remove(iid);
 }
 
 Face* Subdivision::getFace(int iid)
 {
-    assert(iid > 0 && (unsigned int)iid < _faces->size());
+    assert(iid > 0 && iid < _faces->size());
     return _faces->contains(iid) ? _faces->value(iid) : NULL;
 }
 
@@ -699,6 +709,29 @@ Iterator<Face> Subdivision::faceIterator(int level)
 Iterator<Face> Subdivision::constFaceIterator(int level) const
 {
     return Iterator<Face>(new FaceIterator(this, level));
+}
+
+Point3 Subdivision::localToWorldCoords(const Point3& p) const
+{
+    Eigen::Matrix3f m;
+    m = Eigen::AngleAxisf(m_rotZ, Eigen::Vector3f::UnitZ())
+        * Eigen::AngleAxisf(m_rotY, Eigen::Vector3f::UnitY())
+        * Eigen::AngleAxisf(m_rotX, Eigen::Vector3f::UnitZ());
+    Eigen::Transform3f t(m);
+    t *= Eigen::Translation3f(m_position);
+    return t * p;
+}
+
+Point3 Subdivision::worldToLocalCoords(const Point3& p) const
+{
+    Eigen::Matrix3f m;
+    m = Eigen::AngleAxisf(m_rotZ, Eigen::Vector3f::UnitZ())
+        * Eigen::AngleAxisf(m_rotY, Eigen::Vector3f::UnitY())
+        * Eigen::AngleAxisf(m_rotX, Eigen::Vector3f::UnitZ());
+    Eigen::Transform3f t(m);
+    t *= Eigen::Translation3f(m_position);
+    Eigen::Vector4f p4(p.x(), p.y(), p.z(), 1.0f);
+    return Point3(Eigen::Vector4f(t.inverse() * p4).data());
 }
 
 // Inner classes implementation

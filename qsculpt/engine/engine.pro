@@ -70,7 +70,6 @@ SOURCES += src/BOManager.cpp \
     src/HEdge.cpp \
     src/Material.cpp \
     src/Mesh.cpp \
-    src/Octree.cpp \
     src/Picking.cpp \
     src/PickingFacesRenderer.cpp \
     src/PointRenderer.cpp \
@@ -87,5 +86,4 @@ SOURCES += src/BOManager.cpp \
     src/WireframeRenderer.cpp \
     src/ray.cpp \
     src/Plane.cpp \
-    src/QuadTree.cpp \
-    src/Octree.cpp
+    src/QuadTree.cpp

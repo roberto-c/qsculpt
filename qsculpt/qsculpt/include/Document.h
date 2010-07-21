@@ -22,6 +22,7 @@
 
 #include <QList>
 #include "IDocument.h"
+#include "IIterator.h"
 
 class ISurface;
 
@@ -48,6 +49,7 @@ public:
     virtual int getObjectsCount() const;
     virtual void selectObject(int index);
     virtual QList<ISurface*> getSelectedObjects() const;
+    Iterator<ISurface> surfaceIterator();
 // End IDocument interface
     
 private:

@@ -23,65 +23,109 @@
 #include <QtDebug>
 #include <QVector>
 #include "Point3D.h"
+#include "ICollection.h"
 
-template< typename T >
-class Octree
+template<typename T> class Octree;
+
+template< typename D >
+class OctreeNode {
+    static const int MaxVertex = 4;
+    static const int MaxDepth = 50;
+public:
+    OctreeNode(Octree<D>* octree);
+    OctreeNode(OctreeNode<D>* parent, int depth = 0);
+    ~OctreeNode();
+
+    inline void setMinimumCoords(const Point3& v);
+    inline Point3 getMinimumCoords();
+    inline void setMaximumCoords(const Point3& v);
+    inline Point3 getMaximumCoords();
+    bool findClosest(const Point3& v, D* data) ;
+    int indexOf(const D& data);
+    inline bool contains(const D& data);
+    bool add(const D& data) ;
+    bool remove(const D&);
+    void clear();
+
+    QString toString();
+
+protected:
+    void doPartition();
+
+    bool isInVolume(const D& v);
+
+private:
+    OctreeNode(const OctreeNode<D>&);
+    OctreeNode& operator=(const OctreeNode<D>&);
+
+    Octree<D>*              m_octree;           // Pointer to owner octree
+    OctreeNode<D>*          m_parent;           // Pointer to parent node
+    QVector<OctreeNode<D>*> m_childrenNodes;    // Children nodes.
+    QVector<int>            m_dataIndices;  //
+    Point3                  m_minimumCoords;
+    Point3                  m_maximumCoords;
+    bool                    m_hasChildren;
+    int                     m_depth;
+};
+
+template< typename Type>
+class Octree : public data::ICollection<Type>
 {
 public:
     Octree() {
-        m_rootNode = new OctreeNode<T>(this);
+        m_rootNode = new OctreeNode<Type>(this);
         m_rootNode->setMinimumCoords(Point3(-1024, -1024, -1024));
         m_rootNode->setMaximumCoords(Point3(1024, 1024, 1024));
     }
-    
-	Octree(const Octree<T>& cpy) {
-		m_rootNode = new OctreeNode<T>(this);
-		m_rootNode->setMinimumCoords(Point3(-1024, -1024, -1024));
+
+    Octree(const Octree<Type>& cpy) {
+        m_rootNode = new OctreeNode<Type>(this);
+        m_rootNode->setMinimumCoords(Point3(-1024, -1024, -1024));
         m_rootNode->setMaximumCoords(Point3(1024, 1024, 1024));
-		
-		foreach (Point3 v, m_data) {
-			append(v);
-		}
-	}
-	
+
+        foreach (Point3 v, m_data) {
+            append(v);
+        }
+    }
+
     ~Octree() {
         delete m_rootNode;
     }
-	
-	inline T* getData() {
-		return m_data.data();
-	}
-    
-    inline T& operator[](int index) {
+
+    inline Type* getData() {
+        return m_data.data();
+    }
+
+    inline Type& operator[](int index) {
         return m_data[index];
     }
-    
-    inline const T& operator[](int index) const {
+
+    inline const Type& operator[](int index) const {
         return m_data[index];
     }
-    
-    inline const T& at(int index) const {
+
+    inline const Type& at(int index) const {
         return m_data.at(index);
     }
-    
-    inline bool contains(const T& v) const {
+
+    inline bool contains(const Type& v) const {
         return m_rootNode->contains(v);
     }
-    
-	inline bool append(const T& v) {
+
+    inline bool append(const Type& v) {
         //qDebug("Octree::add");
         if (!m_rootNode->add(v))
         {
             qDebug("%s", qPrintable("Octree::add : failed: Point: " + ::toString(v)));
-			return false;
+            return false;
         }
-		return true;
+        return true;
     }
-    
-    inline void remove(const T& v) {
+
+    inline void remove(const Type& v) {
         Q_UNUSED(v);
     }
-    
+
     inline void remove(int index) {
         Q_UNUSED(index);
     }
@@ -90,147 +134,102 @@ public:
         m_rootNode->clear();
         m_data.clear();
     }
-    
+
     inline int size() const {
         return m_data.size();
     }
-    
+
     inline int findClosest(const Point3& v) const {
-        T data;
+        Type data;
         if (m_rootNode->findClosest(v, &data)) {
             return m_rootNode->indexOf(data);
         }
         return -1;
     }
-   
+
     inline void reserve(int _size) {
         m_data.reserve(_size);
     }
- 
+
     inline QString toString() {
         return m_rootNode->toString();
     }
-    
-    inline QVector<T> toQVector() {
+
+    inline QVector<Type> toQVector() {
         return m_data;
     }
-    
-    inline const QVector<T> toQVector() const {
+
+    inline const QVector<Type> toQVector() const {
         return m_data;
     }
-    
+
 private:
-    template< typename D >
-    class OctreeNode {
-        static const int MaxVertex = 4;
-		static const int MaxDepth = 50;
-    public:
-        OctreeNode(Octree<D>* octree);          
-        OctreeNode(OctreeNode<D>* parent, int depth = 0);           
-        ~OctreeNode();
-            
-        inline void setMinimumCoords(const Point3& v);          
-        inline Point3 getMinimumCoords();       
-        inline void setMaximumCoords(const Point3& v);      
-        inline Point3 getMaximumCoords();       
-        bool findClosest(const Point3& v, D* data) ;            
-        int indexOf(const D& data);     
-        inline bool contains(const D& data);        
-        bool add(const D& data) ;       
-        bool remove(const D&);
-        void clear();
-        
-        QString toString();
-            
-    protected:
-        void doPartition();
-        
-        bool isInVolume(const D& v);
-            
-    private:
-        OctreeNode(const OctreeNode<D>&);
-        OctreeNode& operator=(const OctreeNode<D>&);
-            
-        Octree<D>*              m_octree;           // Pointer to owner octree
-        OctreeNode<D>*          m_parent;           // Pointer to parent node
-        QVector<OctreeNode<D>*> m_childrenNodes;    // Children nodes.
-        QVector<int>            m_dataIndices;  // 
-        Point3                  m_minimumCoords;
-        Point3                  m_maximumCoords;
-        bool                    m_hasChildren;
-        int                     m_depth;
-    };
-    
+
+
     // Do not allow coping semantincs
-    Octree& operator=(const Octree<T>&);
-    
-    OctreeNode<T>*  m_rootNode;
-    QVector<T>      m_data;
-    
+    Octree& operator=(const Octree<Type>&);
+
+    OctreeNode<Type>*  m_rootNode;
+    QVector<Type>      m_data;
+
 };
 
-template<typename T>
+
+
 template<typename D>
-Octree< T >::OctreeNode< D >::OctreeNode(Octree<D>* octree)
+OctreeNode< D >::OctreeNode(Octree<D>* octree)
     : m_octree(octree),
-      m_parent(NULL),
-      m_hasChildren(false),
-      m_depth (0) 
-{                
-//    m_minimumCoords = Vertex::null();
-//    m_maximumCoords = Vertex::null();
+    m_parent(NULL),
+    m_hasChildren(false),
+    m_depth (0)
+{
+    //    m_minimumCoords = Vertex::null();
+    //    m_maximumCoords = Vertex::null();
 }
 
-template<typename T>
 template<typename D>
-Octree<T>::OctreeNode<D>::OctreeNode(OctreeNode<D>* parent, int depth)
+OctreeNode<D>::OctreeNode(OctreeNode<D>* parent, int depth)
     : m_parent(parent),
-      m_hasChildren(false),
-      m_depth (depth) 
+    m_hasChildren(false),
+    m_depth (depth)
 {
     m_octree = m_parent != NULL ? m_parent->m_octree : NULL;
-//    m_minimumCoords = Vertex::null();
-//    m_maximumCoords = Vertex::null();
+    //    m_minimumCoords = Vertex::null();
+    //    m_maximumCoords = Vertex::null();
 }
 
-template<typename T>
 template<typename D>
-Octree<T>::OctreeNode<D>::~OctreeNode() 
+OctreeNode<D>::~OctreeNode()
 {
     clear();
 }
 
-template<typename T>
 template<typename D>
-inline void Octree<T>::OctreeNode<D>::setMinimumCoords(const Point3& v)
+inline void OctreeNode<D>::setMinimumCoords(const Point3& v)
 {
     m_minimumCoords = v;
 }
 
-template<typename T>
 template<typename D>
-inline Point3 Octree<T>::OctreeNode<D>::getMinimumCoords() 
+inline Point3 OctreeNode<D>::getMinimumCoords()
 {
     return m_minimumCoords;
 }
 
-template<typename T>
 template<typename D>
-inline void Octree<T>::OctreeNode<D>::setMaximumCoords(const Point3& v) 
+inline void OctreeNode<D>::setMaximumCoords(const Point3& v)
 {
     m_maximumCoords = v;
 }
 
-template<typename T>
 template<typename D>
-inline Point3 Octree<T>::OctreeNode<D>::getMaximumCoords() 
+inline Point3 OctreeNode<D>::getMaximumCoords()
 {
     return m_maximumCoords;
 }
 
-template<typename T>
 template<typename D>
-void Octree<T>::OctreeNode<D>::clear() 
+void OctreeNode<D>::clear()
 {
     int size = m_childrenNodes.size();
     OctreeNode<D>* d = NULL;
@@ -245,16 +244,15 @@ void Octree<T>::OctreeNode<D>::clear()
     m_dataIndices.clear();
 }
 
-template<typename T>
 template<typename D>
-bool Octree<T>::OctreeNode<D>::findClosest(const Point3& v, D* data) 
+bool OctreeNode<D>::findClosest(const Point3& v, D* data)
 {
     if (data == NULL)
         return false;
-    
+
     //if (!isInVolume(v))
     //  return Vertex::null();;
-    
+
     if (m_hasChildren) {
         bool res;
         foreach(OctreeNode<D>* node, m_childrenNodes) {
@@ -267,7 +265,7 @@ bool Octree<T>::OctreeNode<D>::findClosest(const Point3& v, D* data)
     else {
         if (m_dataIndices.isEmpty())
             return false;
-        
+
         double distance = 0.0, minDistance = -1.0;
         int i = 0, indexOf = 0, dataSize = m_dataIndices.size();
         qDebug("OctreeNode: dataSize = %d", dataSize);
@@ -287,24 +285,23 @@ bool Octree<T>::OctreeNode<D>::findClosest(const Point3& v, D* data)
     return false;
 }
 
-template<typename T>
 template<typename D>
-int Octree<T>::OctreeNode<D>::indexOf(const D& data) 
+int OctreeNode<D>::indexOf(const D& data)
 {
     int index = -1;
-    
+
     //if (data == D::null()) {
     //  qDebug("OctreeNode::indexOf: Vertex cannot be null()");
     //  return false;
     //}
-    
+
     if (!isInVolume(data))
         return false;
-    
+
     if (m_hasChildren) {
         if (m_childrenNodes.isEmpty())
             return index;
-        
+
         int size = m_childrenNodes.size();
         for (int i = 0; i < size; ++i) {
             index = m_childrenNodes[i]->indexOf(data);
@@ -315,7 +312,7 @@ int Octree<T>::OctreeNode<D>::indexOf(const D& data)
     else {
         if (m_dataIndices.isEmpty())
             return index;
-        
+
         int size = m_dataIndices.size();
         for (int i = 0; i < size; ++i) {
             if (m_octree->at(m_dataIndices[i]) == data) {
@@ -324,24 +321,22 @@ int Octree<T>::OctreeNode<D>::indexOf(const D& data)
             }
         }
     }
-    return index;           
+    return index;
 }
 
-template<typename T>
 template<typename D>
-inline bool Octree<T>::OctreeNode<D>::contains(const D& data) 
+inline bool OctreeNode<D>::contains(const D& data)
 {
     return indexOf(data) != -1;
 }
 
-template<typename T>
 template<typename D>
-bool Octree<T>::OctreeNode<D>::add(const D& data) 
+bool OctreeNode<D>::add(const D& data)
 {
     // TODO: This method doesn't work, crash!!!
     if ( !isInVolume(data) )
         return false;
-    
+
     if ( m_hasChildren ) {
         foreach(OctreeNode<D>* n, m_childrenNodes) {
             if ( n->add(data) )
@@ -366,72 +361,71 @@ bool Octree<T>::OctreeNode<D>::add(const D& data)
     return false;
 }
 
-template<typename T>
 template<typename D>
-void Octree<T>::OctreeNode<D>::doPartition()
+void OctreeNode<D>::doPartition()
 {
-	Vector3 delta = (m_maximumCoords - m_minimumCoords) / 2.0f;
-    
+    Vector3 delta = (m_maximumCoords - m_minimumCoords) / 2.0f;
+
     OctreeNode<D>* node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(m_minimumCoords);
     node->setMaximumCoords(m_minimumCoords + delta);
     m_childrenNodes.append(node);
-    
+
     Point3 tmp = m_minimumCoords;
-	tmp.x() += delta.x();
+    tmp.x() += delta.x();
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
-    
+
     tmp = m_minimumCoords;
-	tmp.x() += delta.x();
-	tmp.y() += delta.y();
+    tmp.x() += delta.x();
+    tmp.y() += delta.y();
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
-    
+
     tmp = m_minimumCoords;
-	tmp.y() += delta.y();
+    tmp.y() += delta.y();
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
-    
+
     tmp = m_minimumCoords;
-	tmp.z() += delta.z();
+    tmp.z() += delta.z();
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
-    
+
     tmp = m_minimumCoords;
-	tmp.x() += delta.x();
-	tmp.z() += delta.z();
+    tmp.x() += delta.x();
+    tmp.z() += delta.z();
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
-    
+
     tmp = m_minimumCoords;
-	tmp.x() += delta.x();
-	tmp.y() += delta.y();
-	tmp.z() += delta.z();
+    tmp.x() += delta.x();
+    tmp.y() += delta.y();
+    tmp.z() += delta.z();
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
-    
+
     tmp = m_minimumCoords;
-	tmp.y() += delta.y();
-	tmp.z() += delta.z();
+    tmp.y() += delta.y();
+    tmp.z() += delta.z();
     node = new OctreeNode<D>(this, m_depth + 1);
     node->setMinimumCoords(tmp);
     node->setMaximumCoords(tmp + delta);
     m_childrenNodes.append(node);
-    
-	OctreeNode* n;
+
+    OctreeNode* n;
     int dataCount = m_dataIndices.size();
     for (int i = 0; i < dataCount; ++i)
     {
@@ -448,36 +442,34 @@ void Octree<T>::OctreeNode<D>::doPartition()
     m_hasChildren = true;
 }
 
-template<typename T>
 template<typename D>
-bool Octree<T>::OctreeNode<D>::isInVolume(const D& d)
+bool OctreeNode<D>::isInVolume(const D& d)
 {
     Point3 v = d;
     float x = v.x(), y = v.y(), z = v.z();
     if ( x < m_minimumCoords.x() || x >= m_maximumCoords.x()
-         || y < m_minimumCoords.y() || y >= m_maximumCoords.y()
-         || z < m_minimumCoords.z() || z >= m_maximumCoords.z()
-         ) 
-    {
+        || y < m_minimumCoords.y() || y >= m_maximumCoords.y()
+        || z < m_minimumCoords.z() || z >= m_maximumCoords.z()
+        )
+        {
         return false;
     }
-    
+
     return true;
 }
 
-template<typename T>
 template<typename D>
-QString Octree<T>::OctreeNode<D>::toString()
+QString OctreeNode<D>::toString()
 {
     QString res;
     QString indent;
     for (int i = 0; i < m_depth; i++)
         indent+= "  ";
-    
+
     res = indent + "Node{\n";
-    res += indent + "m_depth:" + QString::number(m_depth) + "\n"; 
-    res += indent + "m_minCoords:" + ::toString(m_minimumCoords) + "\n"; 
-	res += indent + "m_maxCoords:" + ::toString(m_maximumCoords); 
+    res += indent + "m_depth:" + QString::number(m_depth) + "\n";
+    res += indent + "m_minCoords:" + ::toString(m_minimumCoords) + "\n";
+    res += indent + "m_maxCoords:" + ::toString(m_maximumCoords);
     qDebug("%s", qPrintable(res));
     if (m_hasChildren) {
         OctreeNode* n;
@@ -493,7 +485,7 @@ QString Octree<T>::OctreeNode<D>::toString()
         foreach(i, m_dataIndices)
         {
             res = indent + "point[" + QString::number(i)
-			+ "]:" + ::toString(m_octree->toQVector()[i]);
+                  + "]:" + ::toString(m_octree->toQVector()[i]);
             qDebug("%s", qPrintable(res));
         }
     }

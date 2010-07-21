@@ -29,7 +29,10 @@
 #include <Eigen/LU>
 #include <Eigen/StdVector>
 
+#include <utility>
+
 unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
+unsigned int qHash(const std::pair<int, int> & v);
 
 #include <QtDebug>
 #include <QtGui>
