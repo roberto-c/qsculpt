@@ -14,10 +14,18 @@
 
 class Face;
 
+enum EdgeFlags {
+    EF_None     = 0,
+    EF_Selected = 1 << 0,   /*< Face is selected */
+    EF_Deleted  = 1 << 31,  /*< Face is marked as deleted */
+    EF_All      = 0xFFFFFFFF
+};
+
 class Edge {
     static QAtomicInt NEXT_ID;
 
     int _id;
+    EdgeFlags   _flags;
     Edge *_next, *_pair;
     Vertex *_head, *_tail;
     Face *_face;
@@ -33,6 +41,14 @@ public:
      * Gets the instance id of the vertex.
      */
     int iid() const { return _id; }
+
+    /**
+     * Set / get attribute flags to the face.
+     */
+    void addFlag(EdgeFlags flag) { _flags = (EdgeFlags)(_flags | flag); }
+    void removeFlag(EdgeFlags flag) { _flags = (EdgeFlags)(_flags & ~flag); }
+    EdgeFlags flags() const { return _flags; }
+    void setFlags(EdgeFlags flags) {_flags = flags; }
 
     /**
      * Gets / sets a pointer to the next HEdge structure.

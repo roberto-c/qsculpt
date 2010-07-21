@@ -24,16 +24,46 @@
 class GlCanvas;
 
 /**
+ * Interface class to define a renderer for the item.
+ */
+//class IGlItemRenderer
+//{
+//public:
+//};
+
+
+/**
   * Render item in the GlCanvas
   */
 class GlItem
 {
+
 public:
     GlItem();
 
     virtual ~GlItem();
 
-    void paintGl(GlCanvas *c);
+    virtual void paintGl(GlCanvas *c);
+
+    /**
+     * Set a pointer to a user data.
+     */
+    void setData(void* d);
+
+    /**
+     * Returns the data attached to this item.
+     */
+    void* data();
+
+    /**
+     *
+     */
+    void setSelected(bool value);
+
+    /**
+     *
+     */
+    bool isSelected();
 };
 
 #endif // GLITEM_H

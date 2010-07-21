@@ -47,7 +47,7 @@ void BOManager::invalidateBO(ISurface* mesh)
         if (mesh == it.value())
         {
             m_boMap[it.key()]->setNeedUpdate(true);
-            qDebug() << " update BOs";
+            //qDebug() << " update BOs";
         }
     }
 }

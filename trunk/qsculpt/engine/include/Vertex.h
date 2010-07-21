@@ -18,10 +18,11 @@
 class Edge;
 
 enum VertexFlags {
-    VF_None = 0,
-    VF_Selected = 1,
+    VF_None     =   0,
+    VF_Selected =   1 << 0, /*< Vertex is selected*/
+    VF_Deleted  =   1 << 31, /*< Vertex is marked as deleted.*/
     VF_ALL = 0xFFFFFFFF
-         };
+};
 
 class Vertex
 {
@@ -93,8 +94,9 @@ public:
     /**
      * Set / get attribute flags to the vertex.
      */
-    void setFlags(VertexFlags flags) { _flags = flags; }
-    VertexFlags flags() { return _flags; }
+    void addFlag(VertexFlags flag) { _flags = (VertexFlags)(_flags | flag); }
+    void removeFlag(VertexFlags flag) { _flags = (VertexFlags)(_flags & ~flag); }
+    VertexFlags flags() const { return _flags; }
 
     /**
      * Operator to treat the Vertex class as a Point3 instance. Returns

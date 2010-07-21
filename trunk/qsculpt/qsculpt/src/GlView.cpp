@@ -251,7 +251,7 @@ void GlCanvas::resizeGL( int w, int h )
     if ( h > 0 )
         _aspectRatio = GLdouble( w ) / GLdouble( h );
 
-    // setup viewport, projection etc.:
+    // setup viewport, projection etc. for OpenGL:
     glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
@@ -265,6 +265,18 @@ void GlCanvas::resizeGL( int w, int h )
     glMatrixMode( GL_MODELVIEW );
 
     glGetIntegerv(GL_VIEWPORT, _viewport);
+
+    // Now update the cameras to have the same viewport and projection
+    // information
+    foreach(Camera* c, _cameraList) {
+        c->setViewport(0, 0, w, h);
+        c->setOrthoMatrix( -DEFAULT_HEIGHT / 2 * _zoomFactor * _aspectRatio,
+                           DEFAULT_HEIGHT / 2 * _zoomFactor * _aspectRatio,
+                           -DEFAULT_HEIGHT / 2 * _zoomFactor,
+                           DEFAULT_HEIGHT / 2 * _zoomFactor,
+                           -1000.0,
+                           1000.0 );
+    }
 }
 
 void GlCanvas::paintGL()
@@ -276,12 +288,7 @@ void GlCanvas::paintGL()
     Camera* camera = _cameraList.contains(_viewType) ? _cameraList[_viewType] : NULL;
     if (camera)
     {
-        gluLookAt( camera->getPosition().x(), camera->getPosition().y(),
-                   camera->getPosition().z(), camera->getTargetPoint().x(),
-                   camera->getTargetPoint().y(), camera->getTargetPoint().z(),
-                   camera->getOrientationVector().x(), camera->getOrientationVector().y(),
-                   camera->getOrientationVector().z());
-        //qDebug(qPrintable(camera->toString()));
+        glLoadMatrixf(camera->modelView().data());
     }
 
     //glTranslatef(-100, -100, 0);
@@ -289,6 +296,11 @@ void GlCanvas::paintGL()
 
     if (_isGridVisible)
         drawGrid();
+
+    glLineWidth(1);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    enable(GL_BLEND);
+    enable(GL_LINE_SMOOTH);
 
     glBegin( GL_LINES );
     glColor3f( 1.0, 0.0, 0.0 );
@@ -328,30 +340,30 @@ void GlCanvas::paintGL()
         eyePosition.w() = 1.0f;
     }
 
-    g_shaderProgram->bind();
-    printGlError();
-    uint loc = g_shaderProgram->uniformLocation("eyePosition");
-    g_shaderProgram->setUniformValue(loc, eyePosition.x(),
-                                     eyePosition.y(), eyePosition.z(),
-                                     eyePosition.w());
-    printGlError();
-    loc = g_shaderProgram->uniformLocation("lightPosition");
-    g_shaderProgram->setUniformValue(loc, lightPosition.x(),
-                                     lightPosition.y(), lightPosition.z(),
-                                     lightPosition.w());
-    printGlError();
-    loc = g_shaderProgram->uniformLocation("diffuseColor");
-    g_shaderProgram->setUniformValue(loc, 0.5f, 0.2f, 1.0f, 1.0f);
-    printGlError();
-    loc = g_shaderProgram->uniformLocation("specularColor");
-    g_shaderProgram->setUniformValue(loc, 1.0f, 1.0f, 1.0f, 1.0f);
-    printGlError();
-    loc = g_shaderProgram->uniformLocation("exponent");
-    g_shaderProgram->setUniformValue(loc, 220.0f);
-    printGlError();
+//    g_shaderProgram->bind();
+//    printGlError();
+//    uint loc = g_shaderProgram->uniformLocation("eyePosition");
+//    g_shaderProgram->setUniformValue(loc, eyePosition.x(),
+//                                     eyePosition.y(), eyePosition.z(),
+//                                     eyePosition.w());
+//    printGlError();
+//    loc = g_shaderProgram->uniformLocation("lightPosition");
+//    g_shaderProgram->setUniformValue(loc, lightPosition.x(),
+//                                     lightPosition.y(), lightPosition.z(),
+//                                     lightPosition.w());
+//    printGlError();
+//    loc = g_shaderProgram->uniformLocation("diffuseColor");
+//    g_shaderProgram->setUniformValue(loc, 0.5f, 0.2f, 1.0f, 1.0f);
+//    printGlError();
+//    loc = g_shaderProgram->uniformLocation("specularColor");
+//    g_shaderProgram->setUniformValue(loc, 1.0f, 1.0f, 1.0f, 1.0f);
+//    printGlError();
+//    loc = g_shaderProgram->uniformLocation("exponent");
+//    g_shaderProgram->setUniformValue(loc, 220.0f);
+//    printGlError();
 
     drawObjects();
-    g_shaderProgram->release();
+//    g_shaderProgram->release();
 
     drawCursor();
 
@@ -361,7 +373,6 @@ void GlCanvas::paintGL()
     }
 
     glFlush();
-    //drawOrientationAxis();
 }
 
 void GlCanvas::drawObjects()
@@ -446,9 +457,9 @@ void GlCanvas::drawCursor()
             bool depthTestState = glIsEnabled(GL_DEPTH_TEST);
 
             // Enable the texture and set the blend parameters
-            glEnable(GL_TEXTURE_2D);
+            enable(GL_TEXTURE_2D);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glEnable(GL_BLEND);
+            enable(GL_BLEND);
 
             // Disable depth test so we dont modify previusly rendered information
             if (depthTestState)
@@ -489,11 +500,11 @@ void GlCanvas::drawCursor()
 
             // Restore previus states
             if (blendState == false)
-                glDisable(GL_BLEND);
+                disable(GL_BLEND);
             if (textureState == false)
-                glDisable(GL_TEXTURE_2D);
+                disable(GL_TEXTURE_2D);
             if (depthTestState)
-                glEnable( GL_DEPTH_TEST);
+                disable( GL_DEPTH_TEST);
         }
         break;
     }
@@ -789,58 +800,33 @@ QImage GlCanvas::getCursorImage()
 void GlCanvas::mapScreenCoordsToWorldCoords(double x, double y, double z,
                                             double *wx, double *wy, double *wz)
 {
-    double modelMatrix[16], projMatrix[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
-
-    GLdouble dx = GLdouble(x);
-    GLdouble dy = GLdouble(_viewport[3] - y);
-    GLdouble dz = GLdouble(z);
-    gluUnProject( dx, dy, dz, modelMatrix, projMatrix, _viewport,
-                  (GLdouble*)wx, (GLdouble*)wy, (GLdouble*)wz);
+    Point3 p(x, y, z);
+    Point3 o = getViewCamera()->eyeToWorld(p);
+    if (wx) *wx = o.x();
+    if (wy) *wy = o.y();
+    if (wz) *wz = o.z();
 }
 
 void GlCanvas::mapScreenCoordsToWorldCoords(const Point3& winCoords,
                                             Point3& world)
 {
-    double x, y, z;
-    double wx, wy, wz;
-    x = winCoords.x();
-    y = winCoords.y();
-    z = winCoords.z();
-    mapScreenCoordsToWorldCoords(x, y, z, &wx, &wy, &wz);
-    world.x() = float(wx);
-    world.y() = float(wy);
-    world.z() = float(wz);
+    world = getViewCamera()->eyeToWorld(winCoords);
 }
 
 void GlCanvas::mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
                                             double *x, double *y, double *z)
 {
-    double modelMatrix[16], projMatrix[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
-
-    double dx, dy, dz;
-    gluProject( (GLdouble)wx, (GLdouble)wy, (GLdouble)wz,
-                modelMatrix, projMatrix, _viewport, &dx, &dy, &dz);
-    if (x) *x = (int)dx;
-    if (y) *y = (int)dy;
-    if (z) *z = (int)dz;
+    Point3 p(wx, wy, wz);
+    Point3 o = getViewCamera()->worldToEye(p);
+    if (x) *x = o.x();
+    if (y) *y = o.y();
+    if (z) *z = o.z();
 }
 
 void GlCanvas::mapWorldCoordsToScreenCoords(const Point3& world,
                                             Point3& winCoords)
 {
-    double x, y, z;
-    double wx, wy, wz;
-    x = world.x();
-    y = world.y();
-    z = world.z();
-    mapWorldCoordsToScreenCoords(wx, wy, wz, &x, &y, &z);
-    winCoords.x() = float(x);
-    winCoords.y() = float(y);
-    winCoords.z() = float(z);
+    winCoords = getViewCamera()->worldToEye(world);
 }
 
 /**

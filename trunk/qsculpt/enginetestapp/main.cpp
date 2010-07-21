@@ -26,6 +26,7 @@
 #include <QHash>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include "command/ICommand.h"
 #include "Vertex.h"
 
@@ -45,6 +46,27 @@ using namespace __gnu_cxx;
 
 typedef hash_map<string, ICommand*> MyMap;
 
+enum Flags {
+    F_0 = 0,
+    F_1 = 1<<0,
+    F_2 = 1<<1,
+    F_3 = 1<<2,
+    F_A = 0xFFFFFFFF
+};
+
+Flags flags = F_0;
+void addFlag(Flags flag) {
+    flags = (Flags)(flags | flag);
+}
+
+void removeFlag(Flags flag) {
+    flags = (Flags)(flags & ~flag);
+}
+
+Flags getFlags() {
+    return flags;
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -54,35 +76,21 @@ int main(int argc, char *argv[])
     cout << "QHash size: "  << sizeof(table) << endl;
     cout << "hash_map size: "  << sizeof(hashmap) << endl;
 
-    time_t delta = 0;
-    time_t t0, t1;
-    t0 = t1 = time(NULL);
-    delta = abs(t1 - t0);
-    cout << delta << endl;
-    for (int i = 0; i < 10000000; ++i) {
-        Vertex *v = new Vertex;
-        table.insert(v->iid(), v);
-        hashmap[v->iid()] = v;
-    }
-    t0 = time(NULL);
-    delta = abs( t0 - t1);
-    cout << delta << endl;
-    for (int i = 0; i < 10000000; ++i) {
-        table.contains( (i % 100) + 3);
-    }
-    t1 = time(NULL);
-    delta = abs( t1 - t0);
-    cout << delta << endl;
-    for (int i = 0; i < 10000000; ++i) {
-        hashmap.find((i % 100) + 3);
-    }
-    t0 = time(NULL);
-    delta = abs( t0 - t1);
-    cout << delta << endl;
-    foreach(Vertex* v, table) {
-        delete v;
-    }
-    table.clear();
-    hashmap.clear();
+
+    unsigned int f = 0x0403;
+    cout << setfill('0') << setw(8) << setbase(16) << getFlags() << endl;
+    addFlag((Flags)f);
+    cout << setfill('0') << setw(8) << setbase(16) << getFlags() << endl;
+    removeFlag(F_1);
+    cout << setfill('0') << setw(8) << setbase(16) << getFlags() << endl;
+
+    cout << endl;
+
+    Vertex *v = new Vertex(Point3());
+    cout << setfill('0') << setw(8) << setbase(16) << v->flags() << endl;
+    v->addFlag((VertexFlags)f);
+    cout << setfill('0') << setw(8) << setbase(16) << v->flags() << endl;
+    v->removeFlag(VF_Selected);
+    cout << setfill('0') << setw(8) << setbase(16) << v->flags() << endl;
     //return a.exec();
 }

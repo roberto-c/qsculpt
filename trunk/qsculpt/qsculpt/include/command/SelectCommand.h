@@ -61,6 +61,7 @@ private:
     Point3          _endPointWin;
 
     void selectObject();
+    void selectVertices();
 
     static QPointer<TransformWidget>	_objectProperties;
 };

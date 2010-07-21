@@ -26,6 +26,62 @@
 #include "Sphere.h"
 #include "Mesh.h"
 #include "Quad.h"
+#include <stdexcept>
+
+
+class SurfaceIterator : public IIterator<ISurface>
+{
+    Document* _doc;
+
+public:
+    SurfaceIterator(Document* surface) ;
+
+    /**
+     * Function to copy iterators of the same type.
+     */
+    virtual IIterator<ISurface>* clone() const;
+
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    virtual bool hasNext() const;
+
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    virtual bool hasPrevious() const;
+
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    virtual ISurface & next();
+
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    virtual const ISurface & next() const;
+
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    virtual ISurface & previous();
+
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    virtual const ISurface & previous() const;
+
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    virtual bool seek(int pos, IteratorOrigin origin) const;
+};
 
 Document::Document() {
 
@@ -193,8 +249,12 @@ int Document::getObjectsCount() const
     return m_objectList.size();
 }
 
-void Document::selectObject(int /*index*/)
+void Document::selectObject(int index)
 {
+    if (index < m_objectList.size())
+    {
+        m_objectList[index]->setSelected(true);
+    }
 }
 
 QList<ISurface*> Document::getSelectedObjects() const
@@ -209,5 +269,103 @@ QList<ISurface*> Document::getSelectedObjects() const
             selectedObjectList.append(m_objectList[i]);
     }
     return selectedObjectList;
+}
+
+Iterator<ISurface> Document::surfaceIterator()
+{
+    return Iterator<ISurface>(new SurfaceIterator(this));
+}
+
+
+/// Iterator definition
+SurfaceIterator::SurfaceIterator(Document* doc)
+    :	_doc(doc)
+{
+    assert(doc);
+}
+
+IIterator<ISurface>* SurfaceIterator::clone() const
+{
+    SurfaceIterator *it = new SurfaceIterator(_doc);
+    return it;
+}
+
+bool SurfaceIterator::hasNext() const
+{
+//    int n = _surface->getNumFaces();
+//    return n > 0 && _index != _surface->_faces->end();
+    return false;
+}
+
+bool SurfaceIterator::hasPrevious() const
+{
+//    int n = _surface->getNumFaces();
+//    return n > 0 &&
+//            (_index == _surface->_faces->end() ||
+//             _index != _surface->_faces->begin());
+    return false;
+}
+
+ISurface & SurfaceIterator::next()
+{
+    //NOT_IMPLEMENTED
+    throw std::runtime_error("Not implemented");
+}
+
+const ISurface & SurfaceIterator::next() const
+{
+    //NOT_IMPLEMENTED
+    throw std::runtime_error("Not implemented");
+//    Face *f = _index.value();
+//    assert(f);
+//    ++_index;
+//    return *f;
+}
+
+ISurface & SurfaceIterator::previous()
+{
+    throw std::runtime_error("Not implemented");
+//    --_index;
+//    return *_index.value();
+}
+
+const ISurface & SurfaceIterator::previous() const
+{
+    throw std::runtime_error("Not implemented");
+//    --_index;
+//    return *_index.value();
+}
+
+bool SurfaceIterator::seek(int /*pos*/, IteratorOrigin /*origin*/) const
+{
+//    switch(origin)
+//    {
+//    case Iter_Current:
+//        // nothing
+//        break;
+//    case Iter_End:
+//        _index = _surface->_faces->end();
+//        break;
+
+//    case Iter_Start:
+//    default:
+//        _index = _surface->_faces->begin();
+//        break;
+//    }
+
+//    if (pos > 0) {
+//        while(--pos && _index != _surface->_faces->end()) {
+//            ++_index;
+//        }
+//        if (_index == _surface->_faces->end())
+//            return false;
+//    } else if (pos < 0 ) {
+//        while(++pos && _index != _surface->_faces->end()) {
+//            --_index;
+//        }
+//        if (_index == _surface->_faces->end())
+//            return false;
+//    }
+    return false;
 }
 
