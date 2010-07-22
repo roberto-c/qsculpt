@@ -14,3 +14,8 @@ uint qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key)
 	quint64 d = (quint64)(x && 0xFFFF) << 32 | (quint64)(y & 0xFFFF) << 16 | (quint64)(z & 0xFFFF);
 	return qHash(d);
 }
+
+uint qHash(const std::pair<int, int> & v)
+{
+    return qHash(v.first ^ (v.second << 8));
+}

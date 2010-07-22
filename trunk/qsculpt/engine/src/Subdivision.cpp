@@ -178,6 +178,7 @@ Subdivision::Subdivision()
     :   ISurface(),
     _vertices(NULL),
     _edges(NULL),
+    _vtxPairEdge(NULL),
     _faces(NULL),
     m_scene(NULL),
     //m_drawingMode(Wireframe),
@@ -206,12 +207,13 @@ Subdivision::~Subdivision()
 {
     _vertices = NULL;
     _edges = NULL;
+    _vtxPairEdge = NULL;
     _faces = NULL;
 
-    std::vector<VertexCollection>::iterator it = _vertLevelCollections.begin();
+    std::vector<VertexCollection*>::iterator it = _vertLevelCollections.begin();
     for (; it != _vertLevelCollections.end(); ++it)
     {
-        _vertices = &(*it);
+        _vertices = (*it);
         //Vertex
     }
 }
@@ -220,11 +222,13 @@ void Subdivision::initPoints()
 {
     _vertices = new VertexCollection;
     _edges = new EdgesCollection;
+    _vtxPairEdge = new VtxPairEdgeMap;
     _faces = new FacesCollection;
 
-    _vertLevelCollections.push_back(*_vertices);
-    _edgesLevelCollections.push_back(*_edges);
-    _facesLevelCollections.push_back(*_faces);
+    _vertLevelCollections.push_back(_vertices);
+    _edgesLevelCollections.push_back(_edges);
+    _vertexEdgeCollection.push_back(_vtxPairEdge);
+    _facesLevelCollections.push_back(_faces);
 }
 
 bool Subdivision::hasChanged() {
@@ -403,28 +407,22 @@ int Subdivision::addVertex(Vertex* v)
     m_maxY = MAX(y , m_maxY);
     m_maxZ = MAX(z , m_maxZ);
 
-//    _vertices->push_back(v);
-//    return _vertices->size() - 1;
     this->_vertices->insert(v->iid(), v);
     return v->iid();
 }
 
 void Subdivision::removeVertex(int iid)
 {
-    //qWarning("%s %s", __FUNCTION__, " Not implemented");
     _vertices->remove(iid);
 }
 
 Vertex* Subdivision::getVertex(int iid)
 {
-    //qWarning("%s %s", __FUNCTION__, " Not implemented");
-//    return _vertices->at(index);
     return _vertices->contains(iid) ? _vertices->value(iid) : NULL;
 }
 
 const Vertex* Subdivision::getVertex(int iid) const
 {
-//    return _vertices->at(index);
     return _vertices->contains(iid) ? _vertices->value(iid) : NULL;
 }
 
@@ -435,34 +433,11 @@ int Subdivision::getNumVertices() const
 
 int Subdivision::addEdge(const Edge& edge)
 {
-    //NOT_IMPLEMENTED
-//    int indexOf = -1;
-    
-//    std::vector<Edge*>::iterator it;
-//    it = std::find_if(_edges->begin(), _edges->end(), EdgePtrComparator(edge));
-//    if (it != _edges->end()) {
-//        indexOf = it - _edges->begin();
-//    } else {
-//        Edge *h1 = new Edge(edge.tail(), edge.head());
-//        Edge *h2 = new Edge(edge.head(), edge.tail());
-//        h1->setPair(h2);
-//        h2->setPair(h1);
-        
-//        h1->head()->setEdge(h2);
-        
-//        indexOf = _edges->size();
-//        _edges->push_back(h1);
-//        _edges->push_back(h2);
-//    }
-    
-//    return indexOf;
     return addEdge(edge.tail(), edge.head());
 }
 
 int Subdivision::addEdge(int v1, int v2)
-{
-    //Edge edge(_vertices->at(v1), _vertices->at(v2));
-    
+{    
     return addEdge(_vertices->value(v1), _vertices->value(v2));
 }
 
@@ -470,11 +445,9 @@ int Subdivision::addEdge(Vertex* tail, Vertex* head)
 {
     int iid = -1;
 
-    EdgesCollection::iterator it;
-    it = std::find_if(_edges->begin(), _edges->end(), EdgePtrComparator2(tail, head));
-    if (it != _edges->end()) {
-//        iid = it - _edges->begin();
-        iid = it.key();
+    VtxPair pair(tail->iid(), head->iid());
+    if (_vtxPairEdge->contains(pair)) {
+        iid = _vtxPairEdge->value(pair);
     } else {
         Edge *h1 = new Edge(tail, head);
         Edge *h2 = new Edge(head, tail);
@@ -483,12 +456,13 @@ int Subdivision::addEdge(Vertex* tail, Vertex* head)
 
         h1->head()->setEdge(h2);
 
-//        iid = _edges->size();
-//        _edges->push_back(h1);
-//        _edges->push_back(h2);
         iid = h1->iid();
         _edges->insert(h1->iid(), h1);
         _edges->insert(h2->iid(), h2);
+        _vtxPairEdge->insert(pair, h1->iid());
+        pair.first = head->iid();
+        pair.second = tail->iid();
+        _vtxPairEdge->insert(pair, h2->iid());
     }
 
     return iid;
