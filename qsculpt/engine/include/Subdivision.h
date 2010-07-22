@@ -10,6 +10,7 @@
 #define SUBDIVISION_H
 
 #include <vector>
+#include <utility>
 #include "ISurface.h"
 #include "SceneNode.h"
 #include <QHash>
@@ -23,19 +24,26 @@ class SubdivisionScheme;
  */
 class Subdivision : public ISurface
 {
-    typedef QHash<int, Vertex*> VertexCollection;
-    typedef QHash<int, Edge*> EdgesCollection;
-    typedef QHash<int, Face*> FacesCollection;
+    typedef std::pair<int, int>     VtxPair;
+    typedef QHash<int, Vertex*>     VertexCollection;
+    typedef QHash<int, Edge*>       EdgesCollection;
+    typedef QHash<VtxPair, int>     VtxPairEdgeMap;
+    typedef QHash<int, Face*>       FacesCollection;
 
     /** Vertices by each subdivision level */
-    std::vector<VertexCollection> _vertLevelCollections;
+    std::vector<VertexCollection*>  _vertLevelCollections;
     /** Edges by each subdivision level */
-    std::vector<EdgesCollection> _edgesLevelCollections;
-    std::vector<FacesCollection> _facesLevelCollections;
+    std::vector<EdgesCollection*>   _edgesLevelCollections;
+    /** Relates a pair of vertex ids to an edge*/
+    std::vector<VtxPairEdgeMap*>    _vertexEdgeCollection;
 
-    VertexCollection *_vertices;
-    EdgesCollection *_edges;
-    FacesCollection *_faces;
+    std::vector<FacesCollection*>   _facesLevelCollections;
+
+
+    VertexCollection    *_vertices;
+    EdgesCollection     *_edges;
+    VtxPairEdgeMap      *_vtxPairEdge;
+    FacesCollection     *_faces;
 
     SubdivisionScheme* scheme;
 
