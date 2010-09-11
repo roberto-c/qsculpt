@@ -120,6 +120,12 @@ public:
     Iterator<Face> faceIterator(int level);
     Iterator<Face> constFaceIterator(int level) const;
 
+    /**
+     * Debugging function used to print the memory usage of this
+     * object.
+     */
+    void printMemoryInfo() const;
+    
 protected:
     /**
      * Initializes the points vector.

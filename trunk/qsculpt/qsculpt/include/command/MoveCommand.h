@@ -29,9 +29,9 @@ class ISurface;
 
 // Configuration keys constants
 #define CONF_ACTION         "ACTION"
-#define CONF_MOVE_AXIS      "MOVE_ON_AXIS"
-#define CONF_ROTATE_AXIS    "ROTATE_ON_AXIS"
-#define CONF_SCALE_AXIS     "ROTATE_ON_AXIS"
+#define CONF_MOVE_AXIS      "MOVE_AXIS"
+#define CONF_ROTATE_AXIS    "ROTATE_AXIS"
+#define CONF_SCALE_AXIS     "SCALE_AXIS"
 
 #define CONF_MOVE_X         "MX"
 #define CONF_MOVE_Y         "MY"

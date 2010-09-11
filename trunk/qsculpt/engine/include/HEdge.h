@@ -16,19 +16,21 @@ class Face;
 
 enum EdgeFlags {
     EF_None     = 0,
-    EF_Selected = 1 << 0,   /*< Face is selected */
-    EF_Deleted  = 1 << 31,  /*< Face is marked as deleted */
+    EF_Selected = 0x00000001,  /*< Face is selected */
+    EF_Deleted  = 0x80000000,  /*< Face is marked as deleted */
     EF_All      = 0xFFFFFFFF
 };
 
 class Edge {
     static QAtomicInt NEXT_ID;
 
-    int _id;
-    EdgeFlags   _flags;
-    Edge *_next, *_pair;
-    Vertex *_head, *_tail;
-    Face *_face;
+    int         _id;    // 4
+    EdgeFlags   _flags; // 4
+    Edge        *_next; // 4
+    Edge        *_pair; // 4
+    Vertex      *_head; // 4
+    Vertex      *_tail; // 4
+    Face        *_face; // 4
 
 public:
     Edge();

@@ -36,6 +36,7 @@
 #include "ISurface.h"
 #include "Console.h"
 #include "ConsoleWindow.h"
+#include "IConfigContainer.h"
 
 QSculptWindow::QSculptWindow()
     : m_documentView(new DocumentView(this)),
@@ -107,6 +108,28 @@ void QSculptWindow::createWidgets()
     m_toolActionGroup->addAction(action);
     m_toolsToolbar->addAction(action);
     m_commandManager.registerCommand("Select", action, cmd);
+
+    action = new QAction("SelectFaces", this);
+    cmd = new SelectCommand;
+    cmd->getConfig().setInt(SELECT_TYPE, ST_Face);
+    action->setToolTip("Select faces.");
+    action->setCheckable(true);
+    action->setIcon(QIcon(":/img_select.png"));
+    menuTools->addAction(action);
+    m_toolActionGroup->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("SelectFaces", action, cmd);
+
+    action = new QAction("SelectVertices", this);
+    cmd = new SelectCommand;
+    cmd->getConfig().setInt(SELECT_TYPE, ST_Vertex);
+    action->setToolTip("Select vertices.");
+    action->setCheckable(true);
+    action->setIcon(QIcon(":/img_select.png"));
+    menuTools->addAction(action);
+    m_toolActionGroup->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("SelectVertices", action, cmd);
 
     cmd = new OrbitCommand;
     action = new QAction("Orbit", this);

@@ -29,6 +29,7 @@
 #include "DocumentView.h"
 #include "HEdge.h"
 #include "Face.h"
+#include "Subdivision.h"
 
 SubdivideCommand::SubdivideCommand()
     : CommandBase("Subdivide")
@@ -102,6 +103,8 @@ void SubdivideCommand::execute()
         facesToDelete.clear();
         obj->setChanged(true);
         qDebug() << "Num Faces: " << obj->getNumFaces();
+        
+        static_cast<Subdivision*>(obj)->printMemoryInfo();
     }
     qDebug() << "End time:" << QDateTime::currentDateTime();
     dlg.setValue(100);

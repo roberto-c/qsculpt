@@ -392,7 +392,7 @@ void GlCanvas::drawObjects()
         mesh->getPosition(&x, &y, &z);
         glTranslatef(x, y, z);
         _renderer->renderObject(mesh);
-        _editVertexRenderer->renderObject(mesh);
+//        _editVertexRenderer->renderObject(mesh);
         glPopMatrix();
     }
 }

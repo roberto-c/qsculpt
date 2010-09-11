@@ -34,6 +34,10 @@ ConfigContainer::~ConfigContainer()
 {
 }
 
+IConfigContainer* ConfigContainer::clone() const
+{
+    return new ConfigContainer(*this);
+}
 
 bool ConfigContainer::containsKey(QString key)
 {

@@ -19,8 +19,8 @@ class ISurface;
 
 enum FaceFlags {
     FF_None     = 0,
-    FF_Selected = 1 << 0,   /*< Face is selected */
-    FF_Deleted  = 1 << 31,  /*< Face is marked as deleted */
+    FF_Selected = 0x00000001,   /*< Face is selected */
+    FF_Deleted  = 0x80000000,  /*< Face is marked as deleted */
     FF_All      = 0xFFFFFFFF
 };
 
@@ -37,18 +37,17 @@ enum FaceFlags {
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
 class Face {
-    static QAtomicInt NEXT_ID;
+    ISurface *_surface; // 4
+    Edge *_he; // 4
+    Vertex* _vertex; // 4
+    Face* _children; // 4
 
-    int _id;
-    int _depth;
-    FaceFlags _flags;
-    ISurface *_surface;
-    Edge *_he;
-    Vertex* _vertex;
-    Face* _children;
-
+    int _id; // 4
+    int _depth; // 4
+    FaceFlags _flags; // 4
+    
 public:
-    qint32 hashValue;
+    //qint32 hashValue; // 4
 
 public:
     /**

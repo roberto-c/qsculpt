@@ -18,22 +18,22 @@
 class Edge;
 
 enum VertexFlags {
-    VF_None     =   0,
-    VF_Selected =   1 << 0, /*< Vertex is selected*/
-    VF_Deleted  =   1 << 31, /*< Vertex is marked as deleted.*/
-    VF_ALL = 0xFFFFFFFF
+    VF_None     = 0,
+    VF_Selected = 0x00000001, /*< Vertex is selected*/
+    VF_Deleted  = 0x80000000, /*< Vertex is marked as deleted.*/
+    VF_ALL      = 0xFFFFFFFF
 };
 
 class Vertex
 {
     static QAtomicInt NEXT_ID;
 
-    int         _id;
-    Point3      _position;
-    Vector3     _normal;
-    Vector3     _color;
-    VertexFlags _flags;
-    Edge*       _he;
+    Point3      _position; // 16
+    Vector3     _normal; // 16
+    Vector3     _color; // 16
+    int         _id; //4
+    VertexFlags _flags; // 4
+    Edge*       _he; // 4
 
     class VertexIterator;
 
