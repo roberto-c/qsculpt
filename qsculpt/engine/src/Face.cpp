@@ -12,8 +12,6 @@
 #include "HEdge.h"
 #include "ISurface.h"
 
-
-
 class Face::VertexIterator : public IIterator<Vertex>
 {
     friend class Face;
@@ -139,15 +137,16 @@ public:
     bool seek(int pos, IteratorOrigin origin) const ;
 };
 
-QAtomicInt Face::NEXT_ID(0);
+//QAtomicInt Face::NEXT_ID(0);
+static QAtomicInt NEXT_ID(0);
 
 Face::Face(ISurface *surface)
     :   _flags(FF_None),
     _surface(surface),
     _he(NULL),
     _vertex(NULL),
-    _children(NULL),
-    hashValue(0)
+    _children(NULL)
+//hashValue(0)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
 }
@@ -158,13 +157,13 @@ Face::Face(ISurface *surface, const QVector<int>& vertexIndexList)
     _he(NULL),
     _vertex(NULL),
     //point(vertexIndexList),
-    _children(NULL),
-    hashValue(0)
+    _children(NULL)
+//    hashValue(0)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
     //normal.fill(-1, point.size());
-    for(int i = 0; i < vertexIndexList.size(); ++i)
-        hashValue += vertexIndexList[i];
+//    for(int i = 0; i < vertexIndexList.size(); ++i)
+//        hashValue += vertexIndexList[i];
 }
 
 Face::~Face()

@@ -2,7 +2,7 @@
 #define OBJECTPROPERTIES_H_
 
 #include <QWidget>
-#include "../ui/ui_TransformWidget.h"
+#include "ui_TransformWidget.h"
 
 class ISurface;
 

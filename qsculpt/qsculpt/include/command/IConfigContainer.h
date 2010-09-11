@@ -41,6 +41,11 @@ public:
     virtual ~IConfigContainer(){}
 
     /**
+     * Creates a new copy of this container.
+     */
+    virtual IConfigContainer* clone() const = 0;
+
+    /**
      * Retrieves true if a config parameter key exist.
      *
      * @param key key name of the parameter to retrieve.

@@ -100,6 +100,7 @@ QString CommandManager::getActiveCommandName()
     return QString();
 }
 
+// TODO: Check this function for mem leaks.
 void CommandManager::commandTriggered()
 {
     QAction* obj = qobject_cast<QAction*>(sender());
@@ -115,12 +116,16 @@ void CommandManager::commandTriggered()
             {
                 if (newCommand->needsUserInteraction())
                 {
-                    if (m_currentCommand)
+                    if (m_currentCommand) 
+                    {
                         m_currentCommand->activate(false);
-
+                        disconnect(m_currentCommand, SIGNAL(executed()), 0, 0);
+                        delete m_currentCommand;
+                    }
+                    
                     m_currentCommand = newCommand;
 
-                    disconnect(m_currentCommand, SIGNAL(executed()), 0, 0);
+                    
                     connect(m_currentCommand, SIGNAL(executed()),
                             this, SLOT(commandExecuted()));
 
@@ -129,15 +134,17 @@ void CommandManager::commandTriggered()
                 }
                 else
                 {
-                    connect(m_currentCommand, SIGNAL(executed()),
+                    connect(newCommand, SIGNAL(executed()),
                             this, SLOT(commandExecuted()));
                     newCommand->execute();
+                    delete newCommand;
                 }
             }
         }
     }
 }
 
+// TODO: Check this function
 void CommandManager::commandExecuted()
 {
     ICommand* cmd = qobject_cast<ICommand*>(sender());

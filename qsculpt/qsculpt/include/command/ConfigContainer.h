@@ -43,6 +43,7 @@ public:
     /*
      * IConfigContainer interface
      */
+    virtual IConfigContainer* clone() const;
     virtual bool containsKey(QString key);
     virtual double getDouble(QString key);
     virtual int getInt(QString key);

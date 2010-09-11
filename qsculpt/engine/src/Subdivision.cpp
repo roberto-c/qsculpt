@@ -975,3 +975,30 @@ bool Subdivision::FaceIterator::seek(int pos, IteratorOrigin origin) const
     }
     return true;
 }
+
+void Subdivision::printMemoryInfo() const
+{
+    unsigned int sizeVertex, sizeEdge, sizeFace;
+    unsigned int nVertex, nFace, nEdge;
+    
+    sizeVertex = sizeof(Vertex);
+    sizeFace = sizeof(Face);
+    sizeEdge = sizeof(Edge);
+    nVertex = this->getNumVertices();
+    nFace = this->getNumFaces();
+    nEdge = this->_edges->size();
+    
+    qDebug() << "Size of vertex: " << sizeVertex;
+    qDebug() << "Size of Face: " << sizeFace;
+    qDebug() << "Size of Edge: " << sizeEdge;
+    qDebug() << "Num verts: " << nVertex;
+    qDebug() << "Num facess: " << nFace;
+    qDebug() << "Num edges: " << nEdge;
+    
+    qDebug() << "Size of vertex hash: " << sizeof(*_vertices);
+    
+    qDebug() << "Mem usage: " << (sizeVertex * nVertex) 
+        + (sizeEdge * nEdge) 
+        + (sizeFace * nFace)
+        + sizeof(*_vertices);
+}

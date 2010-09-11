@@ -23,23 +23,27 @@
 #include <QtOpenGL>
 #include <QMap>
 #include "BOManager.h"
+#include <cstddef>
 
 
 #define BO_POOL_NAME "FlatRendererPool"
 
 #define SIZE_OF_VERTEX (3*sizeof(GLfloat))
 #define SIZE_OF_NORMAL (3*sizeof(GLfloat))
-#define SIZE_OF_COLOR (4*sizeof(GLubyte))
-#define BUFFER_OFFSET(bytes) ((GLubyte*)NULL + bytes)
+#define SIZE_OF_COLOR (4*sizeof(GLfloat))
+//#define BUFFER_OFFSET(bytes) ((GLubyte*)NULL + bytes)
+#define BUFFER_OFFSET(start, elem) ((GLubyte*)elem - (GLubyte*)start)
 
 bool g_enableVBO = false;
 
+GLfloat g_selectedColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
+GLfloat g_normalColor[] =   {0.8f, 0.8f, 0.8f, 1.0f};
 
 typedef struct tagFlatVtxStruct
 {
     GLfloat v[3];
     GLfloat n[3];
-    GLubyte color[4];
+    GLfloat color[4];
 } FlatVtxStruct;
 
 FlatRenderer::FlatRenderer()
@@ -122,10 +126,12 @@ void FlatRenderer::renderVbo(const ISurface* mesh)
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
-    glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), BUFFER_OFFSET(SIZE_OF_VERTEX));
-    glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), 0);
+    glColorPointer(4, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, color));
+    glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, n));
+    glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, v));
 
     QColor color = Qt::white;
     if (mesh->isSelected())
@@ -139,6 +145,7 @@ void FlatRenderer::renderVbo(const ISurface* mesh)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 
     //	glDepthFunc(GL_ALWAYS);
     //	glPointSize(2.0);
@@ -196,10 +203,15 @@ void FlatRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
             vtxData[offset].n[1] = v.normal().y();
             vtxData[offset].n[2] = v.normal().z();
 
-            vtxData[offset].color[0] = 0.8;
-            vtxData[offset].color[1] = 0.8;
-            vtxData[offset].color[2] = 0.8;
-            vtxData[offset].color[3] = 1.0;
+            if (f.flags() & FF_Selected) {
+                memcpy(vtxData[offset].color, g_selectedColor,
+                       sizeof(g_selectedColor)) ;
+            }
+            else
+            {
+                memcpy(vtxData[offset].color, g_normalColor,
+                       sizeof(g_normalColor)) ;
+            }
             offset++;
         }
     }

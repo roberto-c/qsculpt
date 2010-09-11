@@ -230,20 +230,20 @@ public:
     virtual Vertex* getVertex(int index) = 0;
     virtual const Vertex* getVertex(int index) const = 0;
 
-        /**
-         * Gets the number of vertices
-         */
-        virtual int getNumVertices() const = 0;
+    /**
+     * Gets the number of vertices
+     */
+    virtual int getNumVertices() const = 0;
 
-        /**
-         *
-         */
-        virtual int addEdge(const Edge& edge) = 0;
+    /**
+     *
+     */
+    virtual int addEdge(const Edge& edge) = 0;
 
-        /**
-         *
-         */
-        virtual int addEdge(int v1, int v2) = 0;
+    /**
+     *
+     */
+    virtual int addEdge(int v1, int v2) = 0;
 
     /**
      * Add a triangle to the object. The triangle is formed by the vertices
@@ -257,10 +257,10 @@ public:
      */
     virtual int addFace( const QVector<int>& vertexIndexes )=0;
 
-        /**
-         * Replace a triangle with new indices to existing points.
-         */
-        virtual void replaceFace(int index, const QVector<int>& vertexIndexList)=0;
+    /**
+     * Replace a triangle with new indices to existing points.
+     */
+    virtual void replaceFace(int index, const QVector<int>& vertexIndexList)=0;
 
     /**
      * Remove the triangle from the object. The points or vertices that
@@ -271,12 +271,12 @@ public:
      */
     virtual void removeFace( int id) =0;
 
-        /**
-         * Returns the number of faces that the object has.
-         *
-         * TODO: This may not belong here as is specific to mesh surfaces.
-         */
-        virtual int getNumFaces() const = 0;
+    /**
+     * Returns the number of faces that the object has.
+     *
+     * TODO: This may not belong here as is specific to mesh surfaces.
+     */
+    virtual int getNumFaces() const = 0;
 
     /**
      * Returns the face at the position index.

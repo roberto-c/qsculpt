@@ -44,7 +44,7 @@ CommandBase::CommandBase(ICommand* parent)
 
 CommandBase::CommandBase(const CommandBase& cpy)
 :	ICommand(cpy),
-	_configContainer(new ConfigContainer()),
+    _configContainer(cpy._configContainer->clone()),
 	_isActive(cpy._isActive),
 	_rotationRadius(cpy._rotationRadius),
 	_currentCamera(new Camera),
@@ -70,6 +70,14 @@ CommandBase::CommandBase(const QString& text, ICommand* parent)
 
 CommandBase::~CommandBase()
 {
+    delete _intialCameraState;
+    _intialCameraState = NULL;
+    
+    delete _configContainer;
+    _configContainer = NULL;
+    
+    delete _currentCamera;
+    _currentCamera = NULL;
 }
 
 IConfigContainer& CommandBase::getConfig() const

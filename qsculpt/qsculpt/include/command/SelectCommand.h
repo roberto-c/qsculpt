@@ -28,6 +28,16 @@
 
 class TransformWidget;
 
+
+#define SELECT_TYPE     "SELECTION_TYPE"
+
+enum SelectionType{
+    ST_Surface,
+    ST_Vertex,
+    ST_Edge,
+    ST_Face
+};
+
 /**
  * Implements a simple object selection command.
  *
@@ -51,6 +61,20 @@ public:
     virtual QWidget* getOptionsWidget();
     // End ICommand interface
 
+    /**
+     * This function set the kind of primitive that the selection should
+     * work on.
+     *
+     * @param type primitive type to select. Can be any kind SelectionType
+     */
+    void setSelectionType(SelectionType type);
+
+    /**
+     * This function returns the kind of primitives that this selection works
+     * on.
+     */
+    SelectionType selectionType();
+
 private:
     ObjectContainer _objectsSelected;
     bool            _boxSelection;
@@ -59,9 +83,15 @@ private:
     Point3          _endPoint;
     Point3          _startPointWin;
     Point3          _endPointWin;
+    SelectionType   _selectionType;
 
-    void selectObject();
+    void select();
+    void selectSurface();
     void selectVertices();
+    void selectFaces();
+    void selectEdges();
+
+    void unselectAll();
 
     static QPointer<TransformWidget>	_objectProperties;
 };

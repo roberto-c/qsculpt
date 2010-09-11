@@ -37,8 +37,11 @@ QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 SelectCommand::SelectCommand(ICommand* parent)
     : CommandBase("Select", parent),
     _boxSelection(true),
-    _drawBox(false)
+    _drawBox(false),
+    _selectionType(ST_Surface)
 {
+    _configContainer->setInt(SELECT_TYPE, ST_Surface);
+
     if(getOptionsWidget())
     {
         // TODO: initialize object properties window
@@ -48,7 +51,8 @@ SelectCommand::SelectCommand(ICommand* parent)
 SelectCommand::SelectCommand(const SelectCommand& cpy)
     : CommandBase(cpy),
     _boxSelection(cpy._boxSelection),
-    _drawBox(false)
+    _drawBox(false),
+    _selectionType(cpy._selectionType)
 {
     if(getOptionsWidget())
     {
@@ -81,7 +85,7 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
         _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
         view->getCanvas()->mapScreenCoordsToWorldCoords(_endPointWin, _endPoint);
         _drawBox = true;
-        selectObject();
+        select();
     } 
     else 
     {
@@ -93,6 +97,11 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 void SelectCommand::mousePressEvent(QMouseEvent* e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+
+    unselectAll();
+
+    // Get the config options
+    _selectionType = (SelectionType)_configContainer->getInt(SELECT_TYPE);
 
     if (_boxSelection) 
     {
@@ -125,7 +134,7 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
         _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
         view->getCanvas()->mapScreenCoordsToWorldCoords(_endPointWin, _endPoint);
         _drawBox = false;
-        selectObject();
+        select();
         emit executed();
     } 
     else 
@@ -149,6 +158,24 @@ void SelectCommand::paintGL(GlCanvas *c)
         c->enable(GL_LIGHTING);
         c->disable(GL_BLEND);
         c->enable(GL_DEPTH_TEST);
+    }
+}
+
+void SelectCommand::select()
+{
+    switch(_selectionType) {
+    case ST_Vertex:
+        selectVertices();
+        break;
+    case ST_Surface:
+        selectSurface();
+        break;
+    case ST_Face:
+        selectFaces();
+        break;
+    case ST_Edge:
+        selectEdges();
+        break;
     }
 }
 
@@ -189,7 +216,7 @@ void SelectCommand::selectVertices()
     }
 }
 
-void SelectCommand::selectObject()
+void SelectCommand::selectSurface()
 {
     using namespace geometry;
     using namespace std;
@@ -225,3 +252,79 @@ void SelectCommand::selectObject()
         surface->setChanged(true);
     }
 }
+
+void SelectCommand::selectFaces()
+{
+    using namespace geometry;
+    using namespace std;
+
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    assert(view);
+
+    AABB box;
+    box.extend(_startPointWin).extend(_endPointWin);
+//    qDebug() << toString(_startPointWin) << toString(_endPointWin);
+//    Camera *c = view->getCanvas()->getViewCamera();
+//    qDebug() << c->toString();
+//    cout << "Projection: " << endl << c->projection() << endl;
+//    cout << "View: " << endl << c->modelView() << endl;
+//    cout << "Viewport: " << endl << c->viewport() << endl;
+
+    Point3 p;
+    ISurface *surface = NULL;
+    if (view->getDocument()->getObjectsCount() > 0) {
+        surface = view->getDocument()->getObject(0);
+    }
+    if(surface) {
+        surface->setSelected(false);
+        Iterator<Face> it = surface->faceIterator();
+        while(it.hasNext()) {
+            Face* f = &it.next();
+            f->removeFlag(FF_Selected);
+            Iterator<Vertex> vtxIt = f->vertexIterator();
+            while(vtxIt.hasNext()) {
+                Vertex* v = &vtxIt.next();
+                view->getCanvas()->mapWorldCoordsToScreenCoords(v->position(), p);
+                //qDebug() << toString(v->position()) << toString(p);
+                if (box.contains(p)) {
+                    f->addFlag(FF_Selected);
+                    surface->setSelected(true);
+                }
+            }
+        }
+        surface->setChanged(true);
+    }
+}
+
+void SelectCommand::selectEdges()
+{
+
+}
+
+void SelectCommand::unselectAll()
+{
+    using namespace geometry;
+    using namespace std;
+
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    assert(view);
+    ISurface *surface = NULL;
+    if (view->getDocument()->getObjectsCount() > 0) {
+        surface = view->getDocument()->getObject(0);
+    }
+    if(surface) {
+        surface->setSelected(false);
+        Iterator<Face> it = surface->faceIterator();
+        while(it.hasNext()) {
+            Face* f = &it.next();
+            f->removeFlag(FF_Selected);
+            Iterator<Vertex> vtxIt = f->vertexIterator();
+            while(vtxIt.hasNext()) {
+                Vertex* v = &vtxIt.next();
+                v->removeFlag(VF_Selected);
+            }
+        }
+        surface->setChanged(true);
+    }
+}
+
