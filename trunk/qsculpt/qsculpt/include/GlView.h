@@ -273,12 +273,21 @@ private:
     void drawGrid();
 
     void drawObjects();
+    
+    /**
+     * Draw a bounding box a round the surface.
+     */
+    void drawBoundingBox(const ISurface* mesh);
 
     void drawCursor();
 
     void drawOrientationAxis();
     
-    void _drawRectWinCoord(const Point3&, const Point3& );
+    void drawRectWinCoord(const Point3&, const Point3& );
+    
+    void drawEllipseWinCoord(const Point3& center,
+                             float axis1,
+                             float axis2);
 	
     bool            _isGridVisible;        /**< Grid visibility flag */
     bool            _areNormalsVisible;    /**< Normals visibility flag */

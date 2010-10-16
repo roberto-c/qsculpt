@@ -37,6 +37,7 @@
 #include "Console.h"
 #include "ConsoleWindow.h"
 #include "IConfigContainer.h"
+#include "DocumentTreeWidget.h"
 
 QSculptWindow::QSculptWindow()
     : m_documentView(new DocumentView(this)),
@@ -81,6 +82,9 @@ void QSculptWindow::createWidgets()
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
 
     _console = Console::instance();
+    
+    _docTree = new DocumentTreeWidget(this);
+    _docTree->setDocument(m_document);
 
     QAction *action = m_commandManager.createUndoAction(this);
     Q_CHECK_PTR(action);
@@ -195,6 +199,9 @@ void QSculptWindow::createWidgets()
     }
 
     _console->consoleWindow()->show();
+    
+    _docTree->setFloating(true);
+    _docTree->show();
 }
 
 const IDocument* QSculptWindow::getCurrentDocument()

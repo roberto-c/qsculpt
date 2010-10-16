@@ -21,10 +21,13 @@ unsigned int qHash(const std::pair<int, int> & v);
 
 #include <exception>
 #include <stdexcept>
-
+#include <typeinfo>
 #include <QtDebug>
 #include <QtOpenGL>
 #include <QString>
+#include <QPointer>
+#include <QScopedPointer>
+#include <QSharedPointer>
 
 inline bool printGlError()
 {

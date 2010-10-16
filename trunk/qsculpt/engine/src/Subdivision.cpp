@@ -183,13 +183,6 @@ Subdivision::Subdivision()
     m_scene(NULL),
     //m_drawingMode(Wireframe),
     m_color(Qt::white),
-    m_boundingBoxColor(Qt::red),
-    m_minX(0.0),
-    m_maxX(0.0),
-    m_minY(0.0),
-    m_maxY(0.0),
-    m_minZ(0.0),
-    m_maxZ(0.0),
     m_rotX(0.0),
     m_rotY(0.0),
     m_rotZ(0.0),
@@ -300,43 +293,9 @@ void Subdivision::setPosition(const Point3& position)
     emit positionChanged(m_position.x(), m_position.y(), m_position.z());
 }
 
-float Subdivision::getDepth()
+const geometry::AABB& Subdivision::getBoundingBox() const
 {
-    return m_maxZ - m_minZ;
-}
-
-float Subdivision::getHeight()
-{
-    return m_maxY - m_minY;
-}
-
-float Subdivision::getWidth()
-{
-    return m_maxX - m_minX;
-}
-
-void Subdivision::setDepth(float value)
-{
-    //scale(1.0, 1.0, value / m_depth);
-    //m_depth = value;
-    //updateBoundingBox();
-    Q_UNUSED(value);
-}
-
-void Subdivision::setHeight(float value)
-{
-    //scale(1.0, value / m_height, 1.0);
-    //m_height = value;
-    //updateBoundingBox();
-    Q_UNUSED(value);
-}
-
-void Subdivision::setWidth(float value)
-{
-    //scale(value / m_width, 1.0, 1.0);
-    //m_width = value;
-    //updateBoundingBox();
-    Q_UNUSED(value);
+    return _boundingBox;
 }
 
 void Subdivision::setColor(const QColor& color)
@@ -359,31 +318,11 @@ bool Subdivision::isSelected() const
     return m_selected;
 }
 
-void Subdivision::setBoundingBoxColor(const QColor& color)
-{
-    m_boundingBoxColor = color;
-}
-
-QColor Subdivision::getBoundingBoxColor() const
-{
-    return m_boundingBoxColor;
-}
-
 int Subdivision::addVertex(const Point3& point)
 {
     assert(_vertices != NULL );
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
-    float x = point[0];
-    float y = point[1];
-    float z = point[2];
-
-    m_minX = MIN(x , m_minX);
-    m_minY = MIN(y , m_minY);
-    m_minZ = MIN(z , m_minZ);
-
-    m_maxX = MAX(x , m_maxX);
-    m_maxY = MAX(y , m_maxY);
-    m_maxZ = MAX(z , m_maxZ);
+    _boundingBox.extend(point);
 
     Vertex* vertex = new Vertex(point);
 //    this->_vertices->push_back(vertex);
@@ -395,18 +334,7 @@ int Subdivision::addVertex(const Point3& point)
 
 int Subdivision::addVertex(Vertex* v)
 {
-    float x = v->getPosition().x();
-    float y = v->getPosition().y();
-    float z = v->getPosition().z();
-
-    m_minX = MIN(x , m_minX);
-    m_minY = MIN(y , m_minY);
-    m_minZ = MIN(z , m_minZ);
-
-    m_maxX = MAX(x , m_maxX);
-    m_maxY = MAX(y , m_maxY);
-    m_maxZ = MAX(z , m_maxZ);
-
+    _boundingBox.extend(v->getPosition());
     this->_vertices->insert(v->iid(), v);
     return v->iid();
 }
@@ -528,55 +456,55 @@ int Subdivision::getNumFaces() const
     return _faces->size();
 }
 
-void Subdivision::drawBoundingBox()
-{
-    GLboolean lightEnabled = GL_FALSE;
-    lightEnabled = glIsEnabled(GL_LIGHTING);
-
-    if (lightEnabled == GL_TRUE)
-        glDisable(GL_LIGHTING);
-
-    glColor3f(0.0, 1.0, 0.0);
-
-    float minX = m_minX - 0.1;
-    float maxX = m_maxX + 0.1;
-    float minY = m_minY - 0.1;
-    float maxY = m_maxY + 0.1;
-    float minZ = m_minZ - 0.1;
-    float maxZ = m_maxZ + 0.1;
-
-    glColor3f(0.0, 1.0, 0.0);
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(minX, minY, minZ);
-    glVertex3f(maxX, minY, minZ);
-    glVertex3f(maxX, maxY, minZ);
-    glVertex3f(minX, maxY, minZ);
-    glEnd();
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(minX, minY, maxZ);
-    glVertex3f(maxX, minY, maxZ);
-    glVertex3f(maxX, maxY, maxZ);
-    glVertex3f(minX, maxY, maxZ);
-    glEnd();
-
-    glBegin(GL_LINES);
-    glVertex3f(minX, minY, minZ);
-    glVertex3f(minX, minY, maxZ);
-
-    glVertex3f(maxX, minY, minZ);
-    glVertex3f(maxX, minY, maxZ);
-
-    glVertex3f(maxX, maxY, minZ);
-    glVertex3f(maxX, maxY, maxZ);
-
-    glVertex3f(minX, maxY, minZ);
-    glVertex3f(minX, maxY, maxZ);
-    glEnd();
-
-    if (lightEnabled == GL_TRUE)
-        glEnable(GL_LIGHTING);
-}
+//void Subdivision::drawBoundingBox()
+//{
+//    GLboolean lightEnabled = GL_FALSE;
+//    lightEnabled = glIsEnabled(GL_LIGHTING);
+//
+//    if (lightEnabled == GL_TRUE)
+//        glDisable(GL_LIGHTING);
+//
+//    glColor3f(0.0, 1.0, 0.0);
+//
+//    float minX = m_minX - 0.1;
+//    float maxX = m_maxX + 0.1;
+//    float minY = m_minY - 0.1;
+//    float maxY = m_maxY + 0.1;
+//    float minZ = m_minZ - 0.1;
+//    float maxZ = m_maxZ + 0.1;
+//
+//    glColor3f(0.0, 1.0, 0.0);
+//
+//    glBegin(GL_LINE_LOOP);
+//    glVertex3f(minX, minY, minZ);
+//    glVertex3f(maxX, minY, minZ);
+//    glVertex3f(maxX, maxY, minZ);
+//    glVertex3f(minX, maxY, minZ);
+//    glEnd();
+//    glBegin(GL_LINE_LOOP);
+//    glVertex3f(minX, minY, maxZ);
+//    glVertex3f(maxX, minY, maxZ);
+//    glVertex3f(maxX, maxY, maxZ);
+//    glVertex3f(minX, maxY, maxZ);
+//    glEnd();
+//
+//    glBegin(GL_LINES);
+//    glVertex3f(minX, minY, minZ);
+//    glVertex3f(minX, minY, maxZ);
+//
+//    glVertex3f(maxX, minY, minZ);
+//    glVertex3f(maxX, minY, maxZ);
+//
+//    glVertex3f(maxX, maxY, minZ);
+//    glVertex3f(maxX, maxY, maxZ);
+//
+//    glVertex3f(minX, maxY, minZ);
+//    glVertex3f(minX, maxY, maxZ);
+//    glEnd();
+//
+//    if (lightEnabled == GL_TRUE)
+//        glEnable(GL_LIGHTING);
+//}
 
 int Subdivision::getFaceIndexAtPoint(const Point3& /*p*/) const
 {

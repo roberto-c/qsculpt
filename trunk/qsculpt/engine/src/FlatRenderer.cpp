@@ -186,12 +186,10 @@ void FlatRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     int numVertices = numFaces*4;
     FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
 
-//    int fcounter = 0;
     int offset = 0;
     Iterator<Face> it = mesh->constFaceIterator();
     while(it.hasNext()) {
         const Face& f = it.next();
-//        qDebug() << "face " << fcounter++;
         Iterator<Vertex> vtxIt = f.constVertexIterator();
         while(vtxIt.hasNext()) {
             const Vertex& v = vtxIt.next();

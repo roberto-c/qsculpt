@@ -49,11 +49,15 @@ public:
     virtual int getObjectsCount() const;
     virtual void selectObject(int index);
     virtual QList<ISurface*> getSelectedObjects() const;
+    virtual SceneNode* rootNode();
+    virtual const SceneNode* rootNode() const;
+    virtual Iterator<SceneNode> sceneIterator();
+    virtual Iterator<SceneNode> constSceneIterator() const;
     Iterator<ISurface> surfaceIterator();
 // End IDocument interface
     
 private:
-    QList<ISurface*> m_objectList;
+    QScopedPointer<SceneNode>     _rootNode;
     QList<ISurface*> m_selectedObjectList;
 };
 

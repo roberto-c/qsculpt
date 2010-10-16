@@ -14,6 +14,7 @@
 #include "ISurface.h"
 #include "SceneNode.h"
 #include <QHash>
+#include "Aabb.h"
 
 class Vertex;
 class Edge;
@@ -63,18 +64,11 @@ public:
     virtual void rotate(float rotX, float rotY, float rotZ);
     virtual void setPosition(float x, float y, float z);
     virtual void setPosition(const Point3& position);
-    virtual float getDepth();
-    virtual float getHeight();
-    virtual float getWidth();
-    virtual void setDepth(float value);
-    virtual void setHeight(float value);
-    virtual void setWidth(float value);
+    virtual const geometry::AABB& getBoundingBox() const;
     virtual void setColor(const QColor& color);
     virtual QColor getColor() const;
     virtual void setSelected(bool val);
     virtual bool isSelected() const;
-    virtual void setBoundingBoxColor(const QColor& color);
-    virtual QColor getBoundingBoxColor() const;
     virtual int addVertex(const Point3& point);
     virtual int addVertex(Vertex* v);
     virtual void removeVertex(int id);
@@ -135,7 +129,7 @@ protected:
     /**
      * Draw a bounding box around the object.
      */
-    void drawBoundingBox();
+    //void drawBoundingBox();
 
     /**
       *
@@ -145,14 +139,7 @@ protected:
     Scene*          m_scene;
     Point3          m_position;
     QColor          m_color;
-    QColor          m_boundingBoxColor;
-    Point3          m_boundingBoxVert[8];
-    float           m_minX;
-    float           m_maxX;
-    float           m_minY;
-    float           m_maxY;
-    float           m_minZ;
-    float           m_maxZ;
+    geometry::AABB  _boundingBox;
     float           m_rotX, m_rotY, m_rotZ;
     bool            m_selected;
     int             m_callListId;

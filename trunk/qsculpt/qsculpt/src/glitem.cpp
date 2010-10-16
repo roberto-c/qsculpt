@@ -21,6 +21,8 @@
 #include "glitem.h"
 #include "GlView.h"
 
+namespace Plastilina {
+
 GlItem::GlItem()
 {
 }
@@ -35,4 +37,5 @@ void GlItem::paintGl(GlCanvas *c)
     assert(c != NULL);
 
     //c->drawLine();
+}
 }

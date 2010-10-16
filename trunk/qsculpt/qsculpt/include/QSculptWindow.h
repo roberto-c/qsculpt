@@ -33,6 +33,7 @@ class QDockWidget;
 class DocumentView;
 class ICommand;
 class Console;
+class DocumentTreeWidget;
 
 /**
  * SolidPaint3D main window.
@@ -139,6 +140,7 @@ private:
     QDockWidget*    m_dockCommandOptions;
     QToolBar*       m_toolsToolbar;
     Console*         _console;
+    DocumentTreeWidget* _docTree;
 };
 
 

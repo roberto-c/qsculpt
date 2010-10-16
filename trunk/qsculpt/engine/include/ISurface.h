@@ -34,6 +34,7 @@
  */
 class QColor;
 class Scene;
+class geometry::AABB;
 
 /**
 Interface that every 3D object should implement.
@@ -108,43 +109,10 @@ public:
     virtual void rotate (float rotX, float rotY, float rotZ) = 0;
 
     /**
-     * Returns the depth of the object.
+     * Returns the bounding box of the object.
      *
      */
-    virtual float getDepth() = 0;
-
-    /**
-     * Returns the height of the object.
-     *
-     */
-    virtual float getHeight() = 0;
-
-    /**
-     * Returns the width of the object.
-     *
-     */
-    virtual float getWidth() = 0;
-
-    /**
-     * Sets the depth of the object.
-     *
-     * @param value new depth value
-     */
-    virtual void setDepth(float value) = 0;
-
-    /**
-     * Sets the height of the object.
-     *
-     * @param value new height value
-     */
-    virtual void setHeight(float value) = 0;
-
-    /**
-     * Sets the width of the object.
-     *
-     * @param value new width value
-     */
-    virtual void setWidth(float value) = 0;
+    virtual const geometry::AABB& getBoundingBox() const = 0;
 
     /**
     * Sets the object base color. Used as vertex color, line color, shading
@@ -180,20 +148,6 @@ public:
      * @see setSelected
      */
     virtual bool isSelected() const = 0;
-
-    /**
-     * Set the color of the bounding box.
-     *
-     * @param color color of bounding box.
-     */
-    virtual void setBoundingBoxColor(const QColor& color) = 0;
-
-    /**
-     * Get the color of the bounding box.
-     *
-     * @return color of bounding box.
-     */
-    virtual QColor getBoundingBoxColor() const = 0;
 
     /**
      * Add point to object. The point added is in local coordinates ( i.e.
