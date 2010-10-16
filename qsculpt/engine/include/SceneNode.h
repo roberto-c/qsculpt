@@ -17,31 +17,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef SCENENODE_H
+#define SCENENODE_H
 
 #include <vector>
-#include <QObject>
+#include <QStandardItem>
 
 class ISurface;
 
 /**
  * Basic scene graph node class. 
+ *
+ * This class inherit from QStandardItem to be able to be displayed
+ * in the document tree widget.
  */
-class SceneNode
+class SceneNode : public QStandardItem
 {
-    //Q_OBJECT
-    
     SceneNode* _parent;
     Eigen::Transform3f _transform;
 
 public:
-    SceneNode(SceneNode* /*parent*/){}
-    virtual ~SceneNode(){}
+    SceneNode(const QString& = "", SceneNode * = NULL);
+    virtual ~SceneNode();
     
-    const Eigen::Transform3f& transform() const { return _transform; }
-    Eigen::Transform3f& transform() { return _transform; }
-    void setTransform(const Eigen::Transform3f& /*t*/) {}
-    
-    
+    const Eigen::Transform3f& transform() const;
+    Eigen::Transform3f& transform();
+    void setTransform(const Eigen::Transform3f& /*t*/);
 };
 
 class GroupNode : public SceneNode
@@ -61,6 +62,27 @@ class SurfaceNode : public SceneNode
     ISurface *_surface;
 
 public:
-    SurfaceNode(ISurface *surface, SceneNode *parent);
+    /**
+     *
+     */
+    SurfaceNode(ISurface *surface, SceneNode * = NULL);
+    
+    /**
+     * Free resources used by this node.
+     *
+     * The surface is not deleted
+     */
     ~SurfaceNode();
+    
+    /**
+     * Returns the surface contained in this node.
+     */
+    ISurface* surface() const;
+    
+    /**
+     * Set the surface contained in this node.
+     */
+    void setSurface(ISurface *surface);
 };
+
+#endif // SCENENODE_H_

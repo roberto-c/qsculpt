@@ -20,3 +20,53 @@
 #include "StdAfx.h"
 #include "SceneNode.h"
 
+SceneNode::SceneNode(const QString& name, SceneNode *parent)
+: QStandardItem()
+{
+    this->setText(name);
+    if (parent)
+    {
+        parent->appendRow(this);
+    }
+}
+
+SceneNode::~SceneNode()
+{
+}
+
+const Eigen::Transform3f& SceneNode::transform() const
+{ 
+    return _transform; 
+}
+
+Eigen::Transform3f& SceneNode::transform() 
+{ 
+    return _transform; 
+}
+
+void SceneNode::setTransform(const Eigen::Transform3f& /*t*/)
+{
+}
+
+
+
+
+SurfaceNode::SurfaceNode(ISurface *surface, SceneNode *parent)
+: SceneNode("", parent)
+, _surface(surface)
+{
+}
+
+SurfaceNode::~SurfaceNode()
+{
+}
+
+ISurface* SurfaceNode::surface() const
+{
+    return _surface;
+}
+
+void SurfaceNode::setSurface(ISurface *surface)
+{
+    _surface = surface;
+}

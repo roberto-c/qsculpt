@@ -90,7 +90,9 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
     else 
     {
         if (_objectsSelected.isEmpty())
-            CommandBase::mouseMoveEvent(e);
+        {
+            //    CommandBase::mouseMoveEvent(e);
+        }
     }
 }
 
@@ -121,7 +123,7 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
         }
         else
         {
-            CommandBase::mousePressEvent(e);
+            //    CommandBase::mousePressEvent(e);
         }
     }
 }
@@ -142,7 +144,9 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
         if (_objectsSelected.count() > 0)
             emit executed();
         else
-            CommandBase::mouseReleaseEvent(e);
+        {
+            //    CommandBase::mouseReleaseEvent(e);
+        }
     }
 }
 
@@ -189,12 +193,6 @@ void SelectCommand::selectVertices()
 
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
-//    qDebug() << toString(_startPointWin) << toString(_endPointWin);
-//    Camera *c = view->getCanvas()->getViewCamera();
-//    qDebug() << c->toString();
-//    cout << "Projection: " << endl << c->projection() << endl;
-//    cout << "View: " << endl << c->modelView() << endl;
-//    cout << "Viewport: " << endl << c->viewport() << endl;
 
     Point3 p;
     ISurface *surface = NULL;
@@ -226,12 +224,6 @@ void SelectCommand::selectSurface()
 
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
-//    qDebug() << toString(_startPointWin) << toString(_endPointWin);
-//    Camera *c = view->getCanvas()->getViewCamera();
-//    qDebug() << c->toString();
-//    cout << "Projection: " << endl << c->projection() << endl;
-//    cout << "View: " << endl << c->modelView() << endl;
-//    cout << "Viewport: " << endl << c->viewport() << endl;
 
     Point3 p;
     ISurface *surface = NULL;
@@ -244,7 +236,6 @@ void SelectCommand::selectSurface()
         while(it.hasNext()) {
             Vertex* v = &it.next();
             view->getCanvas()->mapWorldCoordsToScreenCoords(v->position(), p);
-            //qDebug() << toString(v->position()) << toString(p);
             if (box.contains(p)) {
                 surface->setSelected(true);
             }
@@ -263,12 +254,6 @@ void SelectCommand::selectFaces()
 
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
-//    qDebug() << toString(_startPointWin) << toString(_endPointWin);
-//    Camera *c = view->getCanvas()->getViewCamera();
-//    qDebug() << c->toString();
-//    cout << "Projection: " << endl << c->projection() << endl;
-//    cout << "View: " << endl << c->modelView() << endl;
-//    cout << "Viewport: " << endl << c->viewport() << endl;
 
     Point3 p;
     ISurface *surface = NULL;

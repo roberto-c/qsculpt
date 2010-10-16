@@ -27,7 +27,9 @@
 #include "Mesh.h"
 #include "Quad.h"
 #include <stdexcept>
+#include "SceneNode.h"
 
+static QAtomicInt NEXT_ID(0);
 
 class SurfaceIterator : public IIterator<ISurface>
 {
@@ -83,14 +85,70 @@ public:
     virtual bool seek(int pos, IteratorOrigin origin) const;
 };
 
-Document::Document() {
+class SceneIterator : public IIterator<SceneNode>
+{
+    const Document* _doc;
+    
+public:
+    SceneIterator(const Document* doc) ;
+    
+    /**
+     * Function to copy iterators of the same type.
+     */
+    virtual IIterator<SceneNode>* clone() const;
+    
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    virtual bool hasNext() const;
+    
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    virtual bool hasPrevious() const;
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    virtual SceneNode & next();
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    virtual const SceneNode & next() const;
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    virtual SceneNode & previous();
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    virtual const SceneNode & previous() const;
+    
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    virtual bool seek(int pos, IteratorOrigin origin) const;
+};
 
+Document::Document() 
+: _rootNode(new SceneNode("Scene"))
+{
 }
 
 
-Document::~Document() {
-    qDeleteAll(m_objectList);
-    m_objectList.clear();
+Document::~Document() 
+{    
+//    qDeleteAll(m_objectList);
+//    m_objectList.clear();
 }
 
 void Document::loadFile(QString fileName)
@@ -155,8 +213,8 @@ void Document::saveFile(QString fileName)
     Q_UNUSED(fileName);
     qDebug("Save file");
 
-    int numObjects = m_objectList.size();
-    qDebug("Number of objects to save %d", numObjects);
+    //int numObjects = m_objectList.size();
+    //qDebug("Number of objects to save %d", numObjects);
 
 //    if (numObjects > 0 )
 //    {
@@ -223,7 +281,9 @@ void Document::addObject(ObjectType type)
             obj = new ::Mesh();
             break;
     }
-    m_objectList.append( obj );
+    SceneNode *n = new SurfaceNode(obj);
+    n->setText(QString("Object %1").arg(NEXT_ID.fetchAndAddRelaxed(1)));
+    _rootNode->appendRow(n);
     emit changed(AddObject, obj);
 }
 
@@ -231,8 +291,8 @@ void Document::addObject(ObjectType type, ISurface* obj)
 {
     Q_ASSERT(obj);
     Q_UNUSED(type);
-    m_objectList.append( obj );
-    emit changed(AddObject, obj);
+    //m_objectList.append( obj );
+    //emit changed(AddObject, obj);
 }
 
 void Document::removeObject(int /*index*/)
@@ -241,19 +301,19 @@ void Document::removeObject(int /*index*/)
 
 ISurface* Document::getObject(int index) const
 {
-    return m_objectList[index];
+    return static_cast<SurfaceNode*>(_rootNode->child(index))->surface(); //m_objectList[index];
 }
 
 int Document::getObjectsCount() const
 {
-    return m_objectList.size();
+    return _rootNode->rowCount();
 }
 
 void Document::selectObject(int index)
 {
-    if (index < m_objectList.size())
+    if (index < getObjectsCount())
     {
-        m_objectList[index]->setSelected(true);
+        getObject(index)->setSelected(true);
     }
 }
 
@@ -262,13 +322,33 @@ QList<ISurface*> Document::getSelectedObjects() const
     QList<ISurface*> selectedObjectList;
     selectedObjectList.clear();
 
-    int count = m_objectList.size();
+    int count = getObjectsCount();
     for (int i = 0; i < count; ++i)
     {
-        if (m_objectList[i]->isSelected())
-            selectedObjectList.append(m_objectList[i]);
+        if (getObject(i)->isSelected())
+            selectedObjectList.append(getObject(i));
     }
     return selectedObjectList;
+}
+
+SceneNode* Document::rootNode()
+{
+    return _rootNode.data();
+}
+
+const SceneNode* Document::rootNode() const
+{
+    return _rootNode.data();
+}
+
+Iterator<SceneNode> Document::sceneIterator()
+{
+    return Iterator<SceneNode>(new SceneIterator(this));
+}
+
+Iterator<SceneNode> Document::constSceneIterator() const
+{
+    return Iterator<SceneNode>(new SceneIterator(this));
 }
 
 Iterator<ISurface> Document::surfaceIterator()
@@ -369,3 +449,94 @@ bool SurfaceIterator::seek(int /*pos*/, IteratorOrigin /*origin*/) const
     return false;
 }
 
+
+SceneIterator::SceneIterator(const Document* doc)
+:	_doc(doc)
+{
+    assert(doc);
+}
+
+IIterator<SceneNode>* SceneIterator::clone() const
+{
+    SceneIterator *it = new SceneIterator(_doc);
+    return it;
+}
+
+bool SceneIterator::hasNext() const
+{
+    //    int n = _surface->getNumFaces();
+    //    return n > 0 && _index != _surface->_faces->end();
+    return false;
+}
+
+bool SceneIterator::hasPrevious() const
+{
+    //    int n = _surface->getNumFaces();
+    //    return n > 0 &&
+    //            (_index == _surface->_faces->end() ||
+    //             _index != _surface->_faces->begin());
+    return false;
+}
+
+SceneNode & SceneIterator::next()
+{
+    //NOT_IMPLEMENTED
+    throw std::runtime_error("Not implemented");
+}
+
+const SceneNode & SceneIterator::next() const
+{
+    //NOT_IMPLEMENTED
+    throw std::runtime_error("Not implemented");
+    //    Face *f = _index.value();
+    //    assert(f);
+    //    ++_index;
+    //    return *f;
+}
+
+SceneNode & SceneIterator::previous()
+{
+    throw std::runtime_error("Not implemented");
+    //    --_index;
+    //    return *_index.value();
+}
+
+const SceneNode & SceneIterator::previous() const
+{
+    throw std::runtime_error("Not implemented");
+    //    --_index;
+    //    return *_index.value();
+}
+
+bool SceneIterator::seek(int /*pos*/, IteratorOrigin /*origin*/) const
+{
+    //    switch(origin)
+    //    {
+    //    case Iter_Current:
+    //        // nothing
+    //        break;
+    //    case Iter_End:
+    //        _index = _surface->_faces->end();
+    //        break;
+    
+    //    case Iter_Start:
+    //    default:
+    //        _index = _surface->_faces->begin();
+    //        break;
+    //    }
+    
+    //    if (pos > 0) {
+    //        while(--pos && _index != _surface->_faces->end()) {
+    //            ++_index;
+    //        }
+    //        if (_index == _surface->_faces->end())
+    //            return false;
+    //    } else if (pos < 0 ) {
+    //        while(++pos && _index != _surface->_faces->end()) {
+    //            --_index;
+    //        }
+    //        if (_index == _surface->_faces->end())
+    //            return false;
+    //    }
+    return false;
+}

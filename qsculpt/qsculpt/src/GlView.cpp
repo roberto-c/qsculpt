@@ -391,10 +391,66 @@ void GlCanvas::drawObjects()
         float x = 0.0f, y = 0.0f, z = 0.0f;
         mesh->getPosition(&x, &y, &z);
         glTranslatef(x, y, z);
+        if (mesh->isSelected()) {
+            drawBoundingBox(mesh);
+        }
         _renderer->renderObject(mesh);
 //        _editVertexRenderer->renderObject(mesh);
         glPopMatrix();
     }
+}
+
+void GlCanvas::drawBoundingBox(const ISurface* mesh)
+{
+    using namespace geometry;
+    
+    GLboolean lightEnabled = GL_FALSE;
+    lightEnabled = glIsEnabled(GL_LIGHTING);
+
+    if (lightEnabled == GL_TRUE)
+        glDisable(GL_LIGHTING);
+
+    glColor3f(0.0, 1.0, 0.0);
+    
+    AABB bb = mesh->getBoundingBox();
+    float minX = bb.min().x() - 0.1;
+    float minY = bb.min().y() - 0.1;
+    float minZ = bb.min().z() - 0.1;
+    float maxX = bb.max().x() + 0.1;
+    float maxY = bb.max().y() + 0.1;
+    float maxZ = bb.max().z() + 0.1;
+    
+    glColor3f(0.0, 1.0, 0.0);
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(minX, minY, minZ);
+    glVertex3f(maxX, minY, minZ);
+    glVertex3f(maxX, maxY, minZ);
+    glVertex3f(minX, maxY, minZ);
+    glEnd();
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(minX, minY, maxZ);
+    glVertex3f(maxX, minY, maxZ);
+    glVertex3f(maxX, maxY, maxZ);
+    glVertex3f(minX, maxY, maxZ);
+    glEnd();
+
+    glBegin(GL_LINES);
+    glVertex3f(minX, minY, minZ);
+    glVertex3f(minX, minY, maxZ);
+
+    glVertex3f(maxX, minY, minZ);
+    glVertex3f(maxX, minY, maxZ);
+
+    glVertex3f(maxX, maxY, minZ);
+    glVertex3f(maxX, maxY, maxZ);
+
+    glVertex3f(minX, maxY, minZ);
+    glVertex3f(minX, maxY, maxZ);
+    glEnd();
+
+    if (lightEnabled == GL_TRUE)
+        glEnable(GL_LIGHTING);
 }
 
 void GlCanvas::drawGrid()
@@ -881,12 +937,12 @@ void GlCanvas::drawRect(const Point3& p1, const Point3& p2, int mode)
 {
     switch(mode) {
     case 0:
-        _drawRectWinCoord(p1, p2);
+        drawRectWinCoord(p1, p2);
         break;
     }
 }
 
-void GlCanvas::_drawRectWinCoord(const Point3& c1, const Point3& c2)
+void GlCanvas::drawRectWinCoord(const Point3& c1, const Point3& c2)
 {
     double c[4];
     Point3 p1, p2, p3, p4;
@@ -925,6 +981,53 @@ void GlCanvas::_drawRectWinCoord(const Point3& c1, const Point3& c2)
 /**
  *
  */
-void GlCanvas::drawEllipse(const Point3& /*center*/, float /*axis1*/, float /*axis2*/)
+void GlCanvas::drawEllipse(const Point3& center, float axis1, float axis2)
 {
+    drawEllipseWinCoord(center, axis1, axis2);
+}
+
+void GlCanvas::drawEllipseWinCoord(const Point3& center,
+                                    float axis1,
+                                    float axis2)
+{
+    Point3 p1 = center;
+    Point3 p2 = center;
+    
+    p1.x() -= axis1;
+    p1.y() -= axis2;
+    p2.x() -= axis1;
+    p2.y() -= axis2;
+    
+//    double c[4];
+//    Point3 p1, p2, p3, p4;
+//    Point3 a1 = c1;
+//    Point3 a3 = c2;
+//    Point3 a2 = Point3(a3.x(), a1.y(), a1.z());
+//    Point3 a4 = Point3(a1.x(), a3.y(), a1.z());
+//    mapScreenCoordsToWorldCoords(a1, p1);
+//    mapScreenCoordsToWorldCoords(a2, p2);
+//    mapScreenCoordsToWorldCoords(a3, p3);
+//    mapScreenCoordsToWorldCoords(a4, p4);
+//    _brush.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+//    if (c[3] > 0) {
+//        glColor4dv(c);
+//        glBegin(GL_QUADS);
+//        glVertex3fv(p1.data());
+//        glVertex3fv(p2.data());
+//        glVertex3fv(p3.data());
+//        glVertex3fv(p4.data());
+//        glEnd();
+//    }
+//    
+//    _pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+//    if (c[3] > 0 ) {
+//        glColor4dv(c);
+//        glBegin(GL_LINE_LOOP);
+//        glVertex3fv(p1.data());
+//        glVertex3fv(p2.data());
+//        glVertex3fv(p3.data());
+//        glVertex3fv(p4.data());
+//        glVertex3fv(p1.data());
+//        glEnd();
+//    }
 }

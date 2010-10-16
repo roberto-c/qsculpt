@@ -100,16 +100,16 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
     GLdouble x, y, z;
-    GLfloat wz = 0.0f;
 
     glGetDoublev(GL_MODELVIEW_MATRIX, _modelMatrix);
     glGetDoublev(GL_PROJECTION_MATRIX, _projMatrix);
     glGetIntegerv(GL_VIEWPORT, _viewPort);
 
-    glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-    gluUnProject(e->x(), _viewPort[3] - e->y(), wz, _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
-
-    _initialWinPoint = Point3(e->x(), _viewPort[3] - e->y(), wz);
+    GlCanvas *canvas = view->getCanvas();
+    Point3 p(e->x(), view->getCanvas()->height() - e->y(), 0.0);
+    canvas->mapScreenCoordsToWorldCoords(p, _initialWinPoint);
+    
+    //_initialWinPoint = Point3(e->x(), _viewPort[3] - e->y(), wz);
     _currentWinPoint = _initialWinPoint;
     _intialPoint = Point3(x, y, z);
     _currentPoint = _intialPoint;
@@ -118,7 +118,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     _currentCamera = view->getViewCamera();
     *_intialCameraState = *_currentCamera;
 
-    // In prespective view, we allow the user to change the orientation of the view. 
+    // In perspective view, we allow the user to change the orientation of the view. 
     // In the other views, we only allow screen panning.
     if (view->getPerspectiveViewType() == GlCanvas::Perspective)
     {

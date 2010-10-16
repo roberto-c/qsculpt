@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,58 +18,43 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef GLITEM_H
-#define GLITEM_H
+#ifndef DOCUMENTTREEWIDGET_H_
+#define DOCUMENTTREEWIDGET_H_
 
-class GlCanvas;
+#include <QDockWidget>
+#include <QModelIndex>
 
-/**
- * Interface class to define a renderer for the item.
- */
-//class IGlItemRenderer
-//{
-//public:
-//};
+class IDocument;
 
-
-namespace Plastilina {
-    enum ItemFlag {
-        None = 0,
-        Selected = 0x00000001
-    };
-
+class DocumentTreeWidget : public QDockWidget
+{
+    Q_OBJECT
+    Q_PROPERTY(IDocument* document READ document WRITE setDocument)
+    
+public:
+    DocumentTreeWidget(QWidget* parent);
+    virtual ~DocumentTreeWidget();
+    
     /**
-      * Render item in the GlCanvas
-      */
-    class GlItem
-    {
-
-    public:
-        GlItem();
-
-        virtual ~GlItem();
-
-        virtual void paintGl(GlCanvas *c);
-
-        /**
-         * Set a pointer to a user data.
-         */
-        void setData(void* d);
-
-        /**
-         * Returns the data attached to this item.
-         */
-        void* data();
-
-        /**
-         *
-         */
-        void setSelected(bool value);
-
-        /**
-         *
-         */
-        bool isSelected();
-    };
+     * Gets the document to which this DocumentTree is associated to.
+     */
+    IDocument* document() const;
+    
+    /**
+     * Sets the document to which this DocumentTree instance is associated to.
+     */
+    void setDocument(IDocument* doc);
+    
+public slots:
+    void itemActivated(const QModelIndex &index);
+    
+private:
+    void updateTree();
+    
+    struct Private;
+    QScopedPointer<Private> _d;
+    
 };
-#endif // GLITEM_H
+
+#endif // DOCUMENTTREEWIDGET_H_ 
+

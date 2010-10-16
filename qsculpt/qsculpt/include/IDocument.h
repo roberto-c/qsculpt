@@ -21,8 +21,10 @@
 #define IDOCUMENT_H
 
 #include <QObject>
+#include "IIterator.h"
 
 class ISurface;
+class SceneNode;
 
 /**
  * Interface that should implement every kind of document.
@@ -116,6 +118,20 @@ public:
      * 
      */
     virtual QList<ISurface*> getSelectedObjects() const = 0;
+    
+    virtual Iterator<SceneNode> sceneIterator() = 0;
+    
+    virtual Iterator<SceneNode> constSceneIterator() const = 0;
+    
+    /**
+     * Get the root node of the document
+     */
+    virtual SceneNode* rootNode() = 0;
+    
+    /**
+     * Get the root node of the document
+     */
+    virtual const SceneNode* rootNode() const = 0;
     
 signals:
     void changed(IDocument::ChangeType type, ISurface* object);

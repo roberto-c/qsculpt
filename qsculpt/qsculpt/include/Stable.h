@@ -30,6 +30,7 @@
 #include <Eigen/StdVector>
 
 #include <utility>
+#include <typeinfo>
 
 unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
 unsigned int qHash(const std::pair<int, int> & v);
@@ -37,6 +38,9 @@ unsigned int qHash(const std::pair<int, int> & v);
 #include <QtDebug>
 #include <QtGui>
 #include <QtOpenGL>
+#include <QPointer>
+#include <QScopedPointer>
+#include <QSharedPointer>
 
 inline bool printGlError()
 {
