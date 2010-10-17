@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,37 +17,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "ConsoleWindow.h"
-#include "ui_ConsoleWindow.h"
-#include "Console.h"
 
-ConsoleWindow::ConsoleWindow(QWidget *parent) :
-    QDockWidget(parent),
-    ui(new Ui::ConsoleWindow)
-{
-    ui->setupUi(this);
-}
+#ifndef IRENDERABLE_H
+#define IRENDERABLE_H
 
-ConsoleWindow::~ConsoleWindow()
+class IRenderable
 {
-    delete ui;
-}
+public:
+    virtual void paintGL() = 0;
+};
 
-void ConsoleWindow::changeEvent(QEvent *e)
-{
-    QDockWidget::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
-}
+#endif // IRENDERABLE_H
 
-void ConsoleWindow::executeLine()
-{
-    qDebug() << "Execute...";
-    Console::instance()->evaluate(ui->input->text());
-}

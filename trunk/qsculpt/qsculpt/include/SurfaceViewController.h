@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,37 +17,49 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "ConsoleWindow.h"
-#include "ui_ConsoleWindow.h"
-#include "Console.h"
 
-ConsoleWindow::ConsoleWindow(QWidget *parent) :
-    QDockWidget(parent),
-    ui(new Ui::ConsoleWindow)
-{
-    ui->setupUi(this);
-}
+#ifndef MESHCONTROLLER_H
+#define MESHCONTROLLER_H
 
-ConsoleWindow::~ConsoleWindow()
-{
-    delete ui;
-}
+#include "IRenderable.h"
+#include "Point3D.h"
 
-void ConsoleWindow::changeEvent(QEvent *e)
-{
-    QDockWidget::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
-}
+class ISurface;
 
-void ConsoleWindow::executeLine()
+/**
+ * Used to manipulate a mesh.
+ */
+class SurfaceViewController : public IRenderable
 {
-    qDebug() << "Execute...";
-    Console::instance()->evaluate(ui->input->text());
-}
+public:
+    /**
+     * Constructor of a controller
+     *
+     * @param surface surface to which this controller sends commands to
+     */
+    SurfaceViewController(ISurface* surface);
+    
+    virtual ~SurfaceViewController();
+    
+    /**
+     *
+     */
+    void setPosition(const Point3& pos);
+    Point3 position() const;
+    
+    /**
+     * Rotates the surface around a given axis by the given angle.
+     */
+    void setRotation(const Vector3& axis, float angle);
+    void setRotation(const Eigen::Quaternionf& r);
+    Eigen::Quaternionf rotation();
+
+    
+    void paintGL();
+    
+private:
+    struct PrivateData;
+    PrivateData* d;
+};
+
+#endif // MESHCONTROLLER_H

@@ -81,13 +81,14 @@ HEADERS += include/command/BrushCommand.h \
     include/command/orbitcommand.h \
     include/glitem.h \
     include/ConsoleWindow.h \
-    include/Console.h
+    include/Console.h \
+    include/DocumentTreeWidget.h
 
 FORMS += ui/BrushProperties.ui \
     ui/ConsoleWindow.ui \
     ui/MainWindow.ui \
     ui/TransformWidget.ui \
-    ui/ConsoleWindow.ui
+    ui/DocumentTreeWidget.ui
 
 SOURCES += src/command/BrushCommand.cpp \
     src/command/BrushProperties.cpp \
@@ -110,7 +111,8 @@ SOURCES += src/command/BrushCommand.cpp \
     src/command/orbitcommand.cpp \
     src/glitem.cpp \
     src/ConsoleWindow.cpp \
-    src/Console.cpp
+    src/Console.cpp \
+    src/DocumentTreeWidget.cpp
 
 RESOURCES += resources/QSculpt.qrc
 
