@@ -198,10 +198,10 @@ void QSculptWindow::createWidgets()
     	layout()->setSpacing(0);
     }
 
-    _console->consoleWindow()->show();
+    _console->consoleWindow()->setParent(this);
+    this->addDockWidget(Qt::BottomDockWidgetArea, _console->consoleWindow());
     
-    _docTree->setFloating(true);
-    _docTree->show();
+    addDockWidget(Qt::RightDockWidgetArea, _docTree);
 }
 
 const IDocument* QSculptWindow::getCurrentDocument()

@@ -21,13 +21,13 @@
 #ifndef CONSOLEWINDOW_H
 #define CONSOLEWINDOW_H
 
-#include <QDialog>
+#include <QDockWidget>
 
 namespace Ui {
     class ConsoleWindow;
 }
 
-class ConsoleWindow : public QDialog
+class ConsoleWindow : public QDockWidget
 {
     Q_OBJECT
 

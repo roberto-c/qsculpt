@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
- *   roberto.cabral@gmail.com   *
+ *   Copyright (C) 2010 by Juan Roberto Cabral Flores                      *
+ *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,37 +17,45 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "ConsoleWindow.h"
-#include "ui_ConsoleWindow.h"
-#include "Console.h"
 
-ConsoleWindow::ConsoleWindow(QWidget *parent) :
-    QDockWidget(parent),
-    ui(new Ui::ConsoleWindow)
-{
-    ui->setupUi(this);
-}
+#ifndef MATERIAL_H_
+#define MATERIAL_H_
 
-ConsoleWindow::~ConsoleWindow()
-{
-    delete ui;
-}
+#include <QAtomicInt>
 
-void ConsoleWindow::changeEvent(QEvent *e)
-{
-    QDockWidget::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
-}
+class QGLContext;
+class QGLShader;
+class QGLShaderProgram;
 
-void ConsoleWindow::executeLine()
+
+/**
+ * Defines the appeareance of the surface or a renderable object.
+ *
+ * Each material is composed by a shader objects for real time rendring using
+ * OpenGL.
+ */
+class Material
 {
-    qDebug() << "Execute...";
-    Console::instance()->evaluate(ui->input->text());
-}
+    static QAtomicInt NEXT_ID;
+    
+    int _id;
+    
+public:
+    Material();
+    virtual ~Material();
+    
+    /**
+     * Returns the instance ID of the material object.
+     */
+    int iid() const { return _id; } ;
+    
+    bool attach(const QGLContext* ctx);
+    bool deattach();
+    
+protected:
+    QGLContext          *_context;
+    QGLShaderProgram    *_program;
+    QGLShader           *_shaders;
+};
+
+#endif

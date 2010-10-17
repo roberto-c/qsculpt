@@ -70,7 +70,7 @@ private:
     Console();
 
     class Impl;
-    Impl *_impl;
+    QScopedPointer<Impl> _impl;
 };
 
 #endif // CONSOLE_H

@@ -42,18 +42,17 @@ public:
 
 
     CommandMap commands; /*< list of command registered*/
-    ConsoleWindow *window;
+    QScopedPointer<ConsoleWindow> window;
 };
 
 Console::Console()
     : _impl(new Impl)
 {
-    _impl->window = new ConsoleWindow();
+    _impl->window.reset(new ConsoleWindow());
 }
 
 Console::~Console()
 {
-    delete _impl;
 }
 
 Console* Console::instance()
@@ -96,7 +95,7 @@ bool Console::evaluate(const QString& command)
 
 ConsoleWindow* Console::consoleWindow()
 {
-    return _impl->window;
+    return _impl->window.data();
 }
 
 bool Console::Impl::parseCommandLine(const QString& line, ICommand** cmd)

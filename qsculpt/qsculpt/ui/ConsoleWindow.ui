@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>ConsoleWindow</class>
- <widget class="QDialog" name="ConsoleWindow">
+ <widget class="QDockWidget" name="ConsoleWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,16 +11,24 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Console</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QPlainTextEdit" name="output"/>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="input"/>
-   </item>
-  </layout>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>3</number>
+    </property>
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QPlainTextEdit" name="output"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="input"/>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <resources/>
  <connections>
