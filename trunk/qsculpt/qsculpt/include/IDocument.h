@@ -74,16 +74,16 @@ public:
      *
      * @param type type of object to add.
      */
-    virtual void addObject(ObjectType type) = 0;
+    virtual ISurface* addObject(ObjectType type) = 0;
 	
-	/**
+    /**
      * Adds an object to the document. The object passed as parameter is added
-	 * to the document's objects list.
+     * to the document's objects list.
      *
      * @param type type of object to add.
-	 * @param obj object to add to the document.
+     * @param obj object to add to the document.
      */
-	virtual void addObject(ObjectType type, ISurface* obj) = 0;
+    virtual void addObject(ObjectType type, ISurface* obj) = 0;
     
     /**
      * Remove an object from the document. This does not free the memory allocated
@@ -92,6 +92,13 @@ public:
      * @param index index of the object to remove.
      */
     virtual void removeObject(int index) = 0;
+    
+    /**
+     * Remove the object pointer by s. This just removes the object from the
+     * scene and does not destroy the object.
+     * @param s Surface to remove from the scene.
+     */
+    virtual void removeObject(ISurface *s) = 0;
     
     /**
      * Gets the Nth object in the document.
