@@ -50,7 +50,15 @@ public:
      * Gets the current document. This document is the one that all commands
      * should operate on.
      */
-    const IDocument* getCurrentDocument();
+    const IDocument* getCurrentDocument() const;
+
+    /**
+     * Gets the current document. This document is the one that all commands
+     * should operate on.
+     * 
+     * @return pointer to current document
+     */
+    IDocument* getCurrentDocument();
 
     /**
      * Get the current application command. This is the command that the

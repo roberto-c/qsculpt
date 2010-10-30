@@ -265,7 +265,7 @@ void Document::saveFile(QString fileName)
 //    }
 }
 
-void Document::addObject(ObjectType type)
+ISurface* Document::addObject(ObjectType type)
 {
     ISurface* obj = NULL;
 
@@ -285,6 +285,7 @@ void Document::addObject(ObjectType type)
     n->setText(QString("Object %1").arg(NEXT_ID.fetchAndAddRelaxed(1)));
     _rootNode->appendRow(n);
     emit changed(AddObject, obj);
+    return obj;
 }
 
 void Document::addObject(ObjectType type, ISurface* obj)
@@ -297,6 +298,11 @@ void Document::addObject(ObjectType type, ISurface* obj)
 
 void Document::removeObject(int /*index*/)
 {
+}
+
+void Document::removeObject(ISurface *s)
+{
+
 }
 
 ISurface* Document::getObject(int index) const

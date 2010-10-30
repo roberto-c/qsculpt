@@ -38,6 +38,7 @@
 #include "ConsoleWindow.h"
 #include "IConfigContainer.h"
 #include "DocumentTreeWidget.h"
+#include "MeshEditCommands.h"
 
 QSculptWindow::QSculptWindow()
     : m_documentView(new DocumentView(this)),
@@ -78,7 +79,7 @@ void QSculptWindow::createWidgets()
     connect(m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
     connect(m_document, SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(documentChanged(IDocument::ChangeType)));
 
-    connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
+    //connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
 
     _console = Console::instance();
@@ -86,7 +87,14 @@ void QSculptWindow::createWidgets()
     _docTree = new DocumentTreeWidget(this);
     _docTree->setDocument(m_document);
 
-    QAction *action = m_commandManager.createUndoAction(this);
+    QAction *action = NULL;
+    ICommand* cmd = NULL;
+
+    //action = new QAction("AddSurface", this);
+    cmd = new AddSurfaceCommand;
+    m_commandManager.registerCommand("Add box", m_addBox, cmd);
+
+    action = m_commandManager.createUndoAction(this);
     Q_CHECK_PTR(action);
     action->setShortcut(QKeySequence::Undo);
     menuEdit->addAction(action);
@@ -99,7 +107,7 @@ void QSculptWindow::createWidgets()
     Q_CHECK_PTR(m_toolActionGroup);
     m_toolsToolbar = addToolBar("Tools");
 
-    ICommand* cmd = NULL;
+    
     action = new QAction("Select", this);
     cmd = new SelectCommand;
     Q_CHECK_PTR(action);
@@ -204,7 +212,12 @@ void QSculptWindow::createWidgets()
     addDockWidget(Qt::RightDockWidgetArea, _docTree);
 }
 
-const IDocument* QSculptWindow::getCurrentDocument()
+const IDocument* QSculptWindow::getCurrentDocument() const
+{
+    return m_document;
+}
+
+IDocument* QSculptWindow::getCurrentDocument()
 {
     return m_document;
 }

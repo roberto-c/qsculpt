@@ -66,6 +66,7 @@ HEADERS += include/command/BrushCommand.h \
     include/command/SelectCommand.h \
     include/command/SubdivideCommand.h \
     include/command/TransformCameraCommand.h \
+    include/command/MeshEditCommands.h \
     include/Document.h \
     include/DocumentView.h \
     include/globalDefs.h \
@@ -99,6 +100,7 @@ SOURCES += src/command/BrushCommand.cpp \
     src/command/SelectCommand.cpp \
     src/command/SubdivideCommand.cpp \
     src/command/TransformCameraCommand.cpp \
+    src/command/MeshEditCommands.cpp \
     src/Document.cpp \
     src/DocumentView.cpp \
     src/GlView.cpp \

@@ -42,9 +42,10 @@ public:
 // IDocument interface
     virtual void loadFile(QString fileName);
     virtual void saveFile(QString fileName);
-    virtual void addObject(ObjectType type);
-	virtual void addObject(ObjectType type, ISurface* obj);
+    virtual ISurface* addObject(ObjectType type);
+    virtual void addObject(ObjectType type, ISurface* obj);
     virtual void removeObject(int index);
+    virtual void removeObject(ISurface *s);
     virtual ISurface* getObject(int index) const;
     virtual int getObjectsCount() const;
     virtual void selectObject(int index);
