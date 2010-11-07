@@ -71,7 +71,7 @@ public:
      * @return source document for this view.
      */
     IDocument* getDocument() {
-        return m_document;
+        return _document;
     };
 
     /**
@@ -92,62 +92,65 @@ public:
      * @return an object container with the results of the test.
      */
 	ObjectContainer getSelectedObjects(int x, int y) {
-        return m_display->getSelectedObjects(x, y);
+        return _display->getSelectedObjects(x, y);
     };
 	PointIndexList getSelectedVertices(GLint x, GLint y,
 									   GLint width, GLint height) {
-		return m_display->getSelectedVertices(x, y, width, height);
+		return _display->getSelectedVertices(x, y, width, height);
 	}
 
     /**
      * getViewType
      */
     GlCanvas::PerspectiveType getPerspectiveViewType() {
-        return m_display->getPerspectiveView();
+        return _display->getPerspectiveView();
     };
 
     /**
      *
      */
     Camera* getViewCamera() {
-        return m_display->getViewCamera();
+        return _display->getViewCamera();
     };
 
     void set3DCursorShape(GlCanvas::CursorShapeType shape) {
-        m_display->set3DCursorShape(shape);
+        _display->set3DCursorShape(shape);
     };
 
     GlCanvas::CursorShapeType getCursorShape() {
-        return m_display->getCursorShape();
+        return _display->getCursorShape();
     };
 
     void setCursorPosition(Point3 p) {
-        m_display->setCursorPosition(p);
+        _display->setCursorPosition(p);
     };
 
     Point3 getCursorPosition() {
-        return m_display->getCursorPosition();
+        return _display->getCursorPosition();
     };
 
     void setCursorOrientation(Point3 n) {
-        m_display->setCursorOrientation(n);
+        _display->setCursorOrientation(n);
     };
 
     Point3 getCursorOrientation() {
-        return m_display->getCursorOrientation();
+        return _display->getCursorOrientation();
     };
 
     void setCursorImage(const QImage& image) {
-    	m_display->setCursorImage(image);
+    	_display->setCursorImage(image);
     }
 
     QImage getCursorImage() {
-    	return m_display->getCursorImage();
+    	return _display->getCursorImage();
     }
 
     bool getDrawVertices();
     
-    GlCanvas* getCanvas() { return m_display; } ;
+    GlCanvas* getCanvas() { return _display; } ;
+    
+    IRenderer* renderer() const;
+    
 public slots:
     /**
      * Turn the visibility of the grid on/off.
@@ -178,23 +181,23 @@ public slots:
     void updateView();
 
     void grabMouse(bool val) {
-    	if (m_display)
+    	if (_display)
     	{
     		if (val)
-    			m_display->grabMouse();
+    			_display->grabMouse();
     		else
-    			m_display->releaseMouse();
+    			_display->releaseMouse();
     	}
     }
 
     void setDrawVertices(bool drawVertices);
     
 protected:
-    IDocument* m_document;
-    GlCanvas* m_display;
-    QComboBox* m_viewPerspective;
-    QComboBox* m_drawingMode;
-    bool        _drawVertices;
+    IDocument       *_document;
+    GlCanvas        *_display;
+    QComboBox       *_viewPerspective;
+    QComboBox       *_drawingMode;
+    bool            _drawVertices;
 };
 
 #endif

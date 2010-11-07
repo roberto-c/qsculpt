@@ -26,7 +26,6 @@ Box::Box()
     : Subdivision()
 {
     initPoints();
-    initTriangles();
 }
 
 Box::~Box()
@@ -36,55 +35,52 @@ Box::~Box()
 void Box::initPoints()
 {
     //qDebug("Box::initPoints()");
-    double hw = 1.0;
-    double hh = 1.0;
-    double hd = 1.0;
+    double hw = 100.0;
+    double hh = 100.0;
+    double hd = 100.0;
+    
+    QVector<int> vertexID(8);
 
-    addVertex(new Vertex(Point3(-hw, hh,-hd), Vector3(-hw, hh,-hd)));
-    addVertex(new Vertex(Point3( hw, hh,-hd), Vector3( hw, hh,-hd)));
-    addVertex(new Vertex(Point3( hw,-hh,-hd), Vector3( hw,-hh,-hd)));
-    addVertex(new Vertex(Point3(-hw,-hh,-hd), Vector3(-hw,-hh,-hd)));
+    vertexID[0] = addVertex(new Vertex(Point3(-hw, hh,-hd), Vector3(-hw, hh,-hd)));
+    vertexID[1] = addVertex(new Vertex(Point3( hw, hh,-hd), Vector3( hw, hh,-hd)));
+    vertexID[2] = addVertex(new Vertex(Point3( hw,-hh,-hd), Vector3( hw,-hh,-hd)));
+    vertexID[3] = addVertex(new Vertex(Point3(-hw,-hh,-hd), Vector3(-hw,-hh,-hd)));
 
-    addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
-    addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
-    addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
-    addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
-}
-
-void Box::initTriangles()
-{
-    //qDebug("Box::initTriangles()");
-
+    vertexID[4] = addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
+    vertexID[5] = addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
+    vertexID[6] = addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
+    vertexID[7] = addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
+    
     QVector<int> indexList(4);
-    indexList[0] = 0;
-    indexList[1] = 1;
-    indexList[2] = 2;
-    indexList[3] = 3;
+    indexList[0] = vertexID[0];
+    indexList[1] = vertexID[1];
+    indexList[2] = vertexID[2];
+    indexList[3] = vertexID[3];
     addFace( indexList );
-    indexList[0] = 4;
-    indexList[1] = 7;
-    indexList[2] = 6;
-    indexList[3] = 5;
+    indexList[0] = vertexID[4];
+    indexList[1] = vertexID[7];
+    indexList[2] = vertexID[6];
+    indexList[3] = vertexID[5];
     addFace( indexList );
-    indexList[0] = 0;
-    indexList[1] = 3;
-    indexList[2] = 7;
-    indexList[3] = 4;
+    indexList[0] = vertexID[0];
+    indexList[1] = vertexID[3];
+    indexList[2] = vertexID[7];
+    indexList[3] = vertexID[4];
     addFace( indexList );
-    indexList[0] = 5;
-    indexList[1] = 6;
-    indexList[2] = 2;
-    indexList[3] = 1;
+    indexList[0] = vertexID[5];
+    indexList[1] = vertexID[6];
+    indexList[2] = vertexID[2];
+    indexList[3] = vertexID[1];
     addFace( indexList );
-    indexList[0] = 0;
-    indexList[1] = 4;
-    indexList[2] = 5;
-    indexList[3] = 1;
+    indexList[0] = vertexID[0];
+    indexList[1] = vertexID[4];
+    indexList[2] = vertexID[5];
+    indexList[3] = vertexID[1];
     addFace( indexList );
-    indexList[0] = 7;
-    indexList[1] = 3;
-    indexList[2] = 2;
-    indexList[3] = 6;
+    indexList[0] = vertexID[7];
+    indexList[1] = vertexID[3];
+    indexList[2] = vertexID[2];
+    indexList[3] = vertexID[6];
     addFace( indexList );
-    //qDebug("Box::initTriangles() end");
 }
+

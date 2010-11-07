@@ -290,7 +290,7 @@ void GlCanvas::paintGL()
     {
         glLoadMatrixf(camera->modelView().data());
     }
-
+    
     //glTranslatef(-100, -100, 0);
     glDisable(GL_LIGHTING);
 
@@ -381,7 +381,7 @@ void GlCanvas::drawObjects()
         return;
 
     ISurface* mesh;
-    IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
+    IDocument* doc= g_pApp->getMainWindow()->getCurrentDocument();
     int count = doc->getObjectsCount();
     for ( int i = 0; i < count; i++ )
     {

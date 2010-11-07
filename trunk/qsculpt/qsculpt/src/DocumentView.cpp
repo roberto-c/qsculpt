@@ -1,22 +1,22 @@
 /***************************************************************************
-*   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
-*   roberto.cabral@gmail.com   *
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-*   This program is distributed in the hope that it will be useful,       *
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-*   GNU General Public License for more details.                          *
-*                                                                         *
-*   You should have received a copy of the GNU General Public License     *
-*   along with this program; if not, write to the                         *
-*   Free Software Foundation, Inc.,                                       *
-*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
-***************************************************************************/
+ *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   roberto.cabral@gmail.com   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
 #include "Stable.h"
 #include "DocumentView.h"
 #include <iostream>
@@ -35,145 +35,148 @@
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "ICommand.h"
+#include "glitem.h"
 #include "GlView.h"
 
-DocumentView::DocumentView( QWidget *_parent )
-        : QWidget( _parent ),
-        m_document(NULL),
-        m_viewPerspective(NULL),
-        m_drawingMode(NULL),
-        _drawVertices(false)
+DocumentView::DocumentView(QWidget *_parent)
+: QWidget(_parent),
+_document(NULL),
+_viewPerspective(NULL),
+_drawingMode(NULL),
+_drawVertices(false)
 {
     createWidgets();
 }
 
-DocumentView::~DocumentView() {}
+DocumentView::~DocumentView()
+{
+}
 
 void DocumentView::createWidgets()
 {
     QGridLayout* gridLayout = new QGridLayout(this);
-	QHBoxLayout* hboxLayout = new QHBoxLayout();
-	m_display = new GlCanvas(this);
-	
-	Q_CHECK_PTR(gridLayout);
-	Q_CHECK_PTR(m_display);
-	Q_CHECK_PTR(hboxLayout);
+    QHBoxLayout* hboxLayout = new QHBoxLayout();
+    _display = new GlCanvas(this);
 
-	// Set up gl display format
-	QGLFormat format = m_display->format();
-	format.setSwapInterval(1);
-	format.setDepthBufferSize(32);
-	m_display->setFormat(format);
-	
+    Q_CHECK_PTR(gridLayout);
+    Q_CHECK_PTR(_display);
+    Q_CHECK_PTR(hboxLayout);
+
+    // Set up gl display format
+    QGLFormat format = _display->format();
+    format.setSwapInterval(1);
+    format.setDepthBufferSize(32);
+    _display->setFormat(format);
+
     gridLayout->setContentsMargins(0, 0, 0, 0);
-    gridLayout->addWidget(m_display, 0,0, 1, 5);
+    gridLayout->addWidget(_display, 0, 0, 1, 5);
     gridLayout->addLayout(hboxLayout, 1, 0);
-
+    
     QLabel* label = new QLabel("View", this);
-    m_viewPerspective = new QComboBox(this);
-	Q_CHECK_PTR(label);
-	Q_CHECK_PTR(m_viewPerspective);
-    label->setBuddy(m_viewPerspective);
+    _viewPerspective = new QComboBox(this);
+    Q_CHECK_PTR(label);
+    Q_CHECK_PTR(_viewPerspective);
+    label->setBuddy(_viewPerspective);
 
     hboxLayout->addWidget(label);
-    hboxLayout->addWidget(m_viewPerspective);
+    hboxLayout->addWidget(_viewPerspective);
 
     label = new QLabel("Drawing Mode", this);
-    m_drawingMode = new QComboBox(this);
-	Q_CHECK_PTR(label);
-	Q_CHECK_PTR(m_drawingMode);
-    label->setBuddy(m_drawingMode);
+    _drawingMode = new QComboBox(this);
+    Q_CHECK_PTR(label);
+    Q_CHECK_PTR(_drawingMode);
+    label->setBuddy(_drawingMode);
 
     hboxLayout->setContentsMargins(11, 0, 0, 0);
     hboxLayout->addWidget(label);
-    hboxLayout->addWidget(m_drawingMode);
-	QSpacerItem* spacer = new QSpacerItem(100, 0);
-	Q_CHECK_PTR(spacer);
+    hboxLayout->addWidget(_drawingMode);
+    QSpacerItem* spacer = new QSpacerItem(100, 0);
+    Q_CHECK_PTR(spacer);
     hboxLayout->addItem(spacer);
-    gridLayout->setColumnStretch(0,0);
-    gridLayout->setColumnStretch(1,0);
-    gridLayout->setColumnStretch(2,0);
-    gridLayout->setColumnStretch(3,0);
-    gridLayout->setColumnStretch(4,4);
+    gridLayout->setColumnStretch(0, 0);
+    gridLayout->setColumnStretch(1, 0);
+    gridLayout->setColumnStretch(2, 0);
+    gridLayout->setColumnStretch(3, 0);
+    gridLayout->setColumnStretch(4, 4);
 
-    m_viewPerspective->addItem("Front", GlCanvas::Front);
-    m_viewPerspective->addItem("Back", GlCanvas::Back);
-    m_viewPerspective->addItem("Top", GlCanvas::Top);
-    m_viewPerspective->addItem("Bottom", GlCanvas::Bottom);
-    m_viewPerspective->addItem("Left", GlCanvas::Left);
-    m_viewPerspective->addItem("Right", GlCanvas::Right);
-    m_viewPerspective->addItem("Perspective", GlCanvas::Perspective);
-    m_viewPerspective->setCurrentIndex(6);
-    m_display->setPerspectiveView( GlCanvas::Perspective );
+    _viewPerspective->addItem("Front", GlCanvas::Front);
+    _viewPerspective->addItem("Back", GlCanvas::Back);
+    _viewPerspective->addItem("Top", GlCanvas::Top);
+    _viewPerspective->addItem("Bottom", GlCanvas::Bottom);
+    _viewPerspective->addItem("Left", GlCanvas::Left);
+    _viewPerspective->addItem("Right", GlCanvas::Right);
+    _viewPerspective->addItem("Perspective", GlCanvas::Perspective);
+    _viewPerspective->setCurrentIndex(6);
+    _display->setPerspectiveView(GlCanvas::Perspective);
 
-    m_drawingMode->addItem("Points", Points);
-    m_drawingMode->addItem("Wireframe", Wireframe);
-    m_drawingMode->addItem("Flat", Flat);
-    m_drawingMode->addItem("Smooth", Smooth);
-	m_drawingMode->addItem("Textured", Texture);
-    m_drawingMode->setCurrentIndex(2);
-    m_display->setDrawingMode( Flat );
+    _drawingMode->addItem("Points", Points);
+    _drawingMode->addItem("Wireframe", Wireframe);
+    _drawingMode->addItem("Flat", Flat);
+    _drawingMode->addItem("Smooth", Smooth);
+    _drawingMode->addItem("Textured", Texture);
+    _drawingMode->setCurrentIndex(2);
+    _display->setDrawingMode(Flat);
 
-    connect(m_viewPerspective, SIGNAL(currentIndexChanged(int)), this, SLOT(viewPerspectiveChanged(int)));
-    connect(m_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));
-
+    connect(_viewPerspective, SIGNAL(currentIndexChanged(int)), this, SLOT(viewPerspectiveChanged(int)));
+    connect(_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));
 }
 
-void DocumentView::setDocument(IDocument* doc) {
-	Q_ASSERT(doc);
-	
-	if (m_document)
-		m_document->disconnect(this);
-    m_document = doc;
-    connect(m_document, SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
+void DocumentView::setDocument(IDocument* doc)
+{
+    Q_ASSERT(doc);
+
+    if (_document)
+        _document->disconnect(this);
+    _document = doc;
+    connect(_document, SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
 };
 
-void DocumentView::setGridVisible( bool value)
+void DocumentView::setGridVisible(bool value)
 {
-	Q_ASSERT(m_display);
-    m_display->setGridVisible( value );
+    Q_ASSERT(_display);
+    _display->setGridVisible(value);
 }
 
 bool DocumentView::isGridVisible()
 {
-	Q_ASSERT(m_display);
-    return m_display->isGridVisible();
+    Q_ASSERT(_display);
+    return _display->isGridVisible();
 }
 
 void DocumentView::updateView()
 {
-	Q_ASSERT(m_display);
-    m_display->updateGL();
+    Q_ASSERT(_display);
+    _display->updateGL();
 }
 
 void DocumentView::viewPerspectiveChanged(int index)
 {
-	Q_ASSERT(m_display);
-	Q_ASSERT(m_viewPerspective);
-	
+    Q_ASSERT(_display);
+    Q_ASSERT(_viewPerspective);
+
     GlCanvas::PerspectiveType type;
 
-    type = (GlCanvas::PerspectiveType)m_viewPerspective->itemData(index).toInt();
-    m_display->setPerspectiveView( type );
+    type = (GlCanvas::PerspectiveType)_viewPerspective->itemData(index).toInt();
+    _display->setPerspectiveView(type);
     updateView();
 }
 
 void DocumentView::drawingModeChanged(int index)
 {
-	Q_ASSERT(m_display);
-	Q_ASSERT(m_viewPerspective);
-	
+    Q_ASSERT(_display);
+    Q_ASSERT(_viewPerspective);
+
     DrawingMode type;
 
-    type = (DrawingMode)m_viewPerspective->itemData(index).toInt();
-    m_display->setDrawingMode( type );
+    type = (DrawingMode) _viewPerspective->itemData(index).toInt();
+    _display->setDrawingMode(type);
     updateView();
 }
 
 void DocumentView::setNormalsVisible(bool value)
 {
-	Q_ASSERT(m_display);
-    m_display->setNormalsVisible(value);
+    Q_ASSERT(_display);
+    _display->setNormalsVisible(value);
 }
 
 void DocumentView::setDrawVertices(bool drawVertices)
@@ -184,4 +187,9 @@ void DocumentView::setDrawVertices(bool drawVertices)
 bool DocumentView::getDrawVertices()
 {
     return _drawVertices;
+}
+
+IRenderer* DocumentView::renderer() const
+{
+    return _display->renderer();
 }

@@ -21,21 +21,29 @@
 #include "glitem.h"
 #include "GlView.h"
 
+#include "Box.h"
+#include "QSculptApp.h"
+#include "QSculptWindow.h"
+#include "IRenderer.h"
+#include "DocumentView.h"
+
 namespace Plastilina {
 
-GlItem::GlItem()
-{
-}
+    GlItem::GlItem()
+    : _s(new Box)
+    {
+    }
 
-GlItem::~GlItem()
-{
+    GlItem::~GlItem()
+    {
 
-}
+    }
 
-void GlItem::paintGl(GlCanvas *c)
-{
-    assert(c != NULL);
+    void GlItem::paintGl(GlCanvas *c)
+    {
+        assert(c != NULL);
 
-    //c->drawLine();
-}
+        //c->drawLine();
+    }
+
 }
