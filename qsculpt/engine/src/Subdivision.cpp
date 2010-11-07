@@ -371,6 +371,8 @@ int Subdivision::addEdge(int v1, int v2)
 
 int Subdivision::addEdge(Vertex* tail, Vertex* head)
 {
+    assert(tail && head);
+    
     int iid = -1;
 
     VtxPair pair(tail->iid(), head->iid());

@@ -40,11 +40,6 @@ protected:
      */
     virtual void initPoints();
     
-    /**
-     * Initialized the triangles used on the object.
-     */
-    virtual void initTriangles();
-    
 private:
     Point3 m_vertex[8];
 

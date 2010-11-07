@@ -21,7 +21,9 @@
 #ifndef GLITEM_H
 #define GLITEM_H
 
+
 class GlCanvas;
+class ISurface;
 
 /**
  * Interface class to define a renderer for the item.
@@ -43,14 +45,14 @@ namespace Plastilina {
       */
     class GlItem
     {
-
+        ISurface* _s;
     public:
         GlItem();
 
         virtual ~GlItem();
-
+        
         virtual void paintGl(GlCanvas *c);
-
+        
         /**
          * Set a pointer to a user data.
          */

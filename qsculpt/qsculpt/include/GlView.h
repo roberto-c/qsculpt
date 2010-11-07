@@ -225,6 +225,13 @@ public:
      */
     void drawEllipse(const Point3& center, float axis1, float axis2); 
     
+    /**
+     * This method gets the current renderer used to render surfaces.
+     */
+    IRenderer* renderer() const {
+        return _renderer;
+    }
+    
 public slots:
     /**
      * Set the drawing mode of the display.
