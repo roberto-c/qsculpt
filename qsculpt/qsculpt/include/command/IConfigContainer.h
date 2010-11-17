@@ -52,7 +52,7 @@ public:
      *
      * @return true if the key exists. Otherwise, false.
      */
-    virtual bool containsKey(QString key) = 0;
+    virtual bool containsKey(const QString& key) = 0;
     
     /**
      * Get a config string value. The key is the name of the parameter to
@@ -62,7 +62,7 @@ public:
      *
      * @return config value
      */
-    virtual QString getString(QString key) = 0;
+    virtual QString getString(const QString& key) = 0;
     
     /**
      * Set a config string value. The key is the name of the parameter to
@@ -72,7 +72,7 @@ public:
      * @param value config value to set.
      *
      */
-    virtual void setString(QString key, QString value) = 0;
+    virtual void setString(const QString& key, QString value) = 0;
     
     /**
      * Get a config int value. The key is the name of the parameter to
@@ -82,7 +82,7 @@ public:
      *
      * @return config value
      */
-    virtual int getInt(QString key) = 0;
+    virtual int getInt(const QString& key) = 0;
     
     /**
      * Set a config int value. The key is the name of the parameter to
@@ -92,7 +92,7 @@ public:
      * @param value config value to set.
      *
      */
-    virtual void setInt(QString key, int value) = 0;
+    virtual void setInt(const QString& key, int value) = 0;
     
     /**
      * Get a config double value. The key is the name of the parameter to
@@ -102,7 +102,7 @@ public:
      *
      * @return config value
      */
-    virtual double getDouble(QString key) = 0;
+    virtual double getDouble(const QString& key) = 0;
     
     /**
      * Set a config double value. The key is the name of the parameter to
@@ -112,7 +112,7 @@ public:
      * @param value config value to set.
      *
      */
-    virtual void setDouble(QString key, double value) = 0;
+    virtual void setDouble(const QString& key, double value) = 0;
     
     /**
      * Get a bool config value. The key is the name of the parameter to
@@ -122,7 +122,7 @@ public:
      *
      * @return config value
      */
-    virtual bool getBool(QString key) = 0;
+    virtual bool getBool(const QString& key) = 0;
     
     /**
      * Set a config boolean value. The key is the name of the parameter to
@@ -132,12 +132,12 @@ public:
      * @param value config value to set.
      *
      */
-    virtual void setBool(QString key, bool value) = 0;
+    virtual void setBool(const QString& key, bool value) = 0;
     
-    virtual Point3 getPoint3D(QString key)=0;
+    virtual Point3 getPoint3D(const QString& key)=0;
     
     
-    virtual void setPoint3D(QString key, const Point3 &v) = 0;
+    virtual void setPoint3D(const QString& key, const Point3 &v) = 0;
 };
 
 #endif

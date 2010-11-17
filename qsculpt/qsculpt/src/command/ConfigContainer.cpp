@@ -39,57 +39,57 @@ IConfigContainer* ConfigContainer::clone() const
     return new ConfigContainer(*this);
 }
 
-bool ConfigContainer::containsKey(QString key)
+bool ConfigContainer::containsKey(const QString& key)
 {
     return m_container.contains(key);
 }
 
-double ConfigContainer::getDouble(QString key)
+double ConfigContainer::getDouble(const QString& key)
 {
     return !m_container.contains(key) ? 0.0 : m_container[key].toDouble();
 }
 
-int ConfigContainer::getInt(QString key)
+int ConfigContainer::getInt(const QString& key)
 {
     return !m_container.contains(key) ? 0 : m_container[key].toInt();
 }
 
-QString ConfigContainer::getString(QString key)
+QString ConfigContainer::getString(const QString& key)
 {
     return !m_container.contains(key) ? QString("") : m_container[key].toString();
 }
 
-void ConfigContainer::setDouble(QString key, double value)
+void ConfigContainer::setDouble(const QString& key, double value)
 {
     m_container[key] = QVariant(value);
 }
 
-void ConfigContainer::setInt(QString key, int value)
+void ConfigContainer::setInt(const QString& key, int value)
 {
     m_container[key] = QVariant(value);
 }
 
-void ConfigContainer::setString(QString key, QString value)
+void ConfigContainer::setString(const QString& key, QString value)
 {
     m_container[key] = QVariant(value);
 }
 
-bool ConfigContainer::getBool(QString key)
+bool ConfigContainer::getBool(const QString& key)
 {
     return !m_container.contains(key) ? false : m_container[key].toBool();
 }
 
-void ConfigContainer::setBool(QString key, bool value)
+void ConfigContainer::setBool(const QString& key, bool value)
 {
     m_container[key] = QVariant(value);
 }
 
-Point3 ConfigContainer::getPoint3D(QString key)
+Point3 ConfigContainer::getPoint3D(const QString& key)
 {
     return !m_container.contains(key) ? Point3( 0, 0, 0) : m_container[key].value<Point3>();
 }
 
-void ConfigContainer::setPoint3D(QString key, const Point3 &v)
+void ConfigContainer::setPoint3D(const QString& key, const Point3 &v)
 {
     m_container[key] = QVariant::fromValue(v);
 }

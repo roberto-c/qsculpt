@@ -44,17 +44,17 @@ public:
      * IConfigContainer interface
      */
     virtual IConfigContainer* clone() const;
-    virtual bool containsKey(QString key);
-    virtual double getDouble(QString key);
-    virtual int getInt(QString key);
-    virtual QString getString(QString key);
-    virtual void setDouble(QString key, double value);
-    virtual void setInt(QString key, int value);
-    virtual void setString(QString key, QString value);
-    virtual bool getBool(QString key);
-    virtual void setBool(QString key, bool value);
-    virtual Point3 getPoint3D(QString key);
-    virtual void setPoint3D(QString key, const Point3 &v);
+    virtual bool containsKey(const QString& key);
+    virtual double getDouble(const QString& key);
+    virtual int getInt(const QString& key);
+    virtual QString getString(const QString& key);
+    virtual void setDouble(const QString& key, double value);
+    virtual void setInt(const QString& key, int value);
+    virtual void setString(const QString& key, QString value);
+    virtual bool getBool(const QString& key);
+    virtual void setBool(const QString& key, bool value);
+    virtual Point3 getPoint3D(const QString& key);
+    virtual void setPoint3D(const QString& key, const Point3 &v);
     
 private:
     QMap<QString, QVariant> m_container;
