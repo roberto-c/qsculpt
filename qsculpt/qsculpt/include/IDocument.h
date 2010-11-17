@@ -89,9 +89,9 @@ public:
      * Remove an object from the document. This does not free the memory allocated
      * by the object.
      *
-     * @param index index of the object to remove.
+     * @param iid ID of the object to remove
      */
-    virtual void removeObject(int index) = 0;
+    virtual void removeObject(int iid) = 0;
     
     /**
      * Remove the object pointer by s. This just removes the object from the
@@ -101,13 +101,13 @@ public:
     virtual void removeObject(ISurface *s) = 0;
     
     /**
-     * Gets the Nth object in the document.
+     * Gets the object with the IID specified in the document.
      *
-     * @param index index of object to retrieve
+     * @param iid ID of object to retrieve
      *
      * @return an object with IObject3D interface
      */
-    virtual ISurface* getObject(int index) const = 0;
+    virtual ISurface* getObject(int iid) const = 0;
     
     /**
      * Get the objects count on this document.

@@ -44,7 +44,7 @@ public:
     virtual void saveFile(QString fileName);
     virtual ISurface* addObject(ObjectType type);
     virtual void addObject(ObjectType type, ISurface* obj);
-    virtual void removeObject(int index);
+    virtual void removeObject(int iid);
     virtual void removeObject(ISurface *s);
     virtual ISurface* getObject(int index) const;
     virtual int getObjectsCount() const;
