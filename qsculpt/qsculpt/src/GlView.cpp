@@ -382,21 +382,28 @@ void GlCanvas::drawObjects()
 
     ISurface* mesh;
     IDocument* doc= g_pApp->getMainWindow()->getCurrentDocument();
-    int count = doc->getObjectsCount();
-    for ( int i = 0; i < count; i++ )
+    
+    Iterator<SceneNode> it = doc->sceneIterator();
+    SurfaceNode *s;
+    while(it.hasNext())
     {
-        mesh = doc->getObject(i);
-
-        glPushMatrix();
-        float x = 0.0f, y = 0.0f, z = 0.0f;
-        mesh->getPosition(&x, &y, &z);
-        glTranslatef(x, y, z);
-        if (mesh->isSelected()) {
-            drawBoundingBox(mesh);
+        SceneNode *n = &it.next();
+        if (n->nodeType() == NT_Surface)
+        {
+            s = static_cast<SurfaceNode*> (n);
+            mesh = s->surface();
+            glPushMatrix();
+            float x = 0.0f, y = 0.0f, z = 0.0f;
+            mesh->getPosition(&x, &y, &z);
+            glTranslatef(x, y, z);
+            if (mesh->isSelected()) {
+                drawBoundingBox(mesh);
+            }
+            _renderer->renderObject(mesh);
+            //        _editVertexRenderer->renderObject(mesh);
+            glPopMatrix();
+            
         }
-        _renderer->renderObject(mesh);
-//        _editVertexRenderer->renderObject(mesh);
-        glPopMatrix();
     }
 }
 

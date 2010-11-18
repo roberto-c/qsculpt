@@ -46,9 +46,9 @@ public:
     virtual void addObject(ObjectType type, ISurface* obj);
     virtual void removeObject(int iid);
     virtual void removeObject(ISurface *s);
-    virtual ISurface* getObject(int index) const;
+    virtual ISurface* getObject(int iid) const;
     virtual int getObjectsCount() const;
-    virtual void selectObject(int index);
+    virtual void selectObject(int iid);
     virtual QList<ISurface*> getSelectedObjects() const;
     virtual SceneNode* rootNode();
     virtual const SceneNode* rootNode() const;

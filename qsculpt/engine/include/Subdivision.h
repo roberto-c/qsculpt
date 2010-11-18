@@ -31,6 +31,9 @@ class Subdivision : public ISurface
     typedef QHash<VtxPair, int>     VtxPairEdgeMap;
     typedef QHash<int, Face*>       FacesCollection;
 
+    /** Instance ID of the surface */
+    uint _iid;
+    
     /** Vertices by each subdivision level */
     std::vector<VertexCollection*>  _vertLevelCollections;
     /** Edges by each subdivision level */
@@ -54,6 +57,7 @@ public:
     /******************************************************************************
      * IObject3D interface
      */
+    virtual uint iid() const;
     virtual bool hasChanged();
     virtual void setChanged(bool val);
     virtual void setScene(Scene* scene) ;
