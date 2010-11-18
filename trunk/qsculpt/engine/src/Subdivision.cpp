@@ -173,6 +173,7 @@ public:
 };
 
 
+static QAtomicInt NEXT_ID;
 
 Subdivision::Subdivision()
     :   ISurface(),
@@ -192,6 +193,7 @@ Subdivision::Subdivision()
     m_currentResolutionLevel(0),
     m_hasChanged(true)
 {
+    _iid = NEXT_ID.fetchAndAddRelaxed(1);
     initPoints();
     //updateBoundingBox();
 }
@@ -209,6 +211,11 @@ Subdivision::~Subdivision()
         _vertices = (*it);
         //Vertex
     }
+}
+
+uint Subdivision::iid() const
+{
+    return _iid;
 }
 
 void Subdivision::initPoints()

@@ -119,7 +119,7 @@ public:
     /**
      * 
      */
-    virtual void selectObject(int index) = 0;
+    virtual void selectObject(int iid) = 0;
     
     /**
      * 

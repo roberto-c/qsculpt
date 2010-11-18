@@ -88,7 +88,8 @@ public:
 class SceneIterator : public IIterator<SceneNode>
 {
     const Document* _doc;
-    
+    const SceneNode* _node;
+    mutable int _current;
 public:
     SceneIterator(const Document* doc) ;
     
@@ -305,9 +306,22 @@ void Document::removeObject(ISurface *s)
 
 }
 
-ISurface* Document::getObject(int index) const
+ISurface* Document::getObject(int iid) const
 {
-    return static_cast<SurfaceNode*>(_rootNode->child(index))->surface(); //m_objectList[index];
+    //return static_cast<SurfaceNode*>(_rootNode->child(index))->surface(); //m_objectList[index];
+    QStandardItem *n = static_cast<SceneNode*>(_rootNode.data());
+    SurfaceNode *s = NULL;
+    for (int i = 0; i < _rootNode->rowCount(); ++i)
+    {
+        n = _rootNode.data()->child(i);
+        if ( n->type() == NT_Surface )
+        {
+            s = static_cast<SurfaceNode*>(n);
+            if (s->surface()->iid() == iid)
+                return s->surface();
+        }
+    }
+    return NULL;
 }
 
 int Document::getObjectsCount() const
@@ -315,11 +329,12 @@ int Document::getObjectsCount() const
     return _rootNode->rowCount();
 }
 
-void Document::selectObject(int index)
+void Document::selectObject(int iid)
 {
-    if (index < getObjectsCount())
+    ISurface *s = getObject(iid);
+    if (s)
     {
-        getObject(index)->setSelected(true);
+        s->setSelected(true);
     }
 }
 
@@ -457,9 +472,11 @@ bool SurfaceIterator::seek(int /*pos*/, IteratorOrigin /*origin*/) const
 
 
 SceneIterator::SceneIterator(const Document* doc)
-:	_doc(doc)
+:	_doc(doc),
+    _current(0)
 {
     assert(doc);
+    _node = doc->rootNode();
 }
 
 IIterator<SceneNode>* SceneIterator::clone() const
@@ -472,7 +489,7 @@ bool SceneIterator::hasNext() const
 {
     //    int n = _surface->getNumFaces();
     //    return n > 0 && _index != _surface->_faces->end();
-    return false;
+    return _current < _node->rowCount();
 }
 
 bool SceneIterator::hasPrevious() const
@@ -487,17 +504,23 @@ bool SceneIterator::hasPrevious() const
 SceneNode & SceneIterator::next()
 {
     //NOT_IMPLEMENTED
-    throw std::runtime_error("Not implemented");
+    //throw std::runtime_error("Not implemented");
+    SceneNode *n = static_cast<SceneNode*>(_node->child(_current));
+    _current++;
+    return *n;
 }
 
 const SceneNode & SceneIterator::next() const
 {
     //NOT_IMPLEMENTED
-    throw std::runtime_error("Not implemented");
+    //throw std::runtime_error("Not implemented");
     //    Face *f = _index.value();
     //    assert(f);
     //    ++_index;
     //    return *f;
+    SceneNode *n = static_cast<SceneNode*>(_node->child(_current));
+    _current++;
+    return *n;
 }
 
 SceneNode & SceneIterator::previous()
