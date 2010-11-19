@@ -77,6 +77,35 @@ QWidget* SelectCommand::getOptionsWidget()
     return _objectProperties;
 }
 
+void SelectCommand::execute()
+{
+    bool ok = true;
+    uint iid = 0;
+    // If the config container has a numeric key, then we assume it was
+    // called by the console.
+    if (_configContainer->containsKey("0"))
+    {
+        QString cmdName = _configContainer->getString("0");
+        QString cmdArg1 = _configContainer->getString("1");
+        if (cmdName == "select")
+        {
+            if (cmdArg1 == "object")
+            {
+                iid = _configContainer->getString("2").toUInt(&ok);
+                if (!ok) {
+                    qDebug() << "error in parameter";
+                    return;
+                }
+                
+                DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+                assert(view);
+                view->getDocument()->selectObject(iid);
+                emit executed();
+            }
+        }
+    }
+}
+
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();

@@ -31,5 +31,26 @@ private:
     ISurface* _surface;
 };
 
+class RemoveSurfaceCommand : public CommandBase 
+{
+public:
+    
+    RemoveSurfaceCommand();
+    RemoveSurfaceCommand(const RemoveSurfaceCommand& orig);
+    virtual ~RemoveSurfaceCommand();
+    
+    // ICommand Interface
+    virtual ICommand* clone() const;
+    virtual bool needsUserInteraction() const { return false; }
+    virtual void execute();
+    virtual void undo();
+    virtual void redo();
+    virtual QWidget* getOptionsWidget(){return NULL;}
+    // End ICommand Interface
+    
+private:
+    ISurface* _surface;
+};
+
 #endif	/* MESHEDITCOMMANDS_H */
 
