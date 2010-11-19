@@ -54,6 +54,7 @@ public:
 
     // ICommand interface
     virtual ICommand* clone() const;
+    virtual void execute();
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);

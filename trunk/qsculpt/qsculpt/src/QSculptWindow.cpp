@@ -92,7 +92,7 @@ void QSculptWindow::createWidgets()
 
     //action = new QAction("AddSurface", this);
     cmd = new AddSurfaceCommand;
-    m_commandManager.registerCommand("Add box", m_addBox, cmd);
+    m_commandManager.registerCommand("AddBox", m_addBox, cmd);
 
     action = m_commandManager.createUndoAction(this);
     Q_CHECK_PTR(action);
@@ -152,17 +152,18 @@ void QSculptWindow::createWidgets()
     m_toolsToolbar->addAction(action);
     m_commandManager.registerCommand("Orbit", action, cmd);
 
-    //	action = new QAction("Transform", this);
-    //	cmd = new TransformCommand;
-    //	Q_CHECK_PTR(action);
-    //	Q_CHECK_PTR(cmd);
-    //	action->setToolTip("Move, rotate or scale an object.");
-    //    action->setCheckable(true);
-    //	//action->setEnabled(false);
-    //	menuTools->addAction(action);
-    //	m_toolActionGroup->addAction(action);
-    //	m_toolsToolbar->addAction(action);
-    //	m_commandManager.registerCommand("Transform", action, cmd);
+	action = new QAction("Move", this);
+	cmd = new TransformCommand;
+    cmd->getConfig().setInt(CONF_ACTION, TransformCommand::Move);
+	Q_CHECK_PTR(action);
+	Q_CHECK_PTR(cmd);
+	action->setToolTip("Move, rotate or scale an object.");
+    action->setCheckable(true);
+	//action->setEnabled(false);
+	menuTools->addAction(action);
+	m_toolActionGroup->addAction(action);
+	m_toolsToolbar->addAction(action);
+	m_commandManager.registerCommand("Move", action, cmd);
 
     action = new QAction("Brush", this);
     cmd = new BrushCommand;

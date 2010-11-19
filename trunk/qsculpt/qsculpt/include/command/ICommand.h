@@ -103,6 +103,7 @@ public:
      * @return referece to an IConfigContainer class
      */
     virtual IConfigContainer& getConfig()const = 0;
+    IConfigContainer& config() const { return getConfig(); }
 
     /**
      * Called when a mouse press event ocurrs. This method is called by the

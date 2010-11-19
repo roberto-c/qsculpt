@@ -10,6 +10,7 @@
 #include "IDocument.h"
 #include "QSculptWindow.h"
 #include "QSculptApp.h"
+#include "IConfigContainer.h"
 
 AddSurfaceCommand::AddSurfaceCommand()
 : CommandBase("AddSurface")
@@ -37,6 +38,7 @@ void AddSurfaceCommand::execute()
     if (doc)
     {
         _surface = doc->addObject(IDocument::Box);
+        qDebug() << "IID=" << _surface->iid();
     }
 }
 
@@ -52,6 +54,56 @@ void AddSurfaceCommand::undo()
 }
 
 void AddSurfaceCommand::redo()
+{
+    execute();
+}
+
+
+
+RemoveSurfaceCommand::RemoveSurfaceCommand()
+: CommandBase("RemoveSurface")
+, _surface(NULL){
+}
+
+RemoveSurfaceCommand::RemoveSurfaceCommand(const RemoveSurfaceCommand& orig)
+: CommandBase(orig),
+_surface(orig._surface)
+{
+}
+
+RemoveSurfaceCommand::~RemoveSurfaceCommand()
+{
+}
+
+ICommand* RemoveSurfaceCommand::clone() const
+{
+    return new RemoveSurfaceCommand(*this);
+}
+
+void RemoveSurfaceCommand::execute()
+{
+    int iid = _configContainer->getInt("IID");
+    if (iid = 0 ) return;
+    
+    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+    if (doc)
+    {
+        _surface = doc->addObject(IDocument::Box);
+    }
+}
+
+void RemoveSurfaceCommand::undo()
+{
+    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+    if (doc && _surface)
+    {
+        doc->removeObject(_surface);
+        delete _surface;
+        _surface = NULL;
+    }
+}
+
+void RemoveSurfaceCommand::redo()
 {
     execute();
 }

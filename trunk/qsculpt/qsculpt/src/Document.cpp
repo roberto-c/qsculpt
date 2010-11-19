@@ -314,9 +314,10 @@ ISurface* Document::getObject(int iid) const
     for (int i = 0; i < _rootNode->rowCount(); ++i)
     {
         n = _rootNode.data()->child(i);
-        if ( n->type() == NT_Surface )
+        SceneNode *sn = static_cast<SceneNode*> (n);
+        if ( sn->nodeType() == NT_Surface )
         {
-            s = static_cast<SurfaceNode*>(n);
+            s = static_cast<SurfaceNode*>(sn);
             if (s->surface()->iid() == iid)
                 return s->surface();
         }
@@ -343,11 +344,17 @@ QList<ISurface*> Document::getSelectedObjects() const
     QList<ISurface*> selectedObjectList;
     selectedObjectList.clear();
 
-    int count = getObjectsCount();
-    for (int i = 0; i < count; ++i)
-    {
-        if (getObject(i)->isSelected())
-            selectedObjectList.append(getObject(i));
+    Iterator<SceneNode> it = constSceneIterator();
+    while (it.hasNext()) {
+        SceneNode *n = &it.next();
+        if (n->nodeType() == NT_Surface)
+        {
+            ISurface *s = static_cast<SurfaceNode*>(n)->surface();
+            if (s->isSelected())
+            {
+                selectedObjectList.append(s);
+            }
+        }
     }
     return selectedObjectList;
 }
