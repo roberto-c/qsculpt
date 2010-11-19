@@ -25,6 +25,7 @@
 #include <string>
 #include <iostream>
 #include "command/ICommand.h"
+#include "command/IConfigContainer.h"
 
 using namespace std;
 
@@ -86,7 +87,7 @@ bool Console::evaluate(const QString& command)
     _impl->parseCommandLine(command, &cmd);
     if (cmd)
     {
-        qDebug() << "Command found: " << cmd->text();
+//        qDebug() << "Command found: " << command;
         cmd->execute();
         return true;
     }
@@ -107,13 +108,19 @@ bool Console::Impl::parseCommandLine(const QString& line, ICommand** cmd)
         *cmd = NULL;
 
         // Extract the command name
-        QStringList tokens = line.trimmed().split(" \t");
+        QStringList tokens = line.trimmed().split(" ");
         // Check if the command name is registered
         if (commands.find(tokens[0]) != commands.end())
         {
+//            qDebug() << "Token[0]=" << tokens[0];
             *cmd = commands[tokens[0]]->clone();
             if (*cmd)
             {
+                (*cmd)->config().setString("0", tokens[0]);
+                for (int i = 1; i < tokens.size(); ++i) 
+                {
+                    (*cmd)->config().setString(QString::number(i), tokens[i]);
+                }
                 res = true;
             }
         }
