@@ -25,6 +25,12 @@
 
 class ISurface;
 
+enum NodeType {
+    NT_Normal,
+    NT_Surface,
+    NT_Group
+};
+
 /**
  * Basic scene graph node class. 
  *
@@ -34,28 +40,35 @@ class ISurface;
 class SceneNode : public QStandardItem
 {
     SceneNode* _parent;
+    std::vector<SceneNode*> _children;
     Eigen::Transform3f _transform;
 
 public:
     SceneNode(const QString& = "", SceneNode * = NULL);
     virtual ~SceneNode();
     
+    virtual NodeType nodeType() { return NT_Normal; }
+    
     const Eigen::Transform3f& transform() const;
     Eigen::Transform3f& transform();
     void setTransform(const Eigen::Transform3f& /*t*/);
+
+    /**
+     * Add a node as a child of this node.
+     */
+    void add(SceneNode *n);
+    
+    /**
+     * Remove node from children list.
+     */
+    void remove(SceneNode *n);
+
+    /**
+     * Function used to render the node on screen.
+     */
+    virtual void render();
 };
 
-class GroupNode : public SceneNode
-{
-    std::vector<SceneNode*> _group;
-    
-public:
-    GroupNode(SceneNode *parent);
-    ~GroupNode();
-    
-    void add(SceneNode *n);
-    void remove(SceneNode *n);
-};
 
 class SurfaceNode : public SceneNode
 {
@@ -73,6 +86,8 @@ public:
      * The surface is not deleted
      */
     ~SurfaceNode();
+    
+    virtual NodeType nodeType() { return NT_Surface; }
     
     /**
      * Returns the surface contained in this node.
