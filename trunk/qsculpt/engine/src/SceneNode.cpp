@@ -20,6 +20,8 @@
 #include "StdAfx.h"
 #include "SceneNode.h"
 
+#include <algorithm>
+
 SceneNode::SceneNode(const QString& name, SceneNode *parent)
 : QStandardItem()
 {
@@ -48,6 +50,23 @@ void SceneNode::setTransform(const Eigen::Transform3f& /*t*/)
 {
 }
 
+
+void SceneNode::add(SceneNode *n)
+{
+    _children.push_back(n);
+}
+
+void SceneNode::remove(SceneNode *n)
+{
+    std::vector<SceneNode*>::iterator it;
+    it = find(_children.begin(), _children.end(), n);
+    if (it != _children.end())
+        _children.erase(it);
+}
+
+void SceneNode::render()
+{
+}
 
 
 
