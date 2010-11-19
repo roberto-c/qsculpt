@@ -48,6 +48,7 @@ void ConsoleWindow::changeEvent(QEvent *e)
 
 void ConsoleWindow::executeLine()
 {
-    qDebug() << "Execute...";
+//    qDebug() << "Execute...";
     Console::instance()->evaluate(ui->input->text());
+    ui->input->setText("");
 }
