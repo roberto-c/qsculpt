@@ -53,6 +53,12 @@ public:
 
     virtual ~ISurface(){}
 
+    /**
+     * Instance id of the surface
+     */
+    virtual uint iid() const = 0;
+    
+    
     virtual void setScene(Scene* scene) = 0;
 
     virtual Scene* getScene() const = 0;
