@@ -31,6 +31,7 @@
 #include "Camera.h"
 #include "TransformWidget.h"
 #include "Aabb.h"
+#include "Console.h"
 
 QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
@@ -79,6 +80,8 @@ QWidget* SelectCommand::getOptionsWidget()
 
 void SelectCommand::execute()
 {
+    const QString output("\tselected object %1");
+    
     bool ok = true;
     uint iid = 0;
     // If the config container has a numeric key, then we assume it was
@@ -104,6 +107,7 @@ void SelectCommand::execute()
                 s->setSelected(true);
                 s->setChanged(true);
                 view->updateView();
+                CONSOLE()->write(output.arg(iid));
                 emit executed();
             }
         }
