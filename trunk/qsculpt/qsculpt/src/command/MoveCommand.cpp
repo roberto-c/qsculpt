@@ -26,6 +26,8 @@
 #include "ISurface.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
+#include "Console.h"
+#include "DocumentView.h"
 
 TransformCommand::TransformCommand()
     : CommandBase(),
@@ -47,63 +49,116 @@ TransformCommand::TransformCommand()
     _configContainer->setDouble( CONF_SCALE_Z, 1);
 }
 
+TransformCommand::TransformCommand(const TransformCommand& cpy)
+: CommandBase(cpy),
+_actionFinished(false),
+_initial(cpy._initial),
+_delta(cpy._delta),
+_final(cpy._final),
+_mousePosition(cpy._mousePosition)
+{
+}
 
 TransformCommand::~TransformCommand()
 {
 }
 
+ICommand* TransformCommand::clone() const 
+{
+    return new TransformCommand(*this);
+}
+
 void TransformCommand::execute()
 {
-    double mx = 0.0, my = 0.0, mz = 0.0;
-    double rx = 0.0, ry = 0.0, rz = 0.0;
-    double sx = 0.0, sy = 0.0, sz = 0.0;
+    double x = 0.0, y = 0.0, z = 0.0;
+    Action action;
     int count= 0;
+    bool ok = true;
 
-    mx = _configContainer->getDouble(CONF_MOVE_X);
-    my = _configContainer->getDouble(CONF_MOVE_Y);
-    mz = _configContainer->getDouble(CONF_MOVE_Z);
-
-    rx = _configContainer->getDouble(CONF_ROTATE_X);
-    ry = _configContainer->getDouble(CONF_ROTATE_Y);
-    rz = _configContainer->getDouble(CONF_ROTATE_Z);
-
-    sx = _configContainer->getDouble(CONF_SCALE_X);
-    sy = _configContainer->getDouble(CONF_SCALE_Y);
-    sz = _configContainer->getDouble(CONF_SCALE_Z);
+    
+    // If the config container has a numeric key, then we assume it was
+    // called by the console.
+    if (_configContainer->containsKey("0"))
+    {
+        QString cmdName = _configContainer->getString("0"); 
+        if (cmdName == "move") action = Move;
+        if (cmdName == "rotate") action = Rotate;
+        if (cmdName == "scale") action = Scale;
+        
+        x = _configContainer->getString("1").toDouble(&ok);
+        if (!ok) {
+            qDebug() << "error on command argument 1";
+            return;
+        }
+        y = _configContainer->getString("2").toDouble(&ok);
+        if (!ok) {
+            qDebug() << "error on command argument 2";
+            return;
+        }
+        z = _configContainer->getString("3").toDouble(&ok);
+        if (!ok) {
+            qDebug() << "error on command argument 3";
+            return;
+        }        
+        qDebug() << "arguments passed";
+    }
+    else
+    {
+        action = (Action)_configContainer->getInt(CONF_MOVE_AXIS);
+        
+        switch(action) {
+            case Move:
+                x = _configContainer->getDouble(CONF_MOVE_X);
+                y = _configContainer->getDouble(CONF_MOVE_Y);
+                z = _configContainer->getDouble(CONF_MOVE_Z);
+                break;
+            case Rotate:
+                x = _configContainer->getDouble(CONF_ROTATE_X);
+                y = _configContainer->getDouble(CONF_ROTATE_Y);
+                z = _configContainer->getDouble(CONF_ROTATE_Z);
+                break;
+            case Scale:
+                x = _configContainer->getDouble(CONF_SCALE_X);
+                y = _configContainer->getDouble(CONF_SCALE_Y);
+                z = _configContainer->getDouble(CONF_SCALE_Z);
+                break;
+        }
+    }
 
     const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
-    Action action = (Action)_configContainer->getInt(CONF_MOVE_AXIS);
     QList<ISurface*> objects = doc->getSelectedObjects();
     switch(action)
     {
         default:
         case Move:
             count = objects.size();
-            if (count > 0)
+            if (count > 0) 
+            {
                 _initial = objects[0]->getPosition();
+            }
             for (int i = 0; i < count; i++)
             {
                 //_final.setPoint( mx, my, mz);
-				_final.x() = mx;
-				_final.y() = my;
-				_final.z() = mz;
-                if (count == 1)
-                    objects[i]->setPosition( _final);
-                else
-                    objects[i]->displace(_initial - _final);
+				_final.x() = x;
+				_final.y() = y;
+				_final.z() = z;
+                
+                objects[i]->displace(_initial - _final);
             }
+            CONSOLE()->write("move object");
             break;
         case Rotate:
             count = objects.size();
             for (int i = 0; i < count; i++)
             {
-                objects[i]->rotate(rx, ry, rz);
+                objects[i]->rotate(x, y, z);
             }
             break;
         case Scale:
             break;
     }
+    g_pApp->getMainWindow()->getCurrentView()->updateView();
 }
 
 void TransformCommand::activate(bool active)

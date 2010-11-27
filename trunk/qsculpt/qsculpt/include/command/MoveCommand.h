@@ -81,14 +81,20 @@ public:
      */
     TransformCommand();
 
+    /**
+     * Copy constructor.
+     */
+    TransformCommand(const TransformCommand& cpy);
+    
+    /**
+     * Transform command destructor
+     */
     virtual ~TransformCommand();
 
     /**
      * Creates a copy of this object
      */
-    virtual ICommand* clone() const {
-    	return new TransformCommand(*this);
-    }
+    virtual ICommand* clone() const;
 
     /**
      * Execute the transformation command.
