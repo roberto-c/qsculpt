@@ -35,6 +35,8 @@ public:
     explicit ConsoleWindow(QWidget *parent = 0);
     ~ConsoleWindow();
 
+    void write(const QString &);
+    
 public slots:
     void executeLine();
 

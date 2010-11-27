@@ -24,6 +24,7 @@
 #include <QHash>
 #include <string>
 #include <iostream>
+#include <QStringList>
 #include "command/ICommand.h"
 #include "command/IConfigContainer.h"
 
@@ -44,6 +45,7 @@ public:
 
     CommandMap commands; /*< list of command registered*/
     QScopedPointer<ConsoleWindow> window;
+    QStringList buffer;
 };
 
 Console::Console()
@@ -87,7 +89,7 @@ bool Console::evaluate(const QString& command)
     _impl->parseCommandLine(command, &cmd);
     if (cmd)
     {
-//        qDebug() << "Command found: " << command;
+        write(command);
         cmd->execute();
         return true;
     }
@@ -97,6 +99,12 @@ bool Console::evaluate(const QString& command)
 ConsoleWindow* Console::consoleWindow()
 {
     return _impl->window.data();
+}
+
+void Console::write(const QString & str)
+{
+    _impl->buffer << str.split('\n');
+    _impl->window.data()->write(str);
 }
 
 bool Console::Impl::parseCommandLine(const QString& line, ICommand** cmd)
@@ -112,7 +120,6 @@ bool Console::Impl::parseCommandLine(const QString& line, ICommand** cmd)
         // Check if the command name is registered
         if (commands.find(tokens[0]) != commands.end())
         {
-//            qDebug() << "Token[0]=" << tokens[0];
             *cmd = commands[tokens[0]]->clone();
             if (*cmd)
             {

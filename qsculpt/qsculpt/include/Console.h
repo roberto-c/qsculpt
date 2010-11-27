@@ -63,6 +63,11 @@ public:
       */
     ConsoleWindow* consoleWindow();
 
+    /**
+     * Write a string into the console
+     */
+    void write(const QString &);
+    
 private:
     /**
       * Default constructor of the console.
@@ -72,5 +77,8 @@ private:
     class Impl;
     QScopedPointer<Impl> _impl;
 };
+
+
+#define CONSOLE() Console::instance()
 
 #endif // CONSOLE_H
