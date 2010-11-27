@@ -396,6 +396,10 @@ void GlCanvas::drawObjects()
             float x = 0.0f, y = 0.0f, z = 0.0f;
             mesh->getPosition(&x, &y, &z);
             glTranslatef(x, y, z);
+            mesh->orientation(x, y, z);
+            glRotatef(x, 1, 0, 0);
+            glRotatef(y, 0, 1, 0);
+            glRotatef(z, 0, 0, 1);
             if (mesh->isSelected()) {
                 drawBoundingBox(mesh);
             }

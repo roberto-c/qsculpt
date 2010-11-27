@@ -157,13 +157,26 @@ void QSculptWindow::createWidgets()
     cmd->getConfig().setInt(CONF_ACTION, TransformCommand::Move);
 	Q_CHECK_PTR(action);
 	Q_CHECK_PTR(cmd);
-	action->setToolTip("Move, rotate or scale an object.");
+	action->setToolTip("Move an object.");
     action->setCheckable(true);
 	//action->setEnabled(false);
 	menuTools->addAction(action);
 	m_toolActionGroup->addAction(action);
 	m_toolsToolbar->addAction(action);
 	m_commandManager.registerCommand("Move", action, cmd);
+    
+    action = new QAction("Rotate", this);
+	cmd = new TransformCommand;
+    cmd->getConfig().setInt(CONF_ACTION, TransformCommand::Rotate);
+	Q_CHECK_PTR(action);
+	Q_CHECK_PTR(cmd);
+	action->setToolTip("Rotate an object.");
+    action->setCheckable(true);
+	//action->setEnabled(false);
+	menuTools->addAction(action);
+	m_toolActionGroup->addAction(action);
+	m_toolsToolbar->addAction(action);
+	m_commandManager.registerCommand("Rotate", action, cmd);
 
     action = new QAction("Brush", this);
     cmd = new BrushCommand;
