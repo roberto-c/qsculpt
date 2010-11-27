@@ -65,7 +65,8 @@ public:
     virtual Point3 getPosition() const;
     virtual void displace(const Point3& delta);
     virtual void getPosition(float *x, float *y, float *z) const;
-    virtual void rotate(float rotX, float rotY, float rotZ);
+    virtual void setOrientation(float rotX, float rotY, float rotZ);
+    virtual void orientation(float& rotX, float& rotY, float& rotZ);
     virtual void setPosition(float x, float y, float z);
     virtual void setPosition(const Point3& position);
     virtual const geometry::AABB& getBoundingBox() const;

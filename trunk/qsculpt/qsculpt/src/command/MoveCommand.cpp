@@ -152,7 +152,7 @@ void TransformCommand::execute()
             count = objects.size();
             for (int i = 0; i < count; i++)
             {
-                objects[i]->rotate(x, y, z);
+                objects[i]->setOrientation(x, y, z);
             }
             break;
         case Scale:
@@ -174,7 +174,7 @@ void TransformCommand::activate(bool active)
             if (action == Move)
                 _objects[i]->displace(_initial - _final);
             else if (action == Rotate)
-                _objects[i]->rotate(0 ,0 ,0);
+                _objects[i]->setOrientation(0 ,0 ,0);
         }
     }
     _actionFinished = false;

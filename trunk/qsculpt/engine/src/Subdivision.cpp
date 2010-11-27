@@ -278,11 +278,18 @@ void Subdivision::getPosition(float *x, float *y, float *z) const
     if (z) *z = m_position.z();
 }
 
-void Subdivision::rotate(float rotX, float rotY, float rotZ)
+void Subdivision::setOrientation(float rotX, float rotY, float rotZ)
 {
     m_rotX = rotX;
     m_rotY = rotY;
     m_rotZ = rotZ;
+}
+
+void Subdivision::orientation(float& rotX, float& rotY, float& rotZ)
+{
+    rotX = m_rotX;
+    rotY = m_rotY;
+    rotZ = m_rotZ;
 }
 
 void Subdivision::setPosition(float x, float y, float z)

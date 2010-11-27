@@ -112,8 +112,13 @@ public:
      * @param rotY Rotation angle in y-axis.
      * @param rotZ Rotation angle in z-axis.
      */
-    virtual void rotate (float rotX, float rotY, float rotZ) = 0;
+    virtual void setOrientation(float rotX, float rotY, float rotZ) = 0;
 
+    /**
+     * Returns the orientation of the object in Euler angle
+     */
+    virtual void orientation(float& rotX, float& rotY, float& rotZ) = 0;
+    
     /**
      * Returns the bounding box of the object.
      *
