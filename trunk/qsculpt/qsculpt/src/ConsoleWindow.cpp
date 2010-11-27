@@ -52,3 +52,8 @@ void ConsoleWindow::executeLine()
     Console::instance()->evaluate(ui->input->text());
     ui->input->setText("");
 }
+
+void ConsoleWindow::write(const QString &text)
+{
+    ui->output->appendPlainText(text);
+}
