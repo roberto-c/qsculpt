@@ -83,6 +83,7 @@ void SelectCommand::execute()
     uint iid = 0;
     // If the config container has a numeric key, then we assume it was
     // called by the console.
+    qDebug() << "SelectCommand execute";
     if (_configContainer->containsKey("0"))
     {
         QString cmdName = _configContainer->getString("0");
@@ -99,7 +100,10 @@ void SelectCommand::execute()
                 
                 DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
                 assert(view);
-                view->getDocument()->selectObject(iid);
+                ISurface* s = view->getDocument()->getObject(iid);
+                s->setSelected(true);
+                s->setChanged(true);
+                view->updateView();
                 emit executed();
             }
         }
