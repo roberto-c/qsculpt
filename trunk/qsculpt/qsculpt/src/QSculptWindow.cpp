@@ -39,6 +39,8 @@
 #include "IConfigContainer.h"
 #include "DocumentTreeWidget.h"
 #include "MeshEditCommands.h"
+#include "SceneNode.h"
+#include "Box.h"
 
 QSculptWindow::QSculptWindow()
     : m_documentView(new DocumentView(this)),
@@ -383,12 +385,12 @@ QString QSculptWindow::strippedName(const QString &fullFileName)
 
 void QSculptWindow::addBox()
 {
-    m_document->addObject( IDocument::Box );
+    //m_document->addObject( IDocument::Box );
 }
 
 void QSculptWindow::addSphere()
 {
-    m_document->addObject( IDocument::Sphere );
+    //m_document->addObject( IDocument::Sphere );
     //	QList<IObject3D*> objects = m_document->getSelectedObjects();
     //	if (objects.size() > 0)
     //	{

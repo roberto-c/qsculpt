@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <QStandardItem>
+#include "IIterator.h"
 
 class ISurface;
 
@@ -39,13 +40,15 @@ enum NodeType {
  */
 class SceneNode : public QStandardItem
 {
-    SceneNode* _parent;
+    uint _iid;
     std::vector<SceneNode*> _children;
     Eigen::Transform3f _transform;
 
 public:
     SceneNode(const QString& = "", SceneNode * = NULL);
     virtual ~SceneNode();
+    
+    uint iid() const { return _iid; }
     
     virtual NodeType nodeType() { return NT_Normal; }
     
@@ -54,19 +57,19 @@ public:
     void setTransform(const Eigen::Transform3f& /*t*/);
 
     /**
-     * Add a node as a child of this node.
-     */
-    void add(SceneNode *n);
-    
-    /**
-     * Remove node from children list.
-     */
-    void remove(SceneNode *n);
-
-    /**
      * Function used to render the node on screen.
      */
     virtual void render();
+    
+    /**
+     * Returns an iterator for the children items in this node
+     */
+    Iterator<SceneNode> iterator();
+    
+    /**
+     * Returns an iterator for the children items in this node
+     */
+    Iterator<SceneNode> constIterator() const ;
 };
 
 

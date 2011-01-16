@@ -22,6 +22,8 @@
 
 #include <QObject>
 #include <string>
+#include <QStandardItemModel>
+#include "IIterator.h"
 
 class ISurface;
 class SceneNode;
@@ -31,8 +33,9 @@ class SceneNode;
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class Scene : public QObject {
+class Scene : public QStandardItemModel {
 public:
+    Scene();
     Scene(const std::string& name);
 
     ~Scene();
@@ -40,10 +43,22 @@ public:
     /**
      *
      */
-    SceneNode* findByName(const std::string& name);
+    SceneNode* findByName(const QString& name);
+
+    /**
+     * Returns the node with the specified instance ID. NULL if not found.
+     */
+    SceneNode* findByIID(uint iid);
     
-private:
-    SceneNode* root;
+    /**
+     *
+     */
+    Iterator<SceneNode> iterator();
+    
+    /**
+     *
+     */
+    Iterator<SceneNode> constIterator() const;
 };
 
 #endif
