@@ -30,6 +30,9 @@
  */
 class OrbitCommand : public CommandBase
 {
+    class Impl;
+    Impl *d;
+    
 public:
     /**
      * Constructor for commands.
@@ -50,6 +53,30 @@ public:
     virtual ICommand* clone() const;
 
     virtual QWidget* getOptionsWidget();
+    
+    /**
+     *
+     */
+    virtual void mousePressEvent(QMouseEvent *e);
+    
+    /**
+     * Called when a mouse release event ocurrs. This method is called by the
+     * widget (a QGLWidget).
+     *
+     */
+    virtual void mouseReleaseEvent(QMouseEvent *e);
+    
+    /**
+     * Called when a mouse move event ocurrs. This method is called by the
+     * widget (a QGLWidget).
+     *
+     */
+    virtual void mouseMoveEvent(QMouseEvent *e);
+    
+    /**
+     * Used to display anything specific to the command as user feedback.
+     */
+    virtual void paintGL(GlCanvas *c);
 };
 
 #endif // ORBITCOMMAND_H
