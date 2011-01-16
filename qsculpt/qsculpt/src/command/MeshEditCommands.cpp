@@ -11,6 +11,9 @@
 #include "QSculptWindow.h"
 #include "QSculptApp.h"
 #include "IConfigContainer.h"
+#include "Box.h"
+#include "Scene.h"
+#include "SceneNode.h"
 
 AddSurfaceCommand::AddSurfaceCommand()
 : CommandBase("AddSurface")
@@ -37,20 +40,21 @@ void AddSurfaceCommand::execute()
     IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (doc)
     {
-        _surface = doc->addObject(IDocument::Box);
+        _surface = new SurfaceNode(new Box);
+        doc->scene()->appendRow(_surface);
         qDebug() << "IID=" << _surface->iid();
     }
 }
 
 void AddSurfaceCommand::undo()
 {
-    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
-    if (doc && _surface)
-    {
-        doc->removeObject(_surface);
-        delete _surface;
-        _surface = NULL;
-    }
+//    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+//    if (doc && _surface)
+//    {
+//        doc->removeObject(_surface);
+//        delete _surface;
+//        _surface = NULL;
+//    }
 }
 
 void AddSurfaceCommand::redo()
@@ -86,25 +90,54 @@ void RemoveSurfaceCommand::execute()
     if (iid = 0 ) return;
     
     IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
-    if (doc)
-    {
-        _surface = doc->addObject(IDocument::Box);
-    }
+    if (!doc) return;
+    
+    NOT_IMPLEMENTED
 }
 
 void RemoveSurfaceCommand::undo()
 {
-    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
-    if (doc && _surface)
-    {
-        doc->removeObject(_surface);
-        delete _surface;
-        _surface = NULL;
-    }
+    NOT_IMPLEMENTED
 }
 
 void RemoveSurfaceCommand::redo()
 {
     execute();
+}
+
+
+AddGroupCommand::AddGroupCommand()
+: CommandBase("AddGroup")
+{
+}
+
+AddGroupCommand::AddGroupCommand(const AddGroupCommand& orig)
+: CommandBase(orig)
+{
+}
+
+AddGroupCommand::~AddGroupCommand()
+{
+}
+
+
+ICommand* AddGroupCommand::clone() const
+{
+    return new AddGroupCommand(*this);
+}
+
+void AddGroupCommand::execute()
+{
+    NOT_IMPLEMENTED
+}
+
+void AddGroupCommand::undo()
+{
+    NOT_IMPLEMENTED
+}
+
+void AddGroupCommand::redo()
+{
+    NOT_IMPLEMENTED
 }
 

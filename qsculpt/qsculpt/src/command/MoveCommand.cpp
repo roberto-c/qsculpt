@@ -181,13 +181,14 @@ void TransformCommand::activate(bool active)
 
     _objects.clear();
 
-    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
-
-    if (doc->getObjectsCount() > 0 )
-    {
-        _objects += doc->getSelectedObjects();
-        _initial = _objects.first()->getPosition();
-    }
+    // TODO: Fix this code
+//    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+//
+//    if (doc->getObjectsCount() > 0 )
+//    {
+//        _objects += doc->getSelectedObjects();
+//        _initial = _objects.first()->getPosition();
+//    }
 }
 
 void TransformCommand::mouseMoveEvent(QMouseEvent* e)

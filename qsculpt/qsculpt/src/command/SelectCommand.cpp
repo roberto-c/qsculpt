@@ -32,6 +32,8 @@
 #include "TransformWidget.h"
 #include "Aabb.h"
 #include "Console.h"
+#include "Scene.h"
+#include "SceneNode.h"
 
 QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
@@ -103,12 +105,16 @@ void SelectCommand::execute()
                 
                 DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
                 assert(view);
-                ISurface* s = view->getDocument()->getObject(iid);
-                s->setSelected(true);
-                s->setChanged(true);
-                view->updateView();
-                CONSOLE()->write(output.arg(iid));
-                emit executed();
+                SceneNode* n = view->getDocument()->scene()->findByIID(iid);
+                if (n && n->nodeType() == NT_Surface) 
+                {
+                    ISurface* s = static_cast<SurfaceNode*> (n)->surface();
+                    s->setSelected(true);
+                    s->setChanged(true);
+                    view->updateView();
+                    CONSOLE()->write(output.arg(iid));
+                    emit executed();
+                }
             }
         }
     }
@@ -233,10 +239,17 @@ void SelectCommand::selectVertices()
 
     Point3 p;
     ISurface *surface = NULL;
-    if (view->getDocument()->getObjectsCount() > 0) {
-        surface = view->getDocument()->getObject(0);
-    }
-    if(surface) {
+    Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
+    while(nodeIt.hasNext())
+    {
+        SceneNode *n = &nodeIt.next();
+        if (n->nodeType() != NT_Surface)
+            continue;
+        
+        surface = static_cast<SurfaceNode*> (n)->surface();
+        if(!surface) 
+            continue;
+        
         Iterator<Vertex> it = surface->vertexIterator();
         while(it.hasNext()) {
             Vertex* v = &it.next();
@@ -264,10 +277,17 @@ void SelectCommand::selectSurface()
 
     Point3 p;
     ISurface *surface = NULL;
-    if (view->getDocument()->getObjectsCount() > 0) {
-        surface = view->getDocument()->getObject(0);
-    }
-    if(surface) {
+    Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
+    while(nodeIt.hasNext())
+    {
+        SceneNode *n = &nodeIt.next();
+        if (n->nodeType() != NT_Surface)
+            continue;
+        
+        surface = static_cast<SurfaceNode*> (n)->surface();
+        if(!surface) 
+            continue;
+        
         surface->setSelected(false);
         Iterator<Vertex> it = surface->vertexIterator();
         while(it.hasNext()) {
@@ -294,10 +314,17 @@ void SelectCommand::selectFaces()
 
     Point3 p;
     ISurface *surface = NULL;
-    if (view->getDocument()->getObjectsCount() > 0) {
-        surface = view->getDocument()->getObject(0);
-    }
-    if(surface) {
+    Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
+    while(nodeIt.hasNext())
+    {
+        SceneNode *n = &nodeIt.next();
+        if (n->nodeType() != NT_Surface)
+            continue;
+        
+        surface = static_cast<SurfaceNode*> (n)->surface();
+        if(!surface) 
+            continue;
+        
         surface->setSelected(false);
         Iterator<Face> it = surface->faceIterator();
         while(it.hasNext()) {
@@ -331,10 +358,17 @@ void SelectCommand::unselectAll()
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
     ISurface *surface = NULL;
-    if (view->getDocument()->getObjectsCount() > 0) {
-        surface = view->getDocument()->getObject(0);
-    }
-    if(surface) {
+    Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
+    while(nodeIt.hasNext())
+    {
+        SceneNode *n = &nodeIt.next();
+        if (n->nodeType() != NT_Surface)
+            continue;
+        
+        surface = static_cast<SurfaceNode*> (n)->surface();
+        if(!surface) 
+            continue;
+        
         surface->setSelected(false);
         Iterator<Face> it = surface->faceIterator();
         while(it.hasNext()) {

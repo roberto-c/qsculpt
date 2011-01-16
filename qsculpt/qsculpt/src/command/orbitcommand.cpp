@@ -20,6 +20,11 @@
 #include "Stable.h"
 #include "orbitcommand.h"
 
+struct OrbitCommand::Impl
+{
+    
+};
+
 OrbitCommand::OrbitCommand(ICommand *parent)
     : CommandBase(parent)
 {
@@ -41,4 +46,20 @@ ICommand* OrbitCommand::clone() const
 
 QWidget* OrbitCommand::getOptionsWidget() {
     return NULL;
+}
+
+void OrbitCommand::mousePressEvent(QMouseEvent *e)
+{
+}
+
+void OrbitCommand::mouseReleaseEvent(QMouseEvent *e)
+{
+}
+
+void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
+{
+}
+
+void OrbitCommand::paintGL(GlCanvas *c)
+{
 }

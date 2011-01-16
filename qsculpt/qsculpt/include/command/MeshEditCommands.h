@@ -10,7 +10,7 @@
 
 #include "CommandBase.h"
 
-class ISurface;
+class SurfaceNode;
 
 class AddSurfaceCommand : public CommandBase {
 public:
@@ -28,7 +28,7 @@ public:
     // End ICommand Interface
 
 private:
-    ISurface* _surface;
+    SurfaceNode* _surface;
 };
 
 class RemoveSurfaceCommand : public CommandBase 
@@ -49,7 +49,26 @@ public:
     // End ICommand Interface
     
 private:
-    ISurface* _surface;
+    SurfaceNode* _surface;
+};
+
+
+class AddGroupCommand : public CommandBase
+{
+public:
+    AddGroupCommand();
+    AddGroupCommand(const AddGroupCommand& orig);
+    ~AddGroupCommand();
+    
+    // ICommand Interface
+    virtual ICommand* clone() const;
+    virtual bool needsUserInteraction() const { return false; }
+    virtual void execute();
+    virtual void undo();
+    virtual void redo();
+    virtual QWidget* getOptionsWidget(){return NULL;}
+    // End ICommand Interface
+    
 };
 
 #endif	/* MESHEDITCOMMANDS_H */
