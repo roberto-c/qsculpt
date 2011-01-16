@@ -28,6 +28,7 @@
 #include "Quad.h"
 #include <stdexcept>
 #include "SceneNode.h"
+#include "Scene.h"
 
 static QAtomicInt NEXT_ID(0);
 
@@ -141,7 +142,8 @@ public:
 };
 
 Document::Document() 
-: _rootNode(new SceneNode("Scene"))
+: _scene(new Scene),
+_rootNode(new SceneNode("Scene"))
 {
 }
 
@@ -152,7 +154,7 @@ Document::~Document()
 //    m_objectList.clear();
 }
 
-void Document::loadFile(QString fileName)
+void Document::loadFile(const QString& fileName)
 {
     qDebug("loadFile");
 
@@ -205,11 +207,11 @@ void Document::loadFile(QString fileName)
             }
         }
 		obj->setChanged(true);
-        addObject(IDocument::Mesh, obj);
+        //        addObject(IDocument::Mesh, obj);
     }
 }
 
-void Document::saveFile(QString fileName)
+void Document::saveFile(const QString& fileName)
 {
     Q_UNUSED(fileName);
     qDebug("Save file");
@@ -266,77 +268,82 @@ void Document::saveFile(QString fileName)
 //    }
 }
 
-ISurface* Document::addObject(ObjectType type)
-{
-    ISurface* obj = NULL;
-
-    switch(type)
-    {
-        case IDocument::Box:
-            obj = new ::Quad();
-            break;
-        case IDocument::Sphere:
-            obj = new ::Sphere();
-            break;
-        case IDocument::Mesh:
-            obj = new ::Mesh();
-            break;
-    }
-    SceneNode *n = new SurfaceNode(obj);
-    n->setText(QString("Object %1").arg(NEXT_ID.fetchAndAddRelaxed(1)));
-    _rootNode->appendRow(n);
-    emit changed(AddObject, obj);
-    return obj;
-}
-
-void Document::addObject(ObjectType type, ISurface* obj)
-{
-    Q_ASSERT(obj);
-    Q_UNUSED(type);
-    //m_objectList.append( obj );
-    //emit changed(AddObject, obj);
-}
-
-void Document::removeObject(int /*index*/)
-{
-}
-
-void Document::removeObject(ISurface *s)
-{
-
-}
-
-ISurface* Document::getObject(int iid) const
-{
-    //return static_cast<SurfaceNode*>(_rootNode->child(index))->surface(); //m_objectList[index];
-    QStandardItem *n = static_cast<SceneNode*>(_rootNode.data());
-    SurfaceNode *s = NULL;
-    for (int i = 0; i < _rootNode->rowCount(); ++i)
-    {
-        n = _rootNode.data()->child(i);
-        SceneNode *sn = static_cast<SceneNode*> (n);
-        if ( sn->nodeType() == NT_Surface )
-        {
-            s = static_cast<SurfaceNode*>(sn);
-            if (s->surface()->iid() == iid)
-                return s->surface();
-        }
-    }
-    return NULL;
-}
-
-int Document::getObjectsCount() const
-{
-    return _rootNode->rowCount();
-}
+//ISurface* Document::addObject(ObjectType type)
+//{
+//    ISurface* obj = NULL;
+//
+//    switch(type)
+//    {
+//        case IDocument::Box:
+//            obj = new ::Quad();
+//            break;
+//        case IDocument::Sphere:
+//            obj = new ::Sphere();
+//            break;
+//        case IDocument::Mesh:
+//            obj = new ::Mesh();
+//            break;
+//        case IDocument::Group:
+//            break;
+//    }
+//    SceneNode *n = NULL;
+//    n = (type == IDocument::Group) ? new SceneNode : new SurfaceNode(obj);
+//    n->setText(QString("Object %1").arg(NEXT_ID.fetchAndAddRelaxed(1)));
+//    _rootNode->appendRow(n);
+//    if (type != IDocument::Group) {
+//        emit changed(AddObject, obj);
+//    }
+//    return obj;
+//}
+//
+//void Document::addObject(ObjectType type, ISurface* obj)
+//{
+//    Q_ASSERT(obj);
+//    Q_UNUSED(type);
+//    //m_objectList.append( obj );
+//    //emit changed(AddObject, obj);
+//}
+//
+//void Document::removeObject(int /*index*/)
+//{
+//}
+//
+//void Document::removeObject(ISurface *s)
+//{
+//
+//}
+//
+//ISurface* Document::getObject(int iid) const
+//{
+//    //return static_cast<SurfaceNode*>(_rootNode->child(index))->surface(); //m_objectList[index];
+//    QStandardItem *n = static_cast<SceneNode*>(_rootNode.data());
+//    SurfaceNode *s = NULL;
+//    for (int i = 0; i < _rootNode->rowCount(); ++i)
+//    {
+//        n = _rootNode.data()->child(i);
+//        SceneNode *sn = static_cast<SceneNode*> (n);
+//        if ( sn->nodeType() == NT_Surface )
+//        {
+//            s = static_cast<SurfaceNode*>(sn);
+//            if (s->surface()->iid() == iid)
+//                return s->surface();
+//        }
+//    }
+//    return NULL;
+//}
+//
+//int Document::getObjectsCount() const
+//{
+//    return _rootNode->rowCount();
+//}
 
 void Document::selectObject(int iid)
 {
-    ISurface *s = getObject(iid);
-    if (s)
-    {
-        s->setSelected(true);
-    }
+//    ISurface *s = getObject(iid);
+//    if (s)
+//    {
+//        s->setSelected(true);
+//    }
 }
 
 QList<ISurface*> Document::getSelectedObjects() const
@@ -368,6 +375,18 @@ const SceneNode* Document::rootNode() const
 {
     return _rootNode.data();
 }
+
+
+Scene* Document::scene()
+{
+    return _scene.data();
+}
+
+Scene* Document::scene() const
+{
+    return _scene.data();
+}
+
 
 Iterator<SceneNode> Document::sceneIterator()
 {

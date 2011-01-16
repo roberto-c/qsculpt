@@ -25,6 +25,7 @@
 
 class ISurface;
 class SceneNode;
+class Scene;
 
 /**
  * Interface that should implement every kind of document.
@@ -39,7 +40,8 @@ public:
     enum ObjectType {
         Mesh,
         Box,
-        Sphere
+        Sphere,
+        Group
     };
     
     enum ChangeType {
@@ -61,12 +63,12 @@ public:
     /**
      * Load file
      */
-    virtual void loadFile(QString fileName) = 0;
+    virtual void loadFile(const QString& fileName) = 0;
     
     /**
      * Save file
      */
-    virtual void saveFile(QString fileName) = 0;
+    virtual void saveFile(const QString& fileName) = 0;
     
     /**
      * Adds an object to the document. This function creates a new instance
@@ -74,7 +76,7 @@ public:
      *
      * @param type type of object to add.
      */
-    virtual ISurface* addObject(ObjectType type) = 0;
+//    virtual ISurface* addObject(ObjectType type) = 0;
 	
     /**
      * Adds an object to the document. The object passed as parameter is added
@@ -83,7 +85,7 @@ public:
      * @param type type of object to add.
      * @param obj object to add to the document.
      */
-    virtual void addObject(ObjectType type, ISurface* obj) = 0;
+//    virtual void addObject(ObjectType type, ISurface* obj) = 0;
     
     /**
      * Remove an object from the document. This does not free the memory allocated
@@ -91,14 +93,14 @@ public:
      *
      * @param iid ID of the object to remove
      */
-    virtual void removeObject(int iid) = 0;
+//    virtual void removeObject(int iid) = 0;
     
     /**
      * Remove the object pointer by s. This just removes the object from the
      * scene and does not destroy the object.
      * @param s Surface to remove from the scene.
      */
-    virtual void removeObject(ISurface *s) = 0;
+//    virtual void removeObject(ISurface *s) = 0;
     
     /**
      * Gets the object with the IID specified in the document.
@@ -107,14 +109,14 @@ public:
      *
      * @return an object with IObject3D interface
      */
-    virtual ISurface* getObject(int iid) const = 0;
+//    virtual ISurface* getObject(int iid) const = 0;
     
     /**
      * Get the objects count on this document.
      *
      * @return count of objects on the document
      */
-    virtual int getObjectsCount() const = 0;
+//    virtual int getObjectsCount() const = 0;
 
     /**
      * 
@@ -131,7 +133,7 @@ public:
     virtual Iterator<SceneNode> constSceneIterator() const = 0;
     
     /**
-     * Get the root node of the document
+     * Get the root scene node of the document.
      */
     virtual SceneNode* rootNode() = 0;
     
@@ -139,6 +141,19 @@ public:
      * Get the root node of the document
      */
     virtual const SceneNode* rootNode() const = 0;
+    
+    /**
+     * Get the scene object of the document. The scene object
+     * is a container with all the objects or actors in the scene.
+     */
+    virtual Scene* scene() = 0;
+    
+    /**
+     * Get the scene object of the document. The scene object
+     * is a container with all the objects or actors in the scene.
+     */
+    virtual Scene* scene() const = 0;
+    
     
 signals:
     void changed(IDocument::ChangeType type, ISurface* object);
