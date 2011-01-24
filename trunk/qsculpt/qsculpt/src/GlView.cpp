@@ -28,6 +28,8 @@
 #include <QRectF>
 #include <QPolygonF>
 #include <QMatrix>
+#include <QBrush>
+#include <QPen>
 #include "Sphere.h"
 #include "Box.h"
 #include "IDocument.h"
@@ -1059,53 +1061,123 @@ void GlCanvas::drawRectWinCoord(const Point3& c1, const Point3& c2)
 /**
  *
  */
-void GlCanvas::drawEllipse(const Point3& center, float axis1, float axis2)
+void GlCanvas::drawEllipse(const Point3& center, 
+                           float axis1,
+                           float axis2,
+                           float innerAxis1,
+                           float innerAxis2)
 {
-    drawEllipseWinCoord(center, axis1, axis2);
+    drawEllipseWinCoord(center, 0, 360, axis1,axis2,innerAxis1,innerAxis2);
+}
+
+void GlCanvas::drawArc(const Point3& center, 
+             float startAngle,
+             float endAngle,
+             float axis1,
+             float axis2,
+             float innerAxis1,
+             float innerAxis2)
+{
+    drawEllipseWinCoord(center,startAngle, endAngle, 
+                        axis1,axis2,innerAxis1,innerAxis2);
+}
+
+// Helper function to compute the next value in an ellipse
+static void calculateEllipse(double x, double y, double a, double b,
+                             double startAngle, double endAngle, double angle,
+                             int steps, std::vector<Point3>& points) 
+{
+    if (steps == 0)
+        steps = 36;
+    
+    double deltaAngle = endAngle - startAngle;
+    // Angle is given by Degree Value
+    double radFactor = M_PI / 180; // factor to convert to radians
+    double beta = -angle * radFactor; // converts Degree Value into Radians
+    double sinbeta = sin(beta);
+    double cosbeta = cos(beta);
+    double angleStep = deltaAngle / steps;
+    for (double i = startAngle; i < endAngle + angleStep; i += angleStep) 
+    {
+        double alpha = i * radFactor ;
+        double sinalpha = sin(alpha);
+        double cosalpha = cos(alpha);
+        
+        double X = x + (a * cosalpha * cosbeta - b * sinalpha * sinbeta);
+        double Y = y + (a * cosalpha * sinbeta + b * sinalpha * cosbeta);
+        
+        points.push_back(Point3(X, Y, 0));
+    }
 }
 
 void GlCanvas::drawEllipseWinCoord(const Point3& center,
-                                    float axis1,
-                                    float axis2)
+                                   float startAngle,
+                                   float endAngle,
+                                   float axis1,
+                                   float axis2,
+                                   float innerAxis1,
+                                   float innerAxis2)
 {
-    Point3 p1 = center;
-    Point3 p2 = center;
+    const int NUM_POINTS = 36;
+    std::vector<Point3> points;
+    std::vector<Point3> innerPoints;
+    bool drawInnerEllipse = innerAxis1 != 0 && innerAxis2 != 0;
     
-    p1.x() -= axis1;
-    p1.y() -= axis2;
-    p2.x() -= axis1;
-    p2.y() -= axis2;
+    calculateEllipse(center.x(), center.y(), axis1, axis2, 
+                     startAngle, endAngle, 0, NUM_POINTS, points);
+    if (drawInnerEllipse) {
+        calculateEllipse(center.x(), center.y(), innerAxis1, innerAxis2,
+                         startAngle, endAngle, 0, NUM_POINTS, innerPoints);
+    }
+    for (int i = 0; i < NUM_POINTS+1; ++i) {
+        mapScreenCoordsToWorldCoords(points[i], points[i]);
+        if (drawInnerEllipse) {
+            mapScreenCoordsToWorldCoords(innerPoints[i], innerPoints[i]);
+        }
+    }
     
-//    double c[4];
-//    Point3 p1, p2, p3, p4;
-//    Point3 a1 = c1;
-//    Point3 a3 = c2;
-//    Point3 a2 = Point3(a3.x(), a1.y(), a1.z());
-//    Point3 a4 = Point3(a1.x(), a3.y(), a1.z());
-//    mapScreenCoordsToWorldCoords(a1, p1);
-//    mapScreenCoordsToWorldCoords(a2, p2);
-//    mapScreenCoordsToWorldCoords(a3, p3);
-//    mapScreenCoordsToWorldCoords(a4, p4);
-//    _brush.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
-//    if (c[3] > 0) {
-//        glColor4dv(c);
-//        glBegin(GL_QUADS);
-//        glVertex3fv(p1.data());
-//        glVertex3fv(p2.data());
-//        glVertex3fv(p3.data());
-//        glVertex3fv(p4.data());
-//        glEnd();
-//    }
-//    
-//    _pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
-//    if (c[3] > 0 ) {
-//        glColor4dv(c);
-//        glBegin(GL_LINE_LOOP);
-//        glVertex3fv(p1.data());
-//        glVertex3fv(p2.data());
-//        glVertex3fv(p3.data());
-//        glVertex3fv(p4.data());
-//        glVertex3fv(p1.data());
-//        glEnd();
-//    }
+    double color[4];
+    _brush.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
+    glColor4dv(color);
+    glBegin(GL_TRIANGLES);
+    if (drawInnerEllipse) {
+        for (int i = 0; i < NUM_POINTS; ++i) {
+            glVertex3fv(points[i].data());
+            glVertex3fv(innerPoints[i].data());
+            glVertex3fv(points[i+1].data());
+            glVertex3fv(innerPoints[i].data());
+            glVertex3fv(points[i+1].data());
+            glVertex3fv(innerPoints[i+1].data());
+        }
+    }
+    else {
+        Point3 c;
+        mapScreenCoordsToWorldCoords(center, c);
+        for (int i = 0; i < NUM_POINTS; ++i) {
+            glVertex3fv(points[i].data());
+            glVertex3fv(c.data());
+            glVertex3fv(points[i+1].data());
+        }
+    }
+    glEnd();
+    
+    _pen.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
+    glColor4dv(color);
+    // draw main ellipse
+    glBegin(GL_LINE_STRIP);
+    for (int i = 0; i < NUM_POINTS; ++i) {
+        glVertex3fv(points[i].data());
+    }
+    glEnd();
+    if (drawInnerEllipse) {
+        // draw inner ellipse
+        glBegin(GL_LINE_STRIP);
+        for (int i = 0; i < NUM_POINTS; ++i) {
+            glVertex3fv(innerPoints[i].data());
+        }
+        glEnd();
+    }
+    
+    glBegin(GL_POINT);
+    
 }
