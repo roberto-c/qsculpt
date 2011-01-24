@@ -221,9 +221,44 @@ public:
     void drawRect(const Point3& p1, const Point3& p2, int mode = 0);
     
     /**
+     * Draw an ellipse with an optional hole in it. The ellipse is defined
+     * by the major axis and the minor axis.
      *
+     * @param axis1 Length of the long axis in pixels.
+     * @param axis2 Length of the minor axis in pixels.
+     * @param innerAxis1 Length of the long axis of the inner ellipse. Pass 0
+     *                   if not inner ellipse is desired.
+     * @param innerAxis2 Length of the minor axis of the inner ellipse. Pass 0
+     *                   if not inner ellipse is desired.
      */
-    void drawEllipse(const Point3& center, float axis1, float axis2); 
+    void drawEllipse(const Point3& center, 
+                     float axis1,
+                     float axis2,
+                     float innerAxis1 = 0.0f,
+                     float innerAxis2 = 0.0f);
+    
+    /**
+     * Draw an arc, a part of an ellipse with an optional hole in it. The ellipse
+     * is defined by the major axis and the minor axis. The arc is defined by the
+     * start and end angles.
+     *
+     * @param center center of the arc
+     * @param starAngle start angle of the arc in degrees.
+     * @param endAngle end angle of the arc in degrees.
+     * @param axis1 Length of the long axis in pixels.
+     * @param axis2 Length of the minor axis in pixels.
+     * @param innerAxis1 Length of the long axis of the inner ellipse. Pass 0
+     *                   if not inner ellipse is desired.
+     * @param innerAxis2 Length of the minor axis of the inner ellipse. Pass 0
+     *                   if not inner ellipse is desired.
+     */
+    void drawArc(const Point3& center, 
+                 float startAngle,
+                 float endAngle,
+                 float axis1,
+                 float axis2,
+                 float innerAxis1 = 0.0f,
+                 float innerAxis2 = 0.0f);
     
     /**
      * This method gets the current renderer used to render surfaces.
@@ -291,10 +326,14 @@ private:
     void drawOrientationAxis();
     
     void drawRectWinCoord(const Point3&, const Point3& );
-    
+        
     void drawEllipseWinCoord(const Point3& center,
+                             float startAngle,
+                             float endAngle,
                              float axis1,
-                             float axis2);
+                             float axis2,
+                             float innerAxis1,
+                             float innerAxis2);
 	
     bool            _isGridVisible;        /**< Grid visibility flag */
     bool            _areNormalsVisible;    /**< Normals visibility flag */
