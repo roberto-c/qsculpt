@@ -369,7 +369,7 @@ void GlCanvas::paintGL()
     drawObjects();
 //    g_shaderProgram->release();
 
-    drawCursor();
+//    drawCursor();
 
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
     if (cmd) {
@@ -1005,10 +1005,13 @@ void GlCanvas::drawLine(const Point3& p1, const Point3& p2)
     double c[4];
     _pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0) {
+        Point3 tmp1, tmp2;
+        mapScreenCoordsToWorldCoords(p1, tmp1);
+        mapScreenCoordsToWorldCoords(p2, tmp2);
         glColor4dv(c);
         glBegin(GL_LINES);
-        glVertex3fv(p1.data());
-        glVertex3fv(p2.data());
+        glVertex3fv(tmp1.data());
+        glVertex3fv(tmp2.data());
         glEnd();
     }
 }
@@ -1090,16 +1093,19 @@ static void calculateEllipse(double x, double y, double a, double b,
     if (steps == 0)
         steps = 36;
     
+    points.clear();
+    points.reserve(steps+1);
+    
     double deltaAngle = endAngle - startAngle;
     // Angle is given by Degree Value
     double radFactor = M_PI / 180; // factor to convert to radians
-    double beta = -angle * radFactor; // converts Degree Value into Radians
+    double beta = angle * radFactor; // converts Degree Value into Radians
     double sinbeta = sin(beta);
     double cosbeta = cos(beta);
-    double angleStep = deltaAngle / steps;
-    for (double i = startAngle; i < endAngle + angleStep; i += angleStep) 
+    double angleStep = deltaAngle / steps * radFactor;
+    double alpha = startAngle * radFactor;
+    for (int j=0; j <= steps; ++j)
     {
-        double alpha = i * radFactor ;
         double sinalpha = sin(alpha);
         double cosalpha = cos(alpha);
         
@@ -1107,6 +1113,8 @@ static void calculateEllipse(double x, double y, double a, double b,
         double Y = y + (a * cosalpha * sinbeta + b * sinalpha * cosbeta);
         
         points.push_back(Point3(X, Y, 0));
+        
+        alpha += angleStep;
     }
 }
 
@@ -1124,12 +1132,13 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     bool drawInnerEllipse = innerAxis1 != 0 && innerAxis2 != 0;
     
     calculateEllipse(center.x(), center.y(), axis1, axis2, 
-                     startAngle, endAngle, 0, NUM_POINTS, points);
+                     0, endAngle, startAngle, NUM_POINTS, points);
     if (drawInnerEllipse) {
         calculateEllipse(center.x(), center.y(), innerAxis1, innerAxis2,
-                         startAngle, endAngle, 0, NUM_POINTS, innerPoints);
+                         0, endAngle, startAngle, NUM_POINTS, innerPoints);
     }
-    for (int i = 0; i < NUM_POINTS+1; ++i) {
+    int npoints = points.size();
+    for (int i = 0; i < npoints; ++i) {
         mapScreenCoordsToWorldCoords(points[i], points[i]);
         if (drawInnerEllipse) {
             mapScreenCoordsToWorldCoords(innerPoints[i], innerPoints[i]);
@@ -1141,7 +1150,7 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     glColor4dv(color);
     glBegin(GL_TRIANGLES);
     if (drawInnerEllipse) {
-        for (int i = 0; i < NUM_POINTS; ++i) {
+        for (int i = 0; i < npoints - 1; ++i) {
             glVertex3fv(points[i].data());
             glVertex3fv(innerPoints[i].data());
             glVertex3fv(points[i+1].data());
@@ -1153,7 +1162,7 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     else {
         Point3 c;
         mapScreenCoordsToWorldCoords(center, c);
-        for (int i = 0; i < NUM_POINTS; ++i) {
+        for (int i = 0; i < npoints - 1; ++i) {
             glVertex3fv(points[i].data());
             glVertex3fv(c.data());
             glVertex3fv(points[i+1].data());
@@ -1165,14 +1174,14 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     glColor4dv(color);
     // draw main ellipse
     glBegin(GL_LINE_STRIP);
-    for (int i = 0; i < NUM_POINTS; ++i) {
+    for (int i = 0; i < npoints - 1; ++i) {
         glVertex3fv(points[i].data());
     }
     glEnd();
     if (drawInnerEllipse) {
         // draw inner ellipse
         glBegin(GL_LINE_STRIP);
-        for (int i = 0; i < NUM_POINTS; ++i) {
+        for (int i = 0; i < npoints - 1; ++i) {
             glVertex3fv(innerPoints[i].data());
         }
         glEnd();
