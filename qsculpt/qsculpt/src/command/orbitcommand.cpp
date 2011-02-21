@@ -128,17 +128,20 @@ void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
 
 void OrbitCommand::paintGL(GlCanvas *c)
 {
-    static QBrush brush(QColor(0, 120, 220, 200));
-    static QPen pen(QColor(0, 220, 220, 200));
+    static QBrush brush(QColor(0, 120, 220, 180));
+    static QPen pen(QColor(0, 220, 220, 180));
     
     if (_d->draw) {
         float rad1 = _d->radius < 100 ? 100.0f : _d->radius;
         float rad2 = rad1 - 5;
         c->setBrush(brush);
         c->setPen(pen);
+        c->disable(GL_DEPTH_TEST);
+        c->drawArc(_d->initial,0,360,
+                   rad1, rad1, rad2, rad2);
         c->drawArc(_d->initial,_d->startAngle,_d->endAngle,
                    rad1, rad1, rad2, rad2);
-        
+        c->enable(GL_DEPTH_TEST);
 //        qDebug() << _d->startAngle << " | " << _d->endAngle;
         
         c->drawLine(_d->initial, _d->initial + 100*(_d->startVector));
