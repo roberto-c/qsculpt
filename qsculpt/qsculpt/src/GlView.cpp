@@ -1174,14 +1174,14 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     glColor4dv(color);
     // draw main ellipse
     glBegin(GL_LINE_STRIP);
-    for (int i = 0; i < npoints - 1; ++i) {
+    for (int i = 0; i < npoints; ++i) {
         glVertex3fv(points[i].data());
     }
     glEnd();
     if (drawInnerEllipse) {
         // draw inner ellipse
         glBegin(GL_LINE_STRIP);
-        for (int i = 0; i < npoints - 1; ++i) {
+        for (int i = 0; i < npoints; ++i) {
             glVertex3fv(innerPoints[i].data());
         }
         glEnd();
