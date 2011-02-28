@@ -56,12 +56,24 @@ namespace geometry
          * @return a float value stating the time t in which the intersection
          * ocurs
          */
-        float intersect(const Ray& ray, Point3 *p = NULL, float ep = DEFAULT_EPSILON) const;
+        float intersect(const Ray& ray, Point3 *p = NULL, 
+                        float ep = DEFAULT_EPSILON) const;
 
         /**
          *
          */
-        float intersect(const Plane& plane, Point3 *p = NULL, float ep = DEFAULT_EPSILON) const;
+        float intersect(const Plane& plane, Point3 *p = NULL, 
+                        float ep = DEFAULT_EPSILON) const;
+        
+        /**
+         * Check if a point lies in a ray.
+         *
+         * @param point point to test for.
+         * @param p point where the intersection is. For this overload, it is 
+         * the same as point
+         */
+        float intersect(const Point3& point, Point3 *p = NULL, 
+                        float ep = DEFAULT_EPSILON) const;
     };
 }
 

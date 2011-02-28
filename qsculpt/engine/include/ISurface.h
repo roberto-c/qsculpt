@@ -24,17 +24,17 @@
 #include <QVector>
 #include "Point3D.h"
 #include "SpEnums.h"
-#include "Octree.h"
 #include "IIterator.h"
 #include "Vertex.h"
 #include "Face.h"
+#include "Aabb.h"
+
 
 /*
  * Class forward declaration
  */
 class QColor;
 class Scene;
-class geometry::AABB;
 
 /**
 Interface that every 3D object should implement.

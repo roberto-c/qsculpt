@@ -26,6 +26,26 @@
 #include "IIterator.h"
 #include "Point3D.h"
 
+
+/**
+ Specs
+ 
+ itShouldBeCapableOfReturnTheClosestPrimitiveToAPoint
+ itShouldBeCapableOfReturnTheClosestPrimitiveToAnotherPrimitve
+ itShouldBeCapableOfReturnASetOfPrimitiveEnclosedByABox
+ itShouldBeCapableOfReturnASetOfPrimitivesThatIntersectARay
+ itShouldBeCapableOfInsertingNewElements
+ itShouldBeCapableOfDeleteExistingElements
+ itShouldBeCapableOfModifiyngExistingElements
+ itShouldBeCapableOfIterateOverAllElements
+ itShouldBeCapableOfBeingUsedToPopulateOtherCollections
+ itShouldSupportMutableData
+ itShouldSupportNonMutableData
+ itShouldSupportDynamicResize
+ 
+ */
+ 
+
 namespace geometry
 {
 class Ray;
@@ -48,20 +68,26 @@ namespace data
     template<typename T>
     class ICollection
     {
+    public:
         /**
          * Add a new element to the collection.
          *
          * @param element element to add to the collection.
          */
-        virtual void add(T *element) = 0;
+        virtual void add(T element) = 0;
 
         /**
          * Removes a new element from the collection.
          *
          * @param element element to remove from the collection.
          */
-        virtual void remove(T *element) = 0;
+        virtual void remove(T element) = 0;
 
+        /**
+         * Return the number of elements contained in the collection.
+         */
+        virtual int size() = 0;
+        
         /**
          * Find the closest element to the point p.
          *
@@ -74,12 +100,12 @@ namespace data
          * maxDistance is negative, just look for the closest point, no matter at what
          * distance it is.
          */
-        virtual T* findClosest(const Point3& p, float maxDistance = 0) = 0;
+        virtual bool findClosest(T& out, const Point3& p, float maxDistance = 0) const = 0;
 
         /**
          * Overload method @see findClosest
          */
-        virtual const T* findClosest(const Point3& p, float maxDistance = 0) const = 0;
+//        virtual bool findClosest(const T& out, const Point3& p, float maxDistance = 0) const = 0;
 
         /**
          * Find an element that a given ray intersects it.
@@ -88,9 +114,12 @@ namespace data
          * not mean that it is the closest element with respect the ray.
          *
          * @param ray Ray to use for intersection test against every element.
-         * @param bag A ICollection object to insert the element found.
+         * @param out the element found value is placed in this instance.
+         *
+         * @returns true if a ray intersects a least one element. Otherwise, 
+         * false
          */
-        virtual  T* findFirstIntersect(const Ray& ray) = 0;
+        virtual  bool findFirstIntersect(T& out, const Ray& ray) const = 0;
 
         /**
          * Find all the elements that intersects a given ray.
@@ -104,21 +133,28 @@ namespace data
          *
          * @returns a boolean value stating if an intersection acurred.
          */
-        virtual bool findIntersect(const Ray& ray, ICollection<T*> bag = NULL) = 0;
+        virtual bool findIntersect(const Ray& ray, ICollection<T> *bag = NULL) const = 0;
 
         /**
          *
          */
-        virtual T* findIntersect(const AABB& box, ICollection<T*> bag = NULL) = 0;
+        virtual bool findIntersect(const AABB& box, ICollection<T> *bag = NULL) const = 0;
 
         /**
-         * Creates
+         * Creates an iterator over the collection class
          */
-        virtual Iterator<T> iterator();
+        virtual Iterator<T> iterator() = 0;
 
-        virtual std::vector<T *> toStdVector();
+        /**
+         * Returns all the elements in a std::vector. It copies the data into
+         * a std::vector<> class instance. The data has to be copiable/assignable.
+         */
+        virtual std::vector<T> toStdVector() = 0;
 
-        virtual std::set<T *> toStdSet();
+        /**
+         *
+         */
+        virtual std::set<T> toStdSet() = 0;
     };
 }
 
