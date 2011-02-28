@@ -26,26 +26,30 @@
 
 struct OrbitCommand::Impl
 {
-    bool    draw;
     Point3  initial;
+    Point3  startVector, endVector;
     float   radius;
     float   startAngle;
     float   endAngle;
-    Point3  startVector, endVector;
+    bool    draw;
     
-    Impl() : draw(false)
-    , initial(Point3())
+    Impl() : 
+    initial(Point3())
     , radius(0)
     , startAngle(0)
     , endAngle(360)
+    , draw(false)
     {
     }
     
-    Impl(const Impl& cpy) : draw(false)
-    , initial(cpy.initial)
+    Impl(const Impl& cpy) :
+    initial(cpy.initial)
+    , startVector(cpy.startVector)
+    , endVector(cpy.endVector)
     , radius(cpy.radius)
     , startAngle(cpy.startAngle)
     , endAngle(cpy.endAngle)
+    , draw(false)
     {
     }
 };

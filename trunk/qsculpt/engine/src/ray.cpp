@@ -48,4 +48,14 @@ namespace geometry
         return t;
     }
 
+    float Ray::intersect(const Point3 &point, Point3 *p, float ep) const
+    {
+        float d = distance(point);
+        if (d < ep) {
+            if (p) *p = point;
+            double l = (point - this->m_origin).norm();
+            return l / this->m_direction.norm();
+        }
+        return -1.0f;
+    }
 }
