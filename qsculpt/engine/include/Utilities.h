@@ -20,6 +20,12 @@ namespace utils {
     Type* getReference(Type* p) {
         return p;
     }
+    
+    class Functor {
+    public:
+        void operator()() {
+        };
+    };
 };
 
 #endif

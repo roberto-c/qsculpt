@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2011 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,30 +17,61 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef POINT3D_H
-#define POINT3D_H
 
-#include <QMetaType>
-#include <QString>
-#include <QVector>
+#ifndef PARTICLESYSTEM_H_
+#define PARTICLESYSTEM_H_
 
-typedef Eigen::Vector3f Point3;
-typedef Eigen::Vector3f Vector3;
-typedef Eigen::Vector4f Point4;
-typedef Eigen::Vector4f Vector4;
+#include "Utilities.h"
 
-typedef QVector<int> PointIndexList;
-
-Q_DECLARE_METATYPE(Point3)
-
-inline QString toString(const Vector3& v)
-{
-	QString str;
-	str += "(" + QString::number(v[0]) + "," + 
-	QString::number(v[1]) + "," +
-	QString::number(v[2]) + ")";
-	return str;
-}
+namespace physics {
+    class Particle;
+    
+    class ParticleSystem {
+        struct Impl;
+        QScopedPointer<Impl> _d;
+        
+    public:
+        enum IntegratorType {
+            Euler
+        };
+        
+        ParticleSystem();
+        
+        /**
+         * 
+         */
+        void addParticle(Particle *p);
+        
+        /**
+         *
+         */
+        void removeParticle(Particle *p);
+        
+        /**
+         * Set the integrator used in the particle system
+         */
+        void setIntegratorType(IntegratorType type);
+        
+        /**
+         * Returns the integrator used in the particle system
+         */
+        IntegratorType integrator();
+        
+        /**
+         * 
+         */
+        void reset();
+        
+        /**
+         * Calculate the next step in the simulation
+         */
+        void step(double time);
+        
+        /**
+         * Set a function object to use to reset the simulation system
+         */
+        void setResetFunctor(utils::Functor fn);
+    };
+};
 
 #endif
-
