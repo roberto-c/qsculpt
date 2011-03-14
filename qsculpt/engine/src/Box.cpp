@@ -35,9 +35,9 @@ Box::~Box()
 void Box::initPoints()
 {
     //qDebug("Box::initPoints()");
-    double hw = 100.0;
-    double hh = 100.0;
-    double hd = 100.0;
+    double hw = 1.0;
+    double hh = 1.0;
+    double hd = 1.0;
     
     QVector<int> vertexID(8);
 
