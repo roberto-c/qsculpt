@@ -25,107 +25,109 @@
 
 static QAtomicInt NEXTID;
 
-namespace
+class SceneNode::SceneNodeIterator : public IIterator<SceneNode>
 {
-    class SceneNodeIterator : public IIterator<SceneNode>
-    {
-        SceneNode* _parent;
-        
-    public:
-        SceneNodeIterator(SceneNode* parent) ;
-        
-        /**
-         * Function to copy iterators of the same type.
-         */
-        virtual IIterator<SceneNode>* clone() const;
-        
-        /**
-         * Return true if the iterator has more elements (i.e. it is not at the
-         * end)
-         */
-        virtual bool hasNext() const;
-        
-        /**
-         * Returns true if the iterator is not at the beginning of the iteration
-         */
-        virtual bool hasPrevious() const;
-        
-        /**
-         * Returns the next element and advance the iterator by one.
-         */
-        virtual SceneNode & next();
-        
-        /**
-         * Returns the next element and advance the iterator by one.
-         */
-        virtual const SceneNode & next() const;
-        
-        /**
-         * Returns the previous elements and move the iterator one position
-         * backwards.
-         */
-        virtual SceneNode & previous();
-        
-        /**
-         * Returns the previous elements and move the iterator one position
-         * backwards.
-         */
-        virtual const SceneNode & previous() const;
-        
-        /**
-         * Set the current position to pos relative to origin.
-         *
-         * @param pos number of elements to jump relative to origin
-         * @param origin states the reference to jump.
-         */
-        virtual bool seek(int pos, IteratorOrigin origin) const;
-    };
+    const SceneNode* _parent;
+    mutable int _index;
     
-    SceneNodeIterator::SceneNodeIterator(SceneNode* parent)
-    : _parent(parent)
-    {
-    }
+public:
+    SceneNodeIterator(const SceneNode* parent) ;
     
-    IIterator<SceneNode>* SceneNodeIterator::clone() const
-    {
-        return new SceneNodeIterator(_parent);
-    }
+    /**
+     * Function to copy iterators of the same type.
+     */
+    virtual IIterator<SceneNode>* clone() const;
     
-    bool SceneNodeIterator::hasNext() const
-    {
-        return false;
-    }
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    virtual bool hasNext() const;
     
-    bool SceneNodeIterator::hasPrevious() const
-    {
-        return false;
-    }
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    virtual bool hasPrevious() const;
     
-    SceneNode & SceneNodeIterator::next()
-    {
-        throw std::runtime_error("Not implemented");
-    }
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    virtual SceneNode & next();
     
-    const SceneNode & SceneNodeIterator::next() const
-    {
-        throw std::runtime_error("Not implemented");
-    }
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    virtual const SceneNode & next() const;
     
-    SceneNode & SceneNodeIterator::previous()
-    {
-        throw std::runtime_error("Not implemented");
-    }
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    virtual SceneNode & previous();
     
-    const SceneNode & SceneNodeIterator::previous() const
-    {
-        throw std::runtime_error("Not implemented");
-    }
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    virtual const SceneNode & previous() const;
     
-    bool SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
-    {
-        throw std::runtime_error("Not implemented");
-    }    
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    virtual bool seek(int pos, IteratorOrigin origin) const;
+};
+
+SceneNode::SceneNodeIterator::SceneNodeIterator(const SceneNode* parent)
+: _parent(parent),_index(0)
+{
 }
+
+IIterator<SceneNode>* SceneNode::SceneNodeIterator::clone() const
+{
+    return new SceneNodeIterator(_parent);
+}
+
+bool SceneNode::SceneNodeIterator::hasNext() const
+{
+    //return _index >= 0 && _parent->_children.size() > _index;
+    return _index >= 0 && _parent->rowCount() > _index;
+}
+
+bool SceneNode::SceneNodeIterator::hasPrevious() const
+{
+    return false;
+}
+
+SceneNode & SceneNode::SceneNodeIterator::next()
+{
+    //throw std::runtime_error("Not implemented");
+    return *static_cast<SceneNode*>(_parent->child(_index++));
+}
+
+const SceneNode & SceneNode::SceneNodeIterator::next() const
+{
+    //throw std::runtime_error("Not implemented");
+    return *static_cast<SceneNode*>(_parent->child(_index++));
+}
+
+SceneNode & SceneNode::SceneNodeIterator::previous()
+{
+    throw std::runtime_error("Not implemented");
+}
+
+const SceneNode & SceneNode::SceneNodeIterator::previous() const
+{
+    throw std::runtime_error("Not implemented");
+}
+
+bool SceneNode::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
+{
+    throw std::runtime_error("Not implemented");
+}    
+
 
 SceneNode::SceneNode(const QString& name, SceneNode *parent)
 : QStandardItem()
@@ -161,6 +163,18 @@ void SceneNode::render()
 {
 }
 
+Iterator<SceneNode> SceneNode::iterator() 
+{
+    return Iterator<SceneNode>(new SceneNodeIterator(this));
+}
+
+/**
+ * Returns an iterator for the children items in this node
+ */
+Iterator<SceneNode> SceneNode::constIterator() const 
+{
+    return Iterator<SceneNode>(new SceneNodeIterator(this));
+}
 
 
 SurfaceNode::SurfaceNode(ISurface *surface, SceneNode *parent)
