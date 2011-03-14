@@ -1178,15 +1178,13 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
         glVertex3fv(points[i].data());
     }
     glEnd();
+    
+    // draw inner ellipse
     if (drawInnerEllipse) {
-        // draw inner ellipse
         glBegin(GL_LINE_STRIP);
         for (int i = 0; i < npoints; ++i) {
             glVertex3fv(innerPoints[i].data());
         }
         glEnd();
     }
-    
-    glBegin(GL_POINT);
-    
 }
