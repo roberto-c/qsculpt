@@ -59,6 +59,13 @@ public:
      *
      */
     Iterator<SceneNode> constIterator() const;
+private:
+    class SceneNodeIterator;
+    class Impl;
+    
+    QScopedPointer<Impl> _d;
+    
+    friend class SceneNodeIterator;
 };
 
 #endif

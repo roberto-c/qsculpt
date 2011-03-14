@@ -70,8 +70,12 @@ public:
      * Returns an iterator for the children items in this node
      */
     Iterator<SceneNode> constIterator() const ;
+    
+private:
+    class SceneNodeIterator;
+    
+    friend class SceneNodeIterator;
 };
-
 
 class SurfaceNode : public SceneNode
 {
