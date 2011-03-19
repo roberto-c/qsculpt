@@ -89,8 +89,8 @@ public:
 class SceneIterator : public IIterator<SceneNode>
 {
     const Document* _doc;
-    const SceneNode* _node;
-    mutable int _current;
+    const Scene*    _scene;
+    mutable int     _current;
 public:
     SceneIterator(const Document* doc) ;
     
@@ -502,7 +502,7 @@ SceneIterator::SceneIterator(const Document* doc)
     _current(0)
 {
     assert(doc);
-    _node = doc->rootNode();
+    _scene = doc->scene();
 }
 
 IIterator<SceneNode>* SceneIterator::clone() const
@@ -515,7 +515,7 @@ bool SceneIterator::hasNext() const
 {
     //    int n = _surface->getNumFaces();
     //    return n > 0 && _index != _surface->_faces->end();
-    return _current < _node->rowCount();
+    return _current < _scene->rowCount();
 }
 
 bool SceneIterator::hasPrevious() const
@@ -531,7 +531,7 @@ SceneNode & SceneIterator::next()
 {
     //NOT_IMPLEMENTED
     //throw std::runtime_error("Not implemented");
-    SceneNode *n = static_cast<SceneNode*>(_node->child(_current));
+    SceneNode *n = static_cast<SceneNode*>(_scene->item(_current));
     _current++;
     return *n;
 }
@@ -544,7 +544,7 @@ const SceneNode & SceneIterator::next() const
     //    assert(f);
     //    ++_index;
     //    return *f;
-    SceneNode *n = static_cast<SceneNode*>(_node->child(_current));
+    SceneNode *n = static_cast<SceneNode*>(_scene->item(_current));
     _current++;
     return *n;
 }
