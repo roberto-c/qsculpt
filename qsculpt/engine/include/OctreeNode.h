@@ -380,7 +380,7 @@ namespace data {
                 qDebug("%s", qPrintable(res));
             }
         }
-        qDebug(qPrintable(indent + "}"));
+        qDebug("%s",qPrintable(indent + "}"));
         //res = res + indent + "}\n";
         res = "";
         return res;
