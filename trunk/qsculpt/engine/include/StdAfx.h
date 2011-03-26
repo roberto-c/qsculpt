@@ -16,6 +16,11 @@
 #include <Eigen/Geometry>
 #include <Eigen/LU>
 
+namespace Eigen {
+    typedef Affine3f Transform3f;    
+};
+
+
 unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
 unsigned int qHash(const std::pair<int, int> & v);
 

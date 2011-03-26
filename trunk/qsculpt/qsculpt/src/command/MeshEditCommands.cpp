@@ -87,7 +87,7 @@ ICommand* RemoveSurfaceCommand::clone() const
 void RemoveSurfaceCommand::execute()
 {
     int iid = _configContainer->getInt("IID");
-    if (iid = 0 ) return;
+    if (iid == 0 ) return;
     
     IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (!doc) return;

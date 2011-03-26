@@ -29,6 +29,10 @@
 #include <Eigen/LU>
 #include <Eigen/StdVector>
 
+namespace Eigen {
+    typedef Affine3f Transform3f; 
+}
+
 #include <utility>
 #include <typeinfo>
 
