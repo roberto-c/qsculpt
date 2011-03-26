@@ -2,7 +2,7 @@
 #define POINTRENDERER_H_
 
 #include "IRenderer.h"
-#include "BufferObject.h";
+#include "BufferObject.h"
 
 class PointRenderer : public IRenderer
 {

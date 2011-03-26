@@ -179,7 +179,7 @@ uint Face::hashCode() const
     Iterator<Vertex> it = _he->vertexIterator();
     while(it.hasNext())
     {
-        v += it.next();
+        v = v + (Vector3)it.next();
     }
     return qHash(v);
 }
