@@ -122,6 +122,8 @@ void TransformCommand::execute()
                 y = _configContainer->getDouble(CONF_SCALE_Y);
                 z = _configContainer->getDouble(CONF_SCALE_Z);
                 break;
+            case AllActions:
+                break;
         }
     }
 
