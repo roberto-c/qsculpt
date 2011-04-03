@@ -366,7 +366,7 @@ void GlCanvas::paintGL()
 //    g_shaderProgram->setUniformValue(loc, 220.0f);
 //    printGlError();
 
-    drawObjects();
+    drawScene(g_pApp->getMainWindow()->getCurrentDocument()->scene());
 //    g_shaderProgram->release();
 
 //    drawCursor();
@@ -379,32 +379,24 @@ void GlCanvas::paintGL()
     glFlush();
 }
 
-void GlCanvas::drawObjects()
+void GlCanvas::drawScene(Scene* scene)
 {
     if (_renderer == NULL)
         return;
-
-    ISurface* mesh;
-    IDocument* doc= g_pApp->getMainWindow()->getCurrentDocument();
     
-    Iterator<SceneNode> it = doc->scene()->iterator();
+    ISurface* mesh;
+    
+    Iterator<SceneNode> it = scene->iterator();
     SurfaceNode *s;
     while(it.hasNext())
     {
         glPushMatrix();
         SceneNode *n = &it.next();
+        glMultMatrixf(n->transform().data());
         if (n->nodeType() == NT_Surface)
         {
             s = static_cast<SurfaceNode*> (n);
             mesh = s->surface();
-            
-            float x = 0.0f, y = 0.0f, z = 0.0f;
-            mesh->getPosition(&x, &y, &z);
-            glTranslatef(x, y, z);
-            mesh->orientation(x, y, z);
-            glRotatef(x, 1, 0, 0);
-            glRotatef(y, 0, 1, 0);
-            glRotatef(z, 0, 0, 1);
             if (mesh->isSelected()) {
                 drawBoundingBox(mesh);
             }
@@ -413,7 +405,7 @@ void GlCanvas::drawObjects()
         else {
             glMultMatrixf(n->transform().data());
         }
-
+        
         glPopMatrix();
     }
 }
