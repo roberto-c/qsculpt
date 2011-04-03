@@ -267,6 +267,11 @@ public:
         return _renderer;
     }
     
+    /**
+     * Used to draw a scene hierarchy using the current renderer
+     */
+    void drawScene(Scene* scene);
+    
 public slots:
     /**
      * Set the drawing mode of the display.
@@ -313,8 +318,6 @@ private:
      * Draws the grid of the widget.
      */
     void drawGrid();
-
-    void drawObjects();
     
     /**
      * Draw a bounding box a round the surface.
