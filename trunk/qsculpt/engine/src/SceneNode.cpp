@@ -139,6 +139,7 @@ SceneNode::SceneNode(const QString& name, SceneNode *parent)
     {
         parent->appendRow(this);
     }
+    _transform = Eigen::Transform3f::Identity();
 }
 
 SceneNode::~SceneNode()
