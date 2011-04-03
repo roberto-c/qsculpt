@@ -31,6 +31,13 @@
 #include "Face.h"
 #include "Subdivision.h"
 
+struct SubdivideCommand::Impl {
+    MidEdgeMap edgeMidPoint;
+    
+    Impl(){}
+    Impl(const Impl& cpy){}
+};
+
 SubdivideCommand::SubdivideCommand()
     : CommandBase("Subdivide")
 {
@@ -38,6 +45,7 @@ SubdivideCommand::SubdivideCommand()
 
 SubdivideCommand::SubdivideCommand(const SubdivideCommand& cpy)
     : CommandBase(cpy)
+, _d(new Impl(*cpy._d.data()))
 {
 }
 
@@ -81,7 +89,7 @@ void SubdivideCommand::execute()
     if (!doc)
         return;
 
-    _edgeMidPoint.clear();
+    _d->edgeMidPoint.clear();
     qDebug() << "Start time: " <<QDateTime::currentDateTime();
 
     QList<ISurface*> list = doc->getSelectedObjects();
@@ -125,9 +133,9 @@ void SubdivideCommand::subdivideFace(ISurface& obj, Face& f)
         // Check if we have subdivided this edge already.
         // If so, get the vertex of that subdvision
         // If not, create the edge mid point vertex
-        if (_edgeMidPoint.contains(pair))
+        if (_d->edgeMidPoint.contains(pair))
         {
-            Vertex* v = _edgeMidPoint.value(pair);
+            Vertex* v = _d->edgeMidPoint.value(pair);
             vtxIndex.append(v->iid());
             p = v->position();
         }
@@ -136,7 +144,7 @@ void SubdivideCommand::subdivideFace(ISurface& obj, Face& f)
             p = (e.tail()->position() + e.head()->position()) * 0.5f;
             Vertex* v = obj.getVertex(obj.addVertex(p));
             vtxIndex.append(v->iid());
-            _edgeMidPoint.insert(pair, v);
+            _d->edgeMidPoint.insert(pair, v);
         }
         // Accumulate the position. Used to compute the face mid point
         avg += p;

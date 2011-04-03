@@ -58,7 +58,9 @@ public:
 private:
     void subdivideFace(ISurface & obj, Face& f);
 
-    MidEdgeMap _edgeMidPoint;
+    class Impl;
+    QScopedPointer<Impl> _d;
+
 };
 
 #endif
