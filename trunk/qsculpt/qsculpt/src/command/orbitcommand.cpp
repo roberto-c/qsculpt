@@ -23,6 +23,12 @@
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "DocumentView.h"
+#include "Document.h"
+#include "Scene.h"
+#include "SceneNode.h"
+#include "Box.h"
+#include "FlatRenderer.h"
+#include "Eigen/Geometry"
 
 struct OrbitCommand::Impl
 {
@@ -32,6 +38,9 @@ struct OrbitCommand::Impl
     float   startAngle;
     float   endAngle;
     bool    draw;
+    QList<ISurface*> selectedObj;
+    Document doc;
+    IRenderer *renderer;
     
     Impl() : 
     initial(Point3())
@@ -39,6 +48,7 @@ struct OrbitCommand::Impl
     , startAngle(0)
     , endAngle(360)
     , draw(false)
+    , renderer(new FlatRenderer)
     {
     }
     
@@ -50,20 +60,44 @@ struct OrbitCommand::Impl
     , startAngle(cpy.startAngle)
     , endAngle(cpy.endAngle)
     , draw(false)
+    , selectedObj(cpy.selectedObj)
+    , renderer(new FlatRenderer)
     {
     }
+    
+    void setup();
 };
+
+void OrbitCommand::Impl::setup()
+{
+    SurfaceNode *surface = new SurfaceNode(new Box);
+    surface->transform() *= Eigen::Translation<float,3>(1, 0, 0);
+    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
+    doc.scene()->appendRow(surface);
+    
+    surface = new SurfaceNode(new Box);
+    surface->transform() *= Eigen::Translation<float,3>(0, 1, 0);
+    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
+    doc.scene()->appendRow(surface);
+    
+    surface = new SurfaceNode(new Box);
+    surface->transform() *= Eigen::Translation<float,3>(0, 0, 1);
+    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
+    doc.scene()->appendRow(surface);
+}
 
 OrbitCommand::OrbitCommand(ICommand *parent)
     : CommandBase(parent)
     , _d(new Impl)
 {
+    _d->setup();
 }
 
 OrbitCommand::OrbitCommand(const OrbitCommand &cpy)
     : CommandBase(cpy)
     , _d(new Impl(*cpy._d))
 {
+    _d->setup();
 }
 
 OrbitCommand::~OrbitCommand()
@@ -83,27 +117,31 @@ void OrbitCommand::mousePressEvent(QMouseEvent *e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     
-    _d->draw = true;
-    // inital point of the arc is the center of the screen
-    _d->initial.x() = view->getCanvas()->width() / 2;
-    _d->initial.y() = view->getCanvas()->height() / 2;
-    // start vector is the vector from the center of the screen to the
-    // current mouse position.
-    _d->startVector.x() = e->x();
-    _d->startVector.y() = view->getCanvas()->height() - e->y();
-    _d->startVector = _d->startVector - _d->initial;
-    // Normalize the vector for doing angle calculations between vectors
-    _d->startVector.normalize();
-    // for now, end vector is the same as the start vector
-    _d->endVector = _d->startVector;
+    _d->selectedObj = view->getDocument()->getSelectedObjects();
     
-    // Calculate the angle of the startVector with respect to X axis
-    Vector3 xaxis(1, 0,0);
-    _d->startAngle = - atan2(xaxis.y(),xaxis.x()) 
-        + atan2(_d->endVector.y(),_d->endVector.x());
-    // Use degrees and clamp to [0,360] range
-    _d->startAngle*=180.0f / M_PI;
-    _d->startAngle = _d->startAngle < 0 ? _d->startAngle + 360 : _d->startAngle;
+    if (_d->selectedObj.size() > 0) {
+        _d->draw = true;
+        // inital point of the arc is the center of the screen
+        _d->initial.x() = view->getCanvas()->width() / 2;
+        _d->initial.y() = view->getCanvas()->height() / 2;
+        // start vector is the vector from the center of the screen to the
+        // current mouse position.
+        _d->startVector.x() = e->x();
+        _d->startVector.y() = view->getCanvas()->height() - e->y();
+        _d->startVector = _d->startVector - _d->initial;
+        // Normalize the vector for doing angle calculations between vectors
+        _d->startVector.normalize();
+        // for now, end vector is the same as the start vector
+        _d->endVector = _d->startVector;
+        
+        // Calculate the angle of the startVector with respect to X axis
+        Vector3 xaxis(1, 0,0);
+        _d->startAngle = - atan2(xaxis.y(),xaxis.x()) 
+            + atan2(_d->endVector.y(),_d->endVector.x());
+        // Use degrees and clamp to [0,360] range
+        _d->startAngle*=180.0f / M_PI;
+        _d->startAngle = _d->startAngle < 0 ? _d->startAngle + 360 : _d->startAngle;
+    }
 }
 
 void OrbitCommand::mouseReleaseEvent(QMouseEvent *e)
@@ -113,6 +151,8 @@ void OrbitCommand::mouseReleaseEvent(QMouseEvent *e)
 
 void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
 {
+    if (_d->selectedObj.size() == 0) return;
+    
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     
     // Get the end vector, from the start point to the current mouse position
@@ -151,4 +191,5 @@ void OrbitCommand::paintGL(GlCanvas *c)
         c->drawLine(_d->initial, _d->initial + 100*(_d->startVector));
         c->drawLine(_d->initial, _d->initial + 100*(_d->endVector));
     }
+    c->drawScene(_d->doc.scene());
 }
