@@ -84,3 +84,59 @@ void Box::initPoints()
     addFace( indexList );
 }
 
+Plane::Plane()
+: Subdivision()
+{
+    initPoints(1, 1);
+}
+
+Plane::Plane(int m, int n)
+: Subdivision()
+{
+    initPoints(m, n);
+}
+
+Plane::~Plane()
+{
+}
+
+void Plane::initPoints(int m, int n)
+{
+#define CELL(x,y) (((y)*(m+1))+(x))
+    
+    if ( m <= 0 || n <= 0) return;
+    
+    //qDebug("Box::initPoints()");
+    double hw = 1.0;
+    double hh = 1.0;
+    double wstep = hw / m;
+    double hstep = hh / n;
+    double x=0, y=0;
+    int j=0,i=0, numVtx=0;
+    
+    QVector<int> vertexID((m+1) * (n+1));
+    y = -hh / 2;
+    for (i = 0; i <= m; ++i) {
+        x = -hw/2;
+        for (j = 0; j <= n; ++j) {
+            vertexID[numVtx] = addVertex(new Vertex(Point3(x, y, 0),
+                                                    Vector3(0, 0, 1)));
+            numVtx++;
+            x += wstep;
+        }
+        y += hstep;
+    }
+    QVector<int> indexList(4);
+    for (i = 0; i < m; ++i) {
+        for (j = 0; j < n; ++j) {
+            indexList[0] = vertexID[CELL(j,i)];
+            indexList[1] = vertexID[CELL(j+1,i)];
+            indexList[2] = vertexID[CELL(j+1,i+1)];
+            indexList[3] = vertexID[CELL(j,i+1)];
+            addFace( indexList );
+        }
+    }
+#undef CELL
+}
+
+

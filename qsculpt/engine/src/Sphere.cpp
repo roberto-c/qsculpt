@@ -38,47 +38,61 @@ Sphere::~Sphere()
 void Sphere::initPoints()
 {	
 #define NUM_LAT 32
-#define NUM_PAR 15
+#define NUM_PAR 16
 	float lat_step = M_PI * 2 / NUM_LAT;
-	float par_step = M_PI  / 16;
+	float par_step = M_PI  / NUM_PAR;
 	float s = M_PI, u = 0;
 	Point3 vtx, tmp;
+    QVector<int> vertexID;
 
-	for ( s = 0; s < M_PI * 2; s+=lat_step) 
-	{
-		for ( u = par_step; u < M_PI; u+=par_step)
-		{
-			addVertex(evalCoords(s, u));
-		}
-	}
+    for (int j = 1; j < NUM_LAT+1; ++j ) {
+        s = j*lat_step;
+		for (int i = 1; i < NUM_PAR; ++i) {
+            u = i*par_step;
+            vertexID.push_back(addVertex(evalCoords(s, u)));
+        }
+    }
+
 	int num_points = this->getNumVertices();
 	QVector<int> indexList(4);
 	for (int j = 0; j < NUM_LAT; ++j ) {
-		for (int i = 0; i < NUM_PAR-1 ; ++i) {
-			indexList[0] = ((i + j*NUM_PAR) ) % num_points;
-			indexList[1] = ((i + j*NUM_PAR) + 1) % num_points;
-			indexList[2] = ((i + j*NUM_PAR) + NUM_PAR + 1 ) % num_points;
-			indexList[3] = ((i + j*NUM_PAR) + NUM_PAR ) % num_points;
+		for (int i = 0; i < NUM_PAR-2 ; ++i) {
+            int index = i + j*(NUM_PAR-1);
+			indexList[0] = vertexID[ index % num_points];
+			indexList[1] = vertexID[(index + 1) % num_points];
+			indexList[2] = vertexID[(index + NUM_PAR ) % num_points];
+			indexList[3] = vertexID[(index + NUM_PAR - 1 ) % num_points];
 			addFace( indexList );
 		}
 	}
+    
+    // adjust normals
+    Iterator<Vertex> it = vertexIterator();
+    while (it.hasNext()) {
+        it.peekNext().normal() = it.peekNext().position();
+        it.peekNext().normal().normalize();
+        it.next();
+    }
 	
-	int topPointIndex = addVertex(evalCoords(0, 0));
+    indexList.resize(3);
+    vertexID.push_back(addVertex(evalCoords(0, 0)));
+    int topPointIndex = vertexID.size() - 1;
 	for (int j = 0; j < NUM_LAT; ++j ) {
-		indexList[0] = ((j*NUM_PAR) ) % num_points;
-		indexList[1] = ((j+1)*NUM_PAR) % num_points;
-		indexList[2] = topPointIndex;
-		indexList[3] = topPointIndex;
+		indexList[0] = vertexID[((j*(NUM_PAR-1)) ) % num_points];
+		indexList[1] = vertexID[((j+1)*(NUM_PAR-1)) % num_points];
+		indexList[2] = vertexID[ topPointIndex];
 		addFace( indexList );
 	}
-	int bottomPointIndex = addVertex(evalCoords(0, M_PI));
-	for (int j = 0; j < NUM_LAT; ++j ) {
-		indexList[0] = ((j)*NUM_PAR + NUM_PAR - 1) % num_points;
-		indexList[1] = ((j+1)*NUM_PAR  + NUM_PAR - 1) % num_points;
-		indexList[2] = bottomPointIndex;
-		indexList[3] = bottomPointIndex;
-		addFace( indexList );
-	}
+//
+//    vertexID.push_back(addVertex(evalCoords(0, M_PI)));
+//    int bottomPointIndex = vertexID.size() - 1;
+//	for (int j = 0; j < NUM_LAT; ++j ) {
+//		indexList[0] = vertexID[((j)*(NUM_PAR-1) + NUM_PAR - 2) % num_points];
+//		indexList[1] = vertexID[((j+1)*(NUM_PAR-1)  + NUM_PAR - 2) % num_points];
+//		indexList[2] = vertexID[bottomPointIndex];
+//        indexList[3] = vertexID[bottomPointIndex];
+//		addFace( indexList );
+//	}
 }
 
 Point3 Sphere::evalCoords(float s, float u) 

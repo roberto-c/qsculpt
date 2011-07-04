@@ -20,6 +20,9 @@
 #include "StdAfx.h"
 #include "Scene.h"
 #include "SceneNode.h"
+#include "ray.h"
+#include "Aabb.h"
+#include "Octree.h"
 
 class Scene::SceneNodeIterator : public IIterator<SceneNode>
 {
@@ -124,10 +127,13 @@ bool Scene::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
     throw std::runtime_error("Not implemented");
 }
 
+
+
 struct Scene::Impl {
-    //QScopedPointer<SceneNode> root;
+    QScopedPointer<SceneNode> root;
+    data::Octree<SceneNode*> octree;
     
-    Impl() //: root(new SceneNode)
+    Impl() : root(new SceneNode)
     {
     }
 };
@@ -155,6 +161,17 @@ SceneNode* Scene::findByIID(uint IID)
     return NULL;
 }
 
+bool Scene::intersects(const geometry::Ray &ray, 
+                data::ICollection<SceneNode*> *col)
+{
+    return _d->octree.findIntersect(ray, col);
+}
+
+bool Scene::intersects(const geometry::AABB &box, 
+                       data::ICollection<SceneNode*> *col)
+{
+    return _d->octree.findIntersect(box, col);
+}
 
 Iterator<SceneNode> Scene::iterator()
 {

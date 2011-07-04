@@ -198,6 +198,9 @@ protected:
     QComboBox       *_viewPerspective;
     QComboBox       *_drawingMode;
     bool            _drawVertices;
+    
+    class Impl;
+    QScopedPointer<Impl> _d;
 };
 
 #endif

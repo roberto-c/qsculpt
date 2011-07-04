@@ -276,10 +276,28 @@ Vector3 Camera::eyeToWorld(const Vector3& p) const
     return Vector3(o.data());
 }
 
+Vector3 Camera::eyeToWorld(float x, float y, float z, float w) const
+{
+    Eigen::Vector4f o, p4(x, y, z, w);
+    p4.w() = w;
+    o = _viewMat.inverse() * _projMat.inverse() * _viewportMat.inverse() * p4;
+    
+    return Vector3(o.data());
+}
+
 Vector3 Camera::worldToEye(const Vector3 &p) const
 {
     Eigen::Vector4f o, p4(p.x(), p.y(), p.z(), 1.0f);
     p4.w() = 1.0f;
+    o = _viewportMat * _projMat * _viewMat * p4;
+    Vector3 t(o.data());
+    return t;
+}
+
+Vector3 Camera::worldToEye(float x, float y, float z, float w) const
+{
+    Eigen::Vector4f o, p4(x, y, z, w);
+    p4.w() = w;
     o = _viewportMat * _projMat * _viewMat * p4;
     Vector3 t(o.data());
     return t;

@@ -45,4 +45,18 @@ private:
 
 };
 
+class Plane : public Subdivision {
+public:
+    Plane();
+    
+    /**
+     * Create a plane composed of MxN faces.
+     */
+    Plane(int m, int n);
+    
+    virtual ~Plane();
+    
+    void initPoints(int m, int n);
+};
+
 #endif

@@ -25,31 +25,34 @@ class SubdivisionScheme;
  */
 class Subdivision : public ISurface
 {
-    typedef std::pair<int, int>     VtxPair;
-    typedef QHash<int, Vertex*>     VertexCollection;
-    typedef QHash<int, Edge*>       EdgesCollection;
-    typedef QHash<VtxPair, int>     VtxPairEdgeMap;
-    typedef QHash<int, Face*>       FacesCollection;
-
-    /** Instance ID of the surface */
-    uint _iid;
+    struct Impl;
+    QScopedPointer<Impl> _d;
     
-    /** Vertices by each subdivision level */
-    std::vector<VertexCollection*>  _vertLevelCollections;
-    /** Edges by each subdivision level */
-    std::vector<EdgesCollection*>   _edgesLevelCollections;
-    /** Relates a pair of vertex ids to an edge*/
-    std::vector<VtxPairEdgeMap*>    _vertexEdgeCollection;
-
-    std::vector<FacesCollection*>   _facesLevelCollections;
-
-
-    VertexCollection    *_vertices;
-    EdgesCollection     *_edges;
-    VtxPairEdgeMap      *_vtxPairEdge;
-    FacesCollection     *_faces;
-
-    SubdivisionScheme* scheme;
+//    typedef std::pair<int, int>     VtxPair;
+//    typedef QHash<int, Vertex*>     VertexCollection;
+//    typedef QHash<int, Edge*>       EdgesCollection;
+//    typedef QHash<VtxPair, int>     VtxPairEdgeMap;
+//    typedef QHash<int, Face*>       FacesCollection;
+//
+//    /** Instance ID of the surface */
+//    uint _iid;
+//    
+//    /** Vertices by each subdivision level */
+//    std::vector<VertexCollection*>  _vertLevelCollections;
+//    /** Edges by each subdivision level */
+//    std::vector<EdgesCollection*>   _edgesLevelCollections;
+//    /** Relates a pair of vertex ids to an edge*/
+//    std::vector<VtxPairEdgeMap*>    _vertexEdgeCollection;
+//
+//    std::vector<FacesCollection*>   _facesLevelCollections;
+//
+//
+//    VertexCollection    *_vertices;
+//    EdgesCollection     *_edges;
+//    VtxPairEdgeMap      *_vtxPairEdge;
+//    FacesCollection     *_faces;
+//
+//    SubdivisionScheme* scheme;
 
 public:
     Subdivision();
@@ -140,18 +143,6 @@ protected:
       *
       */
     int addEdge(Vertex* v1, Vertex* v2);
-
-    Scene*          m_scene;
-    Point3          m_position;
-    QColor          m_color;
-    geometry::AABB  _boundingBox;
-    float           m_rotX, m_rotY, m_rotZ;
-    bool            m_selected;
-    int             m_callListId;
-    bool            m_genereateCallList;
-    int             m_currentResolutionLevel;
-    bool            m_hasChanged;
-    QVector<int>    m_selectedPoints;
 
 
     // inner classes

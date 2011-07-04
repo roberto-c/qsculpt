@@ -51,7 +51,8 @@ inline bool printGlError()
 	return result;
 }
 
-#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+//#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
+#define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
 
 #endif
 

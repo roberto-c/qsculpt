@@ -35,6 +35,7 @@ class QMouseEvent;
 class QWheelEvent;
 class Camera;
 class IRenderer;
+class SceneNode;
 
 /**
  * Structure used to hold a hit return.
@@ -82,7 +83,7 @@ public:
      *
      * @param parent the parent view of the widget.
      */
-    GlCanvas(DocumentView* parent = 0);
+    GlCanvas(QGLContext * ctx, DocumentView* parent = 0);
 
     /**
      * Default destructor
@@ -141,31 +142,19 @@ public:
     /**
      *
      */
-    PerspectiveType getPerspectiveView() {
-        return _viewType;
-    }
+    PerspectiveType getPerspectiveView() ;
 
     void set3DCursorShape(CursorShapeType shape);
 
-    CursorShapeType getCursorShape() {
-        return _cursorShape;
-    }
+    CursorShapeType getCursorShape();
 
-    void setCursorPosition(Point3 p) {
-        _cursorPosition = p;
-    }
+    void setCursorPosition(Point3 p);
 
-    Point3 getCursorPosition() {
-        return _cursorPosition;
-    }
+    Point3 getCursorPosition() ;
 
-    void setCursorOrientation(Point3 n) {
-        _cursorOrientation = n;
-    }
+    void setCursorOrientation(Point3 n);
 
-    Point3 getCursorOrientation() {
-        return _cursorOrientation;
-    }
+    Point3 getCursorOrientation() ;
 
     /**
      * Sets the image to show as the cursor. The image is copied to a new
@@ -213,6 +202,11 @@ public:
      *
      */
     void drawLine(const Point3& p1, const Point3& p2);
+    
+    /**
+     * Draw a line in screen coordinates
+     */
+    void drawLine2D(const Point3& p1, const Point3& p2);
     
     /**
      * Draw a rectangle into the canvas. The z coordinatinate is assumed to be
@@ -263,14 +257,23 @@ public:
     /**
      * This method gets the current renderer used to render surfaces.
      */
-    IRenderer* renderer() const {
-        return _renderer;
-    }
+    IRenderer* renderer() const ;
     
     /**
      * Used to draw a scene hierarchy using the current renderer
      */
     void drawScene(Scene* scene);
+    
+    
+    /**
+     *
+     */
+    void begin(GLenum mode);
+    
+    /**
+     *
+     */
+    void end();
     
 public slots:
     /**
@@ -285,10 +288,7 @@ public slots:
      *
      * @param type new view to use
      */
-    void setPerspectiveView(PerspectiveType type) {
-        _viewType = type;
-    }
-
+    void setPerspectiveView(PerspectiveType type);
     /**
      * Turn the visibility of the grid on/off.
      *
@@ -337,27 +337,12 @@ private:
                              float axis2,
                              float innerAxis1,
                              float innerAxis2);
+    
+    void drawSceneNode(SceneNode* node);
 	
-    bool            _isGridVisible;        /**< Grid visibility flag */
-    bool            _areNormalsVisible;    /**< Normals visibility flag */
-    GLuint*         _selectBuffer;         /**< Selection buffer */
-    double          _aspectRatio;
-    PerspectiveType _viewType;             /**< Kind of view to display */
-    DrawingMode     _drawingMode;          /**< Object drawing mode */
-    IRenderer*		_renderer;				/**< Rendering engine for the objects */
-    IRenderer*		_selectionRenderer;	/**< Renderer used for selection. */
-    IRenderer*      _editVertexRenderer;    /**< Renderer used for vertex edition */
-    CameraContainer _cameraList;           /**< Cameras for the differents view types */
-
-    CursorShapeType     _cursorShape;
-    Point3              _cursorPosition;
-    Point3              _cursorOrientation;
-    GLint               _viewport[4];
-    GLfloat             _zoomFactor;
-    GLuint              _textureId;
-    QImage              _cursorImage;
-    QPen                _pen;
-    QBrush              _brush;
+    struct Impl;
+    QScopedPointer<Impl> _d;
+    
 };
 
 #endif

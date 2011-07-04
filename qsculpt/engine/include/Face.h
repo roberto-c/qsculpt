@@ -45,6 +45,7 @@ class Face {
     int _id; // 4
     int _depth; // 4
     FaceFlags _flags; // 4
+    size_t _nVertices;
     
 public:
     //qint32 hashValue; // 4
@@ -110,6 +111,11 @@ public:
     Edge* hedge() { return _he; }
     void setHEdge(Edge* hedge);
 
+    /**
+     * Returns the number of vertices in this face.
+     */
+    size_t numVertices() const;
+    
     /**
      * Sets the first point index reference.
      *

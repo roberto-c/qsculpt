@@ -54,6 +54,16 @@ public:
     const Vertex & next() const;
 
     /**
+     * Return the next element without advancing to the iterator
+     */
+    Vertex & peekNext();
+    
+    /**
+     * Return the next element without advancing to the iterator
+     */
+    const Vertex & peekNext() const;
+
+    /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
@@ -65,6 +75,16 @@ public:
      */
     const Vertex & previous() const;
 
+    /**
+     * Returns the previous element.
+     */
+    Vertex & peekPrevious();
+    
+    /**
+     * Returns the previous element.
+     */
+    const Vertex & peekPrevious() const;
+    
     /**
      * Set the current position to pos relative to origin.
      *
@@ -117,6 +137,16 @@ public:
     const Edge & next() const;
 
     /**
+     * Return the next element without advancing to the iterator
+     */
+    Edge & peekNext();
+    
+    /**
+     * Return the next element without advancing to the iterator
+     */
+    const Edge & peekNext() const;
+    
+    /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
@@ -128,6 +158,16 @@ public:
      */
     const Edge & previous() const;
 
+    /**
+     * Returns the previous element.
+     */
+    Edge & peekPrevious();
+    
+    /**
+     * Returns the previou element
+     */
+    const Edge & peekPrevious() const;
+    
     /**
      * Set the current position to pos relative to origin.
      *
@@ -145,7 +185,8 @@ Face::Face(ISurface *surface)
     _surface(surface),
     _he(NULL),
     _vertex(NULL),
-    _children(NULL)
+    _children(NULL),
+    _nVertices(0)
 //hashValue(0)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
@@ -157,13 +198,11 @@ Face::Face(ISurface *surface, const QVector<int>& vertexIndexList)
     _he(NULL),
     _vertex(NULL),
     //point(vertexIndexList),
-    _children(NULL)
+    _children(NULL),
+    _nVertices(0)
 //    hashValue(0)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
-    //normal.fill(-1, point.size());
-//    for(int i = 0; i < vertexIndexList.size(); ++i)
-//        hashValue += vertexIndexList[i];
 }
 
 Face::~Face()
@@ -171,17 +210,20 @@ Face::~Face()
     delete [] _children;
 }
 
+// TODO: implement a correct and fast hash
 uint Face::hashCode() const
 {
-    if (!_he)
-        return qHash(_id);
-    Vector3 v;
-    Iterator<Vertex> it = _he->vertexIterator();
-    while(it.hasNext())
-    {
-        v = v + (Vector3)it.next();
-    }
-    return qHash(v);
+    return qHash(_id);
+    
+//    if (!_he)
+//        return qHash(_id);
+//    Vector3 v;
+//    Iterator<Vertex> it = _he->vertexIterator();
+//    while(it.hasNext())
+//    {
+//        v = v + (Vector3)it.next();
+//    }
+//    return qHash(v);
 }
 
 bool Face::isValid() {
@@ -209,6 +251,16 @@ void Face::addVertex(const QVector<Vertex*> /*v*/)
 void Face::setHEdge(Edge* hedge)
 {
     _he = hedge;
+}
+
+size_t Face::numVertices() const {
+    size_t n = 0;
+    Iterator<Vertex> it = constVertexIterator();
+    while (it.hasNext()) {
+        n += 1;
+        it.next();
+    }
+    return n;
 }
 
 
@@ -327,12 +379,32 @@ const Vertex & Face::VertexIterator::next() const
     return *_e->head();
 }
 
+Vertex & Face::VertexIterator::peekNext()
+{
+    return _e == NULL ? *(_f->_he->head()) : *(_e->next()->head());
+}
+
+const Vertex & Face::VertexIterator::peekNext() const
+{
+    return _e == NULL ? *(_f->_he->head()) : *(_e->next()->head());
+}
+
 Vertex & Face::VertexIterator::previous()
 {
     throw std::logic_error("Not implemented");
 }
 
 const Vertex & Face::VertexIterator::previous() const
+{
+    throw std::logic_error("Not implemented");
+}
+
+Vertex & Face::VertexIterator::peekPrevious()
+{
+    throw std::logic_error("Not implemented");
+}
+
+const Vertex & Face::VertexIterator::peekPrevious() const
 {
     throw std::logic_error("Not implemented");
 }
@@ -408,12 +480,34 @@ const Edge & Face::EdgeIterator::next() const
     return *_e;
 }
 
+Edge & Face::EdgeIterator::peekNext()
+{
+    //NOT_IMPLEMENTED
+    return _e==NULL ? *(_f->_he) : *(_e->next());
+}
+
+const Edge & Face::EdgeIterator::peekNext() const
+{
+    //NOT_IMPLEMENTED
+    return _e==NULL ? *(_f->_he) : *(_e->next());
+}
+
 Edge & Face::EdgeIterator::previous()
 {
     throw std::logic_error("Not implemented");
 }
 
 const Edge & Face::EdgeIterator::previous() const
+{
+    throw std::logic_error("Not implemented");
+}
+
+Edge & Face::EdgeIterator::peekPrevious()
+{
+    throw std::logic_error("Not implemented");
+}
+
+const Edge & Face::EdgeIterator::peekPrevious() const
 {
     throw std::logic_error("Not implemented");
 }

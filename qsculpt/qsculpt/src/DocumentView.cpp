@@ -37,13 +37,19 @@
 #include "ICommand.h"
 #include "glitem.h"
 #include "GlView.h"
+#include "CustomGLContext.h"
+
+struct DocumentView::Impl {
+    CustomGLContext ctx;
+};
 
 DocumentView::DocumentView(QWidget *_parent)
 : QWidget(_parent),
 _document(NULL),
 _viewPerspective(NULL),
 _drawingMode(NULL),
-_drawVertices(false)
+_drawVertices(false),
+_d(new Impl)
 {
     createWidgets();
 }
@@ -56,7 +62,10 @@ void DocumentView::createWidgets()
 {
     QGridLayout* gridLayout = new QGridLayout(this);
     QHBoxLayout* hboxLayout = new QHBoxLayout();
-    _display = new GlCanvas(this);
+    
+    _d->ctx.setUseSoftwareRenderer(true);
+    _d->ctx.create();
+    _display = new GlCanvas(&_d->ctx, this);
 
     Q_CHECK_PTR(gridLayout);
     Q_CHECK_PTR(_display);
@@ -115,7 +124,7 @@ void DocumentView::createWidgets()
     _drawingMode->addItem("Smooth", Smooth);
     _drawingMode->addItem("Textured", Texture);
     _drawingMode->setCurrentIndex(2);
-    _display->setDrawingMode(Flat);
+    _display->setDrawingMode(Points);
 
     connect(_viewPerspective, SIGNAL(currentIndexChanged(int)), this, SLOT(viewPerspectiveChanged(int)));
     connect(_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));

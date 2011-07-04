@@ -2,10 +2,15 @@
 #define FLATRENDERER_H_
 
 #include "IRenderer.h"
-#include "BufferObject.h"
+
+class VertexBuffer;
+class Face;
 
 class FlatRenderer : public IRenderer
 {
+    struct Impl;
+    QScopedPointer<Impl> _d;
+    
 public:
 	FlatRenderer();
 	virtual ~FlatRenderer();
@@ -15,29 +20,6 @@ public:
 	 * by using VBOs if supported or if there are enabled.
 	 */
 	void renderObject(const ISurface* mesh);
-	
-private:
-	/**
-	 * Draw the mesh using OpenGL VBOs.
-	 * The VBOs are re-build when the mesh has been changed since the last draw.
-	 */
-	void renderVbo(const ISurface* mesh);
-	
-	/**
-	 * Draw the mesh using the glBeing()/glEnd() and friends functions.
-	 * This method is a fallback method if the  VBOs are not supported.
-	 */
-	void renderImmediate(const ISurface* mesh);
-	
-	/**
-	 *
-	 */
-	VertexBuffer* getVBO(ISurface* mesh);
-	
-	/**
-	 * Fill vertex buffer with the mesh data.
-	 */
-	void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
 };
 
 #endif /*FLATRENDERER_H_*/
