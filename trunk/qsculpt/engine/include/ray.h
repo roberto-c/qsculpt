@@ -30,6 +30,7 @@ namespace geometry
 {
     class AABB;
     class Plane;
+    class Sphere;
 
     class Ray : public Eigen::ParametrizedLine<float, 3>
     {
@@ -73,6 +74,15 @@ namespace geometry
          * the same as point
          */
         float intersect(const Point3& point, Point3 *p = NULL, 
+                        float ep = DEFAULT_EPSILON) const;
+        
+        /**
+         * Check if a ray intersects an sphere and stores the intersection point
+         * in p.
+         *
+         * @param sphere
+         */
+        float insersect(const Sphere& sphere, Point3 *p = NULL,
                         float ep = DEFAULT_EPSILON) const;
     };
 }

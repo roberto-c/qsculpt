@@ -10,7 +10,6 @@
 #ifndef IITERATOR_H_
 #define IITERATOR_H_
 
-
 // TODO: Check if it the need to optimize iterator design. To many indirections?
 
 /**
@@ -57,6 +56,20 @@ public:
      * Returns the next element and advance the iterator by one.
      */
     virtual const T & next() const = 0;
+    
+    /**
+     * Return the next element without advancing to the iterator
+     */
+    virtual T & peekNext() {
+        NOT_IMPLEMENTED
+    };
+    
+    /**
+     * Return the next element without advancing to the iterator
+     */
+    virtual const T & peekNext() const {
+        NOT_IMPLEMENTED
+    };
 
     /**
      * Returns the previous elements and move the iterator one position
@@ -139,6 +152,16 @@ public:
      */
     inline const T & next() const { return _it->next(); }
 
+    /**
+     * Return the next element without advancing to the iterator
+     */
+    inline T & peekNext() { return _it->peekNext(); }
+    
+    /**
+     * Return the next element without advancing to the iterator
+     */
+    inline const T & peekNext() const { return _it->peekNext(); }
+    
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.

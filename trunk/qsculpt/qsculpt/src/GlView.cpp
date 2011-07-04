@@ -54,6 +54,9 @@ QGLShaderProgram    *g_shaderProgram = NULL;
 QGLShader           *g_shaderVertex = NULL;
 QGLShader           *g_shaderFragment = NULL;
 
+
+
+
 struct Rect {
     GLfloat x1, y1, x2, y2;
 
@@ -62,76 +65,126 @@ struct Rect {
     }
 };
 
+#define GLCANVAS_BEGIN  (0x0001)
 
-GlCanvas::GlCanvas(DocumentView* _parent)
-    : QGLWidget(_parent),
-    _isGridVisible(false),
-    _areNormalsVisible(false),
-    _selectBuffer(NULL),
-    _aspectRatio(1.0),
-    _viewType(Front),
-    _drawingMode(Points),
-    _renderer(NULL),
-    _selectionRenderer(NULL),
-    _editVertexRenderer(NULL),
-    _cursorShape(None),
-    _zoomFactor(1.0),
-    _textureId(0),
-    _pen(QPen(QColor(Qt::white))),
-    _brush(QBrush(Qt::transparent))
+struct GlCanvas::Impl {
+    bool            isGridVisible;        /**< Grid visibility flag */
+    bool            areNormalsVisible;    /**< Normals visibility flag */
+    GLuint*         selectBuffer;         /**< Selection buffer */
+    double          aspectRatio;
+    PerspectiveType viewType;             /**< Kind of view to display */
+    DrawingMode     drawingMode;          /**< Object drawing mode */
+    IRenderer*		renderer;				/**< Rendering engine for the objects */
+    IRenderer*		selectionRenderer;	/**< Renderer used for selection. */
+    IRenderer*      editVertexRenderer;    /**< Renderer used for vertex edition */
+    CameraContainer cameraList;           /**< Cameras for the differents view types */
+
+    CursorShapeType     cursorShape;
+    Point3              cursorPosition;
+    Point3              cursorOrientation;
+    GLint               viewport[4];
+    GLfloat             zoomFactor;
+    GLuint              textureId;
+    QImage              cursorImage;
+    QPen                pen;
+    QBrush              brush;
+    uint                flags;
+    
+    Impl() : isGridVisible(false),
+    areNormalsVisible(false),
+    selectBuffer(NULL),
+    aspectRatio(1.0),
+    viewType(Front),
+    drawingMode(Points),
+    renderer(NULL),
+    selectionRenderer(NULL),
+    editVertexRenderer(NULL),
+    cursorShape(None),
+    zoomFactor(1.0),
+    textureId(0),
+    pen(QPen(QColor(Qt::white))),
+    brush(QBrush(Qt::transparent)),
+    flags(0)
+    {
+        
+    }
+    
+    ~Impl() {
+        if (selectBuffer)
+            delete [] selectBuffer;
+        
+        QMutableMapIterator<int, Camera*> it(cameraList);
+        while(it.hasNext())
+        {
+            it.next();
+            delete it.value();
+            it.remove();
+        }
+        
+        delete renderer;
+        renderer = NULL;
+        
+        delete selectionRenderer;
+        selectionRenderer = NULL;
+    }
+};
+
+GlCanvas::GlCanvas(QGLContext * ctx, DocumentView* _parent)
+    : QGLWidget(ctx, _parent), _d(new Impl)
+    
 {
     // Type of renderer used for displaying objects on the screen
-    _renderer = RendererFactory::getRenderer(_drawingMode);
+    _d->renderer = RendererFactory::getRenderer(_d->drawingMode);
 
     // Type of renderer used for user object picking
-    _selectionRenderer = RendererFactory::getRenderer(Points);
+    _d->selectionRenderer = RendererFactory::getRenderer(Points);
 
     // Type of renderer used for vertex edition mode
-    _editVertexRenderer = RendererFactory::getRenderer(Points);
+    _d->editVertexRenderer = RendererFactory::getRenderer(Points);
 
-    _selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
+    _d->selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
 
     Camera* camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector(Point3( 0, 1, 0) );
     camera->setPosition( Point3( 0, 0, 1));
-    _cameraList[Front] = camera;
+    _d->cameraList[Front] = camera;
 
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 1, 0) );
     camera->setPosition( Point3( 0, 0, -1));
-    _cameraList[Back] = camera;
+    _d->cameraList[Back] = camera;
 
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 0, -1) );
     camera->setPosition( Point3( 0, 1, 0) );
-    _cameraList[Top] = camera;
+    _d->cameraList[Top] = camera;
 
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 0, 1) );
     camera->setPosition( Point3( 0, -1, 0) );
-    _cameraList[Bottom] = camera;
+    _d->cameraList[Bottom] = camera;
 
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 1, 0) );
     camera->setPosition( Point3(-1, 0, 0) );
-    _cameraList[Left] = camera;
+    _d->cameraList[Left] = camera;
 
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 1, 0) );
     camera->setPosition( Point3( 1, 0, 0) );
-    _cameraList[Right] = camera;
+    _d->cameraList[Right] = camera;
 
     camera = new Camera();
     camera->setTargetPoint( Point3( 0, 0, 0) );
     camera->setOrientationVector( Point3( 0, 0, 1) );
     camera->setPosition( Point3( 0.75, 0.75, 0.75) );
-    _cameraList[Perspective] = camera;
+    _d->cameraList[Perspective] = camera;
 
     setCursor(Qt::CrossCursor);
 }
@@ -139,49 +192,65 @@ GlCanvas::GlCanvas(DocumentView* _parent)
 
 GlCanvas::~GlCanvas()
 {
-    if (_selectBuffer)
-        delete [] _selectBuffer;
+}
 
-    QMutableMapIterator<int, Camera*> it(_cameraList);
-    while(it.hasNext())
-    {
-        it.next();
-        delete it.value();
-        it.remove();
-    }
+GlCanvas::PerspectiveType GlCanvas::getPerspectiveView() {
+    return _d->viewType;
+}
 
-    delete _renderer;
-    _renderer = NULL;
+GlCanvas::CursorShapeType GlCanvas::getCursorShape() {
+    return _d->cursorShape;
+}
 
-    delete _selectionRenderer;
-    _selectionRenderer = NULL;
+void GlCanvas::setCursorPosition(Point3 p) {
+    _d->cursorPosition = p;
+}
+
+Point3 GlCanvas::getCursorPosition() {
+    return _d->cursorPosition;
+}
+
+void GlCanvas::setCursorOrientation(Point3 n) {
+    _d->cursorOrientation = n;
+}
+
+Point3 GlCanvas::getCursorOrientation() {
+    return _d->cursorOrientation;
+}
+
+IRenderer* GlCanvas::renderer() const {
+    return _d->renderer;
+}
+
+void GlCanvas::setPerspectiveView(PerspectiveType type) {
+    _d->viewType = type;
 }
 
 void GlCanvas::setGridVisible(bool value)
 {
-    _isGridVisible = value;
+    _d->isGridVisible = value;
     updateGL();
 }
 
 bool GlCanvas::isGridVisible()
 {
-    return _isGridVisible;
+    return _d->isGridVisible;
 }
 
 bool GlCanvas::areNormalsVisible()
 {
-    return _areNormalsVisible;
+    return _d->areNormalsVisible;
 }
 
 void GlCanvas::setNormalsVisible(bool visible)
 {
-    _areNormalsVisible = visible;
+    _d->areNormalsVisible = visible;
 }
 
 void GlCanvas::setDrawingMode(DrawingMode mode){
-    _drawingMode = mode;
-    delete _renderer;
-    _renderer = RendererFactory::getRenderer(_drawingMode);
+    _d->drawingMode = mode;
+    delete _d->renderer;
+    _d->renderer = RendererFactory::getRenderer(_d->drawingMode);
 }
 
 void GlCanvas::initializeGL()
@@ -196,7 +265,7 @@ void GlCanvas::initializeGL()
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glShadeModel(GL_SMOOTH);
     enable(GL_LIGHT0);
-    glSelectBuffer(SELECT_BUFFER_SIZE, _selectBuffer);
+    glSelectBuffer(SELECT_BUFFER_SIZE, _d->selectBuffer);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     if (glIsEnabled(GL_DEPTH_TEST) == GL_FALSE)
         qDebug("Depth buffer not enabled.");
@@ -253,31 +322,31 @@ void GlCanvas::initializeGL()
 void GlCanvas::resizeGL( int w, int h )
 {
     if ( h > 0 )
-        _aspectRatio = GLdouble( w ) / GLdouble( h );
+        _d->aspectRatio = GLdouble( w ) / GLdouble( h );
 
     // setup viewport, projection etc. for OpenGL:
     glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    glOrtho( -DEFAULT_HEIGHT / 2 * _zoomFactor * _aspectRatio,
-             DEFAULT_HEIGHT / 2 * _zoomFactor * _aspectRatio,
-             -DEFAULT_HEIGHT / 2 * _zoomFactor,
-             DEFAULT_HEIGHT / 2 * _zoomFactor,
+    glOrtho( -DEFAULT_HEIGHT / 2 * _d->zoomFactor * _d->aspectRatio,
+             DEFAULT_HEIGHT / 2 * _d->zoomFactor * _d->aspectRatio,
+             -DEFAULT_HEIGHT / 2 * _d->zoomFactor,
+             DEFAULT_HEIGHT / 2 * _d->zoomFactor,
              -1000.0,
              1000.0 );
 
     glMatrixMode( GL_MODELVIEW );
 
-    glGetIntegerv(GL_VIEWPORT, _viewport);
+    glGetIntegerv(GL_VIEWPORT, _d->viewport);
 
     // Now update the cameras to have the same viewport and projection
     // information
-    foreach(Camera* c, _cameraList) {
+    foreach(Camera* c, _d->cameraList) {
         c->setViewport(0, 0, w, h);
-        c->setOrthoMatrix( -DEFAULT_HEIGHT / 2 * _zoomFactor * _aspectRatio,
-                           DEFAULT_HEIGHT / 2 * _zoomFactor * _aspectRatio,
-                           -DEFAULT_HEIGHT / 2 * _zoomFactor,
-                           DEFAULT_HEIGHT / 2 * _zoomFactor,
+        c->setOrthoMatrix( -DEFAULT_HEIGHT / 2 * _d->zoomFactor * _d->aspectRatio,
+                           DEFAULT_HEIGHT / 2 * _d->zoomFactor * _d->aspectRatio,
+                           -DEFAULT_HEIGHT / 2 * _d->zoomFactor,
+                           DEFAULT_HEIGHT / 2 * _d->zoomFactor,
                            -1000.0,
                            1000.0 );
     }
@@ -289,7 +358,7 @@ void GlCanvas::paintGL()
     glBindTexture(GL_TEXTURE_2D, 0);
     glLoadIdentity();
 
-    Camera* camera = _cameraList.contains(_viewType) ? _cameraList[_viewType] : NULL;
+    Camera* camera = _d->cameraList.contains(_d->viewType) ? _d->cameraList[_d->viewType] : NULL;
     if (camera)
     {
         glLoadMatrixf(camera->modelView().data());
@@ -298,7 +367,7 @@ void GlCanvas::paintGL()
     //glTranslatef(-100, -100, 0);
     glDisable(GL_LIGHTING);
 
-    if (_isGridVisible)
+    if (_d->isGridVisible)
         drawGrid();
 
     glLineWidth(1);
@@ -320,7 +389,7 @@ void GlCanvas::paintGL()
     glVertex3f( 0.0f, 0.0f, 1.0f );
     glEnd();
 
-    switch(_drawingMode)
+    switch(_d->drawingMode)
     {
     case Smooth:
     case Wireframe:
@@ -381,31 +450,42 @@ void GlCanvas::paintGL()
 
 void GlCanvas::drawScene(Scene* scene)
 {
-    if (_renderer == NULL)
+    if (_d->renderer == NULL)
         return;
     
-    ISurface* mesh;
-    
     Iterator<SceneNode> it = scene->iterator();
-    SurfaceNode *s;
     while(it.hasNext())
     {
         glPushMatrix();
         SceneNode *n = &it.next();
         glMultMatrixf(n->transform().data());
-        if (n->nodeType() == NT_Surface)
-        {
-            s = static_cast<SurfaceNode*> (n);
-            mesh = s->surface();
-            if (mesh->isSelected()) {
-                drawBoundingBox(mesh);
-            }
-            _renderer->renderObject(mesh);
+        drawSceneNode(n);
+        glPopMatrix();
+    }
+}
+
+void GlCanvas::drawSceneNode(SceneNode* node)
+{
+    ISurface* mesh;
+    SurfaceNode *s;
+    
+    if (node->nodeType() == NT_Surface)
+    {
+        s = static_cast<SurfaceNode*> (node);
+        mesh = s->surface();
+        if (mesh->isSelected()) {
+            drawBoundingBox(mesh);
         }
-        else {
-            glMultMatrixf(n->transform().data());
-        }
-        
+        _d->renderer->renderObject(mesh);
+    }
+    
+    Iterator<SceneNode> it = node->iterator();
+    while(it.hasNext())
+    {
+        glPushMatrix();
+        SceneNode *n = &it.next();
+        glMultMatrixf(n->transform().data());
+        drawSceneNode(n);
         glPopMatrix();
     }
 }
@@ -506,10 +586,10 @@ void GlCanvas::drawGrid()
 
 void GlCanvas::drawCursor()
 {
-    if (_cursorShape == None)
+    if (_d->cursorShape == None)
         return;
 
-    switch(_cursorShape)
+    switch(_d->cursorShape)
     {
     case None:
     case Cross:
@@ -538,18 +618,18 @@ void GlCanvas::drawCursor()
             glLoadIdentity();
 
             // Setup the texture and color
-            glBindTexture(GL_TEXTURE_2D, _textureId);
+            glBindTexture(GL_TEXTURE_2D, _d->textureId);
             glColor3f(1.0f, 1.0f, 0.0f);
 
             // Calculate the coordinates of the box to paint the bitmap
             double wx1, wy1, wz1;
-            mapScreenCoordsToWorldCoords(_cursorPosition.x() - _cursorImage.width()/2,
-                                         _cursorPosition.y() - _cursorImage.height() / 2,
-                                         _cursorPosition.z(), &wx1, &wy1, &wz1);
+            mapScreenCoordsToWorldCoords(_d->cursorPosition.x() - _d->cursorImage.width()/2,
+                                         _d->cursorPosition.y() - _d->cursorImage.height() / 2,
+                                         _d->cursorPosition.z(), &wx1, &wy1, &wz1);
             double wx2, wy2, wz2;
-            mapScreenCoordsToWorldCoords(_cursorPosition.x() + _cursorImage.width()/2,
-                                         _cursorPosition.y() + _cursorImage.height() / 2,
-                                         _cursorPosition.z(), &wx2, &wy2, &wz2);
+            mapScreenCoordsToWorldCoords(_d->cursorPosition.x() + _d->cursorImage.width()/2,
+                                         _d->cursorPosition.y() + _d->cursorImage.height() / 2,
+                                         _d->cursorPosition.z(), &wx2, &wy2, &wz2);
 
             // Draw Bitmap cursor as a textured quad
             glBegin(GL_QUADS);
@@ -588,12 +668,12 @@ void GlCanvas::drawOrientationAxis()
     glMatrixMode( GL_PROJECTION );
     glPushMatrix();
     glLoadIdentity();
-    glOrtho( -1.5 * _aspectRatio, 1.5 * _aspectRatio, 1.5, -1.5, 2.0, -2.0 );
+    glOrtho( -1.5 * _d->aspectRatio, 1.5 * _d->aspectRatio, 1.5, -1.5, 2.0, -2.0 );
 
 
     glMatrixMode( GL_MODELVIEW );
 
-    Camera* camera = _cameraList.contains(_viewType) ? _cameraList[_viewType] : NULL;
+    Camera* camera = _d->cameraList.contains(_d->viewType) ? _d->cameraList[_d->viewType] : NULL;
     if (camera)
     {
         gluLookAt( camera->getPosition().x(), camera->getPosition().y(),
@@ -623,7 +703,7 @@ void GlCanvas::drawOrientationAxis()
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
 
-    glViewport( _viewport[0], _viewport[1], _viewport[2], _viewport[3] );
+    glViewport( _d->viewport[0], _d->viewport[1], _d->viewport[2], _d->viewport[3] );
 
     if (lightEnabled)
         glEnable(GL_LIGHTING);
@@ -646,12 +726,12 @@ void GlCanvas::mouseMoveEvent ( QMouseEvent * e )
             cmd->mouseMoveEvent( e );
             needUpdate = true;
         }
-        if (_cursorShape != None)
+        if (_d->cursorShape != None)
         {
             //_cursorPosition.setPoint(e->x(), e->y(), 0);
-            _cursorPosition.x() = e->x();
-            _cursorPosition.y() = e->y();
-            _cursorPosition.z() = 0;
+            _d->cursorPosition.x() = e->x();
+            _d->cursorPosition.y() = e->y();
+            _d->cursorPosition.z() = 0;
             needUpdate = true;
         }
     }
@@ -679,12 +759,12 @@ void GlCanvas::mousePressEvent ( QMouseEvent * e )
             cmd->mousePressEvent( e );
             needUpdate = true;
         }
-        _cursorPosition.x() = e->x();
-        _cursorPosition.y() = e->y();
-        if (_cursorShape != None)
+        _d->cursorPosition.x() = e->x();
+        _d->cursorPosition.y() = e->y();
+        if (_d->cursorShape != None)
         {
-            _cursorPosition.x() = e->x();
-            _cursorPosition.y() = e->y();
+            _d->cursorPosition.x() = e->x();
+            _d->cursorPosition.y() = e->y();
             needUpdate = true;
         }
     }
@@ -718,7 +798,7 @@ void GlCanvas::wheelEvent ( QWheelEvent * e )
     int numDegrees = e->delta() / 8;
     int numSteps = numDegrees / 15;
 
-    _zoomFactor += numSteps * 0.01;
+    _d->zoomFactor += numSteps * 0.01;
 
     resizeGL( width(), height() );
     updateGL();
@@ -727,7 +807,7 @@ void GlCanvas::wheelEvent ( QWheelEvent * e )
 ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
 {
     ObjectContainer l;
-    if (_renderer == NULL)
+    if (_d->renderer == NULL)
         return l;
 
     unsigned int objId = 1;
@@ -748,7 +828,7 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             g_picking.renderObject(mesh, objId);
-            glReadPixels(x, _viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
+            glReadPixels(x, _d->viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
             
             if (d == objId)
                 l.append(mesh);
@@ -757,28 +837,7 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
         }
         glPopMatrix();
     }
-//    int count = doc->getObjectsCount();
-//    for ( int i = 0; i < count; i++ )
-//    {
-//        mesh = doc->getObject(i);
-//
-//        glPushMatrix();
-//        float px = 0.0f, py = 0.0f, pz = 0.0f;
-//        mesh->getPosition(&px, &py, &pz);
-//        glTranslatef(px, py, pz);
-//
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//        g_picking.renderObject(mesh, objId);
-//        glReadPixels(x, _viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
-//
-//        if (d == objId)
-//            l.append(mesh);
-//
-//        objId++;
-//
-//        glPopMatrix();
-//        if (printGlError()) break;
-//    }
+
     return l;
 }
 
@@ -786,7 +845,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
                                              GLint width, GLint height)
 {
     PointIndexList l;
-    if (_renderer == NULL || width == 0 || height == 0)
+    if (_d->renderer == NULL || width == 0 || height == 0)
         return l;
 
     int halfWidth = width / 2;
@@ -812,7 +871,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             g_pickingVertices.renderObject(mesh, objId);
-            glReadPixels(x - halfWidth, _viewport[3]- (y + halfHeight),
+            glReadPixels(x - halfWidth, _d->viewport[3]- (y + halfHeight),
                          width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)d);
             
             int faceIndex = 0;
@@ -879,20 +938,20 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
 
 Camera* GlCanvas::getViewCamera()
 {
-    if (!_cameraList.contains(_viewType))
+    if (!_d->cameraList.contains(_d->viewType))
     {
-        //qDebug("camera %d does not exists. Returning perspective camera.", _viewType);
-        return _cameraList[Perspective];
+        //qDebug("camera %d does not exists. Returning perspective camera.", _d->viewType);
+        return _d->cameraList[Perspective];
     }
-    return _cameraList[_viewType];
+    return _d->cameraList[_d->viewType];
 }
 
 void GlCanvas::set3DCursorShape(CursorShapeType shape)
 {
-    _cursorShape = shape;
+    _d->cursorShape = shape;
 
     // Turn on mouse tracking only if we are going to draw a cursor
-    setMouseTracking(_cursorShape != None);
+    setMouseTracking(_d->cursorShape != None);
 }
 
 void GlCanvas::setCursorImage(const QImage& image)
@@ -904,12 +963,12 @@ void GlCanvas::setCursorImage(const QImage& image)
     else
     {
         // Delete any texture loaded before.
-        deleteTexture(_textureId);
-        _textureId = 0;
+        deleteTexture(_d->textureId);
+        _d->textureId = 0;
 
-        _cursorImage = image;
-        _textureId = bindTexture(_cursorImage);
-        if (_textureId == 0)
+        _d->cursorImage = image;
+        _d->textureId = bindTexture(_d->cursorImage);
+        if (_d->textureId == 0)
         {
             qDebug("texture id is not valid");
         }
@@ -922,7 +981,7 @@ void GlCanvas::setCursorImage(const QImage& image)
  */
 QImage GlCanvas::getCursorImage()
 {
-    return _cursorImage;
+    return _d->cursorImage;
 }
 
 void GlCanvas::mapScreenCoordsToWorldCoords(double x, double y, double z,
@@ -962,7 +1021,7 @@ void GlCanvas::mapWorldCoordsToScreenCoords(const Point3& world,
  */
 void GlCanvas::setPen(const QPen& pen)
 {
-    _pen = pen;
+    _d->pen = pen;
 }
 
 /**
@@ -970,7 +1029,7 @@ void GlCanvas::setPen(const QPen& pen)
  */
 const QPen& GlCanvas::pen() const
 {
-    return _pen;
+    return _d->pen;
 }
 
 /**
@@ -978,7 +1037,7 @@ const QPen& GlCanvas::pen() const
  */
 void GlCanvas::setBrush(const QBrush& brush)
 {
-    _brush = brush;
+    _d->brush = brush;
 }
 
 /**
@@ -986,25 +1045,49 @@ void GlCanvas::setBrush(const QBrush& brush)
  */
 const QBrush& GlCanvas::brush() const
 {
-    return _brush;
+    return _d->brush;
 }
 
-/**
- *
- */
+
+void GlCanvas::begin(GLenum mode)
+{
+    glBegin(mode);
+    _d->flags |= GLCANVAS_BEGIN;
+}
+
+void GlCanvas::end()
+{
+    _d->flags &= ~GLCANVAS_BEGIN;
+    glEnd();
+}
+
+
 void GlCanvas::drawLine(const Point3& p1, const Point3& p2)
 {
     double c[4];
-    _pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+    _d->pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+    if (c[3] > 0) {
+        glColor4dv(c);
+        if (!_d->flags & GLCANVAS_BEGIN) glBegin(GL_LINES);
+        glVertex3fv(p1.data());
+        glVertex3fv(p2.data());
+        if (!_d->flags & GLCANVAS_BEGIN) glEnd();
+    }
+}
+
+void GlCanvas::drawLine2D(const Point3& p1, const Point3& p2)
+{
+    double c[4];
+    _d->pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0) {
         Point3 tmp1, tmp2;
         mapScreenCoordsToWorldCoords(p1, tmp1);
         mapScreenCoordsToWorldCoords(p2, tmp2);
         glColor4dv(c);
-        glBegin(GL_LINES);
+        if (!_d->flags & GLCANVAS_BEGIN) glBegin(GL_LINES);
         glVertex3fv(tmp1.data());
         glVertex3fv(tmp2.data());
-        glEnd();
+        if (!_d->flags & GLCANVAS_BEGIN) glEnd();
     }
 }
 
@@ -1029,7 +1112,7 @@ void GlCanvas::drawRectWinCoord(const Point3& c1, const Point3& c2)
     mapScreenCoordsToWorldCoords(a2, p2);
     mapScreenCoordsToWorldCoords(a3, p3);
     mapScreenCoordsToWorldCoords(a4, p4);
-    _brush.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+    _d->brush.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0) {
         glColor4dv(c);
         glBegin(GL_QUADS);
@@ -1040,7 +1123,7 @@ void GlCanvas::drawRectWinCoord(const Point3& c1, const Point3& c2)
         glEnd();
     }
 
-    _pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
+    _d->pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0 ) {
         glColor4dv(c);
         glBegin(GL_LINE_LOOP);
@@ -1138,7 +1221,7 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     }
     
     double color[4];
-    _brush.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
+    _d->brush.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
     glColor4dv(color);
     glBegin(GL_TRIANGLES);
     if (drawInnerEllipse) {
@@ -1162,7 +1245,7 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     }
     glEnd();
     
-    _pen.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
+    _d->pen.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
     glColor4dv(color);
     // draw main ellipse
     glBegin(GL_LINE_STRIP);

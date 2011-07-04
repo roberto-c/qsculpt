@@ -24,9 +24,15 @@
 #include <string>
 #include <QStandardItemModel>
 #include "IIterator.h"
+#include "ICollection.h"
 
 class ISurface;
 class SceneNode;
+
+namespace geometry {
+    class Ray;
+    class AABB;
+};
 
 /**
  * Contains all the scene data. All 3D objects reference data from the scene.
@@ -49,6 +55,19 @@ public:
      * Returns the node with the specified instance ID. NULL if not found.
      */
     SceneNode* findByIID(uint iid);
+    
+    /**
+     * Returns a list of nodes that intersects a given ray.
+     */
+    bool intersects(const geometry::Ray &ray, 
+                    data::ICollection<SceneNode*> *col);
+    
+    /**
+     * Returns a list of nodes that are intersected or contained by an Axis
+     * Aligned Bounding Box (AABB)
+     */
+    bool intersects(const geometry::AABB &box,
+                    data::ICollection<SceneNode*> *col);
     
     /**
      *

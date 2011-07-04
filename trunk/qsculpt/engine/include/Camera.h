@@ -143,12 +143,22 @@ public:
     Vector3 eyeToWorld(const Vector3& p) const;
     
     /**
+     * Overload to accept a vector by components
+     */
+    Vector3 eyeToWorld(float x, float y, float z, float w = 1.f) const;
+    
+    /**
      * Maps a point from world space to screen space.
      *
      * This method is similar in purpose to gluProject function call.
      */
     Vector3 worldToEye(const Vector3& p) const;
-    
+
+    /**
+     * Overload to accept a vector by components
+     */
+    Vector3 worldToEye(float x, float y, float z, float w = 1.f) const;
+
     
     /**
      * Create a string representation of the object. 
