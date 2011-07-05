@@ -5,13 +5,13 @@
  * Created on October 17, 2010, 4:38 PM
  */
 #include "Stable.h"
-#include "MeshEditCommands.h"
+#include "command/MeshEditCommands.h"
 #include "ISurface.h"
 #include "IDocument.h"
 #include "QSculptWindow.h"
 #include "QSculptApp.h"
 #include "IConfigContainer.h"
-#include "Box.h"
+#include "subdivision/Box.h"
 #include "Scene.h"
 #include "SceneNode.h"
 

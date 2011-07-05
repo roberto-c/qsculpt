@@ -22,7 +22,7 @@
 
 #include <QThread>
 #include <utility>
-#include "CommandBase.h"
+#include "command/CommandBase.h"
 
 class ISurface;
 struct Face;

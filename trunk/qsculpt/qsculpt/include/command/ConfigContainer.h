@@ -20,7 +20,7 @@
 #ifndef CONFIGCONTAINER_H
 #define CONFIGCONTAINER_H
 
-#include "IConfigContainer.h"
+#include "command/IConfigContainer.h"
 #include <QMap>
 #include <QString>
 #include <QVariant>

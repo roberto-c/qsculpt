@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include "BrushCommand.h"
+#include "command/BrushCommand.h"
 
 #include <QtOpenGL>
 #include <QMouseEvent>
@@ -29,7 +29,7 @@
 #include "ISurface.h"
 #include "DocumentView.h"
 #include "Camera.h"
-#include "BrushProperties.h"
+#include "command/BrushProperties.h"
 
 QImage BrushCommand::_cursorImage;
 

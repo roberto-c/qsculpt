@@ -18,9 +18,9 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "Stable.h"
-#include "CommandManager.h"
+#include "command/CommandManager.h"
 
-#include "ICommand.h"
+#include "command/ICommand.h"
 #include <QAction>
 #include "Console.h"
 

@@ -8,7 +8,7 @@
 #ifndef MESHEDITCOMMANDS_H
 #define	MESHEDITCOMMANDS_H
 
-#include "CommandBase.h"
+#include "command/CommandBase.h"
 
 class SurfaceNode;
 

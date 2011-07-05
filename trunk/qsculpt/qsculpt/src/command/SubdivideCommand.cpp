@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include "SubdivideCommand.h"
+#include "command/SubdivideCommand.h"
 #include <QtDebug>
 #include <QThread>
 #include <QProgressDialog>
@@ -29,7 +29,7 @@
 #include "DocumentView.h"
 #include "HEdge.h"
 #include "Face.h"
-#include "Subdivision.h"
+#include "subdivision/Subdivision.h"
 
 struct SubdivideCommand::Impl {
     MidEdgeMap edgeMidPoint;

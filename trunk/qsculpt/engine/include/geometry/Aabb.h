@@ -44,7 +44,7 @@ public:
     inline bool intersect(const Eigen::AlignedBox<float, 3>& box);
 };
 
-}
+};
 
 
 

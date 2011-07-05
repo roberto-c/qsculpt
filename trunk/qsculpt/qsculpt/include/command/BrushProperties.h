@@ -22,7 +22,7 @@
 
 #include <QWidget>
 #include "../ui/ui_BrushProperties.h"
-#include "BrushCommand.h"
+#include "command/BrushCommand.h"
 
 class BrushProperties : public QWidget, private Ui::BrushProperties
 {

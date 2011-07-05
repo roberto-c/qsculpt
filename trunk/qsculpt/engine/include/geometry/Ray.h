@@ -85,6 +85,6 @@ namespace geometry
         float insersect(const Sphere& sphere, Point3 *p = NULL,
                         float ep = DEFAULT_EPSILON) const;
     };
-}
+};
 
 #endif // RAY_H

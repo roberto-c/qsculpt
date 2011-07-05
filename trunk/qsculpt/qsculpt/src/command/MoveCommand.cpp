@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include "MoveCommand.h"
+#include "command/MoveCommand.h"
 #include <QMouseEvent>
 #include <QtOpenGL>
 #include "IDocument.h"

@@ -41,5 +41,5 @@ namespace geometry
 
         float intersect(const Ray& ray, Point3 *p = NULL, float ep = DEFAULT_TOL) const;
     };
-}
+};
 #endif // PLANE_H
