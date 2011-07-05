@@ -20,7 +20,7 @@
 #ifndef TRANSFORMCAMERACOMMAND_H
 #define TRANSFORMCAMERACOMMAND_H
 
-#include "CommandBase.h"
+#include "command/CommandBase.h"
 #include "Point3D.h"
 
 /**

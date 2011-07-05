@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include "orbitcommand.h"
+#include "command/orbitcommand.h"
 #include "GlView.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
@@ -26,8 +26,8 @@
 #include "Document.h"
 #include "Scene.h"
 #include "SceneNode.h"
-#include "Box.h"
-#include "Sphere.h"
+#include "subdivision/Box.h"
+#include "subdivision/Sphere.h"
 #include "FlatRenderer.h"
 #include "Eigen/Geometry"
 #include "BufferObject.h"

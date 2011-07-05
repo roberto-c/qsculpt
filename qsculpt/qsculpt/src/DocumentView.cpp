@@ -29,8 +29,8 @@
 #include <QLabel>
 #include <QSpacerItem>
 
-#include "Sphere.h"
-#include "Box.h"
+#include "subdivision/Sphere.h"
+#include "subdivision/Box.h"
 #include "IDocument.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"

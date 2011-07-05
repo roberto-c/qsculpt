@@ -21,7 +21,7 @@
 #ifndef ORBITCOMMAND_H
 #define ORBITCOMMAND_H
 
-#include "CommandBase.h"
+#include "command/CommandBase.h"
 
 /**
  * Command to move around the view.

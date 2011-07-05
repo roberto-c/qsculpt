@@ -21,7 +21,7 @@
 #define SELECTCOMMAND_H
 
 #include <QVector>
-#include "CommandBase.h"
+#include "command/CommandBase.h"
 #include "DocumentView.h"
 #include "Point3D.h"
 #include <QPointer>

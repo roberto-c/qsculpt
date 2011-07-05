@@ -22,8 +22,8 @@
 #include <QFile>
 #include <QTextStream>
 #include "ISurface.h"
-#include "Box.h"
-#include "Sphere.h"
+#include "subdivision/Box.h"
+#include "subdivision/Sphere.h"
 #include "Mesh.h"
 #include "Quad.h"
 #include <stdexcept>

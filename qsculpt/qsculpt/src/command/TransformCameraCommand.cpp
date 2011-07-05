@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include "TransformCameraCommand.h"
+#include "command/TransformCameraCommand.h"
 
 TransformCameraCommand::TransformCameraCommand(): CommandBase()
 {

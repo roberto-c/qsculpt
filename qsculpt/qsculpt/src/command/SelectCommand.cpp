@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include "SelectCommand.h"
+#include "command/SelectCommand.h"
 #include <QtOpenGL>
 #include <QMouseEvent>
 #include <QPointer>
@@ -30,7 +30,7 @@
 #include "DocumentView.h"
 #include "Camera.h"
 #include "TransformWidget.h"
-#include "Aabb.h"
+#include "geometry/Aabb.h"
 #include "Console.h"
 #include "Scene.h"
 #include "SceneNode.h"

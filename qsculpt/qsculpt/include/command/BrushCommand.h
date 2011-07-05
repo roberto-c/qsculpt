@@ -23,7 +23,7 @@
 #include <QVector>
 #include <QHash>
 #include <QMap>
-#include "CommandBase.h"
+#include "command/CommandBase.h"
 #include "DocumentView.h"
 #include "Point3D.h"
 
