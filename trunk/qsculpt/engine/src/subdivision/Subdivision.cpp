@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "StdAfx.h"
-#include "Subdivision.h"
+#include "subdivision/Subdivision.h"
 
 #include <QColor>
 #include <QtOpenGL>
@@ -26,11 +26,11 @@
 #include <math.h>
 #include <Eigen/Core>
 
-#include "Box.h"
+#include "subdivision/Box.h"
 #include "Point3D.h"
 #include "Scene.h"
 #include "HEdge.h"
-#include "Aabb.h"
+#include "geometry/Aabb.h"
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))

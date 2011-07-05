@@ -20,7 +20,7 @@
 #include "StdAfx.h"
 #include <QtOpenGL>
 #include "Point3D.h"
-#include "Box.h"
+#include "subdivision/Box.h"
 
 Box::Box()
     : Subdivision()

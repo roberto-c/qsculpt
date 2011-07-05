@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
- *   roberto.cabral@gmail.com   *
+ *   Copyright (C) 2011 by Juan Roberto Cabral Flores                      *
+ *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,23 +17,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MESH_H
-#define MESH_H
 
-//#include "Object3D.h"
-#include "subdivision/Subdivision.h"
-/**
- * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
-//class Mesh : public Object3D
-class Mesh : public Subdivision
-{
-public:
-    Mesh();
+#include "geometry/Sphere.h"
+#include "Point3D.h"
 
-    ~Mesh();
-
-};
-
-#endif
-
+// static definitions
+namespace geometry {
+    const Point3 Sphere::DEFAULT_CENTER = Point3(0, 0, 0);
+    const float Sphere::DEFAULT_RADIUS = 1.0f;
+}

@@ -14,7 +14,7 @@
 #include "ISurface.h"
 #include "SceneNode.h"
 #include <QHash>
-#include "Aabb.h"
+#include "geometry/Aabb.h"
 
 class Vertex;
 class Edge;

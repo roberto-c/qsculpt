@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) $YEAR$ by Juan Roberto Cabral Flores   *
- *   roberto.cabral@gmail.com   *
+ *   Copyright (C) 2011 by Juan Roberto Cabral Flores                      *
+ *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
