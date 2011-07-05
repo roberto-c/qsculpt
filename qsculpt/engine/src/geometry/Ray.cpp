@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "StdAfx.h"
-#include "ray.h"
-#include "Plane.h"
+#include "geometry/Ray.h"
+#include "geometry/Plane.h"
 
 namespace geometry
 {

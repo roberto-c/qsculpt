@@ -20,7 +20,7 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include "Subdivision.h"
+#include "subdivision/Subdivision.h"
 
 /**
  * Draw a 3D box.

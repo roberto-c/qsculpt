@@ -20,8 +20,8 @@
 #include "StdAfx.h"
 #include "Scene.h"
 #include "SceneNode.h"
-#include "ray.h"
-#include "Aabb.h"
+#include "geometry/Ray.h"
+#include "geometry/Aabb.h"
 #include "Octree.h"
 
 class Scene::SceneNodeIterator : public IIterator<SceneNode>

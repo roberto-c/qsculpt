@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "StdAfx.h"
-#include "Sphere.h"
+#include "subdivision/Sphere.h"
 #include <QtOpenGL>
 #include <math.h>
 
