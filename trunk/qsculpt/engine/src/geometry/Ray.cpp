@@ -20,6 +20,7 @@
 #include "StdAfx.h"
 #include "geometry/Ray.h"
 #include "geometry/Plane.h"
+#include "geometry/Sphere.h"
 
 namespace geometry
 {
@@ -57,5 +58,64 @@ namespace geometry
             return l / this->m_direction.norm();
         }
         return -1.0f;
+    }
+    
+    float Ray::intersect(const Sphere& sphere, Point3 *p, float /*ep*/) const
+    {
+        //Compute A, B and C coefficients
+        float a = direction().dot(direction());
+        float b = 2 * direction().dot(origin());
+        float c = origin().dot(origin()) - (sphere.radius() * sphere.radius());
+        float t = -1.f;
+        
+        //Find discriminant
+        float disc = b * b - 4 * a * c;
+        
+        // if discriminant is negative there are no real roots, so return 
+        // false as ray misses sphere
+        if (disc < 0)
+            return t;
+        
+        // compute q as described above
+        float distSqrt = sqrtf(disc);
+        float q;
+        if (b < 0)
+            q = (-b - distSqrt)/2.0;
+        else
+            q = (-b + distSqrt)/2.0;
+        
+        // compute t0 and t1
+        float t0 = q / a;
+        float t1 = c / q;
+        
+        // make sure t0 is smaller than t1
+        if (t0 > t1)
+        {
+            // if t0 is bigger than t1 swap them around
+            float temp = t0;
+            t0 = t1;
+            t1 = temp;
+        }
+        
+        // if t1 is less than zero, the object is in the ray's negative direction
+        // and consequently the ray misses the sphere
+        if (t1 < 0)
+            return t;
+        
+        // if t0 is less than zero, the intersection point is at t1
+        if (t0 < 0)
+        {
+            t = t1;
+        }
+        // else the intersection point is at t0
+        else
+        {
+            t = t0;
+        }
+        // calculate point of intersection
+        if (p && t >= 0) {
+            *p = origin() + direction() * t;
+        }
+        return t;
     }
 }

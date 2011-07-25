@@ -82,7 +82,7 @@ namespace geometry
          *
          * @param sphere
          */
-        float insersect(const Sphere& sphere, Point3 *p = NULL,
+        float intersect(const Sphere& sphere, Point3 *p = NULL,
                         float ep = DEFAULT_EPSILON) const;
     };
 };
