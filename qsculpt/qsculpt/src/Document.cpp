@@ -153,7 +153,6 @@ struct Document::Impl {
 };
 
 Document::Document() : _d(new Impl)
-: 
 {
 }
 

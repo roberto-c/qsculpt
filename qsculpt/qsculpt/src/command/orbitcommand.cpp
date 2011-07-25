@@ -31,6 +31,8 @@
 #include "FlatRenderer.h"
 #include "Eigen/Geometry"
 #include "BufferObject.h"
+#include "geometry/Ray.h"
+#include "geometry/Sphere.h"
 #include "math/Utils.h"
 
 struct OrbitCommand::Impl
@@ -48,6 +50,9 @@ struct OrbitCommand::Impl
     Document grid;
     Eigen::Quaternionf rot;
     Eigen::Transform3f t;
+    geometry::Ray ray;
+    geometry::Sphere sphere;
+    Camera  camera;
     
     Impl() : 
     initial(Point3())
@@ -101,8 +106,8 @@ void OrbitCommand::Impl::setup()
     root->transform() *= Eigen::Translation<float,3>(0,0,0);
     doc.scene()->appendRow(root);
     
-    surface = new SurfaceNode(new Plane(1,1));
-    //surface = new SurfaceNode(new Sphere());
+    //surface = new SurfaceNode(new Plane(1,1));
+    surface = new SurfaceNode(new Sphere());
     grid.scene()->appendRow(surface);
 }
 
@@ -141,41 +146,38 @@ void OrbitCommand::mousePressEvent(QMouseEvent *e)
     
     if (_d->selectedObj.size() > 0) {
         _d->draw = true;
-        // inital point of the arc is the center of the screen
-        _d->initial.x() = view->getCanvas()->width() / 2;
-        _d->initial.y() = view->getCanvas()->height() / 2;
-        // start vector is the vector from the center of the screen to the
-        // current mouse position.
-        _d->startVector.x() = e->x();
-        _d->startVector.y() = view->getCanvas()->height() - e->y();
-        _d->startVector = _d->startVector - _d->initial;
-        // Normalize the vector for doing angle calculations between vectors
-        _d->startVector.normalize();
-        // for now, end vector is the same as the start vector
-        _d->endVector = _d->startVector;
+        _d->camera.setViewport(0, 0, view->getCanvas()->width(),
+                               view->getCanvas()->height());
+        float aspect = view->getCanvas()->width() / view->getCanvas()->height();
+        _d->camera.setOrthoMatrix(-aspect, aspect, -1, 1, -1, 1);
+        _d->camera.setTargetPoint( Point3( 0, 0, 0) );
+        _d->camera.setOrientationVector(Point3( 0, 1, 0) );
+        _d->camera.setPosition( Point3( 0, 0, 1));
         
-        // Calculate the angle of the startVector with respect to X axis
-        Vector3 xaxis(1, 0,0);
-        _d->startAngle = - atan2(xaxis.y(),xaxis.x()) 
-            + atan2(_d->endVector.y(),_d->endVector.x());
-        // Use degrees and clamp to [0,360] range
-        _d->startAngle*=180.0f / M_PI;
-        _d->startAngle = _d->startAngle < 0 ? _d->startAngle + 360 : _d->startAngle;
-    } else {
         _d->draw = true;
         _d->initial.x() = view->getCanvas()->width() / 2;
         _d->initial.y() = view->getCanvas()->height() / 2;
         
-        _d->centerPoint = view->getViewCamera()->eyeToWorld(view->getCanvas()->width() / 2,
+        _d->centerPoint = _d->camera.eyeToWorld(view->getCanvas()->width() / 2,
                                                  view->getCanvas()->height() / 2,
                                                  0.5f);
-        Vector3 v2 = view->getViewCamera()->eyeToWorld(e->x(),
-                                                       view->getCanvas()->height() - e->y(),
-                                                       0.1f);
-        _d->startVector = v2 - _d->centerPoint;
-        _d->startVector.normalize();
-        _d->initialVector = _d->startVector;
-        //qDebug() << "Initial " << toString(_d->initialVector);
+        
+        Vector3 v1 = _d->camera.eyeToWorld(e->x(),
+                                           view->getCanvas()->height() - e->y(),
+                                           0.f);
+
+        Vector3 v2 = _d->camera.eyeToWorld(e->x(),
+                                           view->getCanvas()->height() - e->y(),
+                                           0.8f);
+        _d->ray.origin() = v1;
+        _d->ray.direction() = v2 - v1;
+        _d->ray.direction().normalize();
+        qDebug() << "o = " << toString(_d->ray.origin()) << " d = " << toString(_d->ray.direction());
+        if (_d->ray.intersect(_d->sphere, &_d->startVector) >= 0) {
+            _d->startVector.normalize();
+            _d->initialVector = _d->startVector;
+            qDebug() << "Initial " << toString(_d->initialVector);
+        }
     }
 }
 
@@ -198,47 +200,41 @@ void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     if (_d->selectedObj.size() > 0) {        
-        // Get the end vector, from the start point to the current mouse position
-        _d->endVector = Point3(e->x(), view->getCanvas()->height() - e->y(), 0) 
-                        - _d->initial;
-        // set the radius to the distance between center and end point
-        _d->radius = _d->endVector.norm(); 
-        // normalize the vector to make angle calculations
-        _d->endVector.normalize();
-        // Get the angle of the end vector with respect to the start vector.
-        _d->endAngle = atan2(_d->endVector.y(),_d->endVector.x()) 
-            - atan2(_d->startVector.y(),_d->startVector.x());
-        // Use degrees and use a range between [0, 360]
-        _d->endAngle = _d->endAngle * 180.0f / M_PI; 
-        _d->endAngle = _d->endAngle < 0 ? _d->endAngle + 360 : _d->endAngle;
-    } else {
-        //Vector3 tmp2 = _d->endPoint;
-//        Vector3 v1 = view->getViewCamera()->eyeToWorld(Point3(view->getCanvas()->width() / 2,
-//                                                               view->getCanvas()->height() / 2,
-//                                                               0.5f));
-        Vector3 v2 = view->getViewCamera()->eyeToWorld(e->x(),
-                                                        view->getCanvas()->height() - e->y(),
-                                                        0.1f);
+        Vector3 v1 = _d->camera.eyeToWorld(e->x(),
+                                           view->getCanvas()->height() - e->y(),
+                                           0.f);
         
-        _d->endVector = v2 - _d->centerPoint;
+        Vector3 v2 = _d->camera.eyeToWorld(e->x(),
+                                           view->getCanvas()->height() - e->y(),
+                                           0.8f);
+        _d->ray.origin() = v1;
+        _d->ray.direction() = v2 - v1;
+        _d->ray.direction().normalize();
+        qDebug() << "o = " << toString(_d->ray.origin()) << " d = " << toString(_d->ray.direction());
+        if (_d->ray.intersect(_d->sphere, &_d->endVector) < 0 ) {
+            qDebug() << "Intersection failed";
+            return;
+        }
+        
         _d->endVector.normalize();
-//        Vector3 tmp = _d->startVector.cross(_d->endVector);
-//        float dot = _d->startVector.dot(_d->endVector);
-//        if (dot != dot) {
-//            return;
-//        }
-//        dot = math::clamp(dot, -1.f, 1.f);
-//        float angle = acos(dot) / 200;
-//        std::swap(_d->startVector, _d->endVector);
-//        
-//        Eigen::Quaternionf qtmp = Eigen::Quaternionf(angle, tmp.x(), tmp.y(), tmp.z());
-//        qtmp.normalize();
-//        
-//        Iterator<SceneNode> it = _d->doc.scene()->iterator();
-//        while (it.hasNext()) {
-//            SceneNode* node = &it.next();
-//            node->transform().rotate(qtmp);
-//        }
+        qDebug() << "End " << toString(_d->endVector);
+        
+        Vector3 axis = _d->startVector.cross(_d->endVector);
+        axis.normalize();
+        float dot = _d->startVector.dot(_d->endVector);
+        if (dot != dot) {
+            return;
+        }
+        dot = math::clamp(dot, -1.f, 1.f);
+        float angle = acos(dot);
+        std::swap(_d->startVector, _d->endVector);
+        
+        Eigen::AngleAxisf rot = Eigen::AngleAxisf(angle, axis);        
+        Iterator<SceneNode> it = _d->doc.scene()->iterator();
+        while (it.hasNext()) {
+            SceneNode* node = &it.next();
+            node->transform().rotate(rot);
+        }
     }
 }
 
@@ -249,32 +245,7 @@ void OrbitCommand::paintGL(GlCanvas *c)
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     
     if (_d->draw) {
-        if (_d->selectedObj.size() > 0) {
-            float rad1 = _d->radius < 100 ? 100.0f : _d->radius;
-            float rad2 = rad1 - 5;
-            c->setBrush(brush);
-            c->setPen(pen);
-            c->disable(GL_DEPTH_TEST);
-            c->drawArc(_d->initial,0,360,
-                       rad1, rad1, rad2, rad2);
-            c->drawArc(_d->initial,_d->startAngle,_d->endAngle,
-                       rad1, rad1, rad2, rad2);
-            c->enable(GL_DEPTH_TEST);
-            
-            c->drawLine2D(_d->initial, _d->initial + 100*(_d->startVector));
-            c->drawLine2D(_d->initial, _d->initial + 100*(_d->endVector));
-        } else {
-            c->setBrush(brush);
-            c->setPen(pen);
-            c->disable(GL_DEPTH_TEST);
-            c->begin(GL_LINES);
-            c->drawLine(Point3(0,0,0), _d->initialVector*2);
-            qDebug() << "Initial " << toString(_d->initialVector);
-            //c->drawLine(Point3(0,0,0), Point3(1.5f, 0, 0));
-            c->end();
-            c->enable(GL_DEPTH_TEST);
-        }
+        c->drawScene(_d->grid.scene());
+        c->drawScene(_d->doc.scene());
     }
-    c->drawScene(_d->grid.scene());
-    c->drawScene(_d->doc.scene());
 }
