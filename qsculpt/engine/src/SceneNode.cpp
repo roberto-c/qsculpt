@@ -139,25 +139,26 @@ SceneNode::SceneNode(const QString& name, SceneNode *parent)
     {
         parent->appendRow(this);
     }
-    _transform = Eigen::Transform3f::Identity();
+    _transform = Eigen::Affine3f::Identity();
 }
 
 SceneNode::~SceneNode()
 {
 }
 
-const Eigen::Transform3f& SceneNode::transform() const
+const Eigen::Affine3f& SceneNode::transform() const
 { 
     return _transform; 
 }
 
-Eigen::Transform3f& SceneNode::transform() 
+Eigen::Affine3f& SceneNode::transform() 
 { 
     return _transform; 
 }
 
-void SceneNode::setTransform(const Eigen::Transform3f& /*t*/)
+void SceneNode::setTransform(const Eigen::Affine3f& t)
 {
+    _transform = t;
 }
 
 void SceneNode::render()

@@ -42,7 +42,7 @@ class SceneNode : public QStandardItem
 {
     uint _iid;
     std::vector<SceneNode*> _children;
-    Eigen::Transform3f _transform;
+    Eigen::Affine3f _transform;
 
 public:
     SceneNode(const QString& = "", SceneNode * = NULL);
@@ -52,9 +52,9 @@ public:
     
     virtual NodeType nodeType() { return NT_Normal; }
     
-    const Eigen::Transform3f& transform() const;
-    Eigen::Transform3f& transform();
-    void setTransform(const Eigen::Transform3f& /*t*/);
+    const Eigen::Affine3f& transform() const;
+    Eigen::Affine3f& transform();
+    void setTransform(const Eigen::Affine3f& /*t*/);
 
     /**
      * Function used to render the node on screen.
