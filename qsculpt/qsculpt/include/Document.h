@@ -42,12 +42,6 @@ public:
 // IDocument interface
     virtual void loadFile(const QString& fileName);
     virtual void saveFile(const QString& fileName);
-//    virtual ISurface* addObject(ObjectType type);
-//    virtual void addObject(ObjectType type, ISurface* obj);
-//    virtual void removeObject(int iid);
-//    virtual void removeObject(ISurface *s);
-//    virtual ISurface* getObject(int iid) const;
-//    virtual int getObjectsCount() const;
     virtual void selectObject(int iid);
     virtual QList<ISurface*> getSelectedObjects() const;
     virtual SceneNode* rootNode();
@@ -60,9 +54,8 @@ public:
 // End IDocument interface
     
 private:
-    QScopedPointer<Scene>       _scene;
-    QScopedPointer<SceneNode>   _rootNode;
-    QList<ISurface*>            _selectedObjectList;
+    struct Impl;
+    QScopedPointer<Impl>        _d;
 };
 
 #endif
