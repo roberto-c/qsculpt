@@ -34,21 +34,28 @@ namespace geometry {
         Sphere(const Point3 & origin = DEFAULT_CENTER, 
                float r = DEFAULT_RADIUS);
         
-        Point3 origin() const;
+        /**
+         * Returns the origin og the sphere.
+         */
+        Point3 center() const;
+        
+        /**
+         * Set the origin of the sphere.
+         */
+        void setCenter(const Point3 & val);
+        
+        /**
+         * Returns the radius of the sphere.
+         */
+        float radius() const;
+        
+        /**
+         * Set the sphere's radius.
+         *
+         * @param val new radius of the sphere.
+         */
+        void setRadius(float val);
     };
-    
-    
-    Sphere::Sphere(const Point3 & origin, 
-                    float r)
-                   : _origin(origin),
-                   _r(r)
-    {
-    }
-    
-    Point3 Sphere::origin() const {
-        return _origin;
-    }
-
 };
 
 #endif

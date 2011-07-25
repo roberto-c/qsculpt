@@ -25,4 +25,27 @@
 namespace geometry {
     const Point3 Sphere::DEFAULT_CENTER = Point3(0, 0, 0);
     const float Sphere::DEFAULT_RADIUS = 1.0f;
+    
+    Sphere::Sphere(const Point3 & origin, 
+                   float r)
+    : _origin(origin),
+    _r(r)
+    {
+    }
+    
+    Point3 Sphere::center() const {
+        return _origin;
+    }
+    
+    void Sphere::setCenter(const Point3 & val) {
+        _origin = val;
+    }
+    
+    float Sphere::radius() const {
+        return _r;
+    }
+    
+    void Sphere::setRadius(float val) {
+        _r = val;
+    }
 }
