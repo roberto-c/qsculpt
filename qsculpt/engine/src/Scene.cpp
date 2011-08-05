@@ -24,6 +24,15 @@
 #include "geometry/Aabb.h"
 #include "Octree.h"
 
+struct Scene::Impl {
+    QScopedPointer<SceneNode> root;
+    data::Octree<SceneNode*> octree;
+    
+    Impl() : root(new SceneNode)
+    {
+    }
+};
+
 class Scene::SceneNodeIterator : public IIterator<SceneNode>
 {
     const Scene* _parent;
@@ -92,7 +101,7 @@ IIterator<SceneNode>* Scene::SceneNodeIterator::clone() const
 bool Scene::SceneNodeIterator::hasNext() const
 {
     //return _index >= 0 && _parent->_children.size() > _index;
-    return _index >= 0 && _parent->rowCount() > _index;
+    return _index >= 0 && _parent->_d->root->count() > _index;
 }
 
 bool Scene::SceneNodeIterator::hasPrevious() const
@@ -103,13 +112,13 @@ bool Scene::SceneNodeIterator::hasPrevious() const
 SceneNode & Scene::SceneNodeIterator::next()
 {
     //throw std::runtime_error("Not implemented");
-    return *static_cast<SceneNode*>(_parent->item(_index++));
+    return *static_cast<SceneNode*>(_parent->_d->root->item(_index++));
 }
 
 const SceneNode & Scene::SceneNodeIterator::next() const
 {
     //throw std::runtime_error("Not implemented");
-    return *static_cast<SceneNode*>(_parent->item(_index++));
+    return *static_cast<SceneNode*>(_parent->_d->root->item(_index++));
 }
 
 SceneNode & Scene::SceneNodeIterator::previous()
@@ -129,14 +138,6 @@ bool Scene::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
 
 
 
-struct Scene::Impl {
-    QScopedPointer<SceneNode> root;
-    data::Octree<SceneNode*> octree;
-    
-    Impl() : root(new SceneNode)
-    {
-    }
-};
 
 Scene::Scene() : _d(new Impl())
 {
@@ -149,6 +150,26 @@ Scene::Scene(const std::string& /*name*/): _d(new Impl())
 
 Scene::~Scene()
 {
+}
+
+void Scene::add(SceneNode* child)
+{
+    _d->root->add(child);
+}
+
+void Scene::remove(SceneNode* child)
+{
+    _d->root->remove(child);
+}
+
+SceneNode* Scene::item(size_t index) const 
+{
+    return _d->root->item(index);
+}
+
+size_t Scene::count() const
+{
+    return _d->root->count();
 }
 
 SceneNode* Scene::findByName(const QString& name)

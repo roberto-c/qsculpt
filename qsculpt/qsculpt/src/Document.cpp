@@ -455,7 +455,7 @@ bool SceneIterator::hasNext() const
 {
     //    int n = _surface->getNumFaces();
     //    return n > 0 && _index != _surface->_faces->end();
-    return _current < _scene->rowCount();
+    return _current < _scene->count();
 }
 
 bool SceneIterator::hasPrevious() const

@@ -53,6 +53,7 @@ struct OrbitCommand::Impl
     geometry::Ray ray;
     geometry::Sphere sphere;
     Camera  camera;
+    Eigen::Affine3f orginalTransform;
     
     Impl() : 
     initial(Point3())
@@ -104,11 +105,11 @@ void OrbitCommand::Impl::setup()
     surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
     
     root->transform() *= Eigen::Translation<float,3>(0,0,0);
-    doc.scene()->appendRow(root);
+    doc.scene()->add(root);
     
     //surface = new SurfaceNode(new Plane(1,1));
     surface = new SurfaceNode(new Sphere());
-    grid.scene()->appendRow(surface);
+    grid.scene()->add(surface);
 }
 
 OrbitCommand::OrbitCommand(ICommand *parent)

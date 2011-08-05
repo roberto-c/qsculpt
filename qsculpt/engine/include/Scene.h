@@ -22,7 +22,6 @@
 
 #include <QObject>
 #include <string>
-#include <QStandardItemModel>
 #include "IIterator.h"
 #include "ICollection.h"
 
@@ -39,13 +38,27 @@ namespace geometry {
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class Scene : public QStandardItemModel {
+class Scene {
 public:
     Scene();
     Scene(const std::string& name);
 
     ~Scene();
 
+    void add(SceneNode* child);
+    
+    void remove(SceneNode* child);
+    
+    /**
+     *
+     */
+    SceneNode* item(size_t index) const ;
+    
+    /**
+     *
+     */
+    size_t count() const;
+    
     /**
      *
      */

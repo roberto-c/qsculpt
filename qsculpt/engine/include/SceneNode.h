@@ -21,7 +21,6 @@
 #define SCENENODE_H
 
 #include <vector>
-#include <QStandardItem>
 #include "IIterator.h"
 
 class ISurface;
@@ -38,7 +37,7 @@ enum NodeType {
  * This class inherit from QStandardItem to be able to be displayed
  * in the document tree widget.
  */
-class SceneNode : public QStandardItem
+class SceneNode 
 {
     uint _iid;
     std::vector<SceneNode*> _children;
@@ -56,6 +55,27 @@ public:
     Eigen::Affine3f& transform();
     void setTransform(const Eigen::Affine3f& /*t*/);
 
+    /**
+     * Add a new child node to this scene node
+     */
+    void add(SceneNode* child);
+    
+    /**
+     * Removes a node from this node. The node to remove must be a direct child
+     * from this node.
+     */
+    void remove(SceneNode* child);
+    
+    /**
+     * Returns the number of children nodes that this node has.
+     */
+    size_t count() const;
+    
+    /**
+     *
+     */
+    SceneNode* item(size_t index) const;
+    
     /**
      * Function used to render the node on screen.
      */

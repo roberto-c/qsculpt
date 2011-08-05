@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include <QtOpenGL>
-#include <QPolygon>
 #include <QMap>
 #include <cstddef>
 #include "WireframeRenderer.h"

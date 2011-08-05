@@ -93,7 +93,8 @@ IIterator<SceneNode>* SceneNode::SceneNodeIterator::clone() const
 bool SceneNode::SceneNodeIterator::hasNext() const
 {
     //return _index >= 0 && _parent->_children.size() > _index;
-    return _index >= 0 && _parent->rowCount() > _index;
+    //return _index >= 0 && _parent->rowCount() > _index;
+    return _index >= 0 && _parent->count() > _index;
 }
 
 bool SceneNode::SceneNodeIterator::hasPrevious() const
@@ -104,13 +105,13 @@ bool SceneNode::SceneNodeIterator::hasPrevious() const
 SceneNode & SceneNode::SceneNodeIterator::next()
 {
     //throw std::runtime_error("Not implemented");
-    return *static_cast<SceneNode*>(_parent->child(_index++));
+    return *static_cast<SceneNode*>(_parent->_children[_index++]);
 }
 
 const SceneNode & SceneNode::SceneNodeIterator::next() const
 {
     //throw std::runtime_error("Not implemented");
-    return *static_cast<SceneNode*>(_parent->child(_index++));
+    return *static_cast<SceneNode*>(_parent->_children[_index++]);
 }
 
 SceneNode & SceneNode::SceneNodeIterator::previous()
@@ -130,20 +131,41 @@ bool SceneNode::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
 
 
 SceneNode::SceneNode(const QString& name, SceneNode *parent)
-: QStandardItem()
+//: QStandardItem()
 {
     _iid = NEXTID.fetchAndAddRelaxed(1);
     
-    this->setText(name);
+    //this->setText(name);
     if (parent)
     {
-        parent->appendRow(this);
+        //parent->appendRow(this);
+        parent->add(this);
     }
     _transform = Eigen::Affine3f::Identity();
 }
 
 SceneNode::~SceneNode()
 {
+}
+
+void SceneNode::add(SceneNode* child)
+{
+    _children.push_back(child);
+}
+
+void SceneNode::remove(SceneNode* child)
+{
+    int size = _children.size();
+}
+
+size_t SceneNode::count() const
+{
+    return _children.size();
+}
+
+SceneNode* SceneNode::item(size_t index) const
+{
+    return _children[index];
 }
 
 const Eigen::Affine3f& SceneNode::transform() const

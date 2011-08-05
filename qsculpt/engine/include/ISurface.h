@@ -33,7 +33,7 @@
 /*
  * Class forward declaration
  */
-class QColor;
+class Color;
 class Scene;
 
 /**
@@ -132,7 +132,7 @@ public:
     * @param color color of the object.
     *
     */
-    virtual void setColor(const QColor& color) = 0;
+    virtual void setColor(const Color& color) = 0;
 
     /**
     * Gets the object base color. Used as vertex color, line color, shading
@@ -141,7 +141,7 @@ public:
     * @return color of the object.
     *
     */
-    virtual QColor getColor() const = 0;
+    virtual Color getColor() const = 0;
 
     /**
      * Mark the object as selected. This property is used by the renderers

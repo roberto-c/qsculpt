@@ -20,7 +20,6 @@
 #include "StdAfx.h"
 #include "subdivision/Subdivision.h"
 
-#include <QColor>
 #include <QtOpenGL>
 #include <QVector>
 #include <math.h>
@@ -31,6 +30,7 @@
 #include "Scene.h"
 #include "HEdge.h"
 #include "geometry/Aabb.h"
+#include "Color.h"
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -214,7 +214,7 @@ struct Subdivision::Impl {
     
     Scene*          _scene;
     Point3          _position;
-    QColor          _color;
+    Color           _color;
     geometry::AABB  _boundingBox;
     float           _rotX, _rotY, _rotZ;
     bool            _selected;
@@ -231,7 +231,7 @@ struct Subdivision::Impl {
     _faces(NULL),
     _scene(NULL),
     //_drawingMode(Wireframe),
-    _color(Qt::white),
+    _color(1.f,1.f,1.f),
     _rotX(0.0),
     _rotY(0.0),
     _rotZ(0.0),
@@ -368,12 +368,12 @@ const geometry::AABB& Subdivision::getBoundingBox() const
     return _d->_boundingBox;
 }
 
-void Subdivision::setColor(const QColor& color)
+void Subdivision::setColor(const Color& color)
 {
     _d->_color = color;
 }
 
-QColor Subdivision::getColor() const
+Color Subdivision::getColor() const
 {
     return _d->_color;
 }
