@@ -27,32 +27,6 @@ class Subdivision : public ISurface
 {
     struct Impl;
     QScopedPointer<Impl> _d;
-    
-//    typedef std::pair<int, int>     VtxPair;
-//    typedef QHash<int, Vertex*>     VertexCollection;
-//    typedef QHash<int, Edge*>       EdgesCollection;
-//    typedef QHash<VtxPair, int>     VtxPairEdgeMap;
-//    typedef QHash<int, Face*>       FacesCollection;
-//
-//    /** Instance ID of the surface */
-//    uint _iid;
-//    
-//    /** Vertices by each subdivision level */
-//    std::vector<VertexCollection*>  _vertLevelCollections;
-//    /** Edges by each subdivision level */
-//    std::vector<EdgesCollection*>   _edgesLevelCollections;
-//    /** Relates a pair of vertex ids to an edge*/
-//    std::vector<VtxPairEdgeMap*>    _vertexEdgeCollection;
-//
-//    std::vector<FacesCollection*>   _facesLevelCollections;
-//
-//
-//    VertexCollection    *_vertices;
-//    EdgesCollection     *_edges;
-//    VtxPairEdgeMap      *_vtxPairEdge;
-//    FacesCollection     *_faces;
-//
-//    SubdivisionScheme* scheme;
 
 public:
     Subdivision();
@@ -73,8 +47,8 @@ public:
     virtual void setPosition(float x, float y, float z);
     virtual void setPosition(const Point3& position);
     virtual const geometry::AABB& getBoundingBox() const;
-    virtual void setColor(const QColor& color);
-    virtual QColor getColor() const;
+    virtual void setColor(const Color& color);
+    virtual Color getColor() const;
     virtual void setSelected(bool val);
     virtual bool isSelected() const;
     virtual int addVertex(const Point3& point);
@@ -133,11 +107,6 @@ protected:
      * Initializes the points vector.
      */
     virtual void initPoints();
-
-    /**
-     * Draw a bounding box around the object.
-     */
-    //void drawBoundingBox();
 
     /**
       *

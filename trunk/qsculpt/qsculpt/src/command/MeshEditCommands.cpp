@@ -41,7 +41,7 @@ void AddSurfaceCommand::execute()
     if (doc)
     {
         _surface = new SurfaceNode(new Box);
-        doc->scene()->appendRow(_surface);
+        doc->scene()->add(_surface);
         qDebug() << "IID=" << _surface->iid();
     }
 }

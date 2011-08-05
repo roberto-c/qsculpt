@@ -87,5 +87,5 @@ void DocumentTreeWidget::updateTree()
     
     QStandardItem *parentItem = _d->model.invisibleRootItem();
     parentItem->removeRows(0, parentItem->rowCount());
-    parentItem->appendRow(reinterpret_cast<QStandardItem*>(_d->doc->rootNode()));
+    //parentItem->appendRow(reinterpret_cast<QStandardItem*>(_d->doc->rootNode()));
 }
