@@ -18,9 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include "command/MoveCommand.h"
 #include <QMouseEvent>
 #include <QtOpenGL>
+
+#include "command/MoveCommand.h"
 #include "IDocument.h"
 #include "IConfigContainer.h"
 #include "ISurface.h"
@@ -28,6 +29,7 @@
 #include "QSculptWindow.h"
 #include "Console.h"
 #include "DocumentView.h"
+#include "SceneNode.h"
 
 TransformCommand::TransformCommand()
     : CommandBase(),
@@ -129,7 +131,7 @@ void TransformCommand::execute()
 
     const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
 
-    QList<ISurface*> objects = doc->getSelectedObjects();
+    QList<SceneNode*> objects = doc->getSelectedObjects();
     switch(action)
     {
         default:
@@ -137,7 +139,7 @@ void TransformCommand::execute()
             count = objects.size();
             if (count > 0) 
             {
-                _initial = objects[0]->getPosition();
+                _initial = objects[0]->transform().translation();
             }
             for (int i = 0; i < count; i++)
             {
@@ -146,16 +148,18 @@ void TransformCommand::execute()
 				_final.y() = y;
 				_final.z() = z;
                 
-                objects[i]->displace(_initial - _final);
+//                objects[i]->displace(_initial - _final);
+                objects[i]->transform().translation() += _initial - _final;
             }
             CONSOLE()->write("move object");
             break;
         case Rotate:
-            count = objects.size();
-            for (int i = 0; i < count; i++)
-            {
-                objects[i]->setOrientation(x, y, z);
-            }
+            qDebug() << "Move command: rotate not implemented";
+//            count = objects.size();
+//            for (int i = 0; i < count; i++)
+//            {
+//                objects[i]->setOrientation(x, y, z);
+//            }
             break;
         case Scale:
             break;
@@ -174,9 +178,9 @@ void TransformCommand::activate(bool active)
         for (int i = 0; i < count; i++)
         {
             if (action == Move)
-                _objects[i]->displace(_initial - _final);
-            else if (action == Rotate)
-                _objects[i]->setOrientation(0 ,0 ,0);
+                _objects[i]->transform().translation() += _initial - _final;
+//            else if (action == Rotate)
+//                _objects[i]->setOrientation(0 ,0 ,0);
         }
     }
     _actionFinished = false;
@@ -249,8 +253,8 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
     int count = _objects.count();
     for (int i = 0; i < count; i++)
     {
-        ISurface* obj = _objects[i];
-        obj->setPosition(obj->getPosition() + d);
+        SceneNode* obj = _objects[i];
+        obj->transform().translation() += d;
     }
     _initial = _initial + delta;
 }

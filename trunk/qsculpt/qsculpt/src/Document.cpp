@@ -286,22 +286,25 @@ void Document::selectObject(int iid)
 //    }
 }
 
-QList<ISurface*> Document::getSelectedObjects() const
+QList<SceneNode*> Document::getSelectedObjects() const
 {
-    QList<ISurface*> selectedObjectList;
+    QList<SceneNode*> selectedObjectList;
     selectedObjectList.clear();
 
     Iterator<SceneNode> it = constSceneIterator();
     while (it.hasNext()) {
         SceneNode *n = &it.next();
-        if (n->nodeType() == NT_Surface)
-        {
-            ISurface *s = static_cast<SurfaceNode*>(n)->surface();
-            if (s->isSelected())
-            {
-                selectedObjectList.append(s);
-            }
+        if (n->isSelected()) {
+            selectedObjectList.append(n);
         }
+//        if (n->nodeType() == NT_Surface)
+//        {
+//            ISurface *s = static_cast<SurfaceNode*>(n)->surface();
+//            if (s->isSelected())
+//            {
+//                selectedObjectList.append(n);
+//            }
+//        }
     }
     return selectedObjectList;
 }

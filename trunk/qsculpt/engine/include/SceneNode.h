@@ -39,15 +39,14 @@ enum NodeType {
  */
 class SceneNode 
 {
-    uint _iid;
-    std::vector<SceneNode*> _children;
-    Eigen::Affine3f _transform;
+    struct Impl;
+    QScopedPointer<Impl> _d;
 
 public:
     SceneNode(const QString& = "", SceneNode * = NULL);
     virtual ~SceneNode();
     
-    uint iid() const { return _iid; }
+    uint iid() const;
     
     virtual NodeType nodeType() { return NT_Normal; }
     
@@ -75,6 +74,16 @@ public:
      *
      */
     SceneNode* item(size_t index) const;
+    
+    /**
+     *
+     */
+    bool isSelected() const;
+    
+    /**
+     *
+     */
+    void setSelected(bool selected);
     
     /**
      * Function used to render the node on screen.

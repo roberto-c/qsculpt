@@ -92,9 +92,12 @@ void SubdivideCommand::execute()
     _d->edgeMidPoint.clear();
     qDebug() << "Start time: " <<QDateTime::currentDateTime();
 
-    QList<ISurface*> list = doc->getSelectedObjects();
-    foreach(ISurface* obj, list)
+    QList<SceneNode*> list = doc->getSelectedObjects();
+    foreach(SceneNode* node, list)
     {
+        if (node->nodeType() != NT_Surface)
+            continue;
+        ISurface * obj = static_cast<SurfaceNode*>(node)->surface();
         qDebug() << "Object found";
         QVector<Face*> facesToDelete;
         Iterator<Face> it = obj->faceIterator();

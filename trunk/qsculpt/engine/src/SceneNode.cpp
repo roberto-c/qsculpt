@@ -25,6 +25,15 @@
 
 static QAtomicInt NEXTID;
 
+struct SceneNode::Impl {
+    uint                    iid;
+    bool                    isSelected;
+    std::vector<SceneNode*> children;
+    Eigen::Affine3f         transform;
+    
+    Impl() : iid(0), isSelected(false){}
+};
+
 class SceneNode::SceneNodeIterator : public IIterator<SceneNode>
 {
     const SceneNode* _parent;
@@ -105,13 +114,13 @@ bool SceneNode::SceneNodeIterator::hasPrevious() const
 SceneNode & SceneNode::SceneNodeIterator::next()
 {
     //throw std::runtime_error("Not implemented");
-    return *static_cast<SceneNode*>(_parent->_children[_index++]);
+    return *static_cast<SceneNode*>(_parent->_d->children[_index++]);
 }
 
 const SceneNode & SceneNode::SceneNodeIterator::next() const
 {
     //throw std::runtime_error("Not implemented");
-    return *static_cast<SceneNode*>(_parent->_children[_index++]);
+    return *static_cast<SceneNode*>(_parent->_d->children[_index++]);
 }
 
 SceneNode & SceneNode::SceneNodeIterator::previous()
@@ -131,9 +140,9 @@ bool SceneNode::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
 
 
 SceneNode::SceneNode(const QString& name, SceneNode *parent)
-//: QStandardItem()
+: _d(new Impl)
 {
-    _iid = NEXTID.fetchAndAddRelaxed(1);
+    _d->iid = NEXTID.fetchAndAddRelaxed(1);
     
     //this->setText(name);
     if (parent)
@@ -141,46 +150,62 @@ SceneNode::SceneNode(const QString& name, SceneNode *parent)
         //parent->appendRow(this);
         parent->add(this);
     }
-    _transform = Eigen::Affine3f::Identity();
+    _d->transform = Eigen::Affine3f::Identity();
 }
 
 SceneNode::~SceneNode()
 {
 }
 
+uint SceneNode::iid() const { 
+    return _d->iid;
+}
+
 void SceneNode::add(SceneNode* child)
 {
-    _children.push_back(child);
+    _d->children.push_back(child);
 }
 
 void SceneNode::remove(SceneNode* child)
 {
-    int size = _children.size();
+    std::vector<SceneNode*>::iterator it = find(_d->children.begin(), _d->children.end(), child); 
+    if (it != _d->children.end())
+        _d->children.erase(it);
 }
 
 size_t SceneNode::count() const
 {
-    return _children.size();
+    return _d->children.size();
 }
 
 SceneNode* SceneNode::item(size_t index) const
 {
-    return _children[index];
+    return _d->children[index];
+}
+
+bool SceneNode::isSelected() const
+{
+    return _d->isSelected;
+}
+
+void SceneNode::setSelected(bool selected)
+{
+    _d->isSelected = selected;
 }
 
 const Eigen::Affine3f& SceneNode::transform() const
 { 
-    return _transform; 
+    return _d->transform; 
 }
 
 Eigen::Affine3f& SceneNode::transform() 
 { 
-    return _transform; 
+    return _d->transform; 
 }
 
 void SceneNode::setTransform(const Eigen::Affine3f& t)
 {
-    _transform = t;
+    _d->transform = t;
 }
 
 void SceneNode::render()

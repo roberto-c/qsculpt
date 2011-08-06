@@ -46,6 +46,9 @@ public:
     virtual void orientation(float& rotX, float& rotY, float& rotZ);
     virtual void setPosition(float x, float y, float z);
     virtual void setPosition(const Point3& position);
+    virtual Eigen::Affine3f transform() const;
+    virtual Eigen::Affine3f & transform();
+    virtual void setTransform(const Eigen::Affine3f & transform);
     virtual const geometry::AABB& getBoundingBox() const;
     virtual void setColor(const Color& color);
     virtual Color getColor() const;

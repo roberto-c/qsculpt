@@ -119,6 +119,22 @@ public:
      */
     virtual void orientation(float& rotX, float& rotY, float& rotZ) = 0;
     
+    
+    /**
+     *
+     */
+    virtual Eigen::Affine3f transform() const = 0;
+    
+    /**
+     *
+     */
+    virtual Eigen::Affine3f & transform() = 0;
+    
+    /**
+     *
+     */
+    virtual void setTransform(const Eigen::Affine3f & transform) = 0;
+    
     /**
      * Returns the bounding box of the object.
      *
