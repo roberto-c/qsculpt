@@ -43,7 +43,7 @@ public:
     virtual void loadFile(const QString& fileName);
     virtual void saveFile(const QString& fileName);
     virtual void selectObject(int iid);
-    virtual QList<ISurface*> getSelectedObjects() const;
+    virtual QList<SceneNode*> getSelectedObjects() const;
     virtual SceneNode* rootNode();
     virtual const SceneNode* rootNode() const;
     virtual Scene* scene();

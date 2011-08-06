@@ -289,12 +289,14 @@ void SelectCommand::selectSurface()
             continue;
         
         surface->setSelected(false);
+        n->setSelected(false);
         Iterator<Vertex> it = surface->vertexIterator();
         while(it.hasNext()) {
             Vertex* v = &it.next();
             view->getCanvas()->mapWorldCoordsToScreenCoords(v->position(), p);
             if (box.contains(p)) {
                 surface->setSelected(true);
+                n->setSelected(true);
             }
         }
         surface->setChanged(true);
@@ -326,6 +328,7 @@ void SelectCommand::selectFaces()
             continue;
         
         surface->setSelected(false);
+        n->setSelected(false);
         Iterator<Face> it = surface->faceIterator();
         while(it.hasNext()) {
             Face* f = &it.next();
@@ -338,6 +341,7 @@ void SelectCommand::selectFaces()
                 if (box.contains(p)) {
                     f->addFlag(FF_Selected);
                     surface->setSelected(true);
+                    n->setSelected(true);
                 }
             }
         }

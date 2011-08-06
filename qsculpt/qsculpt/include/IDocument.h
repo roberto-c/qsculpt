@@ -126,7 +126,7 @@ public:
     /**
      * 
      */
-    virtual QList<ISurface*> getSelectedObjects() const = 0;
+    virtual QList<SceneNode*> getSelectedObjects() const = 0;
     
     virtual Iterator<SceneNode> sceneIterator() = 0;
     

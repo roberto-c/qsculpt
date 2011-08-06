@@ -223,7 +223,7 @@ struct Subdivision::Impl {
     int             _currentResolutionLevel;
     bool            _hasChanged;
     QVector<int>    _selectedPoints;
-    
+    Eigen::Affine3f _transform;
     
     Impl() :     _vertices(NULL),
     _edges(NULL),
@@ -361,6 +361,21 @@ void Subdivision::setPosition(const Point3& position)
 {
     _d->_position = position;
     emit positionChanged(_d->_position.x(), _d->_position.y(), _d->_position.z());
+}
+
+Eigen::Affine3f Subdivision::transform() const
+{
+    return _d->_transform;
+}
+
+Eigen::Affine3f & Subdivision::transform()
+{
+    return _d->_transform;
+}
+
+void Subdivision::setTransform(const Eigen::Affine3f & transform)
+{
+    _d->_transform = transform;
 }
 
 const geometry::AABB& Subdivision::getBoundingBox() const

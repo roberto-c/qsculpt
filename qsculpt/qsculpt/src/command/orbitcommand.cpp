@@ -44,16 +44,15 @@ struct OrbitCommand::Impl
     float   startAngle;
     float   endAngle;
     bool    draw;
-    QList<ISurface*> selectedObj;
+    QList<SceneNode*> selectedObj;
     Document doc;
     IRenderer *renderer;
-    Document grid;
     Eigen::Quaternionf rot;
     Eigen::Transform3f t;
     geometry::Ray ray;
     geometry::Sphere sphere;
     Camera  camera;
-    Eigen::Affine3f orginalTransform;
+    std::vector<Eigen::Affine3f> originalTransform;
     
     Impl() : 
     initial(Point3())
@@ -106,10 +105,6 @@ void OrbitCommand::Impl::setup()
     
     root->transform() *= Eigen::Translation<float,3>(0,0,0);
     doc.scene()->add(root);
-    
-    //surface = new SurfaceNode(new Plane(1,1));
-    surface = new SurfaceNode(new Sphere());
-    grid.scene()->add(surface);
 }
 
 OrbitCommand::OrbitCommand(ICommand *parent)
@@ -147,6 +142,10 @@ void OrbitCommand::mousePressEvent(QMouseEvent *e)
     
     if (_d->selectedObj.size() > 0) {
         _d->draw = true;
+        
+        _d->originalTransform.clear();
+        _d->originalTransform.push_back(_d->selectedObj[0]->transform());
+        
         _d->camera.setViewport(0, 0, view->getCanvas()->width(),
                                view->getCanvas()->height());
         float aspect = view->getCanvas()->width() / view->getCanvas()->height();
@@ -236,6 +235,7 @@ void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
             SceneNode* node = &it.next();
             node->transform().rotate(rot);
         }
+        _d->selectedObj[0]->setTransform(_d->selectedObj[0]->transform().rotate(rot));
     }
 }
 
@@ -246,7 +246,7 @@ void OrbitCommand::paintGL(GlCanvas *c)
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     
     if (_d->draw) {
-        c->drawScene(_d->grid.scene());
+        glClear(GL_DEPTH_BUFFER_BIT);
         c->drawScene(_d->doc.scene());
     }
 }

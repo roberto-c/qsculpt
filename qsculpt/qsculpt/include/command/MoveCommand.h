@@ -26,6 +26,7 @@
 #include <QPoint>
 
 class ISurface;
+class SceneNode;
 
 // Configuration keys constants
 #define CONF_ACTION         "ACTION"
@@ -147,7 +148,7 @@ private:
                                              * movements */
     Point3              _final;            /**< Final postion of the object. */
     QPoint              _mousePosition;    /**< Initial mouse position */
-    QList<ISurface*>    _objects;          /**< Object list to move */
+    QList<SceneNode*>    _objects;          /**< Object list to move */
 };
 
 #endif
