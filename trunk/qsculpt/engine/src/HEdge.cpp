@@ -219,50 +219,32 @@ IIterator<Vertex>* Edge::VertexIterator::clone() const
 
 bool Edge::VertexIterator::hasNext() const
 {
-    //return _currHe->next() != NULL && _currHe->next() != _he;
-    //return _currHe != NULL;
     NOT_IMPLEMENTED
-            return false;
 }
 
 bool Edge::VertexIterator::hasPrevious() const
 {
     NOT_IMPLEMENTED
-            return false;
 }
 
 Vertex & Edge::VertexIterator::next()
 {
-    //	Vertex * v = _currHe->head();
-    //	_currHe = _currHe->next() == _he ? NULL : _currHe->next();
-    //	return *v;
-    static Vertex v;
     NOT_IMPLEMENTED
-            return v;
 }
 
 const Vertex & Edge::VertexIterator::next() const
 {
-    //	Vertex * v = _currHe->head();
-    //	_currHe = _currHe->next() == _he ? NULL : _currHe->next();
-    //	return *v;
-    static Vertex v;
     NOT_IMPLEMENTED
-            return v;
 }
 
 Vertex & Edge::VertexIterator::previous()
 {
-    static Vertex v;
     NOT_IMPLEMENTED
-            return v;
 }
 
 const Vertex & Edge::VertexIterator::previous() const
 {
-    static Vertex v;
     NOT_IMPLEMENTED
-            return v;
 }
 
 bool Edge::VertexIterator::seek(int pos, IteratorOrigin origin) const
@@ -285,47 +267,36 @@ IIterator<Edge>* Edge::HEdgeIterator::clone() const
 
 bool Edge::HEdgeIterator::hasNext() const
 {
-    //return _currHe->next() != NULL && _currHe->next() != _he;
     return _currHe != NULL;
 }
 
 bool Edge::HEdgeIterator::hasPrevious() const
 {
     NOT_IMPLEMENTED
-            return false;
 }
 
 Edge & Edge::HEdgeIterator::next()
 {
     NOT_IMPLEMENTED
-            Edge * h = _currHe;
-    //_currHe = _currHe->next() == _he ? NULL : _currHe->next();
-    return *h;
 }
 
 const Edge & Edge::HEdgeIterator::next() const
 {
     NOT_IMPLEMENTED
-            Edge * h = _currHe;
-    //_currHe = _currHe->next() == _he ? NULL : _currHe->next();
-    return *h;
 }
 
 Edge & Edge::HEdgeIterator::previous()
 {
-    static Edge v;
     NOT_IMPLEMENTED
-            return v;
 }
 
 const Edge & Edge::HEdgeIterator::previous() const
 {
-    static Edge v;
     NOT_IMPLEMENTED
-            return v;
 }
 
 bool Edge::HEdgeIterator::seek(int pos, IteratorOrigin origin) const
 {
+    NOT_IMPLEMENTED
     return false;
 }

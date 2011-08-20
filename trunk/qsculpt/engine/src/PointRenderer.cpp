@@ -124,7 +124,6 @@ void PointRenderer::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
         return;
 
     Vector3 color1(0.85f, 0.85f, 0.85f);
-    Vector3 color2(0.85f, 0.2f, 0.2f);
 
     int numFloats = numVertices*6;
     GLfloat* vtxData = new GLfloat[numFloats];
@@ -148,11 +147,11 @@ void PointRenderer::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
             vtxData[offset] = color1.z();
             offset++;
         } else {
-            vtxData[offset] = color2.x();
+            vtxData[offset] = v.color().x();
             offset++;
-            vtxData[offset] = color2.y();
+            vtxData[offset] = v.color().y();
             offset++;
-            vtxData[offset] = color2.z();
+            vtxData[offset] = v.color().z();
             offset++;
         }
 

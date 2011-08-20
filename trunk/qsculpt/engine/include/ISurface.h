@@ -206,10 +206,14 @@ public:
     virtual void removeVertex( int id) = 0;
 
     /**
-     *
+     * Returns the vertex with the instance ID iid.
      */
-    virtual Vertex* getVertex(int index) = 0;
-    virtual const Vertex* getVertex(int index) const = 0;
+    virtual Vertex* getVertex(int iid) = 0;
+    
+    /**
+     * Returns the vertex with the instance ID iid.
+     */
+    virtual const Vertex* getVertex(int iid) const = 0;
 
     /**
      * Gets the number of vertices
