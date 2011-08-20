@@ -109,7 +109,7 @@ public:
      * Iterator constructor. Sets up this iterator wrapper around the
      * passed iterator implementation class.
      */
-    Iterator(IIterator<T>* it) : _it(it) {}
+    Iterator(IIterator<T>* it = 0) : _it(it) {}
 
     /**
      * Contructor to make a copy of another iterator.
@@ -135,44 +135,62 @@ public:
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
      */
-    inline bool hasNext() const { return _it->hasNext(); }
+    inline bool hasNext() const { return _it && _it->hasNext(); }
 
     /**
      * Returns true if the iterator is not at the beginning of the iteration
      */
-    inline bool hasPrevious() const { return _it->hasPrevious(); }
+    inline bool hasPrevious() const { return _it && _it->hasPrevious(); }
 
     /**
      * Returns the next element and advance the iterator by one.
      */
-    inline T & next() { return _it->next(); }
+    inline T & next() { 
+        assert(_it != 0);
+        return _it->next();
+    }
 
     /**
      * Returns the next element and advance the iterator by one.
      */
-    inline const T & next() const { return _it->next(); }
+    inline const T & next() const { 
+        assert(_it != 0);
+        return _it->next(); 
+    }
 
     /**
      * Return the next element without advancing to the iterator
      */
-    inline T & peekNext() { return _it->peekNext(); }
+    inline T & peekNext() { 
+        assert(_it != 0);
+        return _it->peekNext();
+    }
     
     /**
      * Return the next element without advancing to the iterator
      */
-    inline const T & peekNext() const { return _it->peekNext(); }
+    inline const T & peekNext() const { 
+        assert(_it != 0);
+        return _it->peekNext();
+    }
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    inline T & previous() { return _it->previous(); }
+    inline T & previous() { 
+        assert(_it != 0);
+        return _it->previous();
+    }
 
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    inline const T & previous() const { return _it->previous(); }
+    inline const T & previous() const { 
+        assert(_it != 0);
+        return _it->previous();
+    }
 
     /**
      * Set the current position to pos relative to origin.
@@ -181,6 +199,7 @@ public:
      * @param origin states the reference to jump.
      */
     inline bool seek(int pos, IteratorOrigin origin = Iter_Start) const {
+        assert(_it != 0);
         return _it->seek(pos, origin);
     }
 };
