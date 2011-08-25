@@ -27,10 +27,12 @@ class Edge {
     int         _id;    // 4
     EdgeFlags   _flags; // 4
     Edge        *_next; // 4
+    Edge        *_prev; // 4
     Edge        *_pair; // 4
     Vertex      *_head; // 4
     Vertex      *_tail; // 4
     Face        *_face; // 4
+    void        *_userData; // 4
 
 public:
     Edge();
@@ -57,6 +59,9 @@ public:
      */
     Edge* next() const { return _next; }
     void setNext(Edge* he) { _next = he; }
+    
+    Edge* prev() const { return _prev; }
+    void setPrev(Edge* he) { _prev = he; }
 
     /**
      * Gets / sets a pointer to the pair of this HEdge structure.
@@ -81,6 +86,22 @@ public:
      */
     Face* face() const { return _face; }
     void setFace(Face* f) { _face = f; }
+
+    /**
+     * Allows to attach a pointer to a user defined structure or data
+     */
+    void setUserData(void * data) {
+        _userData = data;
+    }
+    
+    /**
+     * Returns a pointer to the user data.
+     *
+     * The user is responsible to cast the pointer to the correct type
+     */
+    void * userData() const {
+        return _userData;
+    }
 
     bool isEqual(const Edge& he) const;
     bool operator==(const Edge& he) const;

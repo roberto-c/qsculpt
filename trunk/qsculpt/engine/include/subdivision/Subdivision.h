@@ -85,6 +85,8 @@ public:
     virtual Iterator<Vertex> constVertexIterator() const;
     virtual Iterator<Face> faceIterator();
     virtual Iterator<Face> constFaceIterator() const;
+    virtual Iterator<Edge> edgeIterator();
+    virtual Iterator<Edge> constEdgeIterator() const;
 
     Point3 localToWorldCoords(const Point3& p) const;
 
@@ -121,9 +123,11 @@ protected:
 protected:
     class VertexIterator;
     class FaceIterator;
+    class EdgeIterator;
 
     friend class VertexIterator;
     friend class FaceIterator;
+    friend class EdgeIterator;
 };
 
 #endif

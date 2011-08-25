@@ -172,11 +172,9 @@ void OrbitCommand::mousePressEvent(QMouseEvent *e)
         _d->ray.origin() = v1;
         _d->ray.direction() = v2 - v1;
         _d->ray.direction().normalize();
-        qDebug() << "o = " << toString(_d->ray.origin()) << " d = " << toString(_d->ray.direction());
         if (_d->ray.intersect(_d->sphere, &_d->startVector) >= 0) {
             _d->startVector.normalize();
             _d->initialVector = _d->startVector;
-            qDebug() << "Initial " << toString(_d->initialVector);
         }
     }
 }
@@ -210,14 +208,14 @@ void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
         _d->ray.origin() = v1;
         _d->ray.direction() = v2 - v1;
         _d->ray.direction().normalize();
-        qDebug() << "o = " << toString(_d->ray.origin()) << " d = " << toString(_d->ray.direction());
+        //qDebug() << "o = " << toString(_d->ray.origin()) << " d = " << toString(_d->ray.direction());
         if (_d->ray.intersect(_d->sphere, &_d->endVector) < 0 ) {
             qDebug() << "Intersection failed";
             return;
         }
         
         _d->endVector.normalize();
-        qDebug() << "End " << toString(_d->endVector);
+        //qDebug() << "End " << toString(_d->endVector);
         
         Vector3 axis = _d->startVector.cross(_d->endVector);
         axis.normalize();

@@ -47,6 +47,8 @@ class Face {
     FaceFlags _flags; // 4
     size_t _nVertices;
     
+    void * _userData;
+    
 public:
     //qint32 hashValue; // 4
 
@@ -80,6 +82,12 @@ public:
 
     /**
      * Set / get attribute flags to the face.
+     *
+     * @param flag possible values
+     *              FF_None     
+     *              FF_Selected 
+     *              FF_Deleted  
+     *              FF_All      
      */
     void addFlag(FaceFlags flag) { _flags = (FaceFlags)(_flags | flag); }
     void removeFlag(FaceFlags flag) { _flags = (FaceFlags)(_flags & ~flag); }
@@ -129,6 +137,22 @@ public:
 
     bool hasEdge(int /*v1*/, int /*v2*/) const ;
 
+    /**
+     * Allows to attach a pointer to a user defined structure or data
+     */
+    void setUserData(void * data) {
+        _userData = data;
+    }
+    
+    /**
+     * Returns a pointer to the user data.
+     *
+     * The user is responsible to cast the pointer to the correct type
+     */
+    void * userData() const {
+        return _userData;
+    }
+    
     bool operator==(const Face& t) const;
 
     operator Point3() const ;

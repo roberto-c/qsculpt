@@ -18,6 +18,7 @@ class Face::VertexIterator : public IIterator<Vertex>
 
     const Face* _f;
     mutable Edge* _e;
+    mutable bool first_;
 
 protected:
     /**
@@ -178,7 +179,7 @@ public:
 };
 
 //QAtomicInt Face::NEXT_ID(0);
-static QAtomicInt NEXT_ID(0);
+static QAtomicInt NEXT_ID(1);
 
 Face::Face(ISurface *surface)
     :   _flags(FF_None),
@@ -186,7 +187,8 @@ Face::Face(ISurface *surface)
     _he(NULL),
     _vertex(NULL),
     _children(NULL),
-    _nVertices(0)
+    _nVertices(0),
+    _userData(NULL)
 //hashValue(0)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
@@ -199,7 +201,8 @@ Face::Face(ISurface *surface, const QVector<int>& vertexIndexList)
     _vertex(NULL),
     //point(vertexIndexList),
     _children(NULL),
-    _nVertices(0)
+    _nVertices(0),
+    _userData(NULL)
 //    hashValue(0)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
@@ -337,7 +340,8 @@ void Face::subdivide(int /*level*/)
 
 Face::VertexIterator::VertexIterator(const Face* f)
     :	_f(f),
-    _e(NULL)
+    _e(f->_he),
+    first_(true)
 {
 }
 
@@ -354,7 +358,7 @@ bool Face::VertexIterator::hasNext() const
     // _e pointer hasn't been set yet (next() hasn't been called)
     // or _e has been set and _e is different to the initial
     // edget pointer (_f->_he)
-    return _f->_he && (!_e || (_e->next() && _e->next() != _f->_he));
+    return (first_ && _e != NULL) || (_e != NULL && _e != _f->_he);
 }
 
 
@@ -366,27 +370,30 @@ bool Face::VertexIterator::hasPrevious() const
 
 Vertex & Face::VertexIterator::next()
 {
-    //NOT_IMPLEMENTED
-    _e = _e == NULL ? _f->_he : _e->next();
-    return *_e->head();
+    assert(_e != NULL);
+    first_ = false;
+    Vertex * v = _e->head();
+    _e = _e->next();
+    return *v;
 }
 
 const Vertex & Face::VertexIterator::next() const
 {
-    //NOT_IMPLEMENTED
-
-    _e = _e == NULL ? _f->_he : _e->next();
-    return *_e->head();
+    assert(_e != NULL);
+    first_ = false;
+    Vertex * v = _e->head();
+    _e = _e->next();
+    return *v;
 }
 
 Vertex & Face::VertexIterator::peekNext()
 {
-    return _e == NULL ? *(_f->_he->head()) : *(_e->next()->head());
+    return *_e->head();
 }
 
 const Vertex & Face::VertexIterator::peekNext() const
 {
-    return _e == NULL ? *(_f->_he->head()) : *(_e->next()->head());
+    return *_e->head();
 }
 
 Vertex & Face::VertexIterator::previous()

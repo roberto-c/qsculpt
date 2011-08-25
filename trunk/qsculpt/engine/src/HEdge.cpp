@@ -143,7 +143,8 @@ Edge::Edge()
     _pair(NULL),
     _head(NULL),
     _tail(NULL),
-    _face(NULL)
+    _face(NULL),
+    _userData(NULL)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
 }
@@ -154,7 +155,8 @@ Edge::Edge(Vertex* tail, Vertex* head)
     _pair(NULL),
     _head(head),
     _tail(tail),
-    _face(NULL)
+    _face(NULL),
+    _userData(NULL)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
     assert(tail && head && tail->iid() != head->iid());

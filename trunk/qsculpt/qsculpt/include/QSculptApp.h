@@ -61,6 +61,8 @@ public:
      * are being executed on.
      */
     IDocument* getCurrentDocument();
+    
+    virtual bool	notify ( QObject * receiver, QEvent * e );
 
 private:
     QSculptWindow* m_mainWindow; /**< main widget of the application. */
