@@ -16,6 +16,7 @@
 #include "IIterator.h"
 
 class Edge;
+class Face;
 
 enum VertexFlags {
     VF_None     = 0,
@@ -28,14 +29,13 @@ class Vertex
 {
     static QAtomicInt NEXT_ID;
 
-    Point3      _position; // 16
-    Vector3     _normal; // 16
-    Vector3     _color; // 16
-    int         _id; //4
-    VertexFlags _flags; // 4
-    Edge*       _he; // 4
-
-    class VertexIterator;
+    Point3        _position; // 16
+    Vector3       _normal;  // 16
+    Vector3       _color;   // 16
+    int           _id;      //4
+    VertexFlags   _flags;   // 4
+    Edge        * _he;      // 4
+    void        * _userData; // 4
 
 public:
 
@@ -99,6 +99,22 @@ public:
     VertexFlags flags() const { return _flags; }
 
     /**
+     * Allows to attach a pointer to a user defined structure or data
+     */
+    void setUserData(void * data) {
+        _userData = data;
+    }
+    
+    /**
+     * Returns a pointer to the user data.
+     *
+     * The user is responsible to cast the pointer to the correct type
+     */
+    void * userData() const {
+        return _userData;
+    }
+
+    /**
      * Operator to treat the Vertex class as a Point3 instance. Returns
      * the position of the vertex.
      */
@@ -118,10 +134,22 @@ public:
      */
     bool operator!=(const Vertex& v) const;
 
+    /**
+     * 
+     */
     Iterator<Vertex> vertexIterator();
 
-
+    /**
+     * Used to iterate over faces that share this vertex.
+     */
+    Iterator<Face> faceIterator();
+    
+private:
+    class VertexIterator;
+    class FaceIterator;
+    
     friend class VertexIterator;
+    friend class FaceIterator;
 };
 
 #endif

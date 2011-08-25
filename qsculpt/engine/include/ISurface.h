@@ -369,6 +369,16 @@ public:
     virtual Iterator<Face> constFaceIterator() const = 0;
 
     /**
+     *
+     */
+    virtual Iterator<Edge> edgeIterator() = 0;
+    
+    /**
+     *
+     */
+    virtual Iterator<Edge> constEdgeIterator() const = 0;
+
+    /**
      * This function applies a transformation to convert a coordinate in
      * the local coordinate system to the world coordinate system.
      *

@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "QSculptApp.h"
+#include <stdexcept>
 #include <QWidget>
 #include "QSculptWindow.h"
 #include "IDocument.h"
@@ -41,6 +42,15 @@ QSculptWindow* QSculptApp::getMainWindow()
     return m_mainWindow;
 }
 
+bool QSculptApp::notify ( QObject * receiver, QEvent * e )
+{
+    try {
+        return QApplication::notify(receiver, e);
+    } catch (std::exception & e) {
+        qDebug() << "Exception: " << e.what();
+    }
+    return false;
+}
 
 /**
  * Main entry point.

@@ -35,8 +35,6 @@ class Vertex;
  */
 class SubdivideCommand : public CommandBase
 {
-    typedef QHash< std::pair<int, int>, Vertex*> MidEdgeMap;
-
     Q_OBJECT
 
 public:

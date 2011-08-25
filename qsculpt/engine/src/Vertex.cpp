@@ -11,14 +11,17 @@
 #include "StdAfx.h"
 #include "Vertex.h"
 #include "HEdge.h"
+#include "Face.h"
 
 
 class Vertex::VertexIterator : public IIterator<Vertex>
 {
     friend class Vertex;
 
-    Vertex* _v;
-    Edge* _currHe;
+            Vertex  *   _v;
+    mutable Edge    *   _iniHe;
+    mutable Edge    *   _nextHe;
+    mutable bool        _firstIt;
 
 protected:
     /**
@@ -48,17 +51,27 @@ public:
      * Returns the next element and advance the iterator by one.
      */
     Vertex & next();
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Vertex & next() const;
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    Vertex & peekNext();
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Vertex & peekNext() const;
 
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
     Vertex & previous();
-
-    /**
-     * Returns the next element and advance the iterator by one.
-     */
-    const Vertex & next() const;
 
     /**
      * Returns the previous elements and move the iterator one position
@@ -75,6 +88,81 @@ public:
     bool seek(int pos, IteratorOrigin origin) const ;
 };
 
+class Vertex::FaceIterator : public IIterator<Face>
+{
+    friend class Vertex;
+    
+    Vertex  *   _v;
+    mutable Edge    *   _iniHe;
+    mutable Edge    *   _nextHe;
+    mutable bool        _firstIt;
+    
+protected:
+    /**
+     * Constructor of a vertex iterator. The vertex iterator
+     * is only contructed by means of Vertex::vertexIterator() function
+     */
+    FaceIterator(Vertex* v);
+    
+public:
+    /**
+     *
+     */
+    IIterator<Face>* clone() const;
+    
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    bool hasNext() const;
+    
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    bool hasPrevious() const;
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    Face & next();
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Face & next() const;
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    Face & peekNext();
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Face & peekNext() const;
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    Face & previous();
+        
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    const Face & previous() const;
+    
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    bool seek(int pos, IteratorOrigin origin) const ;
+};
+
+
 QAtomicInt Vertex::NEXT_ID(1);
 
 Vertex::Vertex() 
@@ -82,7 +170,8 @@ Vertex::Vertex()
     _normal(Vector3(0, 1, 0)),
     _color(Vector3(1, 1, 1)),
     _flags(VF_None),
-    _he(NULL)
+    _he(NULL),
+    _userData(NULL)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
 }
@@ -94,7 +183,8 @@ Vertex::Vertex(const Point3 & position,
                    _normal(normal.normalized()),
                    _color(color),
                    _flags(VF_None),
-                   _he(NULL)
+                   _he(NULL),
+                   _userData(NULL)
 {
     _id = NEXT_ID.fetchAndAddRelaxed(1);
 }
@@ -141,6 +231,12 @@ Iterator<Vertex> Vertex::vertexIterator()
     return Iterator<Vertex>(new VertexIterator(this));
 }
 
+Iterator<Face> Vertex::faceIterator()
+{ 
+    return Iterator<Face>(new FaceIterator(this));
+}
+
+
 QString Vertex::toString()
 {
     QString str = QString("V_%1:(%2, %3, %4)")
@@ -155,63 +251,150 @@ QString Vertex::toString()
 // VertexIterator
 
 Vertex::VertexIterator::VertexIterator(Vertex* v) 
-    :	_v(v),
-    _currHe(NULL)
+:	_iniHe(v ? v->edge() : NULL),
+    _nextHe(NULL),
+    _firstIt(true)
 {
+    _nextHe = _iniHe ; //? _iniHe->pair()->next() : NULL;
+    _firstIt = _nextHe != NULL;
 }
 
 IIterator<Vertex>* Vertex::VertexIterator::clone() const
 {
-    VertexIterator *it = new VertexIterator(_v);
-    it->_currHe = _currHe;
+    VertexIterator *it = new VertexIterator(NULL);
+    it->_nextHe = _nextHe;
+    it->_iniHe = _iniHe;
+    it->_firstIt = _firstIt;
     return it;
 }
 
 bool Vertex::VertexIterator::hasNext() const
 {
-    NOT_IMPLEMENTED
-            //if (!_currHe)
-            //	return false;
-
-            return false;
+    return (_firstIt ) || ( (_nextHe != NULL) && (_iniHe != _nextHe) ) ;
 }
 
 
 bool Vertex::VertexIterator::hasPrevious() const
 {
+    NOT_IMPLEMENTED
     return false;
 }
 
-
 Vertex & Vertex::VertexIterator::next()
 {
-    NOT_IMPLEMENTED
-            //return *(_v->_he->head());
-            return *_v;
+    assert(_nextHe != NULL);
+    _firstIt = false;
+    Vertex * v = _nextHe->head();
+    _nextHe = _nextHe->pair()->next();
+    return *v;
 }
 
 const Vertex & Vertex::VertexIterator::next() const
 {
-    NOT_IMPLEMENTED
-            //return *(_v->_he->head());
-            return *_v;
+    assert(_nextHe != NULL);
+    _firstIt = false;
+    Vertex * v = _nextHe->head();
+    _nextHe = _nextHe->pair()->next();
+    return *v;
+}
+
+Vertex & Vertex::VertexIterator::peekNext()
+{
+    return *_nextHe->head();
+}
+
+const Vertex & Vertex::VertexIterator::peekNext() const
+{
+    return *_nextHe->head();
 }
 
 Vertex & Vertex::VertexIterator::previous()
 {
     NOT_IMPLEMENTED
-            //return *(_v->_he->head());
-            return *_v;
 }
 
 const Vertex & Vertex::VertexIterator::previous() const
 {
     NOT_IMPLEMENTED
-            //return *(_v->_he->head());
-            return *_v;
 }
 
 bool Vertex::VertexIterator::seek(int pos, IteratorOrigin origin) const
 {
+    return false;
+}
+
+// FaceIterator
+
+Vertex::FaceIterator::FaceIterator(Vertex* v) 
+:	_iniHe(v ? v->edge() : NULL),
+    _nextHe(NULL),
+    _firstIt(true)
+{
+    _nextHe = _iniHe ; //? _iniHe->pair()->next() : NULL;
+    _firstIt = _nextHe != NULL && _nextHe->face() != NULL;
+}
+
+IIterator<Face>* Vertex::FaceIterator::clone() const
+{
+    FaceIterator *it = new FaceIterator(NULL);
+    it->_nextHe = _nextHe;
+    it->_iniHe = _iniHe;
+    it->_firstIt = _firstIt;
+    return it;
+}
+
+bool Vertex::FaceIterator::hasNext() const
+{    
+    return (_firstIt ) || ( (_nextHe != NULL) && (_iniHe != _nextHe) && (_nextHe->face() != NULL) ) ;
+}
+
+
+bool Vertex::FaceIterator::hasPrevious() const
+{
+    NOT_IMPLEMENTED
+}
+
+
+Face & Vertex::FaceIterator::next()
+{
+    assert(_nextHe != NULL);
+    _firstIt = false;
+    Face * f = _nextHe->face();
+    _nextHe = _nextHe->pair()->next();
+    return *f;    
+}
+
+const Face & Vertex::FaceIterator::next() const
+{
+    assert(_nextHe != NULL);
+    _firstIt = false;
+    Face * f = _nextHe->face();
+    _nextHe = _nextHe->pair()->next();
+    return *f;    
+}
+
+Face & Vertex::FaceIterator::peekNext()
+{
+    return *_nextHe->face();
+}
+
+const Face & Vertex::FaceIterator::peekNext() const
+{
+    return *_nextHe->face();
+}
+
+Face & Vertex::FaceIterator::previous()
+{
+    NOT_IMPLEMENTED
+}
+
+const Face & Vertex::FaceIterator::previous() const
+{
+    NOT_IMPLEMENTED
+}
+
+bool Vertex::FaceIterator::seek(int pos, IteratorOrigin origin) const
+{
+    NOT_IMPLEMENTED
     return false;
 }

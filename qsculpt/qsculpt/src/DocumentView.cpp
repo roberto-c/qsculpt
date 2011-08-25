@@ -124,7 +124,7 @@ void DocumentView::createWidgets()
     _drawingMode->addItem("Smooth", Smooth);
     _drawingMode->addItem("Textured", Texture);
     _drawingMode->setCurrentIndex(2);
-    _display->setDrawingMode(Points);
+    _display->setDrawingMode(Flat);
 
     connect(_viewPerspective, SIGNAL(currentIndexChanged(int)), this, SLOT(viewPerspectiveChanged(int)));
     connect(_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));

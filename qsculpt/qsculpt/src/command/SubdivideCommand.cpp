@@ -31,11 +31,25 @@
 #include "Face.h"
 #include "subdivision/Subdivision.h"
 
+typedef QHash< std::pair<int, int>, Vertex*> MidEdgeMap;
+
 struct SubdivideCommand::Impl {
     MidEdgeMap edgeMidPoint;
     
     Impl(){}
     Impl(const Impl& cpy){}
+    
+    void splitEdges(ISurface& s);
+    
+    void addFaceMidPointVertex(ISurface& s);
+    
+    void createFaces(ISurface& s);
+    
+    void removeOldFaces(ISurface& s);
+    
+    void cleanUserData(ISurface& s);
+    
+    void smoothNormals(ISurface& s);
 };
 
 SubdivideCommand::SubdivideCommand()
@@ -99,23 +113,24 @@ void SubdivideCommand::execute()
             continue;
         ISurface * obj = static_cast<SurfaceNode*>(node)->surface();
         qDebug() << "Object found";
+        qDebug() << "Num faces =" << obj->getNumFaces();
         QVector<Face*> facesToDelete;
-        Iterator<Face> it = obj->faceIterator();
-        it.seek(0, Iter_End);
-        while(it.hasPrevious()){
-            Face* f = &it.previous();
-            subdivideFace(*obj, *f);
-            facesToDelete.append(f);
-        }
-        foreach(Face* f, facesToDelete) {
-            obj->removeFace(f->iid());
-            delete f;
-        }
-        facesToDelete.clear();
+        
+        // split edges in half and add a vertex per face
+        _d->splitEdges(*obj);
+        _d->addFaceMidPointVertex(*obj);
+        
+        // create new faces
+        _d->createFaces(*obj);
+
+        _d->removeOldFaces(*obj);
+        
+        // set to null data
+        _d->cleanUserData(*obj);
+        
         obj->setChanged(true);
         qDebug() << "Num Faces: " << obj->getNumFaces();
-        
-        static_cast<Subdivision*>(obj)->printMemoryInfo();
+        qDebug() << "Num Vertices: " << obj->getNumVertices();
     }
     qDebug() << "End time:" << QDateTime::currentDateTime();
     dlg.setValue(100);
@@ -129,30 +144,7 @@ void SubdivideCommand::subdivideFace(ISurface& obj, Face& f)
     QVector<int> vtxIndex, newFace;
     int counter = 0, nVtx = 0;
     Iterator<Edge> edgeIt = f.edgeIterator();
-    // Create new vertices at the mid point of each edge
-    while(edgeIt.hasNext()){
-        Edge& e = edgeIt.next();
-        VertexPair pair(e.tail()->iid(), e.head()->iid());
-        // Check if we have subdivided this edge already.
-        // If so, get the vertex of that subdvision
-        // If not, create the edge mid point vertex
-        if (_d->edgeMidPoint.contains(pair))
-        {
-            Vertex* v = _d->edgeMidPoint.value(pair);
-            vtxIndex.append(v->iid());
-            p = v->position();
-        }
-        else
-        {
-            p = (e.tail()->position() + e.head()->position()) * 0.5f;
-            Vertex* v = obj.getVertex(obj.addVertex(p));
-            vtxIndex.append(v->iid());
-            _d->edgeMidPoint.insert(pair, v);
-        }
-        // Accumulate the position. Used to compute the face mid point
-        avg += p;
-        nVtx++;
-    }
+    
     // Add the mid point of the face to the surface object
     Vertex* faceCenter = obj.getVertex(obj.addVertex(avg / nVtx));
     // Create the faces
@@ -169,4 +161,147 @@ void SubdivideCommand::subdivideFace(ISurface& obj, Face& f)
         ++counter;
     }
     //qDebug() << "Num edges: " << nVtx << " Conter: " << counter;
+}
+
+void SubdivideCommand::Impl::splitEdges(ISurface& s)
+{
+    Iterator<Edge> edgeIt = s.edgeIterator();
+    // Create new vertices at the mid point of each edge
+    while(edgeIt.hasNext()){
+        Edge& e = edgeIt.next();
+        if (e.userData() == NULL) {
+            Vector3 p = (e.tail()->position() + e.head()->position()) * 0.5f;
+            Vertex * vtx = s.getVertex(s.addVertex(p));
+            e.setUserData( static_cast<void*>(vtx) );
+            assert(e.pair() != NULL && e.pair()->userData() == NULL);
+            e.pair()->setUserData( static_cast<void*>(vtx) );
+        }
+    }
+}
+
+void SubdivideCommand::Impl::addFaceMidPointVertex(ISurface& s)
+{
+    Vector3 p;
+    Iterator<Face> faceIt = s.faceIterator();
+    // Create new vertices at the mid point of each edge
+    while(faceIt.hasNext()){
+        Face & f = faceIt.next();
+        Iterator<Vertex> vtxIt = f.vertexIterator();
+        p.setZero();
+        int val = 0;
+        while (vtxIt.hasNext()) {
+            p += vtxIt.next().position();
+            ++val;
+        }
+        p = p / val;
+        Vertex * vtx = s.getVertex(s.addVertex(p));
+        f.setUserData( static_cast<void*>(vtx) );
+    }
+}
+
+void SubdivideCommand::Impl::createFaces(ISurface& s)
+{
+    int faceCounter = 0;
+    QVector<int> vtxIndex, faceVtxIID;
+    vtxIndex.reserve(10);
+    faceVtxIID.reserve(4);
+    Iterator<Face> faceIt = s.faceIterator();
+    // Create new vertices at the mid point of each edge
+    while(faceIt.hasNext()){
+        Face & f = faceIt.next();
+        // skip face if it does not contain midpoint as it is probably a new
+        // face.
+        if (f.userData() == NULL) {
+            continue;
+        }
+        
+        vtxIndex.clear();
+        int numEdges = 0;
+        faceCounter++;
+        Iterator<Edge> edgeIt = f.edgeIterator();
+        while (edgeIt.hasNext()) {
+            // for each edge add the tail vertex and the the edge midpoint.
+            Edge & e = edgeIt.next();
+            vtxIndex.push_back(e.tail()->iid());
+            Vertex * v = static_cast<Vertex*>(e.userData());
+            assert(v != NULL);
+            vtxIndex.push_back(v->iid());
+            numEdges++;
+        }
+        Vertex * v = static_cast<Vertex*>(f.userData());
+        assert(v != NULL);
+        int faceCenter = v->iid();
+        
+        int numVerts = vtxIndex.size();
+        for (int i = 0; i < numEdges; ++i) {
+            faceVtxIID.clear();
+            faceVtxIID.push_back(faceCenter);
+            faceVtxIID.push_back(vtxIndex[((i + numEdges)*2 - 1) % numVerts]);
+            faceVtxIID.push_back(vtxIndex[i*2]);
+            faceVtxIID.push_back(vtxIndex[((i*2)+1) % numVerts]);
+            s.addFace(faceVtxIID);
+        }
+    }
+}
+
+void SubdivideCommand::Impl::removeOldFaces(ISurface& s)
+{
+    std::vector<int> faceIndex;
+    Iterator<Face> faceIt = s.faceIterator();
+    while(faceIt.hasNext()){
+        Face & f = faceIt.next();
+        // skip face if it does not contain midpoint as it is probably a new
+        // face and it should not be removed.
+        if (f.userData() == NULL) {
+            continue;
+        }
+        s.removeFace(f.iid());
+    }
+}
+
+void SubdivideCommand::Impl::cleanUserData(ISurface& s)
+{
+    Iterator<Edge> edgeIt = s.edgeIterator();
+    while(edgeIt.hasNext()){
+        Edge& e = edgeIt.next();
+        e.setUserData(NULL);
+        e.pair()->setUserData(NULL);
+    }
+    Iterator<Face> faceIt = s.faceIterator();
+    while(faceIt.hasNext()){
+        faceIt.next().setUserData(NULL);
+    }
+}
+
+void SubdivideCommand::Impl::smoothNormals(ISurface& s)
+{
+    Vector3 normal;
+    int counter = 0;
+    Iterator<Vertex> it = s.vertexIterator();
+    while(it.hasNext()){
+        Vertex* vtx = &it.next();
+        Vector3 po = vtx->position();
+        Iterator<Vertex> it2 = vtx->vertexIterator();
+        counter = 0;
+        while (it2.hasNext()) {
+            counter++;
+            it2.next();
+        }
+        qDebug() << "Vtx num neighbor: " << counter;
+//        Vector3 v1, v2, vo;
+//        normal.setZero();
+//        if (it2.hasNext()) {
+//            vo = v1 = it2.next().position() - po;
+//            while (it2.hasNext()) {
+//                v2 = it2.next().position() - po;
+//                normal += v1.cross(v2);
+//                counter++;
+//                v1 = v2;
+//            }
+//            normal += v1.cross(vo);
+//            counter++;
+//            vtx->normal() = normal / counter;
+//            vtx->normal().normalize();
+//        }
+    }
 }

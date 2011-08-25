@@ -32,6 +32,8 @@ class TransformCameraCommand : public CommandBase
 {
 public:
     TransformCameraCommand();
+    
+    TransformCameraCommand(const TransformCameraCommand & cpy);
 
     ~TransformCameraCommand();
 
@@ -46,12 +48,12 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent* e);
     virtual void undo();
     virtual QWidget* getOptionsWidget(){return NULL;}
+    virtual void paintGL(GlCanvas *c);
     // End ICommand Interface
-
+    
 private:
-    Point3     m_eyePosition;
-    Point3     m_targetDirection;
-    Point3     m_upVector;
+    struct Impl;
+    QScopedPointer<Impl> _d;
 };
 
 #endif

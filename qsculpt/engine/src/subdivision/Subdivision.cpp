@@ -24,6 +24,7 @@
 #include <QVector>
 #include <math.h>
 #include <Eigen/Core>
+#include <map>
 
 #include "subdivision/Box.h"
 #include "Point3D.h"
@@ -44,7 +45,64 @@ typedef std::pair<int, int>     VtxPair;
 typedef QHash<int, Vertex*>     VertexCollection;
 typedef QHash<int, Edge*>       EdgesCollection;
 typedef QHash<VtxPair, int>     VtxPairEdgeMap;
-typedef QHash<int, Face*>       FacesCollection;
+typedef std::map<int, Face*>       FacesCollection;
+
+
+static QAtomicInt NEXT_ID;
+
+struct Subdivision::Impl {
+    /** Instance ID of the surface */
+    uint _iid;
+    
+    /** Vertices by each subdivision level */
+    std::vector<VertexCollection*>  _vertLevelCollections;
+    /** Edges by each subdivision level */
+    std::vector<EdgesCollection*>   _edgesLevelCollections;
+    /** Relates a pair of vertex ids to an edge*/
+    std::vector<VtxPairEdgeMap*>    _vertexEdgeCollection;
+    
+    std::vector<FacesCollection*>   _facesLevelCollections;
+    
+    
+    VertexCollection    *_vertices;
+    EdgesCollection     *_edges;
+    VtxPairEdgeMap      *_vtxPairEdge;
+    FacesCollection     *_faces;
+    
+    SubdivisionScheme* scheme;
+    
+    Scene*          _scene;
+    Point3          _position;
+    Color           _color;
+    geometry::AABB  _boundingBox;
+    float           _rotX, _rotY, _rotZ;
+    bool            _selected;
+    int             _callListId;
+    bool            _genereateCallList;
+    int             _currentResolutionLevel;
+    bool            _hasChanged;
+    QVector<int>    _selectedPoints;
+    Eigen::Affine3f _transform;
+    
+    Impl() :     _vertices(NULL),
+    _edges(NULL),
+    _vtxPairEdge(NULL),
+    _faces(NULL),
+    _scene(NULL),
+    //_drawingMode(Wireframe),
+    _color(1.f,1.f,1.f),
+    _rotX(0.0),
+    _rotY(0.0),
+    _rotZ(0.0),
+    _selected(false),
+    _callListId(0),
+    _genereateCallList(true),
+    _currentResolutionLevel(0),
+    _hasChanged(true)
+    {
+        
+    }
+};
 
 // Iterator classes declarations
 class Subdivision::VertexIterator : public IIterator<Vertex>
@@ -168,6 +226,16 @@ public:
     const Face & next() const;
     
     /**
+     * Returns the next element without advancing to the next
+     */
+    Face & peekNext();
+    
+    /**
+     * Returns the next element without advancing to the next
+     */
+    const Face & peekNext() const ;
+    
+    /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
@@ -188,60 +256,108 @@ public:
     bool seek(int pos, IteratorOrigin origin) const ;
 };
 
-
-static QAtomicInt NEXT_ID;
-
-struct Subdivision::Impl {
-    /** Instance ID of the surface */
-    uint _iid;
-
-    /** Vertices by each subdivision level */
-    std::vector<VertexCollection*>  _vertLevelCollections;
-    /** Edges by each subdivision level */
-    std::vector<EdgesCollection*>   _edgesLevelCollections;
-    /** Relates a pair of vertex ids to an edge*/
-    std::vector<VtxPairEdgeMap*>    _vertexEdgeCollection;
-
-    std::vector<FacesCollection*>   _facesLevelCollections;
-
-
-    VertexCollection    *_vertices;
-    EdgesCollection     *_edges;
-    VtxPairEdgeMap      *_vtxPairEdge;
-    FacesCollection     *_faces;
-
-    SubdivisionScheme* scheme;
+class Subdivision::EdgeIterator : public IIterator<Edge>
+{
+    friend class Subdivision;
     
-    Scene*          _scene;
-    Point3          _position;
-    Color           _color;
-    geometry::AABB  _boundingBox;
-    float           _rotX, _rotY, _rotZ;
-    bool            _selected;
-    int             _callListId;
-    bool            _genereateCallList;
-    int             _currentResolutionLevel;
-    bool            _hasChanged;
-    QVector<int>    _selectedPoints;
-    Eigen::Affine3f _transform;
+    typedef EdgesCollection::iterator iterator;
     
-    Impl() :     _vertices(NULL),
-    _edges(NULL),
-    _vtxPairEdge(NULL),
-    _faces(NULL),
-    _scene(NULL),
-    //_drawingMode(Wireframe),
-    _color(1.f,1.f,1.f),
-    _rotX(0.0),
-    _rotY(0.0),
-    _rotZ(0.0),
-    _selected(false),
-    _callListId(0),
-    _genereateCallList(true),
-    _currentResolutionLevel(0),
-    _hasChanged(true)
+    const Subdivision*  surface_;
+    int                 level_;
+    mutable iterator    index_;
+    
+protected:
+    /**
+     * Constructor of a vertex iterator. The vertex iterator
+     * is only contructed by means of Vertex::vertexIterator() function
+     */
+    EdgeIterator(const Subdivision* s, int level = -1) 
+    : surface_(s), level_(level)
     {
-        
+        index_ = surface_->_d->_edges->begin();
+    }
+    
+public:
+    /**
+     *
+     */
+    IIterator<Edge>* clone() const {
+        EdgeIterator *it = new EdgeIterator(surface_, level_);
+        it->index_ = index_;
+        return it;
+    }
+    
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    virtual bool hasNext() const {
+        return (index_ != surface_->_d->_edges->end()) && (index_.value() != NULL);
+    }
+    
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    bool hasPrevious() const {
+        NOT_IMPLEMENTED
+    }
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    Edge & next() {
+        Edge * e = index_.value();
+        ++index_;
+        return *e;
+    }
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    const Edge & next() const {
+        Edge * e = index_.value();
+        ++index_;
+        return *e;
+    }
+    
+    /**
+     * Returns the next element without advancing to the next
+     */
+    Edge & peekNext() {
+        return *index_.value();
+    }
+    
+    /**
+     * Returns the next element without advancing to the next
+     */
+    const Edge & peekNext() const {
+        return *index_.value();
+    }
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    Edge & previous() {
+        NOT_IMPLEMENTED
+    }
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    const Edge & previous() const {
+        NOT_IMPLEMENTED
+    }
+    
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    bool seek(int pos, IteratorOrigin origin) const {
+        NOT_IMPLEMENTED
     }
 };
 
@@ -496,7 +612,9 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
     for (int i = 0; i < size; ++i) {
         int iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
         assert(iid > 0);
-        edges.push_back(_d->_edges->value(iid));
+        Edge *e = _d->_edges->value(iid);
+        assert(e != NULL && e->face() == NULL);
+        edges.push_back(e);
     }
     Face *f = new Face(this);
     f->setHEdge(edges[0]);
@@ -505,7 +623,7 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
         edges[i]->setFace(f);
         //_edges[edgesIndices[i]].setNext(edgesIndices[(i+1)%size]);
     }
-    _d->_faces->insert(f->iid(), f);
+    _d->_faces->insert(std::pair<int,Face*>(f->iid(), f));
     return f->iid();
 }
 
@@ -514,15 +632,27 @@ void Subdivision::replaceFace(int /*faceIndex*/, const QVector<int>& /*vertexInd
     NOT_IMPLEMENTED
 }
 
+
+// clear reference to face from edges and remove the face from this surface.
 void Subdivision::removeFace( int iid)
 {
-    _d->_faces->remove(iid);
+    Face * f = getFace(iid);
+    if (f == NULL)
+        return;
+    Iterator<Edge> edgeIt = f->edgeIterator();
+    while (edgeIt.hasNext()) {
+        Edge *e = &edgeIt.next();
+        e->setFace(NULL);
+        e->setNext(NULL);
+    }
+    _d->_faces->erase(iid);
 }
 
 Face* Subdivision::getFace(int iid)
 {
-    assert(iid > 0 && iid < _d->_faces->size());
-    return _d->_faces->contains(iid) ?_d->_faces->value(iid) : NULL;
+    assert(iid > 0);
+    FacesCollection::iterator it = _d->_faces->find(iid);
+    return  it != _d->_faces->end() ? it->second : NULL;
 }
 
 int Subdivision::getNumFaces() const
@@ -638,6 +768,17 @@ Iterator<Face> Subdivision::constFaceIterator(int level) const
 {
     return Iterator<Face>(new FaceIterator(this, level));
 }
+
+Iterator<Edge> Subdivision::edgeIterator()
+{
+    return Iterator<Edge>(new EdgeIterator(this));
+}
+
+Iterator<Edge> Subdivision::constEdgeIterator() const
+{
+    return Iterator<Edge>(new EdgeIterator(this));
+}
+
 
 Point3 Subdivision::localToWorldCoords(const Point3& p) const
 {
@@ -801,7 +942,7 @@ Face & Subdivision::FaceIterator::next()
 {
     //NOT_IMPLEMENTED
 //    return *_surface->_faces->at(++_index);
-    Face *f = _index.value();
+    Face *f = _index->second;
 
     assert(f);
     ++_index;
@@ -813,11 +954,20 @@ const Face & Subdivision::FaceIterator::next() const
     //NOT_IMPLEMENTED
 //    assert(_surface->getNumFaces() > _index);
 //    return *_surface->_faces->at(++_index);
-    Face *f = _index.value();
+    Face *f = _index->second;
     assert(f);
     ++_index;
     return *f;
 }
+
+Face & Subdivision::FaceIterator::peekNext() {
+    return *_index->second;
+}
+
+const Face & Subdivision::FaceIterator::peekNext() const {
+    return *_index->second;
+}
+
 
 Face & Subdivision::FaceIterator::previous()
 {
@@ -826,7 +976,7 @@ Face & Subdivision::FaceIterator::previous()
 //    --_index;
 //    return *f;
     --_index;
-    return *_index.value();
+    return *_index->second;
 }
 
 const Face & Subdivision::FaceIterator::previous() const
@@ -836,42 +986,15 @@ const Face & Subdivision::FaceIterator::previous() const
 //    --_index;
 //    return *f;
     --_index;
-    return *_index.value();
+    return *_index->second;
 }
 
 bool Subdivision::FaceIterator::seek(int pos, IteratorOrigin origin) const
 {
-//    int n = _surface->getNumFaces();
-//    int nindex = 0;
-//    switch(origin)
-//    {
-//    case Iter_Current:
-//        nindex = _index + pos;
-
-//        break;
-//    case Iter_End:
-//        nindex = n + pos - 1;
-//        break;
-
-//    case Iter_Start:
-//    default:
-//        nindex = pos - 1;
-//        break;
-//    }
-
-//    // check the new pos is valid
-//    if (nindex >= n || nindex < -1)
-//        return false;
-
-//    // go to the new pos
-//    _index = nindex;
-
-//    return true;
-
     switch(origin)
     {
     case Iter_Current:
-        // nothing
+        //nothing
         break;
     case Iter_End:
         _index = _surface->_d->_faces->end();
