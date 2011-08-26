@@ -21,7 +21,9 @@ class Face;
 enum VertexFlags {
     VF_None     = 0,
     VF_Selected = 0x00000001, /*< Vertex is selected*/
-    VF_Deleted  = 0x80000000, /*< Vertex is marked as deleted.*/
+    VF_Deleted  = 0x00000002, /*< Vertex is marked as deleted.*/
+    VF_User1    = 0x00100000, /*< Flag to use for the user */
+    VF_User2    = 0x00200000, /*< Flag to use for the user */
     VF_ALL      = 0xFFFFFFFF
 };
 
@@ -97,6 +99,7 @@ public:
     void addFlag(VertexFlags flag) { _flags = (VertexFlags)(_flags | flag); }
     void removeFlag(VertexFlags flag) { _flags = (VertexFlags)(_flags & ~flag); }
     VertexFlags flags() const { return _flags; }
+    bool isFlagSet(VertexFlags flag) { return (_flags & flag) != 0;}
 
     /**
      * Allows to attach a pointer to a user defined structure or data
@@ -144,12 +147,19 @@ public:
      */
     Iterator<Face> faceIterator();
     
+    /**
+     * Used to iterate over all the edges that share the same point.
+     */
+    Iterator<Edge> edgeIterator();
+    
 private:
     class VertexIterator;
     class FaceIterator;
+    class EdgeIterator;
     
     friend class VertexIterator;
     friend class FaceIterator;
+    friend class EdgeIterator;
 };
 
 #endif
