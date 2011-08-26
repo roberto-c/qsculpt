@@ -17,7 +17,9 @@ class Face;
 enum EdgeFlags {
     EF_None     = 0,
     EF_Selected = 0x00000001,  /*< Face is selected */
-    EF_Deleted  = 0x80000000,  /*< Face is marked as deleted */
+    EF_Deleted  = 0x00000002,  /*< Face is marked as deleted */
+    EF_User1    = 0x00100000,  /*< Reserved to use for the user*/
+    EF_User2    = 0x00200000,  /*< Reserved to use for the user*/
     EF_All      = 0xFFFFFFFF
 };
 
@@ -53,6 +55,7 @@ public:
     void removeFlag(EdgeFlags flag) { _flags = (EdgeFlags)(_flags & ~flag); }
     EdgeFlags flags() const { return _flags; }
     void setFlags(EdgeFlags flags) {_flags = flags; }
+    bool isFlagSet(EdgeFlags flag) { return (_flags & flag) != 0;}
 
     /**
      * Gets / sets a pointer to the next HEdge structure.

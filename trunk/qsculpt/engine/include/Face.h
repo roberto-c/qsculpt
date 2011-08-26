@@ -20,7 +20,9 @@ class ISurface;
 enum FaceFlags {
     FF_None     = 0,
     FF_Selected = 0x00000001,   /*< Face is selected */
-    FF_Deleted  = 0x80000000,  /*< Face is marked as deleted */
+    FF_Deleted  = 0x00000002,  /*< Face is marked as deleted */
+    FF_User1    = 0x00100000,  /*< Flag to be used by the user */
+    FF_User2    = 0x00200000,  /*< Flag to be used by the user */
     FF_All      = 0xFFFFFFFF
 };
 
@@ -93,6 +95,7 @@ public:
     void removeFlag(FaceFlags flag) { _flags = (FaceFlags)(_flags & ~flag); }
     FaceFlags flags() const { return _flags; }
     void setFlags(FaceFlags flags) {_flags = flags; }
+    bool isFlagSet(FaceFlags flag) { return (_flags & flag) != 0;}
 
     /**
      * Checks if the triangle data is valid. Triangle is valid only if
