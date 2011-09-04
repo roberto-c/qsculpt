@@ -22,28 +22,33 @@
 
 #include <QtDebug>
 #include <QVector>
-#include "Point3D.h"
-#include "ICollection.h"
-#include "OctreeNode.h"
 #include <vector>
 #include <set>
 
+#include "Point3D.h"
+#include "ICollection.h"
+#include "OctreeNode.h"
+#include "data/Functors.h"
+#include "geometry/Aabb.h"
+#include "geometry/Ray.h"
 
 namespace data {
-    template<typename T> class Octree;
+    template<typename T, typename ToPointFn=data::ImplicitConvToPoint<T> > class Octree;
     
-    template< typename Type>
+    template< typename Type, typename ToPointFn>
     class Octree : public data::ICollection<Type>
     {
+        typedef OctreeNode<Type,ToPointFn> NodeType;
+        
     public:
         Octree() {
-            m_rootNode = new OctreeNode<Type>(this);
+            m_rootNode = new OctreeNode<Type,ToPointFn>(this);
             m_rootNode->setMinimumCoords(Point3(-1024, -1024, -1024));
             m_rootNode->setMaximumCoords(Point3(1024, 1024, 1024));
         }
         
-        Octree(const Octree<Type>& cpy) {
-            m_rootNode = new OctreeNode<Type>(this);
+        Octree(const Octree<Type,ToPointFn>& cpy) {
+            m_rootNode = new NodeType(this);
             m_rootNode->setMinimumCoords(Point3(-1024, -1024, -1024));
             m_rootNode->setMaximumCoords(Point3(1024, 1024, 1024));
             
@@ -56,21 +61,42 @@ namespace data {
             delete m_rootNode;
         }
         
-        inline void add(Type) {throw std::runtime_error("Not implemented");}
-        
-        inline void remove(Type) {throw std::runtime_error("Not implemented");}
+        inline void add(const Type & v) {
+            if (!m_rootNode->add(v))
+            {
+                throw std::runtime_error("Failed to add element");
+            }
+        }
         
         inline int size() {
             return m_data.size();
         }
         
-        inline bool findClosest(Type&, const Point3&,float) const { throw std::runtime_error("Not implemented"); }
+        inline int findClosest(const Point3& v) const {
+            Type data;
+            if (m_rootNode->findClosest(v, &data)) {
+                return m_rootNode->indexOf(data);
+            }
+            return -1;
+        }
         
-        inline bool findFirstIntersect(Type&, const geometry::Ray&) const { throw std::runtime_error("Not implemented"); }
+        inline bool findClosest(Type&, const Point3&,float) const { 
+            throw std::runtime_error("Not implemented"); 
+        }
         
-        inline bool findIntersect(const geometry::Ray&, data::ICollection<Type>*) const { throw std::runtime_error("Not implemented"); }
+        inline bool findFirstIntersect(Type&, const geometry::Ray&) const { 
+            throw std::runtime_error("Not implemented"); 
+        }
         
-        inline bool findIntersect(const geometry::AABB&, data::ICollection<Type>*) const { throw std::runtime_error("Not implemented"); }
+        inline bool findIntersect(const geometry::Ray&, 
+                                  data::ICollection<Type>*) const {
+            throw std::runtime_error("Not implemented"); 
+        }
+        
+        inline bool findIntersect(const geometry::AABB&, 
+                                  data::ICollection<Type>*) const {
+            throw std::runtime_error("Not implemented"); 
+        }
         
         inline Type* getData() {
             return m_data.data();
@@ -119,14 +145,6 @@ namespace data {
             return m_data.size();
         }
         
-        inline int findClosest(const Point3& v) const {
-            Type data;
-            if (m_rootNode->findClosest(v, &data)) {
-                return m_rootNode->indexOf(data);
-            }
-            return -1;
-        }
-        
         inline void reserve(int _size) {
             m_data.reserve(_size);
         }
@@ -146,21 +164,26 @@ namespace data {
         /**
          * Creates an iterator over the collection class
          */
-        inline Iterator<Type> iterator() {return Iterator<Type>(NULL);}
+        inline Iterator<Type> iterator() {
+            return Iterator<Type>(NULL);
+        }
         
-        std::vector<Type> toStdVector() {return std::vector<Type>();}
+        std::vector<Type> toStdVector() {
+            return std::vector<Type>();
+        }
         
-        std::set<Type> toStdSet() {return std::set<Type>(); }
+        std::set<Type> toStdSet() {
+            return std::set<Type>(); 
+        }
         
     private:
-        
-        
         // Do not allow coping semantincs
-        Octree& operator=(const Octree<Type>&);
+        Octree& operator=(const Octree<Type,ToPointFn>&);
         
-        OctreeNode<Type>*  m_rootNode;
+        NodeType*  m_rootNode;
         QVector<Type>      m_data;
-        
+      
+        friend class OctreeNode<Type,ToPointFn>;
     };
     
     

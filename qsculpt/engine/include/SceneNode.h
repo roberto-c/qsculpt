@@ -50,10 +50,64 @@ public:
     
     virtual NodeType nodeType() { return NT_Normal; }
     
-    const Eigen::Affine3f& transform() const;
-    Eigen::Affine3f& transform();
+    /**
+     * Sets parent as the new parent of this node. 
+     *
+     * This node is also added as child in the parent's children node list
+     */
+    void setParent(SceneNode* parent);
+    
+    /**
+     * Return the parent node of this scene node.
+     */
+    SceneNode* parent();
+    /**
+     * Return the parent node of this scene node.
+     */
+    const SceneNode* parent() const;
+    
+    /**
+     * Return the name of the node.
+     */
+    std::string name() const;
+    
+    /**
+     * Sets the name of the node. It serves as an identifier.
+     */
+    void setName(const std::string & name);
+    
+    /**
+     * Returns the affine transformation of this node.
+     */
+    Eigen::Affine3f   transform() const;
+    
+    /**
+     * Returns the affine transformation of this node as a reference. Useful
+     * to chain the transformation with other transformations.
+     */
+    Eigen::Affine3f & transform();
+    
+    /**
+     * Replace the affine transformation with the new transformation.
+     *
+     * This is equivalent to
+     *
+     * SceneNode n();
+     * n.transform() = t;
+     */
     void setTransform(const Eigen::Affine3f& /*t*/);
 
+    /**
+     * Return the cumulative transformation from the root to the parent of this
+     * node. It does not include this node transformation.
+     */
+    Eigen::Affine3f parentTransform() const;
+    
+    /**
+     *
+     */
+    bool contains(const SceneNode* child) const ;
+    
     /**
      * Add a new child node to this scene node
      */

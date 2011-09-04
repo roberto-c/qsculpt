@@ -28,10 +28,12 @@ static QAtomicInt NEXTID;
 struct SceneNode::Impl {
     uint                    iid;
     bool                    isSelected;
+    SceneNode*              parent;
     std::vector<SceneNode*> children;
     Eigen::Affine3f         transform;
+    std::string             name;
     
-    Impl() : iid(0), isSelected(false){}
+    Impl() : iid(0), isSelected(false), parent(NULL) {}
 };
 
 class SceneNode::SceneNodeIterator : public IIterator<SceneNode>
@@ -147,7 +149,7 @@ SceneNode::SceneNode(const QString& name, SceneNode *parent)
     //this->setText(name);
     if (parent)
     {
-        //parent->appendRow(this);
+        _d->parent = parent;
         parent->add(this);
     }
     _d->transform = Eigen::Affine3f::Identity();
@@ -161,9 +163,55 @@ uint SceneNode::iid() const {
     return _d->iid;
 }
 
+std::string SceneNode::name() const {
+    return _d->name;
+}
+
+void SceneNode::setName(const std::string & name) {
+    _d->name = name;
+}
+
+void SceneNode::setParent(SceneNode* node)
+{
+    if (parent() == node) {
+        return;
+    }
+    
+    if (parent() != NULL) {
+        parent()->remove(this);
+    }
+    _d->parent = node;
+    if (node) {
+        node->add(this);
+    }
+}
+
+SceneNode* SceneNode::parent()
+{
+    return _d->parent;
+}
+
+const SceneNode* SceneNode::parent() const
+{
+    return _d->parent;
+}
+
+bool SceneNode::contains(const SceneNode* child) const 
+{
+    std::vector<SceneNode*>::iterator it = find(_d->children.begin(), _d->children.end(), child); 
+    return it != _d->children.end();
+}
+
 void SceneNode::add(SceneNode* child)
 {
-    _d->children.push_back(child);
+    if (child == NULL)
+        return;
+    
+    // If child node has a parent, remove child from old parent's children list
+    child->setParent(this);
+    if (!contains(child)) {
+        _d->children.push_back(child);
+    }
 }
 
 void SceneNode::remove(SceneNode* child)
@@ -193,7 +241,7 @@ void SceneNode::setSelected(bool selected)
     _d->isSelected = selected;
 }
 
-const Eigen::Affine3f& SceneNode::transform() const
+Eigen::Affine3f SceneNode::transform() const
 { 
     return _d->transform; 
 }
@@ -206,6 +254,18 @@ Eigen::Affine3f& SceneNode::transform()
 void SceneNode::setTransform(const Eigen::Affine3f& t)
 {
     _d->transform = t;
+}
+
+Eigen::Affine3f SceneNode::parentTransform() const
+{
+    Eigen::Affine3f trans = Eigen::Affine3f::Identity();
+    
+    SceneNode * node = _d->parent;
+    while (node) {
+        trans = trans * node->transform();
+        node = node->_d->parent;
+    }
+    return trans;
 }
 
 void SceneNode::render()

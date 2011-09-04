@@ -69,54 +69,6 @@ public:
      * Save file
      */
     virtual void saveFile(const QString& fileName) = 0;
-    
-    /**
-     * Adds an object to the document. This function creates a new instance
-	 * of a mesh object and add it to the document's object list.
-     *
-     * @param type type of object to add.
-     */
-//    virtual ISurface* addObject(ObjectType type) = 0;
-	
-    /**
-     * Adds an object to the document. The object passed as parameter is added
-     * to the document's objects list.
-     *
-     * @param type type of object to add.
-     * @param obj object to add to the document.
-     */
-//    virtual void addObject(ObjectType type, ISurface* obj) = 0;
-    
-    /**
-     * Remove an object from the document. This does not free the memory allocated
-     * by the object.
-     *
-     * @param iid ID of the object to remove
-     */
-//    virtual void removeObject(int iid) = 0;
-    
-    /**
-     * Remove the object pointer by s. This just removes the object from the
-     * scene and does not destroy the object.
-     * @param s Surface to remove from the scene.
-     */
-//    virtual void removeObject(ISurface *s) = 0;
-    
-    /**
-     * Gets the object with the IID specified in the document.
-     *
-     * @param iid ID of object to retrieve
-     *
-     * @return an object with IObject3D interface
-     */
-//    virtual ISurface* getObject(int iid) const = 0;
-    
-    /**
-     * Get the objects count on this document.
-     *
-     * @return count of objects on the document
-     */
-//    virtual int getObjectsCount() const = 0;
 
     /**
      * 
