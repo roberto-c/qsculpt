@@ -74,14 +74,14 @@ namespace data
          *
          * @param element element to add to the collection.
          */
-        virtual void add(T element) = 0;
+        virtual void add(const T & element) = 0;
 
         /**
          * Removes a new element from the collection.
          *
          * @param element element to remove from the collection.
          */
-        virtual void remove(T element) = 0;
+        virtual void remove(const T  & element) = 0;
 
         /**
          * Return the number of elements contained in the collection.

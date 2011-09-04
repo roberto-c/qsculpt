@@ -24,120 +24,22 @@
 #include "geometry/Aabb.h"
 #include "Octree.h"
 
+//namespace  {
+    struct CenterMassFn {
+        Vector3 operator()(SceneNode*) {
+            return Vector3();
+        }
+    };
+//};
+
 struct Scene::Impl {
     QScopedPointer<SceneNode> root;
-    data::Octree<SceneNode*> octree;
+    data::Octree<SceneNode*,CenterMassFn> octree;
     
     Impl() : root(new SceneNode)
     {
     }
 };
-
-class Scene::SceneNodeIterator : public IIterator<SceneNode>
-{
-    const Scene* _parent;
-    mutable int _index;
-    
-public:
-    SceneNodeIterator(const Scene* parent) ;
-    
-    /**
-     * Function to copy iterators of the same type.
-     */
-    virtual IIterator<SceneNode>* clone() const;
-    
-    /**
-     * Return true if the iterator has more elements (i.e. it is not at the
-     * end)
-     */
-    virtual bool hasNext() const;
-    
-    /**
-     * Returns true if the iterator is not at the beginning of the iteration
-     */
-    virtual bool hasPrevious() const;
-    
-    /**
-     * Returns the next element and advance the iterator by one.
-     */
-    virtual SceneNode & next();
-    
-    /**
-     * Returns the next element and advance the iterator by one.
-     */
-    virtual const SceneNode & next() const;
-    
-    /**
-     * Returns the previous elements and move the iterator one position
-     * backwards.
-     */
-    virtual SceneNode & previous();
-    
-    /**
-     * Returns the previous elements and move the iterator one position
-     * backwards.
-     */
-    virtual const SceneNode & previous() const;
-    
-    /**
-     * Set the current position to pos relative to origin.
-     *
-     * @param pos number of elements to jump relative to origin
-     * @param origin states the reference to jump.
-     */
-    virtual bool seek(int pos, IteratorOrigin origin) const;
-};
-
-Scene::SceneNodeIterator::SceneNodeIterator(const Scene* parent)
-: _parent(parent),_index(0)
-{
-}
-
-IIterator<SceneNode>* Scene::SceneNodeIterator::clone() const
-{
-    return new SceneNodeIterator(_parent);
-}
-
-bool Scene::SceneNodeIterator::hasNext() const
-{
-    //return _index >= 0 && _parent->_children.size() > _index;
-    return _index >= 0 && _parent->_d->root->count() > _index;
-}
-
-bool Scene::SceneNodeIterator::hasPrevious() const
-{
-    return false;
-}
-
-SceneNode & Scene::SceneNodeIterator::next()
-{
-    //throw std::runtime_error("Not implemented");
-    return *static_cast<SceneNode*>(_parent->_d->root->item(_index++));
-}
-
-const SceneNode & Scene::SceneNodeIterator::next() const
-{
-    //throw std::runtime_error("Not implemented");
-    return *static_cast<SceneNode*>(_parent->_d->root->item(_index++));
-}
-
-SceneNode & Scene::SceneNodeIterator::previous()
-{
-    throw std::runtime_error("Not implemented");
-}
-
-const SceneNode & Scene::SceneNodeIterator::previous() const
-{
-    throw std::runtime_error("Not implemented");
-}
-
-bool Scene::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
-{
-    throw std::runtime_error("Not implemented");
-}
-
-
-
 
 Scene::Scene() : _d(new Impl())
 {
@@ -196,10 +98,10 @@ bool Scene::intersects(const geometry::AABB &box,
 
 Iterator<SceneNode> Scene::iterator()
 {
-    return Iterator<SceneNode>(new SceneNodeIterator(this));
+    return _d->root->iterator();
 }
 
 Iterator<SceneNode> Scene::constIterator() const
 {
-    return Iterator<SceneNode>(new SceneNodeIterator(this));
+    return _d->root->constIterator();
 }

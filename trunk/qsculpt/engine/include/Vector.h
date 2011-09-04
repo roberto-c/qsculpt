@@ -39,11 +39,11 @@ namespace data {
         ~Vector() {
         }
         
-        inline void add(Type e) { 
+        inline void add(const Type & e) { 
             _data.push_back(e); 
         }
         
-        inline void remove(Type e) {
+        inline void remove(const Type & e) {
             _data.remove(_data.indexOf(e));
         }
         

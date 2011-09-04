@@ -22,17 +22,24 @@
 #define OCTREENODE_H
 
 #include "ICollection.h"
+#include "Octree.h"
 
 using namespace data;
 
 namespace data {
-    template< typename D >
+    template<typename T, typename ToPointFn>
+    class Octree;
+    
+    template< typename D, typename ToPointFn >
     class OctreeNode {
+        typedef OctreeNode<D,ToPointFn> NodeType;
+        
+                ToPointFn toPointFn;
         static const int MaxVertex = 4;
         static const int MaxDepth = 50;
     public:
-        OctreeNode(ICollection<D>* octree);
-        OctreeNode(OctreeNode<D>* parent, int depth = 0);
+        OctreeNode(Octree<D,ToPointFn>* octree);
+        OctreeNode(OctreeNode<D,ToPointFn>* parent, int depth = 0);
         ~OctreeNode();
         
         inline void setMinimumCoords(const Point3& v);
@@ -40,6 +47,7 @@ namespace data {
         inline void setMaximumCoords(const Point3& v);
         inline Point3 getMaximumCoords();
         bool findClosest(const Point3& v, D* data) ;
+        bool findIntersect(const geometry::AABB&, ICollection<D> *);
         int indexOf(const D& data);
         inline bool contains(const D& data);
         bool add(const D& data) ;
@@ -54,12 +62,12 @@ namespace data {
         bool isInVolume(const D& v);
         
     private:
-        OctreeNode(const OctreeNode<D>&);
-        OctreeNode& operator=(const OctreeNode<D>&);
+        OctreeNode(const OctreeNode<D, ToPointFn>&);
+        OctreeNode& operator=(const OctreeNode<D,ToPointFn>&);
         
-        ICollection<D>*         m_octree;           // Pointer to owner octree
-        OctreeNode<D>*          m_parent;           // Pointer to parent node
-        QVector<OctreeNode<D>*> m_childrenNodes;    // Children nodes.
+        Octree<D,ToPointFn>*        m_octree;           // Pointer to owner octree
+        OctreeNode<D,ToPointFn>*          m_parent;           // Pointer to parent node
+        QVector<OctreeNode<D,ToPointFn>*> m_childrenNodes;    // Children nodes.
         QVector<int>            m_dataIndices;  //
         Point3                  m_minimumCoords;
         Point3                  m_maximumCoords;
@@ -67,8 +75,8 @@ namespace data {
         int                     m_depth;
     };
     
-    template<typename D>
-    OctreeNode< D >::OctreeNode(ICollection<D>* octree)
+    template<typename D, typename ToPointFn >
+    OctreeNode< D,ToPointFn >::OctreeNode(data::Octree<D,ToPointFn>* octree)
     : m_octree(octree),
     m_parent(NULL),
     m_hasChildren(false),
@@ -78,8 +86,8 @@ namespace data {
         //    m_maximumCoords = Vertex::null();
     }
     
-    template<typename D>
-    OctreeNode<D>::OctreeNode(OctreeNode<D>* parent, int depth)
+    template<typename D, typename ToPointFn>
+    OctreeNode<D,ToPointFn>::OctreeNode(OctreeNode<D,ToPointFn>* parent, int depth)
     : m_parent(parent),
     m_hasChildren(false),
     m_depth (depth)
@@ -89,41 +97,41 @@ namespace data {
         //    m_maximumCoords = Vertex::null();
     }
     
-    template<typename D>
-    OctreeNode<D>::~OctreeNode()
+    template<typename D, typename ToPointFn>
+    OctreeNode<D,ToPointFn>::~OctreeNode()
     {
         clear();
     }
     
-    template<typename D>
-    inline void OctreeNode<D>::setMinimumCoords(const Point3& v)
+    template<typename D, typename ToPointFn>
+    inline void OctreeNode<D,ToPointFn>::setMinimumCoords(const Point3& v)
     {
         m_minimumCoords = v;
     }
     
-    template<typename D>
-    inline Point3 OctreeNode<D>::getMinimumCoords()
+    template<typename D, typename ToPointFn>
+    inline Point3 OctreeNode<D,ToPointFn>::getMinimumCoords()
     {
         return m_minimumCoords;
     }
     
-    template<typename D>
-    inline void OctreeNode<D>::setMaximumCoords(const Point3& v)
+    template<typename D, typename ToPointFn>
+    inline void OctreeNode<D,ToPointFn>::setMaximumCoords(const Point3& v)
     {
         m_maximumCoords = v;
     }
     
-    template<typename D>
-    inline Point3 OctreeNode<D>::getMaximumCoords()
+    template<typename D, typename ToPointFn>
+    inline Point3 OctreeNode<D,ToPointFn>::getMaximumCoords()
     {
         return m_maximumCoords;
     }
     
-    template<typename D>
-    void OctreeNode<D>::clear()
+    template<typename D, typename ToPointFn>
+    void OctreeNode<D,ToPointFn>::clear()
     {
         int size = m_childrenNodes.size();
-        OctreeNode<D>* d = NULL;
+        NodeType* d = NULL;
         for(int i = 0; i < size; ++i) {
             d = m_childrenNodes[i];
             if (d) {
@@ -135,8 +143,8 @@ namespace data {
         m_dataIndices.clear();
     }
     
-    template<typename D>
-    bool OctreeNode<D>::findClosest(const Point3& v, D* data)
+    template<typename D, typename ToPointFn>
+    bool OctreeNode<D,ToPointFn>::findClosest(const Point3& v, D* data)
     {
         if (data == NULL)
             return false;
@@ -146,7 +154,7 @@ namespace data {
         
         if (m_hasChildren) {
             bool res;
-            foreach(OctreeNode<D>* node, m_childrenNodes) {
+            foreach(NodeType* node, m_childrenNodes) {
                 res = node->findClosest(v, data);
                 if (res) {
                     return res;
@@ -176,8 +184,8 @@ namespace data {
         return false;
     }
     
-    template<typename D>
-    int OctreeNode<D>::indexOf(const D& data)
+    template<typename D, typename ToPointFn>
+    int OctreeNode<D,ToPointFn>::indexOf(const D& data)
     {
         int index = -1;
         
@@ -215,21 +223,21 @@ namespace data {
         return index;
     }
     
-    template<typename D>
-    inline bool OctreeNode<D>::contains(const D& data)
+    template<typename D, typename ToPointFn>
+    inline bool OctreeNode<D,ToPointFn>::contains(const D& data)
     {
         return indexOf(data) != -1;
     }
     
-    template<typename D>
-    bool OctreeNode<D>::add(const D& data)
+    template<typename D, typename ToPointFn>
+    bool OctreeNode<D,ToPointFn>::add(const D& data)
     {
         // TODO: This method doesn't work, crash!!!
         if ( !isInVolume(data) )
             return false;
         
         if ( m_hasChildren ) {
-            foreach(OctreeNode<D>* n, m_childrenNodes) {
+            foreach(NodeType* n, m_childrenNodes) {
                 if ( n->add(data) )
                     return true;
             }
@@ -243,7 +251,7 @@ namespace data {
             }
             else {
                 doPartition();
-                foreach(OctreeNode<D>* n, m_childrenNodes) {
+                foreach(NodeType* n, m_childrenNodes) {
                     if ( n->add(data) )
                         return true;
                 }
@@ -252,19 +260,19 @@ namespace data {
         return false;
     }
     
-    template<typename D>
-    void OctreeNode<D>::doPartition()
+    template<typename D, typename ToPointFn>
+    void OctreeNode<D,ToPointFn>::doPartition()
     {
         Vector3 delta = (m_maximumCoords - m_minimumCoords) / 2.0f;
         
-        OctreeNode<D>* node = new OctreeNode<D>(this, m_depth + 1);
+        NodeType* node = new NodeType(this, m_depth + 1);
         node->setMinimumCoords(m_minimumCoords);
         node->setMaximumCoords(m_minimumCoords + delta);
         m_childrenNodes.append(node);
         
         Point3 tmp = m_minimumCoords;
         tmp.x() += delta.x();
-        node = new OctreeNode<D>(this, m_depth + 1);
+        node = new NodeType(this, m_depth + 1);
         node->setMinimumCoords(tmp);
         node->setMaximumCoords(tmp + delta);
         m_childrenNodes.append(node);
@@ -272,21 +280,21 @@ namespace data {
         tmp = m_minimumCoords;
         tmp.x() += delta.x();
         tmp.y() += delta.y();
-        node = new OctreeNode<D>(this, m_depth + 1);
+        node = new NodeType(this, m_depth + 1);
         node->setMinimumCoords(tmp);
         node->setMaximumCoords(tmp + delta);
         m_childrenNodes.append(node);
         
         tmp = m_minimumCoords;
         tmp.y() += delta.y();
-        node = new OctreeNode<D>(this, m_depth + 1);
+        node = new NodeType(this, m_depth + 1);
         node->setMinimumCoords(tmp);
         node->setMaximumCoords(tmp + delta);
         m_childrenNodes.append(node);
         
         tmp = m_minimumCoords;
         tmp.z() += delta.z();
-        node = new OctreeNode<D>(this, m_depth + 1);
+        node = new NodeType(this, m_depth + 1);
         node->setMinimumCoords(tmp);
         node->setMaximumCoords(tmp + delta);
         m_childrenNodes.append(node);
@@ -294,7 +302,7 @@ namespace data {
         tmp = m_minimumCoords;
         tmp.x() += delta.x();
         tmp.z() += delta.z();
-        node = new OctreeNode<D>(this, m_depth + 1);
+        node = new NodeType(this, m_depth + 1);
         node->setMinimumCoords(tmp);
         node->setMaximumCoords(tmp + delta);
         m_childrenNodes.append(node);
@@ -303,7 +311,7 @@ namespace data {
         tmp.x() += delta.x();
         tmp.y() += delta.y();
         tmp.z() += delta.z();
-        node = new OctreeNode<D>(this, m_depth + 1);
+        node = new NodeType(this, m_depth + 1);
         node->setMinimumCoords(tmp);
         node->setMaximumCoords(tmp + delta);
         m_childrenNodes.append(node);
@@ -311,7 +319,7 @@ namespace data {
         tmp = m_minimumCoords;
         tmp.y() += delta.y();
         tmp.z() += delta.z();
-        node = new OctreeNode<D>(this, m_depth + 1);
+        node = new NodeType(this, m_depth + 1);
         node->setMinimumCoords(tmp);
         node->setMaximumCoords(tmp + delta);
         m_childrenNodes.append(node);
@@ -333,10 +341,11 @@ namespace data {
         m_hasChildren = true;
     }
     
-    template<typename D>
-    bool OctreeNode<D>::isInVolume(const D& d)
+    template<typename D, typename ToPointFn>
+    bool OctreeNode<D,ToPointFn>::isInVolume(const D& d)
     {
-        Point3 v = d;
+//        Point3 v = d;
+        Point3 v = toPointFn(d);
         float x = v.x(), y = v.y(), z = v.z();
         if ( x < m_minimumCoords.x() || x >= m_maximumCoords.x()
             || y < m_minimumCoords.y() || y >= m_maximumCoords.y()
@@ -349,8 +358,18 @@ namespace data {
         return true;
     }
     
-    template<typename D>
-    QString OctreeNode<D>::toString()
+    template<typename D, typename ToPointFn>
+    bool OctreeNode<D,ToPointFn>::findIntersect(const geometry::AABB& box,
+                                                ICollection<D> *container)
+    {
+        if (container == NULL)
+            return false;
+        
+        return false;
+    }
+    
+    template<typename D, typename ToPointFn>
+    QString OctreeNode<D,ToPointFn>::toString()
     {
         QString res;
         QString indent;

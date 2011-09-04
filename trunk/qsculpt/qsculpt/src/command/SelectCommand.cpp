@@ -275,6 +275,7 @@ void SelectCommand::selectSurface()
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
 
+    Eigen::Affine3f trans;
     Point3 p;
     ISurface *surface = NULL;
     Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
@@ -288,12 +289,14 @@ void SelectCommand::selectSurface()
         if(!surface) 
             continue;
         
+        trans = n->transform();
         surface->setSelected(false);
         n->setSelected(false);
         Iterator<Vertex> it = surface->vertexIterator();
         while(it.hasNext()) {
             Vertex* v = &it.next();
-            view->getCanvas()->mapWorldCoordsToScreenCoords(v->position(), p);
+            Vector3 vp = trans * v->position();
+            view->getCanvas()->mapWorldCoordsToScreenCoords(vp, p);
             if (box.contains(p)) {
                 surface->setSelected(true);
                 n->setSelected(true);

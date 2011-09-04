@@ -18,6 +18,7 @@ enum EdgeFlags {
     EF_None     = 0,
     EF_Selected = 0x00000001,  /*< Face is selected */
     EF_Deleted  = 0x00000002,  /*< Face is marked as deleted */
+    EF_Crease   = 0x00000004,
     EF_User1    = 0x00100000,  /*< Reserved to use for the user*/
     EF_User2    = 0x00200000,  /*< Reserved to use for the user*/
     EF_All      = 0xFFFFFFFF

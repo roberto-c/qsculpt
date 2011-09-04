@@ -22,6 +22,7 @@ enum VertexFlags {
     VF_None     = 0,
     VF_Selected = 0x00000001, /*< Vertex is selected*/
     VF_Deleted  = 0x00000002, /*< Vertex is marked as deleted.*/
+    VF_Crease   = 0x00000004,
     VF_User1    = 0x00100000, /*< Flag to use for the user */
     VF_User2    = 0x00200000, /*< Flag to use for the user */
     VF_ALL      = 0xFFFFFFFF
