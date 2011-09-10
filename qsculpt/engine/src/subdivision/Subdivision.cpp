@@ -594,6 +594,11 @@ int Subdivision::addEdge(Vertex* tail, Vertex* head)
         pair.first = head->iid();
         pair.second = tail->iid();
         _d->_vtxPairEdge->insert(pair, h2->iid());
+        
+        if (tail->isFlagSet(VF_Crease) && head->isFlagSet(VF_Crease)) {
+            h1->addFlag(EF_Crease);
+            h2->addFlag(EF_Crease);
+        }
     }
 
     return iid;

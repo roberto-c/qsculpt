@@ -53,6 +53,8 @@ struct SubdivideCommand::Impl {
     
     void computeNewPosition(ISurface& s);
     
+//    void computeBorderPosition(ISurface& s,
+    
     void cleanUserData(ISurface& s);
     
     void smoothNormals(ISurface& s);
@@ -160,32 +162,6 @@ void SubdivideCommand::execute()
     g_pApp->getMainWindow()->getCurrentView()->updateView();
 }
 
-void SubdivideCommand::subdivideFace(ISurface& obj, Face& f)
-{
-    typedef std::pair<int, int> VertexPair;
-    Point3 avg, p;
-    QVector<int> vtxIndex, newFace;
-    int counter = 0, nVtx = 0;
-    Iterator<Edge> edgeIt = f.edgeIterator();
-    
-    // Add the mid point of the face to the surface object
-    Vertex* faceCenter = obj.getVertex(obj.addVertex(avg / nVtx));
-    // Create the faces
-    edgeIt.seek(0);
-    Edge *e = NULL;
-    while(edgeIt.hasNext()){
-        e = &edgeIt.next();
-        newFace.clear();
-        newFace.append(vtxIndex[counter % nVtx]);
-        newFace.append(e->head()->iid());
-        newFace.append(vtxIndex[(counter+1) % nVtx]);
-        newFace.append(faceCenter->iid());
-        obj.addFace(newFace);
-        ++counter;
-    }
-    //qDebug() << "Num edges: " << nVtx << " Conter: " << counter;
-}
-
 void SubdivideCommand::Impl::addFaceMidPointVertex(ISurface& s)
 {
     Vector3 p;
@@ -221,12 +197,20 @@ void SubdivideCommand::Impl::splitEdges(ISurface& s)
                 
             assert(e.face() && e.face()->userData());
             assert(e.pair() && e.pair()->face() && e.pair()->face()->userData());
-            Vertex * v1 = static_cast<Vertex*>(e.face()->userData());
-            Vertex * v2 = static_cast<Vertex*>(e.pair()->face()->userData());
             
             Vector3 p = (e.tail()->position() + e.head()->position()) * 0.5f;
-            Vector3 pf = (v1->position() + v2->position()) * 0.5f;
-            Vertex * vtx = s.getVertex(s.addVertex((p+pf)/2));
+            
+            Vector3 pos;
+            if (e.isFlagSet(EF_Crease)) {
+                pos = p;
+            } else {
+                Vertex * v1 = static_cast<Vertex*>(e.face()->userData());
+                Vertex * v2 = static_cast<Vertex*>(e.pair()->face()->userData());
+                Vector3 pf = (v1->position() + v2->position()) * 0.5f;
+                pos = (p+pf)/2;
+            }
+            
+            Vertex * vtx = s.getVertex(s.addVertex(pos));
             e.setUserData( static_cast<void*>(vtx) );
             assert(e.pair() != NULL && e.pair()->userData() == NULL);
             e.pair()->setUserData( static_cast<void*>(vtx) );
@@ -262,6 +246,9 @@ void SubdivideCommand::Impl::createFaces(ISurface& s)
             Vertex * v = static_cast<Vertex*>(e.userData());
             assert(v != NULL);
             vtxIndex.push_back(v->iid());
+            if (e.isFlagSet(EF_Crease)) {
+                v->addFlag(VF_Crease);
+            }
             numEdges++;
         }
         Vertex * v = static_cast<Vertex*>(f.userData());
