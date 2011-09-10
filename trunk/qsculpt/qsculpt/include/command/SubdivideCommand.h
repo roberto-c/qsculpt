@@ -54,7 +54,6 @@ public:
     // End ICommand Interface
 
 private:
-    void subdivideFace(ISurface & obj, Face& f);
 
     class Impl;
     QScopedPointer<Impl> _d;

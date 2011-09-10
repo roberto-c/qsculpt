@@ -51,6 +51,11 @@ void Box::initPoints()
     vertexID[6] = addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
     vertexID[7] = addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
     
+    Iterator<Vertex> it = vertexIterator();
+    while (it.hasNext()) {
+        it.next().addFlag(VF_Crease);
+    }
+    
     QVector<int> indexList(4);
     indexList[0] = vertexID[0];
     indexList[1] = vertexID[1];
