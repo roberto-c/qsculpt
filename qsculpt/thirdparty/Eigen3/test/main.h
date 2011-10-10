@@ -30,6 +30,15 @@
 #include <string>
 #include <vector>
 #include <typeinfo>
+#include <limits>
+#include <algorithm>
+#include <sstream>
+#include <complex>
+#include <deque>
+#include <queue>
+
+#define min(A,B) please_protect_your_min_with_parentheses
+#define max(A,B) please_protect_your_max_with_parentheses
 
 #ifdef NDEBUG
 #undef NDEBUG
@@ -429,7 +438,7 @@ void createRandomPIMatrixOfRank(typename MatrixType::Index desired_rank, typenam
   MatrixBType  b = MatrixBType::Random(cols,cols);
 
   // set the diagonal such that only desired_rank non-zero entries reamain
-  const Index diag_size = std::min(d.rows(),d.cols());
+  const Index diag_size = (std::min)(d.rows(),d.cols());
   if(diag_size != desired_rank)
     d.diagonal().segment(desired_rank, diag_size-desired_rank) = VectorType::Zero(diag_size-desired_rank);
 
