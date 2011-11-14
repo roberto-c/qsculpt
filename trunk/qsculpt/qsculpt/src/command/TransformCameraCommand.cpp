@@ -247,7 +247,7 @@ void TransformCameraCommand::paintGL(GlCanvas *c)
 {
     static QBrush brush(QColor(0, 120, 220, 180));
     static QPen pen(QColor(0, 220, 220, 180));
-    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    //DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     
     if (_d->draw) {
         glClear(GL_DEPTH_BUFFER_BIT);

@@ -53,7 +53,7 @@ void Sphere::initPoints()
         }
     }
 
-	int num_points = this->getNumVertices();
+	int num_points = this->numVertices();
 	QVector<int> indexList(4);
 	for (int j = 0; j < NUM_LAT; ++j ) {
 		for (int i = 0; i < NUM_PAR-2 ; ++i) {

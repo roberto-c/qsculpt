@@ -200,7 +200,7 @@ void Document::loadFile(const QString& fileName)
                     QStringList values;
                     values = token.split("/");
                     int index = values[0].toInt()  - 1;
-                    if (index >= 0 && index < obj->getNumVertices())
+                    if (index >= 0 && index < obj->numVertices())
                         vertexIndices.append(index);
                     else
                     {

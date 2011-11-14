@@ -96,7 +96,7 @@ void PickingFacesRenderer::renderVbo(const ISurface* mesh, unsigned int objId)
     glEnableClientState(GL_VERTEX_ARRAY);
 
     //glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-    glDrawArrays(GL_QUADS, 0, obj->getNumFaces()*4);
+    glDrawArrays(GL_QUADS, 0, obj->numFaces()*4);
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
@@ -124,7 +124,7 @@ void PickingFacesRenderer::renderVbo(const ISurface* mesh, unsigned int objId)
 void PickingFacesRenderer::renderImmediate(const ISurface* mesh, unsigned int /*objID*/)
 {    
     mesh->lock();
-    int numVertices = mesh->getNumVertices();
+    int numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
     
@@ -162,7 +162,7 @@ VertexBuffer* PickingFacesRenderer::getFlatVBO(ISurface* mesh)
 
 void PickingFacesRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo, GLuint objId)
 {
-    int numVertices = mesh->getNumVertices();
+    int numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
 
@@ -190,7 +190,7 @@ void PickingFacesRenderer::fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vb
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
 
-    int numFaces = mesh->getNumFaces(); //getFaceList().size();
+    int numFaces = mesh->numFaces(); //getFaceList().size();
     if (numFaces == 0)
         return;
 

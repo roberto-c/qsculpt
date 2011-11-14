@@ -123,8 +123,8 @@ void BrushCommand::undo()
         QHash<int, Point3>::iterator it, end = hash.end();
         for (it = hash.begin(); it != end; ++it)
         {
-            Point3 v = _object->getVertex(it.key())->position();
-            _object->getVertex(it.key())->position() = it.value();
+            Point3 v = _object->vertex(it.key())->position();
+            _object->vertex(it.key())->position() = it.value();
             it.value() = v;
         }
         for (it = hash.begin(); it != end; ++it)
@@ -154,8 +154,8 @@ void BrushCommand::redo()
         QHash<int, Point3>::iterator it, end = hash.end();
         for (it = hash.begin(); it != end; ++it)
         {
-            Point3 v = _object->getVertex(it.key())->position();
-            _object->getVertex(it.key())->position() = it.value();
+            Point3 v = _object->vertex(it.key())->position();
+            _object->vertex(it.key())->position() = it.value();
             it.value() = v;
         }
         for (it = hash.begin(); it != end; ++it)
@@ -287,7 +287,7 @@ void BrushCommand::applyOperation()
         for (int i = 0; i < _vertexSelected.size(); i++)
         {
 
-            Point3& v = _object->getVertex(_vertexSelected[i])->position();
+            Point3& v = _object->vertex(_vertexSelected[i])->position();
             gluProject(v.x(), v.y(), v.z(),
                        _modelMatrix, _projMatrix, _viewPort,
                        &winX, &winY, &winZ);
@@ -335,7 +335,7 @@ void BrushCommand::selectObject()
                 if (!_previousState[_object].contains(_vertexSelected[j]))
                 {
                     //_object->getPointList().at(index).color = QColor(255, 0, 0);
-                    _previousState[_object].insert(index, _object->getVertex(index)->position());
+                    _previousState[_object].insert(index, _object->vertex(index)->position());
                 }
             }
         }

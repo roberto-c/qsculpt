@@ -72,7 +72,6 @@ public:
     /**
      * Gets / sets the position of the vertex
      */
-    Point3 getPosition() const { return _position; }
     Point3 position() const { return _position; }
     Point3& position() { return _position; }
 

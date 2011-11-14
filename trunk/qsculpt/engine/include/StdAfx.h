@@ -9,6 +9,11 @@
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
 // TODO: reference additional headers your program requires here
+
+#include <exception>
+#include <stdexcept>
+#include <typeinfo>
+
 #define EIGEN_INITIALIZE_MATRICES_BY_ZERO
 
 #include <Eigen/Core>
@@ -24,9 +29,8 @@ namespace Eigen {
 unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
 unsigned int qHash(const std::pair<int, int> & v);
 
-#include <exception>
-#include <stdexcept>
-#include <typeinfo>
+#include <iterator>
+
 #include <QtDebug>
 #include <QtOpenGL>
 #include <QString>

@@ -271,6 +271,7 @@ Vertex::Vertex(const Vertex& v)
     _color = v._color;
     _flags = v._flags;
     _he = v._he;
+    _userData = v._userData;
 }
 
 Vertex & Vertex::operator=(const Vertex & v)

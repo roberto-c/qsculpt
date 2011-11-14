@@ -38,10 +38,10 @@ public:
     virtual bool hasChanged();
     virtual void setChanged(bool val);
     virtual void setScene(Scene* scene) ;
-    virtual Scene* getScene() const;
-    virtual Point3 getPosition() const;
+    virtual Scene* scene() const;
+    virtual Point3 position() const;
     virtual void displace(const Point3& delta);
-    virtual void getPosition(float *x, float *y, float *z) const;
+    virtual void position(float *x, float *y, float *z) const;
     virtual void setOrientation(float rotX, float rotY, float rotZ);
     virtual void orientation(float& rotX, float& rotY, float& rotZ);
     virtual void setPosition(float x, float y, float z);
@@ -49,24 +49,24 @@ public:
     virtual Eigen::Affine3f transform() const;
     virtual Eigen::Affine3f & transform();
     virtual void setTransform(const Eigen::Affine3f & transform);
-    virtual const geometry::AABB& getBoundingBox() const;
+    virtual const geometry::AABB& boundingBox() const;
     virtual void setColor(const Color& color);
-    virtual Color getColor() const;
+    virtual Color color() const;
     virtual void setSelected(bool val);
     virtual bool isSelected() const;
     virtual int addVertex(const Point3& point);
     virtual int addVertex(Vertex* v);
     virtual void removeVertex(int id);
-    virtual Vertex* getVertex(int index);
-    virtual const Vertex* getVertex(int index) const;
-    virtual int getNumVertices() const;
+    virtual Vertex* vertex(int index);
+    virtual const Vertex* vertex(int index) const;
+    virtual int numVertices() const;
     virtual int addEdge(const Edge& edge);
     virtual int addEdge(int v1, int v2);
     virtual int addFace(const QVector<int>& vertexIndexList);
     virtual void replaceFace(int index, const QVector<int>& vertexIndexList);
     virtual void removeFace( int id);
-    virtual int getNumFaces() const;
-    virtual Face* getFace(int index);
+    virtual int numFaces() const;
+    virtual Face* face(int index);
     virtual int getFaceIndexAtPoint(const Point3& p) const;
     virtual int getClosestPointAtPoint(const Point3 &p) const;
     virtual QVector<int> getPointsInRadius(const Point3 &p, float radius) const;
@@ -76,9 +76,9 @@ public:
     virtual void addResolutionLevel();
     virtual void removeResolutionLevel(int level);
     virtual void setWorkingResolutionLevel(int level);
-    virtual int getWorkingResolutionLevel();
+    virtual int workingResolutionLevel();
 
-    virtual QVector<int> getSelectedPoints() const;
+    virtual QVector<int> selectedPoints() const;
     virtual void setSelectedPoints(const QVector<int>& indicesArray);
 
     virtual Iterator<Vertex> vertexIterator();

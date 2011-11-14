@@ -79,7 +79,7 @@ void PickingObjectRenderer::renderObject(const ISurface* mesh, GLuint objId)
 void PickingObjectRenderer::renderImmediate(const ISurface* mesh, unsigned int /*objID*/)
 {    
     mesh->lock();
-    int numVertices = mesh->getNumVertices();
+    int numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
     
@@ -125,7 +125,7 @@ void PickingObjectRenderer::renderVbo(const ISurface* mesh, unsigned int objID)
 
     glPointSize(1.0f);
     glColor4ub( objID & 0xff,(objID>>8) & 0xff, (objID>>16) & 0xff, (objID>>24) & 0xff);
-    glDrawArrays(GL_QUADS, 0, mesh->getNumFaces()*4);
+    glDrawArrays(GL_QUADS, 0, mesh->numFaces()*4);
 
     glPopAttrib();
 
@@ -151,7 +151,7 @@ void PickingObjectRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
 
-    int numFaces = mesh->getNumFaces();
+    int numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
 

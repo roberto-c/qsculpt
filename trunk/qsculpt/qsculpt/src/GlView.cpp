@@ -502,7 +502,7 @@ void GlCanvas::drawBoundingBox(const ISurface* mesh)
 
     glColor3f(0.0, 1.0, 0.0);
     
-    AABB bb = mesh->getBoundingBox();
+    AABB bb = mesh->boundingBox();
     float minX = bb.min().x() - 0.1;
     float minY = bb.min().y() - 0.1;
     float minZ = bb.min().z() - 0.1;
@@ -823,7 +823,7 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
             s = static_cast<SurfaceNode*> (n);
             mesh = s->surface();
             float px = 0.0f, py = 0.0f, pz = 0.0f;
-            mesh->getPosition(&px, &py, &pz);
+            mesh->position(&px, &py, &pz);
             glTranslatef(px, py, pz);
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -866,7 +866,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
             s = static_cast<SurfaceNode*> (n);
             mesh = s->surface();
             float px = 0.0f, py = 0.0f, pz = 0.0f;
-            mesh->getPosition(&px, &py, &pz);
+            mesh->position(&px, &py, &pz);
             glTranslatef(px, py, pz);
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -880,7 +880,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
                 if (d[j] == 0) continue;
 
                 faceIndex = d[j]-1;
-                Face* f = mesh->getFace(faceIndex);
+                Face* f = mesh->face(faceIndex);
                 
                 Iterator<Vertex> vtxIt = f->constVertexIterator();
                 while(vtxIt.hasNext()) {
