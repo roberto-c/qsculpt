@@ -45,7 +45,7 @@ void PointRenderer::renderObject(const ISurface* mesh)
 void PointRenderer::renderImmediate(const ISurface* mesh)
 {
     mesh->lock();
-    int numVertices = mesh->getNumVertices();
+    int numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
 
@@ -92,7 +92,7 @@ void PointRenderer::renderVbo(const ISurface* mesh)
     glEnable(GL_POINT_SMOOTH);
     glPointSize(3.0f);
     glColor3f(1.0f, 1.0f, 1.0f);
-    glDrawArrays(GL_POINTS, 0, obj->getNumVertices());
+    glDrawArrays(GL_POINTS, 0, obj->numVertices());
 
     //	glDepthFunc(GL_EQUAL);
     //	glPointSize(1.5f);
@@ -119,7 +119,7 @@ VertexBuffer* PointRenderer::getVBO(ISurface* mesh)
 
 void PointRenderer::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
 {
-    int numVertices = mesh->getNumVertices();
+    int numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
 

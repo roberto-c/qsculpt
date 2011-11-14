@@ -182,7 +182,7 @@ void SmoothRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
     
-    int numFaces = mesh->getNumFaces();
+    int numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
     

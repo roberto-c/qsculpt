@@ -60,5 +60,62 @@ private:
 
 };
 
+
+/**
+ * Subdivision command. Subdvide the selected object.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+ */
+class EditSubdivideCommand : public CommandBase
+{
+    Q_OBJECT
+    
+public:
+    EditSubdivideCommand();
+    
+    EditSubdivideCommand(const EditSubdivideCommand& cpy);
+    
+    ~EditSubdivideCommand();
+    
+    // ICommand Interface
+    virtual ICommand* clone() const;
+    virtual bool needsUserInteraction() const { return true; }
+    virtual void execute();
+    virtual void undo();
+    virtual void redo();
+    virtual QWidget* getOptionsWidget(){return NULL;}
+    
+    /**
+     *
+     */
+    virtual void mousePressEvent(QMouseEvent *e);
+    
+    /**
+     * Called when a mouse release event ocurrs. This method is called by the
+     * widget (a QGLWidget).
+     *
+     */
+    virtual void mouseReleaseEvent(QMouseEvent *e);
+    
+    /**
+     * Called when a mouse move event ocurrs. This method is called by the
+     * widget (a QGLWidget).
+     *
+     */
+    virtual void mouseMoveEvent(QMouseEvent *e);
+    
+    /**
+     * Used to display anything specific to the command as user feedback.
+     */
+    virtual void paintGL(GlCanvas *c);
+    // End ICommand Interface
+    
+private:
+    
+    class Impl;
+    QScopedPointer<Impl> _d;
+    
+};
+
 #endif
 

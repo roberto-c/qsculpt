@@ -132,7 +132,7 @@ void RendererPrivate::renderVbo(const ISurface* mesh)
     
     //qDebug() << "Draw mesh";
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawArrays(GL_QUADS, 0, obj->getNumFaces()*4);
+    glDrawArrays(GL_QUADS, 0, obj->numFaces()*4);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -159,7 +159,7 @@ void RendererPrivate::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
     
-    int numFaces = mesh->getNumFaces();
+    int numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
     

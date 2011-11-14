@@ -22,6 +22,7 @@
 #include <QtDebug>
 #include <QThread>
 #include <QProgressDialog>
+//#include <omp.h>
 #include "IDocument.h"
 #include "ISurface.h"
 #include "QSculptApp.h"
@@ -125,7 +126,7 @@ void SubdivideCommand::execute()
             continue;
         ISurface * obj = static_cast<SurfaceNode*>(node)->surface();
         qDebug() << "Object found";
-        qDebug() << "Num faces =" << obj->getNumFaces();
+        qDebug() << "Num faces =" << obj->numFaces();
         QVector<Face*> facesToDelete;
         
         // mark all orginal points with -1
@@ -134,28 +135,30 @@ void SubdivideCommand::execute()
             it.next().addFlag(VF_User1);
         }
         
-        // split edges in half and add a vertex per face
-        _d->addFaceMidPointVertex(*obj);
-        _d->splitEdges(*obj);
-        
-        _d->computeNewPosition(*obj);
-        
-        // create new faces
-        _d->createFaces(*obj);
+        //#pragma omp parallel
+        {
+            // split edges in half and add a vertex per face
+            _d->addFaceMidPointVertex(*obj);
+            _d->splitEdges(*obj);
+            
+            _d->computeNewPosition(*obj);
+            
+            // create new faces
+            _d->createFaces(*obj);
 
-        // removeOldFaces
-        _d->removeOldFaces(*obj);
-        
-        // set to null data
-        _d->cleanUserData(*obj);
-        
-        _d->smoothNormals(*obj);
-        
+            // removeOldFaces
+            _d->removeOldFaces(*obj);
+            
+            // set to null data
+            _d->cleanUserData(*obj);
+            
+            _d->smoothNormals(*obj);
+        }
         //_d->diagnostiscs(*obj);
         
         obj->setChanged(true);
-        qDebug() << "Num Faces: " << obj->getNumFaces();
-        qDebug() << "Num Vertices: " << obj->getNumVertices();
+        qDebug() << "Num Faces: " << obj->numFaces();
+        qDebug() << "Num Vertices: " << obj->numVertices();
     }
     qDebug() << "End time:" << QDateTime::currentDateTime();
     dlg.setValue(100);
@@ -177,7 +180,7 @@ void SubdivideCommand::Impl::addFaceMidPointVertex(ISurface& s)
             ++val;
         }
         p = p / val;
-        Vertex * vtx = s.getVertex(s.addVertex(p));
+        Vertex * vtx = s.vertex(s.addVertex(p));
         f.setUserData( static_cast<void*>(vtx) );
     }
 }
@@ -210,7 +213,7 @@ void SubdivideCommand::Impl::splitEdges(ISurface& s)
                 pos = (p+pf)/2;
             }
             
-            Vertex * vtx = s.getVertex(s.addVertex(pos));
+            Vertex * vtx = s.vertex(s.addVertex(pos));
             e.setUserData( static_cast<void*>(vtx) );
             assert(e.pair() != NULL && e.pair()->userData() == NULL);
             e.pair()->setUserData( static_cast<void*>(vtx) );
@@ -301,7 +304,7 @@ void SubdivideCommand::Impl::computeNewPosition(ISurface& s)
             eAvg = eAvg / n;
             
             assert(n >= 3);
-            v.position() = (fAvg + 2*eAvg + (n-3)*v.position()) / n;
+            v.position() = (fAvg + (eAvg * 2.0f) + v.position()*(n-3)) / n;
             v.removeFlag(VF_User1);
         }
     }
@@ -353,7 +356,7 @@ void SubdivideCommand::Impl::smoothNormals(ISurface& s)
         normal = normal / counter;
         vtx->normal() = normal.normalized();
         
-        qDebug() << "Vtx num neighbor: " << counter;
+        //qDebug() << "Vtx num neighbor: " << counter;
     }
 }
 
@@ -386,5 +389,69 @@ void SubdivideCommand::Impl::diagnostiscs(ISurface & s)
             qDebug() << "Vertex with no edge: " << v.iid();
         }
     }
+}
 
+
+struct EditSubdivideCommand::Impl {
+    Subdivision * surf;
+};
+
+EditSubdivideCommand::EditSubdivideCommand() {
+    
+}
+    
+EditSubdivideCommand::EditSubdivideCommand(const EditSubdivideCommand& cpy){
+    
+}
+    
+EditSubdivideCommand::~EditSubdivideCommand(){
+    
+}
+    
+
+ICommand* EditSubdivideCommand::clone() const{
+    return new EditSubdivideCommand(*this);
+}
+    
+void EditSubdivideCommand::execute(){
+    
+}
+void EditSubdivideCommand::undo(){
+    
+}
+void EditSubdivideCommand::redo(){
+    
+}
+
+    
+    /**
+     *
+     */
+void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
+    
+}
+    
+    /**
+     * Called when a mouse release event ocurrs. This method is called by the
+     * widget (a QGLWidget).
+     *
+     */
+void EditSubdivideCommand::mouseReleaseEvent(QMouseEvent *e){
+    
+}
+    
+    /**
+     * Called when a mouse move event ocurrs. This method is called by the
+     * widget (a QGLWidget).
+     *
+     */
+void EditSubdivideCommand::mouseMoveEvent(QMouseEvent *e){
+    
+}
+    
+    /**
+     * Used to display anything specific to the command as user feedback.
+     */
+void EditSubdivideCommand::paintGL(GlCanvas *c){
+    
 }

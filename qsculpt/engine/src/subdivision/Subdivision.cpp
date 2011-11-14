@@ -48,6 +48,11 @@ typedef QHash<VtxPair, int>     VtxPairEdgeMap;
 typedef std::map<int, Face*>       FacesCollection;
 
 
+struct VertexPool {
+    std::vector<size_t> free;
+    std::vector<Vertex> element;
+};
+
 static QAtomicInt NEXT_ID;
 
 struct Subdivision::Impl {
@@ -83,6 +88,8 @@ struct Subdivision::Impl {
     bool            _hasChanged;
     QVector<int>    _selectedPoints;
     Eigen::Affine3f _transform;
+    
+    VertexPool      _vtxPool;
     
     Impl() :     _vertices(NULL),
     _edges(NULL),
@@ -397,10 +404,21 @@ void Subdivision::initPoints()
     _d->_vtxPairEdge = new VtxPairEdgeMap;
     _d->_faces = new FacesCollection;
 
+    _d->_vertices->reserve(50000);
+    _d->_edges->reserve(50000);
+    _d->_vtxPairEdge->reserve(50000);
+    
     _d->_vertLevelCollections.push_back(_d->_vertices);
     _d->_edgesLevelCollections.push_back(_d->_edges);
     _d->_vertexEdgeCollection.push_back(_d->_vtxPairEdge);
     _d->_facesLevelCollections.push_back(_d->_faces);
+    
+//    _d->_vtxPool.free.reserve(1000000);
+//    for (size_t i = 0; i < 1000000; ++i) {
+//        _d->_vtxPool.free.push_back(i);
+//    }
+//    _d->_vtxPool.element.reserve(1000000);
+//    _d->_vtxPool.element.resize(1000000);
 }
 
 bool Subdivision::hasChanged() {
@@ -414,7 +432,7 @@ void Subdivision::setChanged(bool val) {
     }
 }
 
-QVector<int> Subdivision::getSelectedPoints() const {
+QVector<int> Subdivision::selectedPoints() const {
     return _d->_selectedPoints;
 }
 
@@ -427,12 +445,12 @@ void Subdivision::setScene(Scene* scene)
     _d->_scene = scene;
 }
 
-Scene* Subdivision::getScene() const
+Scene* Subdivision::scene() const
 {
     return _d->_scene;
 }
 
-Point3 Subdivision::getPosition() const
+Point3 Subdivision::position() const
 {
     return _d->_position;
 }
@@ -443,7 +461,7 @@ void Subdivision::displace(const Point3& delta)
     emit positionChanged(_d->_position.x(), _d->_position.y(), _d->_position.z());
 }
 
-void Subdivision::getPosition(float *x, float *y, float *z) const
+void Subdivision::position(float *x, float *y, float *z) const
 {
     if (x) *x = _d->_position.x();
     if (y) *y = _d->_position.y();
@@ -494,7 +512,7 @@ void Subdivision::setTransform(const Eigen::Affine3f & transform)
     _d->_transform = transform;
 }
 
-const geometry::AABB& Subdivision::getBoundingBox() const
+const geometry::AABB& Subdivision::boundingBox() const
 {
     return _d->_boundingBox;
 }
@@ -504,7 +522,7 @@ void Subdivision::setColor(const Color& color)
     _d->_color = color;
 }
 
-Color Subdivision::getColor() const
+Color Subdivision::color() const
 {
     return _d->_color;
 }
@@ -523,11 +541,13 @@ int Subdivision::addVertex(const Point3& point)
 {
     assert(_d->_vertices != NULL );
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
-    _d->_boundingBox.extend(point);
-
+    
     Vertex* vertex = new Vertex(point);
-//    this->_vertices->push_back(vertex);
-//    return _vertices->size() - 1;
+//    size_t index = _d->_vtxPool.free[0];
+//    _d->_vtxPool.free.pop_back();
+//    Vertex* vertex = &_d->_vtxPool.element.at(index);
+//    vertex->position() = point;
+    _d->_boundingBox.extend(point);
     this->_d->_vertices->insert(vertex->iid(), vertex);
     return vertex->iid();
 
@@ -535,7 +555,7 @@ int Subdivision::addVertex(const Point3& point)
 
 int Subdivision::addVertex(Vertex* v)
 {
-    _d->_boundingBox.extend(v->getPosition());
+    _d->_boundingBox.extend(v->position());
     this->_d->_vertices->insert(v->iid(), v);
     return v->iid();
 }
@@ -545,17 +565,17 @@ void Subdivision::removeVertex(int iid)
     _d->_vertices->remove(iid);
 }
 
-Vertex* Subdivision::getVertex(int iid)
+Vertex* Subdivision::vertex(int iid)
 {
     return _d->_vertices->contains(iid) ? _d->_vertices->value(iid) : NULL;
 }
 
-const Vertex* Subdivision::getVertex(int iid) const
+const Vertex* Subdivision::vertex(int iid) const
 {
     return _d->_vertices->contains(iid) ? _d->_vertices->value(iid) : NULL;
 }
 
-int Subdivision::getNumVertices() const
+int Subdivision::numVertices() const
 {
     return _d->_vertices->size();
 }
@@ -641,7 +661,7 @@ void Subdivision::replaceFace(int /*faceIndex*/, const QVector<int>& /*vertexInd
 // clear reference to face from edges and remove the face from this surface.
 void Subdivision::removeFace( int iid)
 {
-    Face * f = getFace(iid);
+    Face * f = face(iid);
     if (f == NULL)
         return;
     Iterator<Edge> edgeIt = f->edgeIterator();
@@ -653,14 +673,14 @@ void Subdivision::removeFace( int iid)
     _d->_faces->erase(iid);
 }
 
-Face* Subdivision::getFace(int iid)
+Face* Subdivision::face(int iid)
 {
     assert(iid > 0);
     FacesCollection::iterator it = _d->_faces->find(iid);
     return  it != _d->_faces->end() ? it->second : NULL;
 }
 
-int Subdivision::getNumFaces() const
+int Subdivision::numFaces() const
 {
     assert( _d->_faces!= NULL );
     return _d->_faces->size();
@@ -722,7 +742,7 @@ void Subdivision::setWorkingResolutionLevel(int level)
     NOT_IMPLEMENTED
 }
 
-int Subdivision::getWorkingResolutionLevel()
+int Subdivision::workingResolutionLevel()
 {
     // TODO: Implement getWorkingResolutionLevel
     NOT_IMPLEMENTED
@@ -828,14 +848,14 @@ IIterator<Vertex>* Subdivision::VertexIterator::clone() const
 bool Subdivision::VertexIterator::hasNext() const
 {
     //NOT_IMPLEMENTED
-    int n = _surface->getNumVertices();
+    int n = _surface->numVertices();
     return n >0 && _index != _surface->_d->_vertices->end();
 }
 
 bool Subdivision::VertexIterator::hasPrevious() const
 {
     //NOT_IMPLEMENTED
-    int n = _surface->getNumVertices();
+    int n = _surface->numVertices();
     return n > 0 &&
             (_index == _surface->_d->_vertices->end() ||
              _index != _surface->_d->_vertices->begin());
@@ -929,14 +949,14 @@ IIterator<Face>* Subdivision::FaceIterator::clone() const
 bool Subdivision::FaceIterator::hasNext() const
 {
     //NOT_IMPLEMENTED
-    int n = _surface->getNumFaces();
+    int n = _surface->numFaces();
 //    return n > 0 && _index < n-1;
     return n > 0 && _index != _surface->_d->_faces->end();
 }
 
 bool Subdivision::FaceIterator::hasPrevious() const
 {
-    int n = _surface->getNumFaces();
+    int n = _surface->numFaces();
 //    return n > 0 && _index < n && _index >= 0;
     return n > 0 &&
             (_index == _surface->_d->_faces->end() ||
@@ -1035,8 +1055,8 @@ void Subdivision::printMemoryInfo() const
     sizeVertex = sizeof(Vertex);
     sizeFace = sizeof(Face);
     sizeEdge = sizeof(Edge);
-    nVertex = this->getNumVertices();
-    nFace = this->getNumFaces();
+    nVertex = this->numVertices();
+    nFace = this->numFaces();
     nEdge = this->_d->_edges->size();
     
     qDebug() << "Size of vertex: " << sizeVertex;

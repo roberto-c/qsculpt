@@ -42,8 +42,9 @@ Interface that every 3D object should implement.
   @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
 class ISurface : public QObject {
-        Q_OBJECT
-
+    Q_OBJECT
+    Q_PROPERTY(Point3 position READ position WRITE setPosition)
+    
 public:
     /**
      * Default contructor. The classes that implement this interface, should
@@ -61,7 +62,7 @@ public:
     
     virtual void setScene(Scene* scene) = 0;
 
-    virtual Scene* getScene() const = 0;
+    virtual Scene* scene() const = 0;
 
     /**
      * Set the object's position.
@@ -86,14 +87,14 @@ public:
      * @param y Object y-axis position.
      * @param z Object z-axis position.
      */
-    virtual void getPosition (float *x, float *y, float *z) const = 0;
+    virtual void position (float *x, float *y, float *z) const = 0;
 
     /**
      * Get the object's position. Overloaded method.
      *
      * @return position of the object.
      */
-    virtual Point3 getPosition () const = 0;
+    virtual Point3 position () const = 0;
 
     /**
      * Move the object.
@@ -139,7 +140,7 @@ public:
      * Returns the bounding box of the object.
      *
      */
-    virtual const geometry::AABB& getBoundingBox() const = 0;
+    virtual const geometry::AABB& boundingBox() const = 0;
 
     /**
     * Sets the object base color. Used as vertex color, line color, shading
@@ -157,7 +158,7 @@ public:
     * @return color of the object.
     *
     */
-    virtual Color getColor() const = 0;
+    virtual Color color() const = 0;
 
     /**
      * Mark the object as selected. This property is used by the renderers
@@ -208,17 +209,17 @@ public:
     /**
      * Returns the vertex with the instance ID iid.
      */
-    virtual Vertex* getVertex(int iid) = 0;
+    virtual Vertex* vertex(int iid) = 0;
     
     /**
      * Returns the vertex with the instance ID iid.
      */
-    virtual const Vertex* getVertex(int iid) const = 0;
+    virtual const Vertex* vertex(int iid) const = 0;
 
     /**
      * Gets the number of vertices
      */
-    virtual int getNumVertices() const = 0;
+    virtual int numVertices() const = 0;
 
     /**
      *
@@ -261,12 +262,12 @@ public:
      *
      * TODO: This may not belong here as is specific to mesh surfaces.
      */
-    virtual int getNumFaces() const = 0;
+    virtual int numFaces() const = 0;
 
     /**
      * Returns the face at the position index.
      */
-    virtual Face* getFace(int index) = 0;
+    virtual Face* face(int index) = 0;
 
     /**
      *
@@ -316,7 +317,7 @@ public:
     /**
      *
      */
-    virtual int getWorkingResolutionLevel() = 0;
+    virtual int workingResolutionLevel() = 0;
 
     /**
      * Get a buffer with all the vertex data. This data is used to render the
@@ -348,7 +349,14 @@ public:
 
     virtual void setChanged(bool val)=0;
 
-    virtual QVector<int> getSelectedPoints() const = 0;
+    /**
+     *
+     */
+    virtual QVector<int> selectedPoints() const = 0;
+    
+    /*
+     *
+     */
     virtual void setSelectedPoints(const QVector<int>& indicesArray) = 0;
 
     /**
