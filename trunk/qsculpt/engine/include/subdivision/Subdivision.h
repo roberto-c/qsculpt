@@ -19,6 +19,7 @@
 class Vertex;
 class Edge;
 class SubdivisionScheme;
+class Mesh;
 
 /**
  * Class that implement subdivision surfaces.
@@ -30,6 +31,12 @@ class Subdivision : public ISurface
 
 public:
     Subdivision();
+    
+    /**
+     * Construct a subdivision surface from a @class Mesh. 
+     */
+    Subdivision(const Mesh* mesh);
+    
     virtual ~Subdivision();
     /******************************************************************************
      * IObject3D interface
@@ -106,6 +113,20 @@ public:
      * object.
      */
     void printMemoryInfo() const;
+    
+    /**
+     * Convert subdivision surface to a regular Mesh.
+     *
+     * @param level level of the surface to convert to mesh.
+     */
+    Mesh* convertToMesh(int level = -1);
+    
+    /**
+     * Uses mesh as base mesh for this subdivision surface.
+     *
+     * @param mesh mesh to convert from.
+     */
+    void convertFromMesh(const Mesh* mesh);
     
 protected:
     /**

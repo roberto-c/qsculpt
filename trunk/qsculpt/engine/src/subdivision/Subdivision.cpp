@@ -32,6 +32,7 @@
 #include "HEdge.h"
 #include "geometry/Aabb.h"
 #include "Color.h"
+#include "Mesh.h"
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -377,6 +378,13 @@ Subdivision::Subdivision()
     //updateBoundingBox();
 }
 
+Subdivision::Subdivision(const Mesh * mesh)
+: ISurface(),
+_d(new Impl)
+{
+    convertFromMesh(mesh);
+}
+
 Subdivision::~Subdivision()
 {
     _d->_vertices = NULL;
@@ -695,9 +703,20 @@ int Subdivision::getFaceIndexAtPoint(const Point3& /*p*/) const
 
 int Subdivision::getClosestPointAtPoint(const Point3 &/*p*/) const
 {
-    NOT_IMPLEMENTED
+    float d = MAXFLOAT;
+    Vertex * vtx, *tmpVtx;
+    Point3 p;
+    Iterator<Vertex> it = constVertexIterator();
+    while (it.hasNext()) {
+        tmpVtx = &it.next();
+        p = tmpVtx->position() - p;
+        if (p.squaredNorm() < d) {
+            d = p.squaredNorm();
+            vtx = tmpVtx;
+        }
+    }
 
-    return -1;
+    return vtx ? vtx->iid() : 0;
 }
 
 QVector<int> Subdivision::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
@@ -826,6 +845,23 @@ Point3 Subdivision::worldToLocalCoords(const Point3& p) const
     t *= Eigen::Translation3f(_d->_position);
     Eigen::Vector4f p4(p.x(), p.y(), p.z(), 1.0f);
     return Point3(Eigen::Vector4f(t.inverse() * p4).data());
+}
+
+Mesh* Subdivision::convertToMesh(int level)
+{
+    Mesh * mesh = new ::Mesh;
+    
+    return mesh;
+}
+
+/**
+ * Uses mesh as base mesh for this subdivision surface.
+ *
+ * @param mesh mesh to convert from.
+ */
+void Subdivision::convertFromMesh(const Mesh* mesh)
+{
+    
 }
 
 // Inner classes implementation
