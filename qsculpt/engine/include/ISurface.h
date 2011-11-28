@@ -300,26 +300,6 @@ public:
     virtual void unlock() const = 0;
 
     /**
-     *
-     */
-    virtual void addResolutionLevel() = 0;
-
-    /**
-     *
-     */
-    virtual void removeResolutionLevel(int level) = 0;
-
-    /**
-     *
-     */
-    virtual void setWorkingResolutionLevel(int level) = 0;
-
-    /**
-     *
-     */
-    virtual int workingResolutionLevel() = 0;
-
-    /**
      * Get a buffer with all the vertex data. This data is used to render the
      * mesh using VBOs.
      *
