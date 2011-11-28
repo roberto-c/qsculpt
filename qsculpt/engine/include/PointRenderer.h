@@ -28,7 +28,7 @@ private:
 	/**
 	 *
 	 */
-	VertexBuffer* getVBO(ISurface* mesh);
+	VertexBuffer* getVBO(const ISurface* mesh);
 	
 	void fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo);
 };

@@ -39,7 +39,7 @@ BOManager* BOManager::getInstance()
     return m_instance;
 }
 
-void BOManager::invalidateBO(ISurface* mesh)
+void BOManager::invalidateBO(const ISurface* mesh)
 {
     BOMeshMap::iterator itEnd = m_boMeshMap.end();
     for (BOMeshMap::iterator it = m_boMeshMap.begin(); it != itEnd; ++it)
@@ -52,7 +52,7 @@ void BOManager::invalidateBO(ISurface* mesh)
     }
 }
 
-VertexBuffer* BOManager::createVBO(const QString& poolName, ISurface* mesh)
+VertexBuffer* BOManager::createVBO(const QString& poolName, const ISurface* mesh)
 {
     Q_ASSERT(mesh);
     VertexBuffer* bo = new VertexBuffer;
@@ -76,7 +76,7 @@ VertexBuffer* BOManager::createVBO(const QString& poolName, ISurface* mesh)
     return bo;
 }
 
-IndexBuffer* BOManager::createIBO(const QString& poolName, ISurface* mesh)
+IndexBuffer* BOManager::createIBO(const QString& poolName, const ISurface* mesh)
 {
     Q_ASSERT(mesh);
     IndexBuffer* bo = new IndexBuffer;
@@ -169,12 +169,12 @@ ISurface* BOManager::getMesh(const BufferObject* bo)
     Q_ASSERT(bo);
     if (bo->getBufferID() != 0 && m_boMeshMap.contains(bo->getBufferID()))
     {
-        return m_boMeshMap[bo->getBufferID()];
+        return const_cast<ISurface*>(m_boMeshMap[bo->getBufferID()]);
     }
     return NULL;
 }
 
-VertexBuffer* BOManager::getVBO(const QString& poolName, ISurface* mesh)
+VertexBuffer* BOManager::getVBO(const QString& poolName, const ISurface* mesh)
 {
     Q_ASSERT(mesh);
     if (m_vboPool.contains(poolName)
@@ -185,7 +185,7 @@ VertexBuffer* BOManager::getVBO(const QString& poolName, ISurface* mesh)
     return NULL;
 }
 
-IndexBuffer* BOManager::getIBO(const QString& poolName, ISurface* mesh)
+IndexBuffer* BOManager::getIBO(const QString& poolName, const ISurface* mesh)
 {
     Q_ASSERT(mesh);
     if (m_iboPool.contains(poolName)

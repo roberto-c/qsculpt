@@ -48,6 +48,7 @@ unsigned int qHash(const std::pair<int, int> & v);
 #include <QScopedPointer>
 #include <QSharedPointer>
 #include <QExplicitlySharedDataPointer>
+#include "PEngineTypes.h"
 
 inline bool printGlError()
 {

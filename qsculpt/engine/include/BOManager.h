@@ -40,8 +40,8 @@ class BOManager : public QObject
 	Q_OBJECT
 
 	typedef QHash<GLuint, BufferObject*> IdBufferObjectMap;
-	typedef QHash<GLuint, ISurface*> BOMeshMap;
-	typedef QHash<ISurface*, GLuint> MeshBOMap;
+	typedef QHash<GLuint, const ISurface*> BOMeshMap;
+	typedef QHash<const ISurface*, GLuint> MeshBOMap;
 	typedef QHash<QString, MeshBOMap> BOPool;
 	
 public:
@@ -62,8 +62,8 @@ public:
 	 *
 	 * TODO: describe the notion of pool's on this class.
 	 */
-	VertexBuffer* createVBO(const QString& poolName, ISurface* mesh);
-	IndexBuffer* createIBO(const QString& poolName, ISurface* mesh);
+	VertexBuffer* createVBO(const QString& poolName, const ISurface* mesh);
+	IndexBuffer* createIBO(const QString& poolName, const ISurface* mesh);
 	
 	/**
 	 * Free the buffer object resources.
@@ -99,11 +99,11 @@ public:
 	/**
 	 * Gets the BO associated to the mesh inside an specific BO pool.
 	 */
-	VertexBuffer* getVBO(const QString& poolName, ISurface* mesh);
-	IndexBuffer* getIBO(const QString& poolName, ISurface* mesh);
+	VertexBuffer* getVBO(const QString& poolName, const ISurface* mesh);
+	IndexBuffer* getIBO(const QString& poolName, const ISurface* mesh);
 	
 public slots:
-	void invalidateBO(ISurface* obj);
+	void invalidateBO(const ISurface* obj);
 	
 private:
 	BOManager();

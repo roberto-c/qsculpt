@@ -6,8 +6,8 @@
 //  Copyright 2011 plastilinaware. All rights reserved.
 //
 
-#ifndef GLOBALDEFS_H_
-#define GLOBALDEFS_H_
+#ifndef ENGINE_GLOBALDEFS_H_
+#define ENGINE_GLOBALDEFS_H_
 
 
 typedef unsigned int IID;

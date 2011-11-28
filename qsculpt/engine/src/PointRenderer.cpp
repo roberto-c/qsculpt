@@ -106,7 +106,7 @@ void PointRenderer::renderVbo(const ISurface* mesh)
     glPopAttrib();
 }
 
-VertexBuffer* PointRenderer::getVBO(ISurface* mesh)
+VertexBuffer* PointRenderer::getVBO(const ISurface* mesh)
 {
     VertexBuffer* vbo = NULL;
     vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
@@ -123,7 +123,7 @@ void PointRenderer::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
     if (numVertices == 0)
         return;
 
-    Vector3 color1(0.85f, 0.85f, 0.85f);
+    Vector3 color1(1.f, 0.f, 0.f);
 
     int numFloats = numVertices*6;
     GLfloat* vtxData = new GLfloat[numFloats];
