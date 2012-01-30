@@ -60,5 +60,16 @@ inline bool printGlError()
 //#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
 #define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
 
+#ifdef PLASTILINA_GL_EXCEPTON_ENABLE
+#define THROW_IF_GLERROR(msg) { \
+    GLenum error = glGetError(); \
+    if (error != GL_NO_ERROR) { \
+        throw core::GlException(msg, error);
+    }\
+}
+#else
+#define THROW_IF_GLERROR(msg)
+#endif
+
 #endif
 

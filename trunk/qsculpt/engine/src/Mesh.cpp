@@ -66,16 +66,13 @@ struct Mesh::Impl {
     SubdivisionScheme* scheme;
     
     Scene*          _scene;
-    Point3          _position;
     Color           _color;
     geometry::AABB  _boundingBox;
-    float           _rotX, _rotY, _rotZ;
     bool            _selected;
     int             _callListId;
     bool            _genereateCallList;
     bool            _hasChanged;
     QVector<int>    _selectedPoints;
-    Eigen::Affine3f _transform;
     
     VertexPool      _vtxPool;
     
@@ -86,9 +83,6 @@ struct Mesh::Impl {
     _scene(NULL),
     //_drawingMode(Wireframe),
     _color(1.f,1.f,1.f),
-    _rotX(0.0),
-    _rotY(0.0),
-    _rotZ(0.0),
     _selected(false),
     _callListId(0),
     _genereateCallList(true),
@@ -418,68 +412,6 @@ Scene* Mesh::scene() const
     return _d->_scene;
 }
 
-Point3 Mesh::position() const
-{
-    return _d->_position;
-}
-
-void Mesh::displace(const Point3& delta)
-{
-    _d->_position = _d->_position + delta;
-    emit positionChanged(_d->_position.x(), _d->_position.y(), _d->_position.z());
-}
-
-void Mesh::position(float *x, float *y, float *z) const
-{
-    if (x) *x = _d->_position.x();
-    if (y) *y = _d->_position.y();
-    if (z) *z = _d->_position.z();
-}
-
-void Mesh::setOrientation(float rotX, float rotY, float rotZ)
-{
-    _d->_rotX = rotX;
-    _d->_rotY = rotY;
-    _d->_rotZ = rotZ;
-}
-
-void Mesh::orientation(float& rotX, float& rotY, float& rotZ)
-{
-    rotX = _d->_rotX;
-    rotY = _d->_rotY;
-    rotZ = _d->_rotZ;
-}
-
-void Mesh::setPosition(float x, float y, float z)
-{
-    _d->_position.x() = x;
-    _d->_position.y() = y;
-    _d->_position.z() = z;
-    
-    emit positionChanged(x, y, z);
-}
-
-void Mesh::setPosition(const Point3& position)
-{
-    _d->_position = position;
-    emit positionChanged(_d->_position.x(), _d->_position.y(), _d->_position.z());
-}
-
-Eigen::Affine3f Mesh::transform() const
-{
-    return _d->_transform;
-}
-
-Eigen::Affine3f & Mesh::transform()
-{
-    return _d->_transform;
-}
-
-void Mesh::setTransform(const Eigen::Affine3f & transform)
-{
-    _d->_transform = transform;
-}
-
 const geometry::AABB& Mesh::boundingBox() const
 {
     return _d->_boundingBox;
@@ -723,30 +655,6 @@ Iterator<Edge> Mesh::edgeIterator()
 Iterator<Edge> Mesh::constEdgeIterator() const
 {
     return Iterator<Edge>(new EdgeIterator(this));
-}
-
-
-Point3 Mesh::localToWorldCoords(const Point3& p) const
-{
-    Eigen::Matrix3f m;
-    m = Eigen::AngleAxisf(_d->_rotZ, Eigen::Vector3f::UnitZ())
-    * Eigen::AngleAxisf(_d->_rotY, Eigen::Vector3f::UnitY())
-    * Eigen::AngleAxisf(_d->_rotX, Eigen::Vector3f::UnitZ());
-    Eigen::Transform3f t(m);
-    t *= Eigen::Translation3f(_d->_position);
-    return t * p;
-}
-
-Point3 Mesh::worldToLocalCoords(const Point3& p) const
-{
-    Eigen::Matrix3f m;
-    m = Eigen::AngleAxisf(_d->_rotZ, Eigen::Vector3f::UnitZ())
-    * Eigen::AngleAxisf(_d->_rotY, Eigen::Vector3f::UnitY())
-    * Eigen::AngleAxisf(_d->_rotX, Eigen::Vector3f::UnitZ());
-    Eigen::Transform3f t(m);
-    t *= Eigen::Translation3f(_d->_position);
-    Eigen::Vector4f p4(p.x(), p.y(), p.z(), 1.0f);
-    return Point3(Eigen::Vector4f(t.inverse() * p4).data());
 }
 
 // Inner classes implementation

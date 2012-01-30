@@ -108,6 +108,18 @@ public:
                         float near, float far);
 
     /**
+     * Construct a perspective projection matrix based in field of view and 
+     * aspect ratio values.
+     *
+     * @param fovy the field of view angle in degrees in the y direction
+     * @param aspect aspect ratio used to determine the field of view in the x direction
+     * @param zNear cut off plane in the z direction
+     * @param zFar cut off plane in the z direction, far from the point of view.
+     *
+     */
+    void setPerspectiveMatrix(float fovy, float aspect, float zNear, float zFar);
+    
+    /**
      * Set the viewport transformation matrix.
      *
      * This transformation matrix is applied after the projection transformation

@@ -103,7 +103,7 @@ public:
 	IndexBuffer* getIBO(const QString& poolName, const ISurface* mesh);
 	
 public slots:
-	void invalidateBO(const ISurface* obj);
+	void invalidateBO(ISurface* obj);
 	
 private:
 	BOManager();

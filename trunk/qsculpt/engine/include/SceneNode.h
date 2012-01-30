@@ -22,6 +22,7 @@
 
 #include <vector>
 #include "IIterator.h"
+#include "Vector.h"
 
 class ISurface;
 
@@ -48,7 +49,7 @@ public:
     
     uint iid() const;
     
-    virtual NodeType nodeType() { return NT_Normal; }
+    virtual NodeType nodeType() const { return NT_Normal; }
     
     /**
      * Sets parent as the new parent of this node. 
@@ -102,6 +103,22 @@ public:
      * node. It does not include this node transformation.
      */
     Eigen::Affine3f parentTransform() const;
+    
+    /**
+     * Map world coordinates to local coordinates.
+     *
+     * It chains the parent node transformation and this node transformation
+     * to compute the local coordinates.
+     */
+    Point3 worldToLocal(Point3 p) const;
+    
+    /**
+     * Map local coordinates to world coordinates.
+     *
+     * It chains the parent node transformation and this node transformation
+     * to compute the local coordinates.
+     */
+    Point3 localToWorld(Point3 p) const;
     
     /**
      *
@@ -177,7 +194,7 @@ public:
      */
     ~SurfaceNode();
     
-    virtual NodeType nodeType() { return NT_Surface; }
+    virtual NodeType nodeType() const { return NT_Surface; }
     
     /**
      * Returns the surface contained in this node.

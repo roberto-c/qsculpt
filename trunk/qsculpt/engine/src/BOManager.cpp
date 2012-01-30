@@ -39,7 +39,7 @@ BOManager* BOManager::getInstance()
     return m_instance;
 }
 
-void BOManager::invalidateBO(const ISurface* mesh)
+void BOManager::invalidateBO(ISurface* mesh)
 {
     BOMeshMap::iterator itEnd = m_boMeshMap.end();
     for (BOMeshMap::iterator it = m_boMeshMap.begin(); it != itEnd; ++it)

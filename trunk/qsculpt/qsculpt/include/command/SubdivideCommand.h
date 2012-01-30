@@ -113,7 +113,7 @@ public:
 private:
     
     class Impl;
-    QScopedPointer<Impl> _d;
+    QScopedPointer<Impl> d_;
     
 };
 

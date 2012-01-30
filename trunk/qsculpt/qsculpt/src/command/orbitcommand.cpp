@@ -216,7 +216,10 @@ void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
         
         _d->endVector.normalize();
         //qDebug() << "End " << toString(_d->endVector);
-        
+        // if end vector and start vector are equal, exit as there is no rotation
+        if (_d->startVector == _d->endVector) {
+            return;
+        }
         Vector3 axis = _d->startVector.cross(_d->endVector);
         axis.normalize();
         float dot = _d->startVector.dot(_d->endVector);
@@ -227,7 +230,8 @@ void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
         float angle = acos(dot);
         std::swap(_d->startVector, _d->endVector);
         
-        Eigen::AngleAxisf rot = Eigen::AngleAxisf(angle, axis);        
+        Eigen::AngleAxisf rot = Eigen::AngleAxisf(angle, axis);
+        qDebug() << "Vector: " << toString(axis) << " @ " << angle;
         Iterator<SceneNode> it = _d->doc.scene()->iterator();
         while (it.hasNext()) {
             SceneNode* node = &it.next();
