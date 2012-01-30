@@ -268,6 +268,16 @@ Eigen::Affine3f SceneNode::parentTransform() const
     return trans;
 }
 
+Point3 SceneNode::worldToLocal(Point3 p) const
+{
+    return transform().inverse() * parentTransform().inverse() * p;
+}
+
+Point3 SceneNode::localToWorld(Point3 p) const
+{
+    return parentTransform() * transform() * p;
+}
+
 void SceneNode::render()
 {
 }

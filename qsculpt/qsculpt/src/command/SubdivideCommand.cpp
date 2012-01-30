@@ -31,6 +31,7 @@
 #include "HEdge.h"
 #include "Face.h"
 #include "subdivision/Subdivision.h"
+#include "PointRenderer.h"
 
 typedef QHash< std::pair<int, int>, Vertex*> MidEdgeMap;
 
@@ -393,14 +394,28 @@ void SubdivideCommand::Impl::diagnostiscs(ISurface & s)
 
 
 struct EditSubdivideCommand::Impl {
-    Subdivision * surf;
+    SurfaceNode * surf;
+    PointRenderer renderer;
+    IID vtxIID;
+    
+    Impl() : surf(NULL), vtxIID(0) 
+    {
+        renderer.setPointSize(10.0f);
+    }
+    
+    Impl(const Impl & cpy) : surf(cpy.surf),vtxIID(cpy.vtxIID) 
+    {
+        renderer.setPointSize(10.0f);
+    }
 };
 
-EditSubdivideCommand::EditSubdivideCommand() {
+EditSubdivideCommand::EditSubdivideCommand() : d_(new Impl)
+{
     
 }
     
-EditSubdivideCommand::EditSubdivideCommand(const EditSubdivideCommand& cpy){
+EditSubdivideCommand::EditSubdivideCommand(const EditSubdivideCommand& cpy)
+: d_(new Impl(*cpy.d_.data())){
     
 }
     
@@ -428,7 +443,35 @@ void EditSubdivideCommand::redo(){
      *
      */
 void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
+    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
     
+    if (!doc)
+        return;
+    QList<SceneNode*> list = doc->getSelectedObjects();
+    foreach(SceneNode* node, list)
+    {
+        if (node->nodeType() != NT_Surface){
+            continue;
+        }
+        ISurface * s = static_cast<SurfaceNode*>(node)->surface();
+        if (dynamic_cast<Subdivision*>(s)) {
+            d_->surf = static_cast<SurfaceNode*>(node);
+            break;
+        }
+    }
+    
+    if (d_->surf) {
+        GlCanvas * canvas = g_pApp->getMainWindow()->getCurrentView()->getCanvas();
+        Point3 world, p, screen(e->x(), canvas->height() - e->y(), 0.1);
+        canvas->mapScreenCoordsToWorldCoords(screen, world);
+        p = d_->surf->worldToLocal(world);
+        d_->vtxIID = d_->surf->surface()->getClosestPointAtPoint(p);
+        qDebug() << "iid " << d_->vtxIID;
+        d_->surf->surface()->vertex(d_->vtxIID)->addFlag(VF_Selected);
+        d_->surf->surface()->setChanged(true);
+        
+        g_pApp->getMainWindow()->getCurrentView()->updateView();
+    }
 }
     
     /**
@@ -436,8 +479,14 @@ void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
      * widget (a QGLWidget).
      *
      */
-void EditSubdivideCommand::mouseReleaseEvent(QMouseEvent *e){
-    
+void EditSubdivideCommand::mouseReleaseEvent(QMouseEvent *e)
+{
+    if (d_->surf && d_->vtxIID > 0) {
+        d_->surf->surface()->vertex(d_->vtxIID)->removeFlag(VF_Selected);
+        d_->surf->surface()->setChanged(true);
+        
+        g_pApp->getMainWindow()->getCurrentView()->updateView();
+    }
 }
     
     /**
@@ -453,5 +502,17 @@ void EditSubdivideCommand::mouseMoveEvent(QMouseEvent *e){
      * Used to display anything specific to the command as user feedback.
      */
 void EditSubdivideCommand::paintGL(GlCanvas *c){
+
+    if (d_->surf) {
+        c->disable(GL_LIGHTING);
+        c->disable(GL_DEPTH_TEST);
+        glPushMatrix();
+        glMultMatrixf(d_->surf->parentTransform().data());
+        glMultMatrixf(d_->surf->transform().data());
+        d_->renderer.renderObject(d_->surf->surface());
+        glPopMatrix();
+        c->enable(GL_DEPTH_TEST);
+        c->enable(GL_LIGHTING);
+    }
     
 }

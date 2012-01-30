@@ -822,9 +822,8 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
         if (n->nodeType() == NT_Surface) {
             s = static_cast<SurfaceNode*> (n);
             mesh = s->surface();
-            float px = 0.0f, py = 0.0f, pz = 0.0f;
-            mesh->position(&px, &py, &pz);
-            glTranslatef(px, py, pz);
+            Point3 p = s->localToWorld(Point3(0,0,0));
+            glTranslatef(p.x(), p.y(), p.z());
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             g_picking.renderObject(mesh, objId);
@@ -865,9 +864,8 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
         if (n->nodeType() == NT_Surface) {
             s = static_cast<SurfaceNode*> (n);
             mesh = s->surface();
-            float px = 0.0f, py = 0.0f, pz = 0.0f;
-            mesh->position(&px, &py, &pz);
-            glTranslatef(px, py, pz);
+            Point3 p = s->localToWorld(Point3(0,0,0));
+            glTranslatef(p.x(), p.y(), p.z());
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             g_pickingVertices.renderObject(mesh, objId);
@@ -893,43 +891,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
         }
         glPopMatrix();
     }    
-//    IDocument* doc= ((DocumentView*)parentWidget())->getDocument();
-//    int count = doc->getObjectsCount();
-//    for ( int i = 0; i < count; i++ )
-//    {
-//        mesh = doc->getObject(i);
-//
-//        memset(d, 0, width*height*sizeof(GLuint));
-//        glPushMatrix();
-//        float px = 0.0f, py = 0.0f, pz = 0.0f;
-//        mesh->getPosition(&px, &py, &pz);
-//        glTranslatef(px, py, pz);
-//
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//        g_pickingVertices.renderObject(mesh, objId);
-//        glReadPixels(x - halfWidth, _viewport[3]- (y + halfHeight),
-//                     width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)d);
-//
-//        int faceIndex = 0;
-//        for (int j = 0; j < width * height; ++j)
-//        {
-//            if (d[j] != 0)
-//            {
-//                faceIndex = d[j]-1;
-//                Face* f = mesh->getFace(faceIndex);
-//
-//                Iterator<Vertex> vtxIt = f->constVertexIterator();
-//                while(vtxIt.hasNext()) {
-//                    //const Vertex& v = vtxIt.next();
-//                }
-//            }
-//        }
-//
-//        objId++;
-//
-//        glPopMatrix();
-//        if (printGlError()) break;
-//    }
+
     delete [] d;
     glClearColor( 0.0, 0.0, 0.0, 1.0 );
 

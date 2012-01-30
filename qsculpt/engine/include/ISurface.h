@@ -43,7 +43,6 @@ Interface that every 3D object should implement.
 */
 class ISurface : public QObject {
     Q_OBJECT
-    Q_PROPERTY(Point3 position READ position WRITE setPosition)
     
 public:
     /**
@@ -63,79 +62,7 @@ public:
     virtual void setScene(Scene* scene) = 0;
 
     virtual Scene* scene() const = 0;
-
-    /**
-     * Set the object's position.
-     *
-     * @param x Object's x position
-     * @param y Object's y postion
-     * @param z Object's z position
-     */
-    virtual void setPosition (float x, float y, float z) = 0;
-
-    /**
-     * Set the object's position. Overloaded method.
-     *
-     * @param position Object position.
-     */
-    virtual void setPosition (const Point3& position) = 0;
-
-    /**
-     * Get the object's position.
-     *
-     * @param x Object x-axis position.
-     * @param y Object y-axis position.
-     * @param z Object z-axis position.
-     */
-    virtual void position (float *x, float *y, float *z) const = 0;
-
-    /**
-     * Get the object's position. Overloaded method.
-     *
-     * @return position of the object.
-     */
-    virtual Point3 position () const = 0;
-
-    /**
-     * Move the object.
-     * Move the object relative to the actual position.
-     *
-     * new_position = current_position + delta.
-     *
-     * @param delta Point that contains the amount of displacement for each axis.
-     */
-    virtual void displace (const Point3& delta) = 0;
-
-    /**
-     * Rotate the object. This rotation is applied over the local object axis.
-     *
-     * @param rotX Rotation angle in x-axis.
-     * @param rotY Rotation angle in y-axis.
-     * @param rotZ Rotation angle in z-axis.
-     */
-    virtual void setOrientation(float rotX, float rotY, float rotZ) = 0;
-
-    /**
-     * Returns the orientation of the object in Euler angle
-     */
-    virtual void orientation(float& rotX, float& rotY, float& rotZ) = 0;
-    
-    
-    /**
-     *
-     */
-    virtual Eigen::Affine3f transform() const = 0;
-    
-    /**
-     *
-     */
-    virtual Eigen::Affine3f & transform() = 0;
-    
-    /**
-     *
-     */
-    virtual void setTransform(const Eigen::Affine3f & transform) = 0;
-    
+        
     /**
      * Returns the bounding box of the object.
      *
@@ -300,33 +227,13 @@ public:
     virtual void unlock() const = 0;
 
     /**
-     * Get a buffer with all the vertex data. This data is used to render the
-     * mesh using VBOs.
-     *
-     * The function return a pointer to the buffer data. The pointer should be
-     * considerated temporal (do not store the pointer for later use). This is
-     * because when inserting new vertices to the mesh, a new allocation may be
-     * needed.
-     *
-     * The function also returns the number of vertices contained in the buffer.
+     * Flag to check if the surface has been modified.
      */
-    //virtual bool getVertexBuffer(float **buffer, int* size) = 0;
-
-    /**
-     * Get a buffer with all the normal data. This data is meant to be used
-     * to create VBOs.
-     *
-     * The function return a pointer to the buffer data. The pointer should be
-     * considerated temporal (do not store the pointer for later use). This is
-     * because when inserting new vertices to the mesh, a new allocation may be
-     * needed.
-     *
-     * The function also returns the number of vertices contained in the buffer.
-     */
-    //virtual bool getNormalBuffer(float **buffer, int* size) = 0;
-
     virtual bool hasChanged()=0;
 
+    /**
+     * Sets a flag to mark the surface as modified.
+     */
     virtual void setChanged(bool val)=0;
 
     /**
@@ -340,9 +247,9 @@ public:
     virtual void setSelectedPoints(const QVector<int>& indicesArray) = 0;
 
     /**
-         * Returns a vertex iterator to traverse over all the vertices in this
-         * object.
-         */
+     * Returns a vertex iterator to traverse over all the vertices in this
+     * object.
+     */
     virtual Iterator<Vertex> vertexIterator() = 0;
     virtual Iterator<Vertex> constVertexIterator() const = 0;
 
@@ -366,30 +273,8 @@ public:
      */
     virtual Iterator<Edge> constEdgeIterator() const = 0;
 
-    /**
-     * This function applies a transformation to convert a coordinate in
-     * the local coordinate system to the world coordinate system.
-     *
-     * @param p point to convert to world coordinate system.
-     *
-     * @return a point in the world coornidate system.
-     */
-    virtual Point3 localToWorldCoords(const Point3& p) const = 0;
-
-    /**
-     * This function applies a transformation to convert a coordinate in
-     * the world coordinate system to the local coordinate system.
-     *
-     * @param p point to convert to local coordinate system.
-     *
-     * @return a point in the local coordinate system.
-     */
-    virtual Point3 worldToLocalCoords(const Point3& p) const = 0;
-
 signals:
     void meshChanged(ISurface* mesh);
-
-    void positionChanged(float x, float y, float z);
 };
 
 typedef QVector<ISurface*> ObjectContainer;

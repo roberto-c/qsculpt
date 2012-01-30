@@ -4,33 +4,38 @@
 #include "IRenderer.h"
 #include "BufferObject.h"
 
+/**
+ * Renders surface object as point meshes.
+ */
 class PointRenderer : public IRenderer
 {
 public:
 	PointRenderer();
+    
+    /**
+     * Constructor of point renderer. Creates new buffer objects under
+     * the specified poolname.
+     */
+    PointRenderer(const std::string & poolname);
+    
 	virtual ~PointRenderer();
 
 	virtual void renderObject(const ISurface* mesh);
+    
+    /**
+     * Set the point size to use when rendering points
+     */
+    void setPointSize(float size);
+    
+    /**
+     * Retuns the point size;
+     */
+    float pointSize();
 	
 private:
-	/**
-	 * Draw the mesh using OpenGL VBOs.
-	 * The VBOs are re-build when the mesh has been changed since the last draw.
-	 */
-	void renderVbo(const ISurface* mesh);
-	
-	/**
-	 * Draw the mesh using the glBeing()/glEnd() and friends functions.
-	 * This method is a fallback method if the  VBOs are not supported.
-	 */
-	void renderImmediate(const ISurface* mesh);
-	
-	/**
-	 *
-	 */
-	VertexBuffer* getVBO(const ISurface* mesh);
-	
-	void fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo);
+    class Impl;
+    QScopedPointer<Impl> d_;
+    
 };
 
 #endif /*POINTRENDERER_H_*/

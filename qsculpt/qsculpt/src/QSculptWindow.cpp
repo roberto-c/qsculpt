@@ -95,7 +95,7 @@ void QSculptWindow::createWidgets()
     //action = new QAction("AddSurface", this);
     cmd = new AddSurfaceCommand;
     m_commandManager.registerCommand("AddBox", m_addBox, cmd);
-
+    
     action = m_commandManager.createUndoAction(this);
     Q_CHECK_PTR(action);
     action->setShortcut(QKeySequence::Undo);
@@ -205,7 +205,29 @@ void QSculptWindow::createWidgets()
     menuTools->addAction(action);
     m_toolsToolbar->addAction(action);
     m_commandManager.registerCommand("Subdivide", action, cmd);
+    
+    action = new QAction("EditSubdivide", this);
+    cmd = new EditSubdivideCommand;
+    Q_CHECK_PTR(action);
+    Q_CHECK_PTR(cmd);
+    action->setToolTip("Move subdivision control points");
+    action->setIcon(QIcon(":/img_subdivide.png"));
+    menuTools->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("EditSubdivide", action, cmd);
 
+    cmd = new SmoothSurfaceCommand;
+    action = new QAction("SmoothSurface", this);
+    menuTools->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("SmoothSurface", action, cmd);
+    
+    cmd = new TestCommand;
+    action = new QAction("Test", this);
+    menuTools->addAction(action);
+    m_toolsToolbar->addAction(action);
+    m_commandManager.registerCommand("Test", action, cmd);
+    
     connect(&m_commandManager, SIGNAL(commandActivated(QString)),
             this, SLOT(commandActivated(QString)));
 

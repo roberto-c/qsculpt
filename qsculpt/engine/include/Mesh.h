@@ -50,16 +50,6 @@ public:
     virtual void setChanged(bool val);
     virtual void setScene(Scene* scene) ;
     virtual Scene* scene() const;
-    virtual Point3 position() const;
-    virtual void displace(const Point3& delta);
-    virtual void position(float *x, float *y, float *z) const;
-    virtual void setOrientation(float rotX, float rotY, float rotZ);
-    virtual void orientation(float& rotX, float& rotY, float& rotZ);
-    virtual void setPosition(float x, float y, float z);
-    virtual void setPosition(const Point3& position);
-    virtual Eigen::Affine3f transform() const;
-    virtual Eigen::Affine3f & transform();
-    virtual void setTransform(const Eigen::Affine3f & transform);
     virtual const geometry::AABB& boundingBox() const;
     virtual void setColor(const Color& color);
     virtual Color color() const;
@@ -95,9 +85,6 @@ public:
     virtual Iterator<Edge> edgeIterator();
     virtual Iterator<Edge> constEdgeIterator() const;
     
-    Point3 localToWorldCoords(const Point3& p) const;
-    
-    Point3 worldToLocalCoords(const Point3& p) const;
     
     // End IObject3D interface
     

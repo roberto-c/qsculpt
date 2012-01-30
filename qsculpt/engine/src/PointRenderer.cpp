@@ -26,23 +26,69 @@
 
 #define BO_POOL_NAME "PointRendererPool"
 
-PointRenderer::PointRenderer()
+struct PointRenderer::Impl {
+    Impl(const std::string & name = std::string(BO_POOL_NAME)) 
+    : name(name), pointSize(3.0), colorSelected(1.f, 0, 0) 
+    {
+        
+    }
+    /**
+     * Draw the mesh using OpenGL VBOs.
+     * The VBOs are re-build when the mesh has been changed since the last draw.
+     */
+    void renderVbo(const ISurface* mesh);
+
+    /**
+     * Draw the mesh using the glBeing()/glEnd() and friends functions.
+     * This method is a fallback method if the  VBOs are not supported.
+     */
+    void renderImmediate(const ISurface* mesh);
+
+    /**
+     *
+     */
+    VertexBuffer* getVBO(const ISurface* mesh);
+
+    void fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo);
+
+    std::string name;  /*< pool name of the VBO to create */
+    float       pointSize;
+    Vector3     colorSelected;
+};
+
+PointRenderer::PointRenderer() : d_(new Impl)
 {
     qDebug() << "PointRenderer constructor";
 }
 
+PointRenderer::PointRenderer(const std::string & name) : d_(new Impl(name))
+{
+    qDebug() << "PointRenderer constructor";
+}
+
+
 PointRenderer::~PointRenderer()
 {
     qDebug() << "PointRenderer destructor";
-    BOManager::getInstance()->destroyPool(BO_POOL_NAME);
+    BOManager::getInstance()->destroyPool(d_->name.c_str());
 }
 
 void PointRenderer::renderObject(const ISurface* mesh)
 {
-    renderVbo(mesh);
+    d_->renderVbo(mesh);
 }
 
-void PointRenderer::renderImmediate(const ISurface* mesh)
+void PointRenderer::setPointSize(float size)
+{
+    d_->pointSize = size;
+}
+
+float PointRenderer::pointSize()
+{
+    return d_->pointSize;
+}
+
+void PointRenderer::Impl::renderImmediate(const ISurface* mesh)
 {
     mesh->lock();
     int numVertices = mesh->numVertices();
@@ -59,7 +105,7 @@ void PointRenderer::renderImmediate(const ISurface* mesh)
     mesh->unlock();
 }
 
-void PointRenderer::renderVbo(const ISurface* mesh)
+void PointRenderer::Impl::renderVbo(const ISurface* mesh)
 {
     //qDebug() << "Render as selected = " << mesh->getShowBoundingBox();
     if (mesh == NULL)
@@ -90,7 +136,7 @@ void PointRenderer::renderVbo(const ISurface* mesh)
     glEnableClientState(GL_COLOR_ARRAY);
 
     glEnable(GL_POINT_SMOOTH);
-    glPointSize(3.0f);
+    glPointSize(pointSize);
     glColor3f(1.0f, 1.0f, 1.0f);
     glDrawArrays(GL_POINTS, 0, obj->numVertices());
 
@@ -106,24 +152,22 @@ void PointRenderer::renderVbo(const ISurface* mesh)
     glPopAttrib();
 }
 
-VertexBuffer* PointRenderer::getVBO(const ISurface* mesh)
+VertexBuffer* PointRenderer::Impl::getVBO(const ISurface* mesh)
 {
     VertexBuffer* vbo = NULL;
-    vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
+    vbo = BOManager::getInstance()->getVBO(name.c_str(), mesh);
     if (vbo == NULL)
     {
-        vbo = BOManager::getInstance()->createVBO(BO_POOL_NAME, mesh);
+        vbo = BOManager::getInstance()->createVBO(name.c_str(), mesh);
     }
     return vbo;
 }
 
-void PointRenderer::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
+void PointRenderer::Impl::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
 {
     int numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
-
-    Vector3 color1(1.f, 0.f, 0.f);
 
     int numFloats = numVertices*6;
     GLfloat* vtxData = new GLfloat[numFloats];
@@ -140,11 +184,11 @@ void PointRenderer::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
         offset++;
 
         if(v.flags() & VF_Selected) {
-            vtxData[offset] = color1.x();
+            vtxData[offset] = colorSelected.x();
             offset++;
-            vtxData[offset] = color1.y();
+            vtxData[offset] = colorSelected.y();
             offset++;
-            vtxData[offset] = color1.z();
+            vtxData[offset] = colorSelected.z();
             offset++;
         } else {
             vtxData[offset] = v.color().x();

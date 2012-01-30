@@ -112,6 +112,10 @@ public:
      */
     ObjectContainer getSelectedObjects(GLint x, GLint y);
 
+    /**
+     * This method returns the vertices contained inside the specified 2D box
+     * in screen coordinates.
+     */
     PointIndexList getSelectedVertices(GLint x, GLint y,
                                        GLint width, GLint height);
     /**

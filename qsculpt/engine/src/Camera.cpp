@@ -244,6 +244,17 @@ void Camera::setOrthoMatrix(float left, float right,
     _projMat(2, 3) = tz;
 }
 
+void Camera::setPerspectiveMatrix(float fovy, float aspect, float zNear, float zFar)
+{
+    assert(zNear > 0 && zFar > 0 && fovy > 0 && fovy < 180.0);
+    
+    float t = tanf(fovy * M_PI / 180.0 / 2.0) * zNear;
+    float b = -t;
+    float r = t * aspect;
+    float l = -r;
+    setPerspectiveMatrix(l, r, b, t, zNear, zFar);
+}
+
 void Camera::setViewport(const Eigen::Matrix4f &m)
 {
     _viewportMat = m;
