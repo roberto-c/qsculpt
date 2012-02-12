@@ -49,6 +49,7 @@ std::string GlslProgram::buildLog()
     } catch (std::bad_alloc & e) {
         std::cerr << e.what() << endl;
     }
+    THROW_IF_GLERROR("attachShader");
     
     return log;
 }
@@ -68,7 +69,7 @@ void GlslProgram::attachShader(FragmentShader * shader)
 void GlslProgram::useProgram()
 {
     glUseProgram(progId_);
-    THROW_IF_GLERROR("useProgram");
+    THROW_IF_GLERROR(__func__);
 }
 
 
@@ -125,3 +126,4 @@ void GlslProgram::setUniform(GLint index, const Eigen::Vector4f & value)
     glUniform2fv(index, 1, value.data());
     THROW_IF_GLERROR("setUniform");
 }
+

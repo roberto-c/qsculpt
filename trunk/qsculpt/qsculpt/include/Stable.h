@@ -22,48 +22,7 @@
 
 #if defined __cplusplus
 
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/LU>
-#include <Eigen/StdVector>
-
-namespace Eigen {
-    typedef Affine3f Transform3f; 
-}
-
-#include <utility>
-#include <typeinfo>
-#include <exception>
-#include <stdexcept>
-
-unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
-unsigned int qHash(const std::pair<int, int> & v);
-
-#include <QtDebug>
-#include <QtGui>
-#include <QtOpenGL>
-#include <QPointer>
-#include <QScopedPointer>
-#include <QSharedPointer>
-#include <QExplicitlySharedDataPointer>
-#include "PEngineTypes.h"
-
-inline bool printGlError()
-{
-    GLuint error = glGetError();
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-	return result;
-}
-
-//#define NOT_IMPLEMENTED qWarning("%s %s", __PRETTY_FUNCTION__, "not implemented");
-#define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
+#include "Plastilina.h"
 
 #endif /* defined __cplusplus */
 

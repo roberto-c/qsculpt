@@ -35,6 +35,11 @@ public:
      */
     void attachShader(VertexShader * shader);
     
+    /**
+     * Add the shader to the current program.
+     *
+     * @param shader shader to add to the program.
+     */
     void attachShader(FragmentShader * shader);
     
     /**
@@ -143,5 +148,7 @@ public:
 private:
     GLuint progId_;
 };
+
+extern void throwTest() ;
 
 #endif
