@@ -22,14 +22,18 @@ namespace core {
         GlException(const char* what, GLenum error) : what_(what), error_(error)
         {}
         
-        const char * what() const { 
+        virtual const char* what() const throw() {
             return what_;
         }
         
         GLenum error() const {
             return error_;
         }
-    }
+        
+        const char* errorString() const {
+            return (const char*)gluErrorString(error_);
+        }
+    };
 }
 
 #endif

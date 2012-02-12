@@ -127,25 +127,18 @@ inline bool BufferObject::create()
  */
 inline bool BufferObject::destroy()
 {
-	GLuint error = GL_NO_ERROR;
+	bool result = false;
 	
 	if (glIsBuffer(m_vboID))
 	{
 		glDeleteBuffers(1, &m_vboID);
-		if ((error = glGetError()) != GL_NO_ERROR) goto Error;
-		
+        THROW_IF_GLERROR(__func__);
+		RET_ON_GLERROR(result);
 		// Reset value
 		m_vboID = 0;
 		m_bufferSize = 0;
 	}
-	
-Error:
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
+	result = true;
 	return result;
 }
 
@@ -155,57 +148,47 @@ Error:
  */
 inline bool BufferObject::mapBuffer(GLvoid** buffer, GLuint* size)
 {
-	GLuint error = GL_NO_ERROR;
+	bool result = false;
 	
 	// Check parameters are not NULL
 	if (buffer == NULL || size == NULL)
-		return false;
+		return result;
 	
 	// Be sure we are working with our buffer
 	glBindBuffer(m_boTarget, m_vboID);
-	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
 	
 	// Set the buffer of the mapped object
 	*buffer = glMapBuffer(m_boTarget, GL_READ_WRITE);
 	*size = 0;
-	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
 	
 	// If the mapping was successful, update the size value
 	if (*buffer != NULL)
 	{
 		*size = m_bufferSize;
 	}
-	
-Error:
-	bool result = (error == GL_NO_ERROR) && (buffer != NULL);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
+	result = true;
 	return result;
 }
 
 inline bool BufferObject::unmapBuffer()
 {
-	GLuint error = GL_NO_ERROR;
-	bool result = true;
+	bool result = false;
 	
 	// Be sure we are working with our buffer
 	glBindBuffer(m_boTarget, m_vboID);
-	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
 	
 	// Unmap the buffer object
 	result = glUnmapBuffer(m_boTarget);
-	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
 	
-Error:
-	result = result && (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
+    result = true;
 	return result;
 }
 
@@ -214,10 +197,11 @@ Error:
  */
 inline bool BufferObject::setBufferData(GLvoid* buffer, GLuint size)
 {
-	GLuint error = GL_NO_ERROR;
+	bool result = false;
 	
 	glBindBuffer(m_boTarget, m_vboID);
-	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
 	
 	m_bufferSize = size;
 	
@@ -225,45 +209,30 @@ inline bool BufferObject::setBufferData(GLvoid* buffer, GLuint size)
 				 m_bufferSize,
 				 buffer,
 				 GL_DYNAMIC_DRAW);
-	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
-	
-Error:
-	bool result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
+
+	result = true;
 	return result;
 }
 
 inline bool BufferObject::setBufferSubData(GLint offset, GLuint size, GLvoid* buffer)
 {
-	GLuint error = GL_NO_ERROR;
-	bool result = (error == GL_NO_ERROR);
+	bool result = false;
     
 	glBindBuffer(m_boTarget, m_vboID);
-#ifdef DEBUG
-	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
-#endif // DEBUG
-	m_bufferSize = size;
+    THROW_IF_GLERROR(__func__);	m_bufferSize = size;
+    RET_ON_GLERROR(result);
 	
 	glBufferSubData(m_boTarget,
 					offset,
 					m_bufferSize,
 					buffer);
-#ifdef DEBUG
-	if ((error = glGetError()) != GL_NO_ERROR) goto Error;
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
 	
-Error:
-	result = (error == GL_NO_ERROR);
-	for(;error != GL_NO_ERROR; error = glGetError())
-	{
-		const GLubyte* strError = gluErrorString(error);
-		qDebug()<<"GLError: code: " << error << " " << (const char*)strError;
-	}
-#endif // DEBUG
-	return result;
+    result = true;
+    return result;
 };
 
 class VertexBuffer : public BufferObject

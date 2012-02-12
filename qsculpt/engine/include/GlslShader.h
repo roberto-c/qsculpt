@@ -112,8 +112,8 @@ bool GlslShader<SHADERTYPE>::loadFromFile(const std::string &filename)
         while (input.good()) {
             input.getline(buffer.data(), buffer.size());
             source.push_back(buffer.data());
-            loadFromString(source);
         }
+        loadFromString(source);
     } catch (std::exception & e) {
         std::cerr << e.what() << endl;
     }

@@ -24,6 +24,7 @@
 #include <QMap>
 #include "BOManager.h"
 #include <cstddef>
+#include <iostream>
 
 
 using namespace std;
@@ -88,12 +89,12 @@ struct FlatRenderer::Impl {
 
 FlatRenderer::FlatRenderer() : _d(new Impl)
 {
-    qDebug() << "FlatRenderer constructor";
+    cerr << "FlatRenderer constructor" << endl;
 }
 
 FlatRenderer::~FlatRenderer()
 {
-    qDebug() << "FlatRenderer destructor";
+    cerr << "FlatRenderer destructor" << endl;
     BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
