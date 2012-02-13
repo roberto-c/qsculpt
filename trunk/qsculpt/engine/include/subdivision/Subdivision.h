@@ -13,7 +13,7 @@
 #include <utility>
 #include "ISurface.h"
 #include "SceneNode.h"
-#include <QHash>
+#include <QtCore/QHash>
 #include "geometry/Aabb.h"
 
 class Vertex;

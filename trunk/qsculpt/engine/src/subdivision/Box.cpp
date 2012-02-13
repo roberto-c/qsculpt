@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "StdAfx.h"
-#include <QtOpenGL>
+#include <QtOpenGL/QtOpenGL>
 #include "Point3D.h"
 #include "subdivision/Box.h"
 

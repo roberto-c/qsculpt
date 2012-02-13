@@ -20,8 +20,8 @@
 #ifndef IPICKINGRENDERER_H_
 #define IPICKINGRENDERER_H_
 
-#include <QVector>
-#include <QMap>
+#include <QtCore/QVector>
+#include <QtCore/QMap>
 #include "BufferObject.h"
 #include "IRenderer.h"
 

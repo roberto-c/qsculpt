@@ -20,8 +20,8 @@
 #ifndef OCTREE_H
 #define OCTREE_H
 
-#include <QtDebug>
-#include <QVector>
+#include <QtCore/QtDebug>
+#include <QtCore/QVector>
 #include <vector>
 #include <set>
 

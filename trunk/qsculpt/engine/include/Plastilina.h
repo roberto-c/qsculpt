@@ -49,15 +49,15 @@ namespace Eigen {
 unsigned int qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key);
 unsigned int qHash(const std::pair<int, int> & v);
 
-#include <QtDebug>
-#include <QtOpenGL>
-#include <QString>
-#include <QPointer>
-#include <QScopedPointer>
-#include <QSharedPointer>
-#include <QSharedData>
-#include <QExplicitlySharedDataPointer>
-#include <QSharedDataPointer>
+#include <QtCore/QtDebug>
+#include <QtOpenGL/QtOpenGL>
+#include <QtCore/QString>
+#include <QtCore/QPointer>
+#include <QtCore/QScopedPointer>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QSharedData>
+#include <QtCore/QExplicitlySharedDataPointer>
+#include <QtCore/QSharedDataPointer>
 #include "PEngineTypes.h"
 
 #include "GlException.h"

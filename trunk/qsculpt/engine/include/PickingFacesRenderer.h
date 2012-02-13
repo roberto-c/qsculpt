@@ -20,8 +20,8 @@
 #ifndef PICKINGVERTEXRENDERER_H_
 #define PICKINGVERTEXRENDERER_H_
 
-#include <QVector>
-#include <QMap>
+#include <QtCore/QVector>
+#include <QtCore/QMap>
 #include "BufferObject.h"
 #include "IRenderer.h"
 

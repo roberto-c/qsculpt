@@ -11,7 +11,7 @@
 #define VERTEX_H
 
 #include <Eigen/Core>
-#include <QAtomicInt>
+#include <QtCore/QAtomicInt>
 #include "Point3D.h"
 #include "IIterator.h"
 

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
-#include <QtOpenGL>
-#include <QMap>
+#include <QtOpenGL/QtOpenGL>
+#include <QtCore/QMap>
 #include <cstddef>
 #include "WireframeRenderer.h"
 #include "ISurface.h"

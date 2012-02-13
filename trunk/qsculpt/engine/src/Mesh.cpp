@@ -20,8 +20,8 @@
 #include "StdAfx.h"
 #include "Mesh.h"
 
-#include <QtOpenGL>
-#include <QVector>
+#include <QtOpenGL/QtOpenGL>
+#include <QtCore/QVector>
 #include <math.h>
 #include <Eigen/Core>
 #include <map>

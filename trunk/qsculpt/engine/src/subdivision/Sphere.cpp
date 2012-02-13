@@ -19,7 +19,7 @@
  ***************************************************************************/
 #include "StdAfx.h"
 #include "subdivision/Sphere.h"
-#include <QtOpenGL>
+#include <QtOpenGL/QtOpenGL>
 #include <math.h>
 
 Sphere::Sphere()

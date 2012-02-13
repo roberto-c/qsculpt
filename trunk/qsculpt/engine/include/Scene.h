@@ -20,7 +20,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <QObject>
+#include <Qtcore/QObject>
 #include <string>
 #include "IIterator.h"
 #include "ICollection.h"

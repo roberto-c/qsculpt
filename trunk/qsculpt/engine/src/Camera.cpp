@@ -20,7 +20,7 @@
 #include "StdAfx.h"
 #include "Point3D.h"
 #include "Camera.h"
-#include <QString>
+#include <QtCore/QString>
 #include <math.h>
 #include <iostream>
 

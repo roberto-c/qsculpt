@@ -21,7 +21,7 @@
 #ifndef BUFFEROBJECT_H_
 #define BUFFEROBJECT_H_
 
-#include <QtOpenGL>
+#include <QtOpenGL/QtOpenGL>
 #include "Point3D.h"
 
 class BufferObject
