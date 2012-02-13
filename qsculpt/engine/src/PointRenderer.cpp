@@ -19,9 +19,9 @@
  ***************************************************************************/
 #include "StdAfx.h"
 #include "PointRenderer.h"
-#include <QtOpenGL>
+#include <QtOpenGL/QtOpenGL>
 #include "ISurface.h"
-#include <QMap>
+#include <QtCore/QMap>
 #include "BOManager.h"
 
 #define BO_POOL_NAME "PointRendererPool"

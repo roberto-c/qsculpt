@@ -21,7 +21,7 @@
 #include "SceneNode.h"
 
 #include <algorithm>
-#include <QAtomicInt>
+#include <QtCore/QAtomicInt>
 
 static QAtomicInt NEXTID;
 

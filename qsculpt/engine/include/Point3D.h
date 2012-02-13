@@ -20,9 +20,9 @@
 #ifndef POINT3D_H
 #define POINT3D_H
 
-#include <QMetaType>
-#include <QString>
-#include <QVector>
+#include <QtCore/QMetaType>
+#include <QtCore/QString>
+#include <QtCore/QVector>
 
 typedef Eigen::Vector3f Point3;
 typedef Eigen::Vector3f Vector3;

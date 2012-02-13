@@ -26,11 +26,11 @@ namespace core {
             return what_;
         }
         
-        GLenum error() const {
+        GLenum error() const throw() {
             return error_;
         }
         
-        const char* errorString() const {
+        const char* errorString() const throw() {
             return (const char*)gluErrorString(error_);
         }
     };

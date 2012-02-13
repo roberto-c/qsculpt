@@ -20,10 +20,10 @@
 #ifndef BOMANAGER_H_
 #define BOMANAGER_H_
 
-#include <QObject>
-#include <QMap>
-#include <QHash>
-#include <QMultiHash>
+#include <QtCore/QObject>
+#include <QtCore/QMap>
+#include <QtCore/QHash>
+#include <QtCore/QMultiHash>
 #include "BufferObject.h"
 
 class ISurface;

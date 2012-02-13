@@ -10,7 +10,7 @@
 #ifndef FACE_H_
 #define FACE_H_
 
-#include <QAtomicInt>
+#include <QtCore/QAtomicInt>
 #include "Vertex.h"
 #include "IIterator.h"
 

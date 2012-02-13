@@ -20,8 +20,8 @@
 #ifndef IOBJECT3D_H
 #define IOBJECT3D_H
 
-#include <QObject>
-#include <QVector>
+#include <QtCore/QObject>
+#include <QtCore/QVector>
 #include "Point3D.h"
 #include "SpEnums.h"
 #include "IIterator.h"

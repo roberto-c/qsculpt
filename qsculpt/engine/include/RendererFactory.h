@@ -1,7 +1,7 @@
 #ifndef RENDERERFACTORY_H_
 #define RENDERERFACTORY_H_
 
-#include <QStringList>
+#include <QtCore/QStringList>
 #include "SpEnums.h"
 #include "IRenderer.h"
 

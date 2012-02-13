@@ -20,7 +20,7 @@
 #include "StdAfx.h"
 #include "SmoothRenderer.h"
 #include "ISurface.h"
-#include <QtOpenGL>
+#include <QtOpenGL/QtOpenGL>
 #include "BOManager.h"
 
 #define BO_POOL_NAME "SmoothRendererPool"

@@ -20,8 +20,8 @@
 #include "StdAfx.h"
 #include "FlatRenderer.h"
 #include "ISurface.h"
-#include <QtOpenGL>
-#include <QMap>
+#include <QtOpenGL/QtOpenGL>
+#include <QtCore/QMap>
 #include "BOManager.h"
 #include <cstddef>
 #include <iostream>
