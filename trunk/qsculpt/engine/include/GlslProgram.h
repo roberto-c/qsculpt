@@ -149,6 +149,4 @@ private:
     GLuint progId_;
 };
 
-extern void throwTest() ;
-
 #endif
