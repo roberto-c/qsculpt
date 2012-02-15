@@ -127,6 +127,3 @@ void GlslProgram::setUniform(GLint index, const Eigen::Vector4f & value)
     THROW_IF_GLERROR("setUniform");
 }
 
-void throwTest() {
-    throw core::GlException("Test", 0);
-}

@@ -19,20 +19,15 @@ namespace core {
         GLenum error_;
         
     public:
-        GlException(const char* what, GLenum error) : what_(what), error_(error)
-        {}
+        GlException(const char* what, GLenum error) throw();
         
-        virtual const char* what() const throw() {
-            return what_;
-        }
+        virtual ~GlException() throw();
         
-        GLenum error() const throw() {
-            return error_;
-        }
+        virtual const char* what() const throw() ;
         
-        const char* errorString() const throw() {
-            return (const char*)gluErrorString(error_);
-        }
+        GLenum error() const throw() ;
+        
+        const char* errorString() const throw() ;
     };
 }
 
