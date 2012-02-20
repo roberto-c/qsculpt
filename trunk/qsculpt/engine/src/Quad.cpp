@@ -45,7 +45,7 @@ void Quad::initTriangles()
     double hh = 1.0;
     double hd = 0.0;
 
-    QVector<int> indexList(4);
+    QVector<size_t> indexList(4);
     indexList[0] = addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
     indexList[1] = addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
     indexList[2] = addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));

@@ -5,6 +5,7 @@
 
 class VertexBuffer;
 class Face;
+class GlslProgram;
 
 class FlatRenderer : public IRenderer
 {
@@ -20,6 +21,12 @@ public:
 	 * by using VBOs if supported or if there are enabled.
 	 */
 	void renderObject(const ISurface* mesh);
+    
+    /**
+     * Set the program shader used for flat rendering. If no set, then it will use
+     * fixed pipeline rendering.
+     */
+    void setShaderProgram(GlslProgram * shader);
 };
 
 #endif /*FLATRENDERER_H_*/

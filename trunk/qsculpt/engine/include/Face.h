@@ -44,8 +44,7 @@ class Face {
     Vertex* _vertex; // 4
     Face* _children; // 4
 
-    int _id; // 4
-    int _depth; // 4
+    size_t _id; // 4
     FaceFlags _flags; // 4
     size_t _nVertices;
     
@@ -80,7 +79,7 @@ public:
     /**
      * Gets the instance id of the vertex.
      */
-    int iid() const { return _id; }
+    size_t iid() const { return _id; }
 
     /**
      * Set / get attribute flags to the face.
@@ -134,11 +133,11 @@ public:
      * @param p2 index of the second point.
      * @param p3 index of the third point.
      */
-    void setPoints(const QVector<int>& vertexIndexList);
+    void setPoints(const QVector<size_t>& vertexIndexList);
 
     bool hasEdge(const Edge& /*e*/) const;
 
-    bool hasEdge(int /*v1*/, int /*v2*/) const ;
+    bool hasEdge(size_t /*v1*/, size_t /*v2*/) const ;
 
     /**
      * Allows to attach a pointer to a user defined structure or data

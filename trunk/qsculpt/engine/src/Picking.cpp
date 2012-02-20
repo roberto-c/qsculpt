@@ -79,7 +79,7 @@ void PickingObjectRenderer::renderObject(const ISurface* mesh, GLuint objId)
 void PickingObjectRenderer::renderImmediate(const ISurface* mesh, unsigned int /*objID*/)
 {    
     mesh->lock();
-    int numVertices = mesh->numVertices();
+    size_t numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
     
@@ -125,7 +125,9 @@ void PickingObjectRenderer::renderVbo(const ISurface* mesh, unsigned int objID)
 
     glPointSize(1.0f);
     glColor4ub( objID & 0xff,(objID>>8) & 0xff, (objID>>16) & 0xff, (objID>>24) & 0xff);
-    glDrawArrays(GL_QUADS, 0, mesh->numFaces()*4);
+    
+    GLuint nElements = static_cast<GLuint>( mesh->numFaces()*4 );
+    glDrawArrays(GL_QUADS, 0, nElements);
 
     glPopAttrib();
 
@@ -151,12 +153,12 @@ void PickingObjectRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
 
-    int numFaces = mesh->numFaces();
+    size_t numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
 
-    int numVertices = numFaces*4;
-    int numFloats = numVertices*6;	// num floats = Faces * Num of point by face
+    size_t numVertices = numFaces*4;
+    size_t numFloats = numVertices*6;	// num floats = Faces * Num of point by face
     //				* Num elements of point
     GLfloat* vtxData = new GLfloat[numFloats]; // Make room for vertices and normals data
 
@@ -179,7 +181,8 @@ void PickingObjectRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
         }        
     }
 
-    vbo->setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
+    GLuint sizeBuffer = static_cast<GLuint>(numFloats*sizeof(GLfloat));
+    vbo->setBufferData((GLvoid*)vtxData, sizeBuffer);
 
     delete [] vtxData;
 }

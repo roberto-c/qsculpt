@@ -91,7 +91,7 @@ float PointRenderer::pointSize()
 void PointRenderer::Impl::renderImmediate(const ISurface* mesh)
 {
     mesh->lock();
-    int numVertices = mesh->numVertices();
+    size_t numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
 
@@ -138,7 +138,8 @@ void PointRenderer::Impl::renderVbo(const ISurface* mesh)
     glEnable(GL_POINT_SMOOTH);
     glPointSize(pointSize);
     glColor3f(1.0f, 1.0f, 1.0f);
-    glDrawArrays(GL_POINTS, 0, obj->numVertices());
+    GLsizei nVertices = static_cast<GLsizei>(obj->numVertices());
+    glDrawArrays(GL_POINTS, 0, nVertices);
 
     //	glDepthFunc(GL_EQUAL);
     //	glPointSize(1.5f);
@@ -165,11 +166,11 @@ VertexBuffer* PointRenderer::Impl::getVBO(const ISurface* mesh)
 
 void PointRenderer::Impl::fillVertexBuffer(const ISurface* mesh, VertexBuffer* vbo)
 {
-    int numVertices = mesh->numVertices();
+    size_t numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
 
-    int numFloats = numVertices*6;
+    size_t numFloats = numVertices*6;
     GLfloat* vtxData = new GLfloat[numFloats];
 
     Iterator<Vertex> it = mesh->constVertexIterator();
@@ -201,7 +202,8 @@ void PointRenderer::Impl::fillVertexBuffer(const ISurface* mesh, VertexBuffer* v
 
     }
 
-    vbo->setBufferData((GLvoid*)vtxData, numFloats*sizeof(GLfloat));
+    GLuint bufferSize = static_cast<GLuint>(numFloats*sizeof(GLfloat));
+    vbo->setBufferData((GLvoid*)vtxData, bufferSize);
 
     delete [] vtxData;
 }

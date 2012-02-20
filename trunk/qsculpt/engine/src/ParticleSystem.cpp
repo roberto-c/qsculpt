@@ -34,10 +34,10 @@ namespace physics {
         VVector4  dv;
         
         void step(double time) {
-            int size = particles.size();
+            size_t size = particles.size();
             
             // clear forces / set force to gravity
-            for (int i = 0; i < size; ++i) {
+            for (size_t i = 0; i < size; ++i) {
                 particles[i].f[0] = 0;
                 particles[i].f[1] = -0.3;
                 particles[i].f[2] = 0;
@@ -45,19 +45,19 @@ namespace physics {
             }
             
             // derive pos and vel
-            for (int i = 0; i < size; ++i) {
+            for (size_t i = 0; i < size; ++i) {
                 dp[i] = particles[i].v;
                 dv[i] = particles[i].f * particles[i].invm;
             }
             
             // scale
-            for (int i = 0; i < size; ++i) {
+            for (size_t i = 0; i < size; ++i) {
                 dp[i] *= time;
                 dv[i] *= time;
             }
             
             // update position
-            for (int i = 0; i < size; ++i) {
+            for (size_t i = 0; i < size; ++i) {
                 particles[i].x += dp[i];
                 particles[i].v += dv[i];
             }

@@ -23,9 +23,7 @@
 
 #include <QAtomicInt>
 
-class QGLContext;
-class QGLShader;
-class QGLShaderProgram;
+class GlslProgram;
 
 
 /**
@@ -49,13 +47,21 @@ public:
      */
     int iid() const { return _id; } ;
     
-    bool attach(const QGLContext* ctx);
-    bool deattach();
+    /**
+     * Setup all data to render an object using this material.
+     *
+     * This function must be implemented by subclasses to bind all necesary 
+     * resources, like shaders, textures, lighting parameters, etc.
+     */
+    virtual void load()=0;
+    
+    /**
+     * Releases all data and resources used by this material.
+     */
+    virtual void unload() = 0;
     
 protected:
-    QGLContext          *_context;
-    QGLShaderProgram    *_program;
-    QGLShader           *_shaders;
+    GlslProgram * shaderProgram_;
 };
 
 #endif

@@ -156,7 +156,7 @@ void SmoothRenderer::Impl::renderVbo(const ISurface* mesh)
 		glColor3d(color.redF(), color.greenF(), color.blueF());
 	}
 	
-    size_t numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+    GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -182,7 +182,7 @@ void SmoothRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
     
-    int numFaces = mesh->numFaces();
+    size_t numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
     
@@ -202,7 +202,8 @@ void SmoothRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     }
     // offset contains the number of vertices in the vtxData after being 
     // processed.
-    vbo->setBufferData((GLvoid*)vtxData.data(), offset*sizeof(SmoothVtxStruct));
+    GLuint dataSize = static_cast<GLuint>(offset*sizeof(SmoothVtxStruct));
+    vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
     
     //qDebug() << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }

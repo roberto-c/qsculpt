@@ -132,7 +132,7 @@ void RendererPrivate::renderVbo(const ISurface* mesh)
     
     //qDebug() << "Draw mesh";
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawArrays(GL_QUADS, 0, obj->numFaces()*4);
+    glDrawArrays(GL_QUADS, 0, (GLsizei)obj->numFaces()*4);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -159,11 +159,11 @@ void RendererPrivate::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
     
-    int numFaces = mesh->numFaces();
+    size_t numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
     
-    int numVertices = numFaces*4;
+    size_t numVertices = numFaces*4;
     FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
     
     //    int fcounter = 0;
@@ -195,7 +195,8 @@ void RendererPrivate::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
             offset++;
         }
     }
-    vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(FlatVtxStruct));
+    GLuint bufferSize = static_cast<GLuint>(numVertices*sizeof(FlatVtxStruct));
+    vbo->setBufferData((GLvoid*)vtxData, bufferSize);
     
     delete [] vtxData;
     

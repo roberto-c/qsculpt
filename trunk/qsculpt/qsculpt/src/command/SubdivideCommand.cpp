@@ -226,7 +226,7 @@ void SubdivideCommand::Impl::splitEdges(ISurface& s)
 void SubdivideCommand::Impl::createFaces(ISurface& s)
 {
     int faceCounter = 0;
-    QVector<int> vtxIndex, faceVtxIID;
+    QVector<size_t> vtxIndex, faceVtxIID;
     vtxIndex.reserve(10);
     faceVtxIID.reserve(4);
     Iterator<Face> faceIt = s.faceIterator();
@@ -240,7 +240,7 @@ void SubdivideCommand::Impl::createFaces(ISurface& s)
         }
         
         vtxIndex.clear();
-        int numEdges = 0;
+        size_t numEdges = 0;
         faceCounter++;
         Iterator<Edge> edgeIt = f.edgeIterator();
         while (edgeIt.hasNext()) {
@@ -259,8 +259,8 @@ void SubdivideCommand::Impl::createFaces(ISurface& s)
         assert(v != NULL);
         int faceCenter = v->iid();
         
-        int numVerts = vtxIndex.size();
-        for (int i = 0; i < numEdges; ++i) {
+        size_t numVerts = vtxIndex.size();
+        for (size_t i = 0; i < numEdges; ++i) {
             faceVtxIID.clear();
             faceVtxIID.push_back(faceCenter);
             faceVtxIID.push_back(vtxIndex[((i + numEdges)*2 - 1) % numVerts]);

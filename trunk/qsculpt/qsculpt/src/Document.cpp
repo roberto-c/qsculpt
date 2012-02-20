@@ -193,7 +193,7 @@ void Document::loadFile(const QString& fileName)
             else if (token == "f")
             {
                 bool error = false;
-                QVector<int> vertexIndices;
+                QVector<size_t> vertexIndices;
                 while(!lineStream.atEnd())
                 {
                     lineStream >> token;

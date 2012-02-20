@@ -267,7 +267,7 @@ size_t Face::numVertices() const {
 }
 
 
-void Face::setPoints(const QVector<int>& vertexIndexList) {
+void Face::setPoints(const QVector<size_t>& vertexIndexList) {
     throw std::runtime_error("Not implemented");
 }
 
@@ -276,7 +276,7 @@ bool Face::hasEdge(const Edge& /*e*/) const {
     return false;
 }
 
-bool Face::hasEdge(int /*v1*/, int /*v2*/) const {
+bool Face::hasEdge(size_t /*v1*/, size_t /*v2*/) const {
     NOT_IMPLEMENTED;
     return false;
 }

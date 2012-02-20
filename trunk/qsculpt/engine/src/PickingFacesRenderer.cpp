@@ -96,7 +96,8 @@ void PickingFacesRenderer::renderVbo(const ISurface* mesh, unsigned int objId)
     glEnableClientState(GL_VERTEX_ARRAY);
 
     //glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-    glDrawArrays(GL_QUADS, 0, obj->numFaces()*4);
+    GLsizei nElements = static_cast<GLsizei>(obj->numFaces()*4);
+    glDrawArrays(GL_QUADS, 0, nElements);
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
@@ -124,7 +125,7 @@ void PickingFacesRenderer::renderVbo(const ISurface* mesh, unsigned int objId)
 void PickingFacesRenderer::renderImmediate(const ISurface* mesh, unsigned int /*objID*/)
 {    
     mesh->lock();
-    int numVertices = mesh->numVertices();
+    size_t numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
     
@@ -162,7 +163,7 @@ VertexBuffer* PickingFacesRenderer::getFlatVBO(ISurface* mesh)
 
 void PickingFacesRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo, GLuint objId)
 {
-    int numVertices = mesh->numVertices();
+    size_t numVertices = mesh->numVertices();
     if (numVertices == 0)
         return;
 
@@ -180,7 +181,8 @@ void PickingFacesRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo, G
         objId++;
     }
 
-    vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(VtxStruct));
+    GLuint bufferSize = static_cast<GLuint>(numVertices*sizeof(VtxStruct));
+    vbo->setBufferData((GLvoid*)vtxData, bufferSize);
 
     delete [] vtxData;
 }
@@ -190,11 +192,11 @@ void PickingFacesRenderer::fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vb
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
 
-    int numFaces = mesh->numFaces(); //getFaceList().size();
+    size_t numFaces = mesh->numFaces(); //getFaceList().size();
     if (numFaces == 0)
         return;
 
-    int numVertices = numFaces*4;
+    size_t numVertices = numFaces*4;
     FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
     
     int fcounter = 0;
@@ -221,7 +223,8 @@ void PickingFacesRenderer::fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vb
         objId++;
     }
     
-    vbo->setBufferData((GLvoid*)vtxData, numVertices*sizeof(FlatVtxStruct));
+    GLuint bufferSize = static_cast<GLuint>(numVertices*sizeof(FlatVtxStruct));
+    vbo->setBufferData((GLvoid*)vtxData, bufferSize);
 
     delete [] vtxData;
 }

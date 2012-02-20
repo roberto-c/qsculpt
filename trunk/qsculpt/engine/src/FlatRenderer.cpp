@@ -25,6 +25,7 @@
 #include "BOManager.h"
 #include <cstddef>
 #include <iostream>
+#include "GlslProgram.h"
 
 
 using namespace std;
@@ -51,6 +52,10 @@ typedef struct tagFlatVtxStruct
 
 struct FlatRenderer::Impl {
     size_t numTriangles;
+    
+    GlslProgram * shaderProgram;
+    
+    Impl() : numTriangles(0), shaderProgram(NULL){}
     
 	/**
 	 * Draw the mesh using OpenGL VBOs.
@@ -96,6 +101,11 @@ FlatRenderer::~FlatRenderer()
 {
     cerr << "FlatRenderer destructor" << endl;
     BOManager::getInstance()->destroyPool(BO_POOL_NAME);
+}
+
+void FlatRenderer::setShaderProgram(GlslProgram * shader)
+{
+    _d->shaderProgram = shader;
 }
 
 void FlatRenderer::renderObject(const ISurface* mesh)
@@ -181,7 +191,7 @@ void FlatRenderer::Impl::renderVbo(const ISurface* mesh)
         glColor3d(color.redF(), color.greenF(), color.blueF());
 
     //qDebug() << "Draw mesh";
-    size_t numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
+    GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -209,7 +219,7 @@ void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (mesh == NULL || vbo->getBufferID() == 0)
         return;
 
-    int numFaces = mesh->numFaces();
+    size_t numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
 
@@ -229,7 +239,8 @@ void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     }
     // offset contains the number of vertices in the vtxData after being 
     // processed.
-    vbo->setBufferData((GLvoid*)vtxData.data(), offset*sizeof(FlatVtxStruct));
+    GLuint bufferSize = static_cast<GLuint>(offset*sizeof(FlatVtxStruct));
+    vbo->setBufferData((GLvoid*)vtxData.data(), bufferSize);
 
     //qDebug() << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }

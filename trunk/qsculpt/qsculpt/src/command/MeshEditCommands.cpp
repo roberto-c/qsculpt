@@ -20,6 +20,7 @@
 #include "DocumentView.h"
 #include "HEdge.h"
 #include "Octree.h"
+#include "Color.h"
 
 AddSurfaceCommand::AddSurfaceCommand()
 : CommandBase("AddSurface")
@@ -47,6 +48,7 @@ void AddSurfaceCommand::execute()
     if (doc)
     {
         _surface = new SurfaceNode(new Box);
+        _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
         doc->scene()->add(_surface);
         qDebug() << "IID=" << _surface->iid();
     }
@@ -367,7 +369,7 @@ void TestCommand::Impl::setup() {
     vertexID.push_back(surf->addVertex(Point3(0.0f, 0.5f, 0))); // 7
     vertexID.push_back(surf->addVertex(Point3(0.5f, 0.5f, 0))); // 8
     
-    QVector<int> face;
+    QVector<size_t> face;
     face.clear();
     face.push_back(vertexID[0]);
     face.push_back(vertexID[1]);

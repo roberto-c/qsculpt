@@ -42,5 +42,15 @@ inline QString toString(const Vector3& v)
 	return str;
 }
 
+inline QString toString(const Vector4& v)
+{
+	QString str;
+	str += "(" + QString::number(v[0]) + "," + 
+	QString::number(v[1]) + "," +
+	QString::number(v[2]) + "," +
+    QString::number(v[3]) + ")";
+	return str;
+}
+
 #endif
 

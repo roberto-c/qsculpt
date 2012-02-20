@@ -40,11 +40,11 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
-typedef std::pair<int, int>     VtxPair;
-typedef QHash<int, Vertex*>     VertexCollection;
-typedef QHash<int, Edge*>       EdgesCollection;
-typedef QHash<VtxPair, int>     VtxPairEdgeMap;
-typedef std::map<int, Face*>       FacesCollection;
+typedef std::pair<size_t, size_t>     VtxPair;
+typedef QHash<size_t, Vertex*>     VertexCollection;
+typedef QHash<size_t, Edge*>       EdgesCollection;
+typedef QHash<VtxPair, size_t>     VtxPairEdgeMap;
+typedef std::map<size_t, Face*>       FacesCollection;
 
 
 struct VertexPool {
@@ -56,7 +56,7 @@ static QAtomicInt NEXT_ID;
 
 struct Mesh::Impl {
     /** Instance ID of the surface */
-    uint _iid;
+    size_t _iid;
     
     VertexCollection    *_vertices;
     EdgesCollection     *_edges;
@@ -72,7 +72,7 @@ struct Mesh::Impl {
     int             _callListId;
     bool            _genereateCallList;
     bool            _hasChanged;
-    QVector<int>    _selectedPoints;
+    QVector<size_t>    _selectedPoints;
     
     VertexPool      _vtxPool;
     
@@ -366,7 +366,7 @@ Mesh::~Mesh()
     delete _d->_faces;
 }
 
-uint Mesh::iid() const
+size_t Mesh::iid() const
 {
     return _d->_iid;
 }
@@ -394,11 +394,11 @@ void Mesh::setChanged(bool val) {
     }
 }
 
-QVector<int> Mesh::selectedPoints() const {
+QVector<size_t> Mesh::selectedPoints() const {
     return _d->_selectedPoints;
 }
 
-void Mesh::setSelectedPoints(const QVector<int>& indicesArray) {
+void Mesh::setSelectedPoints(const QVector<size_t>& indicesArray) {
     _d->_selectedPoints = indicesArray;
 }
 
@@ -437,7 +437,7 @@ bool Mesh::isSelected() const
     return _d->_selected;
 }
 
-int Mesh::addVertex(const Point3& point)
+size_t Mesh::addVertex(const Point3& point)
 {
     assert(_d->_vertices != NULL );
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
@@ -453,48 +453,48 @@ int Mesh::addVertex(const Point3& point)
     
 }
 
-int Mesh::addVertex(Vertex* v)
+size_t Mesh::addVertex(Vertex* v)
 {
     _d->_boundingBox.extend(v->position());
     this->_d->_vertices->insert(v->iid(), v);
     return v->iid();
 }
 
-void Mesh::removeVertex(int iid)
+void Mesh::removeVertex(size_t iid)
 {
     _d->_vertices->remove(iid);
 }
 
-Vertex* Mesh::vertex(int iid)
+Vertex* Mesh::vertex(size_t iid)
 {
     return _d->_vertices->contains(iid) ? _d->_vertices->value(iid) : NULL;
 }
 
-const Vertex* Mesh::vertex(int iid) const
+const Vertex* Mesh::vertex(size_t iid) const
 {
     return _d->_vertices->contains(iid) ? _d->_vertices->value(iid) : NULL;
 }
 
-int Mesh::numVertices() const
+size_t Mesh::numVertices() const
 {
     return _d->_vertices->size();
 }
 
-int Mesh::addEdge(const Edge& edge)
+size_t Mesh::addEdge(const Edge& edge)
 {
     return addEdge(edge.tail(), edge.head());
 }
 
-int Mesh::addEdge(int v1, int v2)
+size_t Mesh::addEdge(size_t v1, size_t v2)
 {    
     return addEdge(_d->_vertices->value(v1), _d->_vertices->value(v2));
 }
 
-int Mesh::addEdge(Vertex* tail, Vertex* head)
+size_t Mesh::addEdge(Vertex* tail, Vertex* head)
 {
     assert(tail && head);
     
-    int iid = -1;
+    size_t iid = -1;
     
     VtxPair pair(tail->iid(), head->iid());
     if (_d->_vtxPairEdge->contains(pair)) {
@@ -524,18 +524,19 @@ int Mesh::addEdge(Vertex* tail, Vertex* head)
     return iid;
 }
 
-int Mesh::addFace(const QVector<int>& vertexIndexList)
+size_t Mesh::addFace(const QVector<size_t>& vertexIndexList)
 {
     //NOT_IMPLEMENTED
     std::vector<Edge*> edges;
-    int size = vertexIndexList.size();
+    QVector<size_t>::size_type size = vertexIndexList.size();
     if (size < 3) {
         qWarning() << "addFace: not enough vertices: " << size;
         return -1;
     }
-    
-    for (int i = 0; i < size; ++i) {
-        int iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
+
+    QVector<size_t>::size_type i = 0;
+    for (i = 0; i < size; ++i) {
+        size_t iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
         assert(iid > 0);
         Edge *e = _d->_edges->value(iid);
         assert(e != NULL && e->face() == NULL);
@@ -543,7 +544,7 @@ int Mesh::addFace(const QVector<int>& vertexIndexList)
     }
     Face *f = new Face(this);
     f->setHEdge(edges[0]);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         edges[i]->setNext(edges[(i+1)%size]);
         edges[i]->setFace(f);
         //_edges[edgesIndices[i]].setNext(edgesIndices[(i+1)%size]);
@@ -552,14 +553,14 @@ int Mesh::addFace(const QVector<int>& vertexIndexList)
     return f->iid();
 }
 
-void Mesh::replaceFace(int /*faceIndex*/, const QVector<int>& /*vertexIndexList*/)
+void Mesh::replaceFace(size_t /*faceIndex*/, const QVector<size_t>& /*vertexIndexList*/)
 {
     NOT_IMPLEMENTED
 }
 
 
 // clear reference to face from edges and remove the face from this surface.
-void Mesh::removeFace( int iid)
+void Mesh::removeFace( size_t iid)
 {
     Face * f = face(iid);
     if (f == NULL)
@@ -573,37 +574,37 @@ void Mesh::removeFace( int iid)
     _d->_faces->erase(iid);
 }
 
-Face* Mesh::face(int iid)
+Face* Mesh::face(size_t iid)
 {
     assert(iid > 0);
     FacesCollection::iterator it = _d->_faces->find(iid);
     return  it != _d->_faces->end() ? it->second : NULL;
 }
 
-int Mesh::numFaces() const
+size_t Mesh::numFaces() const
 {
     assert( _d->_faces!= NULL );
     return _d->_faces->size();
 }
 
 
-int Mesh::getFaceIndexAtPoint(const Point3& /*p*/) const
+size_t Mesh::getFaceIndexAtPoint(const Point3& /*p*/) const
 {
     NOT_IMPLEMENTED
     return -1;
 }
 
-int Mesh::getClosestPointAtPoint(const Point3 &/*p*/) const
+size_t Mesh::getClosestPointAtPoint(const Point3 &/*p*/) const
 {
     NOT_IMPLEMENTED
     
     return -1;
 }
 
-QVector<int> Mesh::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
+QVector<size_t> Mesh::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
 {
     //qDebug() << "Mesh::getPointsInRadius()";
-    QVector<int> results;
+    QVector<size_t> results;
     
     NOT_IMPLEMENTED
     
@@ -622,7 +623,7 @@ void Mesh::unlock() const
     //_mutex.unlock();
 }
 
-void Mesh::adjustPointNormal(int /*index*/)
+void Mesh::adjustPointNormal(size_t /*index*/)
 {
     NOT_IMPLEMENTED
 }
@@ -677,14 +678,14 @@ IIterator<Vertex>* Mesh::VertexIterator::clone() const
 bool Mesh::VertexIterator::hasNext() const
 {
     //NOT_IMPLEMENTED
-    int n = _surface->numVertices();
+    size_t n = _surface->numVertices();
     return n >0 && _index != _surface->_d->_vertices->end();
 }
 
 bool Mesh::VertexIterator::hasPrevious() const
 {
     //NOT_IMPLEMENTED
-    int n = _surface->numVertices();
+    size_t n = _surface->numVertices();
     return n > 0 &&
     (_index == _surface->_d->_vertices->end() ||
      _index != _surface->_d->_vertices->begin());
@@ -777,25 +778,21 @@ IIterator<Face>* Mesh::FaceIterator::clone() const
 
 bool Mesh::FaceIterator::hasNext() const
 {
-    //NOT_IMPLEMENTED
-    int n = _surface->numFaces();
-    //    return n > 0 && _index < n-1;
+    size_t n = _surface->numFaces();
     return n > 0 && _index != _surface->_d->_faces->end();
 }
 
 bool Mesh::FaceIterator::hasPrevious() const
 {
-    int n = _surface->numFaces();
-    //    return n > 0 && _index < n && _index >= 0;
+    size_t n = _surface->numFaces();
+
     return n > 0 &&
-    (_index == _surface->_d->_faces->end() ||
-     _index != _surface->_d->_faces->begin());
+            (_index == _surface->_d->_faces->end() ||
+            _index != _surface->_d->_faces->begin());
 }
 
 Face & Mesh::FaceIterator::next()
 {
-    //NOT_IMPLEMENTED
-    //    return *_surface->_faces->at(++_index);
     Face *f = _index->second;
     
     assert(f);
@@ -805,9 +802,6 @@ Face & Mesh::FaceIterator::next()
 
 const Face & Mesh::FaceIterator::next() const
 {
-    //NOT_IMPLEMENTED
-    //    assert(_surface->getNumFaces() > _index);
-    //    return *_surface->_faces->at(++_index);
     Face *f = _index->second;
     assert(f);
     ++_index;
@@ -825,20 +819,12 @@ const Face & Mesh::FaceIterator::peekNext() const {
 
 Face & Mesh::FaceIterator::previous()
 {
-    //    assert(_index >= 0);
-    //    Face* f = _surface->_faces->at(_index);
-    //    --_index;
-    //    return *f;
     --_index;
     return *_index->second;
 }
 
 const Face & Mesh::FaceIterator::previous() const
 {
-    //    assert(_index >= 0);
-    //    Face* f = _surface->_faces->at(_index);
-    //    --_index;
-    //    return *f;
     --_index;
     return *_index->second;
 }
@@ -878,8 +864,8 @@ bool Mesh::FaceIterator::seek(int pos, IteratorOrigin origin) const
 
 void Mesh::printMemoryInfo() const
 {
-    unsigned int sizeVertex, sizeEdge, sizeFace;
-    unsigned int nVertex, nFace, nEdge;
+    size_t sizeVertex, sizeEdge, sizeFace;
+    size_t nVertex, nFace, nEdge;
     
     sizeVertex = sizeof(Vertex);
     sizeFace = sizeof(Face);
