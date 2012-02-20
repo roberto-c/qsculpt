@@ -49,7 +49,7 @@ std::string GlslProgram::buildLog()
     } catch (std::bad_alloc & e) {
         std::cerr << e.what() << endl;
     }
-    THROW_IF_GLERROR("attachShader");
+    THROW_IF_GLERROR(__func__);
     
     return log;
 }
@@ -57,13 +57,13 @@ std::string GlslProgram::buildLog()
 void GlslProgram::attachShader(VertexShader * shader)
 {
     glAttachShader(progId_, shader->shaderId());
-    THROW_IF_GLERROR("attachShader");
+    THROW_IF_GLERROR(__func__);
 }
    
 void GlslProgram::attachShader(FragmentShader * shader)
 {
     glAttachShader(progId_, shader->shaderId());
-    THROW_IF_GLERROR("attachShader");
+    THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::useProgram()
@@ -76,54 +76,61 @@ void GlslProgram::useProgram()
 void GlslProgram::bindAttributeLocation(GLuint index, const std::string &name)
 {
     glBindAttribLocation(progId_, index, name.c_str());
-    THROW_IF_GLERROR("bindAttributeLocation");
+    THROW_IF_GLERROR(__func__);
+}
+
+GLint GlslProgram::uniformLocation(const std::string &name)
+{
+    GLint loc = glGetUniformLocation(progId_, name.c_str());
+    THROW_IF_GLERROR(__func__);
+    return loc;
 }
 
 void GlslProgram::setUniform(GLint index, int value)
 {
     glUniform1iv(index, 1, &value);
-    THROW_IF_GLERROR("setUniform");
+    THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector2i & value)
 {
     glUniform2iv(index, 1, value.data());
-    THROW_IF_GLERROR("setUniform");
+    THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector3i & value)
 {
-    glUniform2iv(index, 1, value.data());
-    THROW_IF_GLERROR("setUniform");
+    glUniform3iv(index, 1, value.data());
+    THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector4i & value)
 {
-    glUniform2iv(index, 1, value.data());
-    THROW_IF_GLERROR("setUniform");
+    glUniform4iv(index, 1, value.data());
+    THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, float value)
 {
     glUniform1fv(index, 1, &value);
-    THROW_IF_GLERROR("setUniform");
+    THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector2f & value)
 {
     glUniform2fv(index, 1, value.data());
-    THROW_IF_GLERROR("setUniform");
+    THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector3f & value)
 {
-    glUniform2fv(index, 1, value.data());
-    THROW_IF_GLERROR("setUniform");
+    glUniform3fv(index, 1, value.data());
+    THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector4f & value)
 {
-    glUniform2fv(index, 1, value.data());
-    THROW_IF_GLERROR("setUniform");
+    glUniform4fv(index, 1, value.data());
+    THROW_IF_GLERROR(__func__);
 }
 

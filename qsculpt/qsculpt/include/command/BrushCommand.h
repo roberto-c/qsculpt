@@ -71,7 +71,7 @@ private:
     double              _radius;
     double              _depth;
     BrushAction         _action;
-    QVector<int>        _vertexSelected;
+    QVector<size_t>        _vertexSelected;
     BrushProperties*    _propertiesWindow;
     DirtyFaceMap        _previousState;
     bool                _undoCalled;

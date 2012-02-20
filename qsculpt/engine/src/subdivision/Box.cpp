@@ -39,7 +39,7 @@ void Box::initPoints()
     double hh = 1.0;
     double hd = 1.0;
     
-    QVector<int> vertexID(8);
+    QVector<size_t> vertexID(8);
 
     vertexID[0] = addVertex(new Vertex(Point3(-hw, hh,-hd), Vector3(-hw, hh,-hd)));
     vertexID[1] = addVertex(new Vertex(Point3( hw, hh,-hd), Vector3( hw, hh,-hd)));
@@ -56,7 +56,7 @@ void Box::initPoints()
         it.next().addFlag(VF_Crease);
     }
     
-    QVector<int> indexList(4);
+    QVector<size_t> indexList(4);
     indexList[0] = vertexID[0];
     indexList[1] = vertexID[1];
     indexList[2] = vertexID[2];
@@ -119,7 +119,7 @@ void Plane::initPoints(int m, int n)
     double x=0, y=0;
     int j=0,i=0, numVtx=0;
     
-    QVector<int> vertexID((m+1) * (n+1));
+    QVector<size_t> vertexID((m+1) * (n+1));
     y = -hh / 2;
     for (i = 0; i <= m; ++i) {
         x = -hw/2;
@@ -131,7 +131,7 @@ void Plane::initPoints(int m, int n)
         }
         y += hstep;
     }
-    QVector<int> indexList(4);
+    QVector<size_t> indexList(4);
     for (i = 0; i < m; ++i) {
         for (j = 0; j < n; ++j) {
             indexList[0] = vertexID[CELL(j,i)];

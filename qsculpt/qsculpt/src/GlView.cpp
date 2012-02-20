@@ -43,6 +43,8 @@
 #include "PickingFacesRenderer.h"
 #include "Scene.h"
 #include "SceneNode.h"
+#include "GlslProgram.h"
+#include "GlslShader.h"
 
 PickingObjectRenderer g_picking;
 PickingFacesRenderer g_pickingVertices;
@@ -50,11 +52,9 @@ PickingFacesRenderer g_pickingVertices;
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
 
-QGLShaderProgram    *g_shaderProgram = NULL;
-QGLShader           *g_shaderVertex = NULL;
-QGLShader           *g_shaderFragment = NULL;
-
-
+GlslProgram     *g_shaderProgram = NULL;
+VertexShader    *g_shaderVertex = NULL;
+FragmentShader  *g_shaderFragment = NULL;
 
 
 struct Rect {
@@ -106,7 +106,58 @@ struct GlCanvas::Impl {
     brush(QBrush(Qt::transparent)),
     flags(0)
     {
+        // Type of renderer used for displaying objects on the screen
+        renderer = RendererFactory::getRenderer(drawingMode);
         
+        // Type of renderer used for user object picking
+        selectionRenderer = RendererFactory::getRenderer(Points);
+        
+        // Type of renderer used for vertex edition mode
+        editVertexRenderer = RendererFactory::getRenderer(Points);
+        
+        selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
+        
+        Camera* camera = new Camera();
+        camera->setTargetPoint( Point3( 0, 0, 0) );
+        camera->setOrientationVector(Point3( 0, 1, 0) );
+        camera->setPosition( Point3( 0, 0, 1));
+        cameraList[Front] = camera;
+        
+        camera = new Camera();
+        camera->setTargetPoint( Point3( 0, 0, 0) );
+        camera->setOrientationVector( Point3( 0, 1, 0) );
+        camera->setPosition( Point3( 0, 0, -1));
+        cameraList[Back] = camera;
+        
+        camera = new Camera();
+        camera->setTargetPoint( Point3( 0, 0, 0) );
+        camera->setOrientationVector( Point3( 0, 0, -1) );
+        camera->setPosition( Point3( 0, 1, 0) );
+        cameraList[Top] = camera;
+        
+        camera = new Camera();
+        camera->setTargetPoint( Point3( 0, 0, 0) );
+        camera->setOrientationVector( Point3( 0, 0, 1) );
+        camera->setPosition( Point3( 0, -1, 0) );
+        cameraList[Bottom] = camera;
+        
+        camera = new Camera();
+        camera->setTargetPoint( Point3( 0, 0, 0) );
+        camera->setOrientationVector( Point3( 0, 1, 0) );
+        camera->setPosition( Point3(-1, 0, 0) );
+        cameraList[Left] = camera;
+        
+        camera = new Camera();
+        camera->setTargetPoint( Point3( 0, 0, 0) );
+        camera->setOrientationVector( Point3( 0, 1, 0) );
+        camera->setPosition( Point3( 1, 0, 0) );
+        cameraList[Right] = camera;
+        
+        camera = new Camera();
+        camera->setTargetPoint( Point3( 0, 0, 0) );
+        camera->setOrientationVector( Point3( 0, 0, 1) );
+        camera->setPosition( Point3( 0.75, 0.75, 0.75) );
+        cameraList[Perspective] = camera;
     }
     
     ~Impl() {
@@ -129,64 +180,17 @@ struct GlCanvas::Impl {
     }
 };
 
+GlCanvas::GlCanvas(DocumentView* _parent)
+: QGLWidget(_parent), _d(new Impl)
+{
+    
+}
+
+
 GlCanvas::GlCanvas(QGLContext * ctx, DocumentView* _parent)
     : QGLWidget(ctx, _parent), _d(new Impl)
     
 {
-    // Type of renderer used for displaying objects on the screen
-    _d->renderer = RendererFactory::getRenderer(_d->drawingMode);
-
-    // Type of renderer used for user object picking
-    _d->selectionRenderer = RendererFactory::getRenderer(Points);
-
-    // Type of renderer used for vertex edition mode
-    _d->editVertexRenderer = RendererFactory::getRenderer(Points);
-
-    _d->selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
-
-    Camera* camera = new Camera();
-    camera->setTargetPoint( Point3( 0, 0, 0) );
-    camera->setOrientationVector(Point3( 0, 1, 0) );
-    camera->setPosition( Point3( 0, 0, 1));
-    _d->cameraList[Front] = camera;
-
-    camera = new Camera();
-    camera->setTargetPoint( Point3( 0, 0, 0) );
-    camera->setOrientationVector( Point3( 0, 1, 0) );
-    camera->setPosition( Point3( 0, 0, -1));
-    _d->cameraList[Back] = camera;
-
-    camera = new Camera();
-    camera->setTargetPoint( Point3( 0, 0, 0) );
-    camera->setOrientationVector( Point3( 0, 0, -1) );
-    camera->setPosition( Point3( 0, 1, 0) );
-    _d->cameraList[Top] = camera;
-
-    camera = new Camera();
-    camera->setTargetPoint( Point3( 0, 0, 0) );
-    camera->setOrientationVector( Point3( 0, 0, 1) );
-    camera->setPosition( Point3( 0, -1, 0) );
-    _d->cameraList[Bottom] = camera;
-
-    camera = new Camera();
-    camera->setTargetPoint( Point3( 0, 0, 0) );
-    camera->setOrientationVector( Point3( 0, 1, 0) );
-    camera->setPosition( Point3(-1, 0, 0) );
-    _d->cameraList[Left] = camera;
-
-    camera = new Camera();
-    camera->setTargetPoint( Point3( 0, 0, 0) );
-    camera->setOrientationVector( Point3( 0, 1, 0) );
-    camera->setPosition( Point3( 1, 0, 0) );
-    _d->cameraList[Right] = camera;
-
-    camera = new Camera();
-    camera->setTargetPoint( Point3( 0, 0, 0) );
-    camera->setOrientationVector( Point3( 0, 0, 1) );
-    camera->setPosition( Point3( 0.75, 0.75, 0.75) );
-    _d->cameraList[Perspective] = camera;
-
-    setCursor(Qt::CrossCursor);
 }
 
 
@@ -283,40 +287,41 @@ void GlCanvas::initializeGL()
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
     qDebug() << "hasOGL Shaders: " << QGLShaderProgram::hasOpenGLShaderPrograms();
-    g_shaderProgram = new QGLShaderProgram(this);
-    g_shaderVertex = new QGLShader(QGLShader::Vertex, this);
-    g_shaderFragment = new QGLShader(QGLShader::Fragment, this);
+    g_shaderProgram = new GlslProgram();
+    g_shaderVertex = new VertexShader();
+    g_shaderFragment = new FragmentShader();
 
-    g_shaderProgram->addShader(g_shaderVertex);
-    g_shaderProgram->addShader(g_shaderFragment);
+    g_shaderProgram->attachShader(g_shaderVertex);
+    g_shaderProgram->attachShader(g_shaderFragment);
 
     QString path = g_pApp->applicationDirPath();
-
-    qDebug() << "shaderId: " << g_shaderVertex->shaderId();
-    if (!printGlError()) qDebug() << __LINE__;
-    do {
-        if (!g_shaderVertex->compileSourceFile(":shaders/phong.vs"))
-        {
-            qDebug() << "Failed to compile vertex shader";
-            qDebug() << g_shaderVertex->log();
-            break;
+    try {
+        QString filename = path + QString("/../Resources/shaders/phong.vs");
+        if (!g_shaderVertex->loadFromFile(filename.toStdString())) {
+            qDebug() << "Failed to load file";
+        } else if (!g_shaderVertex->compile()) {
+            qDebug() << "Failed to compile shader";
+            qDebug() << g_shaderVertex->infoLog().c_str();
         }
-        if (!printGlError()) qDebug() << __LINE__;
-        if (!g_shaderFragment->compileSourceFile(":shaders/phong.fs"))
-        {
-            qDebug() << "Failed to compile fragment shader";
-            qDebug() << g_shaderFragment->log();
-            break;
+        filename = path + QString("/../Resources/shaders/phong.fs");
+        if (!g_shaderFragment->loadFromFile(filename.toStdString())) {
+            qDebug() << "Failed to load file";
+        } if (!g_shaderFragment->compile()) {
+            qDebug() << "Failed to compile shader";
+            qDebug() << g_shaderFragment->infoLog().c_str();
         }
-        if (!printGlError()) qDebug() << __LINE__;
-        if (!g_shaderProgram->link())
-        {
+        
+        if (g_shaderVertex->compileStatus() && 
+            g_shaderFragment->compileStatus() &&
+            !g_shaderProgram->link()) {
             qDebug() << "Failed to link shaders";
-            qDebug() << g_shaderProgram->log();
-            break;
+            qDebug() << g_shaderProgram->buildLog().c_str();
         }
-        if (!printGlError()) qDebug() << __LINE__;
-    } while (false);
+    } catch (core::GlException & e) {
+        std::cerr   << "Failed to compile shaders: " << e.what() 
+                    << " error " << e.error()
+                    << ": " << e.errorString() << std::endl;
+    }
 }
 
 void GlCanvas::resizeGL( int w, int h )
@@ -407,36 +412,30 @@ void GlCanvas::paintGL()
 
     Eigen::Vector4f eyePosition, lightPosition(-1, 2, -2, 1);
     if (camera) {
-        eyePosition.x() = camera->getPosition().x();
-        eyePosition.y() = camera->getPosition().y();
-        eyePosition.z() = camera->getPosition().z();
-        eyePosition.w() = 1.0f;
+        eyePosition = camera->getPosition().homogeneous();
+        lightPosition = eyePosition;
     }
 
-//    g_shaderProgram->bind();
-//    printGlError();
-//    uint loc = g_shaderProgram->uniformLocation("eyePosition");
-//    g_shaderProgram->setUniformValue(loc, eyePosition.x(),
-//                                     eyePosition.y(), eyePosition.z(),
-//                                     eyePosition.w());
-//    printGlError();
-//    loc = g_shaderProgram->uniformLocation("lightPosition");
-//    g_shaderProgram->setUniformValue(loc, lightPosition.x(),
-//                                     lightPosition.y(), lightPosition.z(),
-//                                     lightPosition.w());
-//    printGlError();
-//    loc = g_shaderProgram->uniformLocation("diffuseColor");
-//    g_shaderProgram->setUniformValue(loc, 0.5f, 0.2f, 1.0f, 1.0f);
-//    printGlError();
-//    loc = g_shaderProgram->uniformLocation("specularColor");
-//    g_shaderProgram->setUniformValue(loc, 1.0f, 1.0f, 1.0f, 1.0f);
-//    printGlError();
-//    loc = g_shaderProgram->uniformLocation("exponent");
-//    g_shaderProgram->setUniformValue(loc, 220.0f);
-//    printGlError();
-
+    uint loc;
+    try {
+        g_shaderProgram->useProgram();
+        loc = g_shaderProgram->uniformLocation("eyePosition");
+        g_shaderProgram->setUniform(loc, eyePosition);
+        loc = g_shaderProgram->uniformLocation("lightPosition");
+        g_shaderProgram->setUniform(loc, lightPosition);
+        loc = g_shaderProgram->uniformLocation("diffuseColor");
+        g_shaderProgram->setUniform(loc, Eigen::Vector4f(0.5f, 0.2f, 1.0f, 1.0f));
+        loc = g_shaderProgram->uniformLocation("specularColor");
+        g_shaderProgram->setUniform(loc, Eigen::Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+        loc = g_shaderProgram->uniformLocation("exponent");
+        g_shaderProgram->setUniform(loc, 220.0f);
+    } catch (core::GlException & e) {
+        qDebug() << "GlException - " << e.what();
+        qDebug() << "Error " << e.error() << ": " << e.errorString();
+    }
+    
     drawScene(g_pApp->getMainWindow()->getCurrentDocument()->scene());
-//    g_shaderProgram->release();
+    glUseProgram(0);
 
 //    drawCursor();
 

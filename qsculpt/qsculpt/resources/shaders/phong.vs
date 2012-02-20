@@ -1,9 +1,12 @@
+//*#version 120
+
 /* Uniform Inputs */
 uniform vec4 lightPosition;
 uniform vec4 eyePosition;
 
 /* Outputs -> fragment program */
 varying vec3 lightVector, eyeVector, normal;
+varying vec4 color;
 
 void main() {
 
@@ -26,5 +29,7 @@ void main() {
 
 	/* Vertex->Eye in world coordinates */
 	eyeVector = (eyePosition - worldSpacePos).xyz;
+    
+    color = gl_Color;
 }
 

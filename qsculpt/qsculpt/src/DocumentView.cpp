@@ -63,9 +63,10 @@ void DocumentView::createWidgets()
     QGridLayout* gridLayout = new QGridLayout(this);
     QHBoxLayout* hboxLayout = new QHBoxLayout();
     
-    _d->ctx.setUseSoftwareRenderer(true);
+    _d->ctx.setUseSoftwareRenderer(false);
     _d->ctx.create();
-    _display = new GlCanvas(&_d->ctx, this);
+    //_display = new GlCanvas(&_d->ctx, this);
+    _display = new GlCanvas(this);
 
     Q_CHECK_PTR(gridLayout);
     Q_CHECK_PTR(_display);

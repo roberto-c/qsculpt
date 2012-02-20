@@ -27,7 +27,7 @@ enum EdgeFlags {
 class Edge {
     static QAtomicInt NEXT_ID;
 
-    int         _id;    // 4
+    size_t         _id;    // 4
     EdgeFlags   _flags; // 4
     Edge        *_next; // 4
     Edge        *_prev; // 4
@@ -47,7 +47,7 @@ public:
     /**
      * Gets the instance id of the vertex.
      */
-    int iid() const { return _id; }
+    size_t iid() const { return _id; }
 
     /**
      * Set / get attribute flags to the face.

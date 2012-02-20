@@ -83,6 +83,14 @@ public:
      *
      * @param parent the parent view of the widget.
      */
+    GlCanvas(DocumentView* parent = 0);
+    
+    /**
+     * Widget constructor. Initializes default parameters. This widget only can
+     * have a DocumentView class-derived as parent.
+     *
+     * @param parent the parent view of the widget.
+     */
     GlCanvas(QGLContext * ctx, DocumentView* parent = 0);
 
     /**

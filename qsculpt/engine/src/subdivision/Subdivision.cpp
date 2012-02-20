@@ -42,11 +42,11 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
-typedef std::pair<int, int>     VtxPair;
-typedef QHash<int, Vertex*>     VertexCollection;
-typedef QHash<int, Edge*>       EdgesCollection;
-typedef QHash<VtxPair, int>     VtxPairEdgeMap;
-typedef std::map<int, Face*>       FacesCollection;
+typedef std::pair<size_t, size_t>     VtxPair;
+typedef QHash<size_t, Vertex*>     VertexCollection;
+typedef QHash<size_t, Edge*>       EdgesCollection;
+typedef QHash<VtxPair, size_t>     VtxPairEdgeMap;
+typedef std::map<size_t, Face*>       FacesCollection;
 
 
 struct VertexPool {
@@ -58,7 +58,7 @@ static QAtomicInt NEXT_ID;
 
 struct Subdivision::Impl {
     /** Instance ID of the surface */
-    uint _iid;
+    size_t _iid;
     
     /** Vertices by each subdivision level */
     std::vector<VertexCollection*>  _vertLevelCollections;
@@ -85,7 +85,7 @@ struct Subdivision::Impl {
     bool            _genereateCallList;
     int             _currentResolutionLevel;
     bool            _hasChanged;
-    QVector<int>    _selectedPoints;
+    QVector<size_t>    _selectedPoints;
     
     VertexPool      _vtxPool;
     
@@ -394,7 +394,7 @@ Subdivision::~Subdivision()
     }
 }
 
-uint Subdivision::iid() const
+size_t Subdivision::iid() const
 {
     return _d->_iid;
 }
@@ -434,11 +434,11 @@ void Subdivision::setChanged(bool val) {
     }
 }
 
-QVector<int> Subdivision::selectedPoints() const {
+QVector<size_t> Subdivision::selectedPoints() const {
     return _d->_selectedPoints;
 }
 
-void Subdivision::setSelectedPoints(const QVector<int>& indicesArray) {
+void Subdivision::setSelectedPoints(const QVector<size_t>& indicesArray) {
     _d->_selectedPoints = indicesArray;
 }
 
@@ -477,7 +477,7 @@ bool Subdivision::isSelected() const
     return _d->_selected;
 }
 
-int Subdivision::addVertex(const Point3& point)
+size_t Subdivision::addVertex(const Point3& point)
 {
     assert(_d->_vertices != NULL );
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
@@ -493,48 +493,48 @@ int Subdivision::addVertex(const Point3& point)
 
 }
 
-int Subdivision::addVertex(Vertex* v)
+size_t Subdivision::addVertex(Vertex* v)
 {
     _d->_boundingBox.extend(v->position());
     this->_d->_vertices->insert(v->iid(), v);
     return v->iid();
 }
 
-void Subdivision::removeVertex(int iid)
+void Subdivision::removeVertex(size_t iid)
 {
     _d->_vertices->remove(iid);
 }
 
-Vertex* Subdivision::vertex(int iid)
+Vertex* Subdivision::vertex(size_t iid)
 {
     return _d->_vertices->contains(iid) ? _d->_vertices->value(iid) : NULL;
 }
 
-const Vertex* Subdivision::vertex(int iid) const
+const Vertex* Subdivision::vertex(size_t iid) const
 {
     return _d->_vertices->contains(iid) ? _d->_vertices->value(iid) : NULL;
 }
 
-int Subdivision::numVertices() const
+size_t Subdivision::numVertices() const
 {
     return _d->_vertices->size();
 }
 
-int Subdivision::addEdge(const Edge& edge)
+size_t Subdivision::addEdge(const Edge& edge)
 {
     return addEdge(edge.tail(), edge.head());
 }
 
-int Subdivision::addEdge(int v1, int v2)
+size_t Subdivision::addEdge(size_t v1, size_t v2)
 {    
     return addEdge(_d->_vertices->value(v1), _d->_vertices->value(v2));
 }
 
-int Subdivision::addEdge(Vertex* tail, Vertex* head)
+size_t Subdivision::addEdge(Vertex* tail, Vertex* head)
 {
     assert(tail && head);
     
-    int iid = -1;
+    size_t iid = -1;
 
     VtxPair pair(tail->iid(), head->iid());
     if (_d->_vtxPairEdge->contains(pair)) {
@@ -564,7 +564,7 @@ int Subdivision::addEdge(Vertex* tail, Vertex* head)
     return iid;
 }
 
-int Subdivision::addFace(const QVector<int>& vertexIndexList)
+size_t Subdivision::addFace(const QVector<size_t>& vertexIndexList)
 {
     //NOT_IMPLEMENTED
     std::vector<Edge*> edges;
@@ -575,7 +575,7 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
     }
     
     for (int i = 0; i < size; ++i) {
-        int iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
+        size_t iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
         assert(iid > 0);
         Edge *e = _d->_edges->value(iid);
         assert(e != NULL && e->face() == NULL);
@@ -592,14 +592,14 @@ int Subdivision::addFace(const QVector<int>& vertexIndexList)
     return f->iid();
 }
 
-void Subdivision::replaceFace(int /*faceIndex*/, const QVector<int>& /*vertexIndexList*/)
+void Subdivision::replaceFace(size_t /*faceIndex*/, const QVector<size_t>& /*vertexIndexList*/)
 {
     NOT_IMPLEMENTED
 }
 
 
 // clear reference to face from edges and remove the face from this surface.
-void Subdivision::removeFace( int iid)
+void Subdivision::removeFace( size_t iid)
 {
     Face * f = face(iid);
     if (f == NULL)
@@ -613,27 +613,27 @@ void Subdivision::removeFace( int iid)
     _d->_faces->erase(iid);
 }
 
-Face* Subdivision::face(int iid)
+Face* Subdivision::face(size_t iid)
 {
     assert(iid > 0);
     FacesCollection::iterator it = _d->_faces->find(iid);
     return  it != _d->_faces->end() ? it->second : NULL;
 }
 
-int Subdivision::numFaces() const
+size_t Subdivision::numFaces() const
 {
     assert( _d->_faces!= NULL );
     return _d->_faces->size();
 }
 
 
-int Subdivision::getFaceIndexAtPoint(const Point3& /*p*/) const
+size_t Subdivision::getFaceIndexAtPoint(const Point3& /*p*/) const
 {
     NOT_IMPLEMENTED
     return -1;
 }
 
-int Subdivision::getClosestPointAtPoint(const Point3 & p) const
+size_t Subdivision::getClosestPointAtPoint(const Point3 & p) const
 {
     float d = MAXFLOAT;
     Vertex * vtx = NULL, *tmpVtx = NULL;
@@ -651,10 +651,10 @@ int Subdivision::getClosestPointAtPoint(const Point3 & p) const
     return vtx ? vtx->iid() : 0;
 }
 
-QVector<int> Subdivision::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
+QVector<size_t> Subdivision::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
 {
     //qDebug() << "Subdivision::getPointsInRadius()";
-    QVector<int> results;
+    QVector<size_t> results;
 
     NOT_IMPLEMENTED
 
@@ -700,7 +700,7 @@ int Subdivision::workingResolutionLevel()
     return _d->_currentResolutionLevel;
 }
 
-void Subdivision::adjustPointNormal(int /*index*/)
+void Subdivision::adjustPointNormal(size_t /*index*/)
 {
     NOT_IMPLEMENTED
 }
@@ -792,14 +792,14 @@ IIterator<Vertex>* Subdivision::VertexIterator::clone() const
 bool Subdivision::VertexIterator::hasNext() const
 {
     //NOT_IMPLEMENTED
-    int n = _surface->numVertices();
+    size_t n = _surface->numVertices();
     return n >0 && _index != _surface->_d->_vertices->end();
 }
 
 bool Subdivision::VertexIterator::hasPrevious() const
 {
     //NOT_IMPLEMENTED
-    int n = _surface->numVertices();
+    size_t n = _surface->numVertices();
     return n > 0 &&
             (_index == _surface->_d->_vertices->end() ||
              _index != _surface->_d->_vertices->begin());
@@ -892,16 +892,16 @@ IIterator<Face>* Subdivision::FaceIterator::clone() const
 
 bool Subdivision::FaceIterator::hasNext() const
 {
-    //NOT_IMPLEMENTED
-    int n = _surface->numFaces();
-//    return n > 0 && _index < n-1;
+
+    size_t n = _surface->numFaces();
+
     return n > 0 && _index != _surface->_d->_faces->end();
 }
 
 bool Subdivision::FaceIterator::hasPrevious() const
 {
-    int n = _surface->numFaces();
-//    return n > 0 && _index < n && _index >= 0;
+    size_t n = _surface->numFaces();
+
     return n > 0 &&
             (_index == _surface->_d->_faces->end() ||
              _index != _surface->_d->_faces->begin());
@@ -909,8 +909,6 @@ bool Subdivision::FaceIterator::hasPrevious() const
 
 Face & Subdivision::FaceIterator::next()
 {
-    //NOT_IMPLEMENTED
-//    return *_surface->_faces->at(++_index);
     Face *f = _index->second;
 
     assert(f);
@@ -920,9 +918,6 @@ Face & Subdivision::FaceIterator::next()
 
 const Face & Subdivision::FaceIterator::next() const
 {
-    //NOT_IMPLEMENTED
-//    assert(_surface->getNumFaces() > _index);
-//    return *_surface->_faces->at(++_index);
     Face *f = _index->second;
     assert(f);
     ++_index;
@@ -940,20 +935,12 @@ const Face & Subdivision::FaceIterator::peekNext() const {
 
 Face & Subdivision::FaceIterator::previous()
 {
-//    assert(_index >= 0);
-//    Face* f = _surface->_faces->at(_index);
-//    --_index;
-//    return *f;
     --_index;
     return *_index->second;
 }
 
 const Face & Subdivision::FaceIterator::previous() const
 {
-//    assert(_index >= 0);
-//    Face* f = _surface->_faces->at(_index);
-//    --_index;
-//    return *f;
     --_index;
     return *_index->second;
 }
@@ -993,8 +980,8 @@ bool Subdivision::FaceIterator::seek(int pos, IteratorOrigin origin) const
 
 void Subdivision::printMemoryInfo() const
 {
-    unsigned int sizeVertex, sizeEdge, sizeFace;
-    unsigned int nVertex, nFace, nEdge;
+    size_t sizeVertex, sizeEdge, sizeFace;
+    size_t nVertex, nFace, nEdge;
     
     sizeVertex = sizeof(Vertex);
     sizeFace = sizeof(Face);

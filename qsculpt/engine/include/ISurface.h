@@ -56,7 +56,7 @@ public:
     /**
      * Instance id of the surface
      */
-    virtual uint iid() const = 0;
+    virtual size_t iid() const = 0;
     
     
     virtual void setScene(Scene* scene) = 0;
@@ -112,7 +112,7 @@ public:
      *
      * @return ID of the new point.
      */
-    virtual int addVertex(const Point3& point) = 0;
+    virtual size_t addVertex(const Point3& point) = 0;
 
     /**
      * Add vertex v to this object. The object will mantain the reference
@@ -123,7 +123,7 @@ public:
      *
      * @return the id of the vertex inside the object.
      */
-    virtual int addVertex(Vertex* v) = 0;
+    virtual size_t addVertex(Vertex* v) = 0;
 
     /**
      * Remove a point from the object. If the point form part of a
@@ -131,32 +131,32 @@ public:
      *
      * @param id ID of the point to delete.
      */
-    virtual void removeVertex( int id) = 0;
+    virtual void removeVertex( size_t id) = 0;
 
     /**
      * Returns the vertex with the instance ID iid.
      */
-    virtual Vertex* vertex(int iid) = 0;
+    virtual Vertex* vertex(size_t iid) = 0;
     
     /**
      * Returns the vertex with the instance ID iid.
      */
-    virtual const Vertex* vertex(int iid) const = 0;
+    virtual const Vertex* vertex(size_t iid) const = 0;
 
     /**
      * Gets the number of vertices
      */
-    virtual int numVertices() const = 0;
+    virtual size_t numVertices() const = 0;
 
     /**
      *
      */
-    virtual int addEdge(const Edge& edge) = 0;
+    virtual size_t addEdge(const Edge& edge) = 0;
 
     /**
      *
      */
-    virtual int addEdge(int v1, int v2) = 0;
+    virtual size_t addEdge(size_t v1, size_t v2) = 0;
 
     /**
      * Add a triangle to the object. The triangle is formed by the vertices
@@ -168,12 +168,12 @@ public:
      *
      * @return triangle ID
      */
-    virtual int addFace( const QVector<int>& vertexIndexes )=0;
+    virtual size_t addFace( const QVector<size_t>& vertexIndexes )=0;
 
     /**
      * Replace a triangle with new indices to existing points.
      */
-    virtual void replaceFace(int index, const QVector<int>& vertexIndexList)=0;
+    virtual void replaceFace(size_t index, const QVector<size_t>& vertexIndexList)=0;
 
     /**
      * Remove the triangle from the object. The points or vertices that
@@ -182,39 +182,39 @@ public:
      *
      * @param id triangle ID to remove.
      */
-    virtual void removeFace( int id) =0;
+    virtual void removeFace( size_t id) =0;
 
     /**
      * Returns the number of faces that the object has.
      *
      * TODO: This may not belong here as is specific to mesh surfaces.
      */
-    virtual int numFaces() const = 0;
+    virtual size_t numFaces() const = 0;
 
     /**
      * Returns the face at the position index.
      */
-    virtual Face* face(int index) = 0;
+    virtual Face* face(size_t index) = 0;
 
     /**
      *
      */
-    virtual int getFaceIndexAtPoint(const Point3& p) const = 0;
+    virtual size_t getFaceIndexAtPoint(const Point3& p) const = 0;
 
     /**
      *
      */
-    virtual int getClosestPointAtPoint(const Point3 &p) const = 0;
+    virtual size_t getClosestPointAtPoint(const Point3 &p) const = 0;
 
     /**
      *
      */
-    virtual QVector<int> getPointsInRadius(const Point3 &p, float radius) const = 0;
+    virtual QVector<size_t> getPointsInRadius(const Point3 &p, float radius) const = 0;
 
     /**
      *
      */
-    virtual void adjustPointNormal(int index) = 0;
+    virtual void adjustPointNormal(size_t index) = 0;
 
     /**
      *
@@ -239,12 +239,12 @@ public:
     /**
      *
      */
-    virtual QVector<int> selectedPoints() const = 0;
+    virtual QVector<size_t> selectedPoints() const = 0;
     
     /*
      *
      */
-    virtual void setSelectedPoints(const QVector<int>& indicesArray) = 0;
+    virtual void setSelectedPoints(const QVector<size_t>& indicesArray) = 0;
 
     /**
      * Returns a vertex iterator to traverse over all the vertices in this

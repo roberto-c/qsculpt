@@ -35,7 +35,7 @@ class Vertex
     Point3        _position; // 16
     Vector3       _normal;  // 16
     Vector3       _color;   // 16
-    int           _id;      //4
+    size_t        _id;      //4
     VertexFlags   _flags;   // 4
     Edge        * _he;      // 4
     void        * _userData; // 4
@@ -67,7 +67,7 @@ public:
     /**
      * Gets the instance id of the vertex.
      */
-    int iid() const { return _id; }
+    size_t iid() const { return _id; }
 
     /**
      * Gets / sets the position of the vertex

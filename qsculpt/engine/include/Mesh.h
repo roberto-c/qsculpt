@@ -45,7 +45,7 @@ public:
     /******************************************************************************
      * IObject3D interface
      */
-    virtual uint iid() const;
+    virtual size_t iid() const;
     virtual bool hasChanged();
     virtual void setChanged(bool val);
     virtual void setScene(Scene* scene) ;
@@ -55,28 +55,28 @@ public:
     virtual Color color() const;
     virtual void setSelected(bool val);
     virtual bool isSelected() const;
-    virtual int addVertex(const Point3& point);
-    virtual int addVertex(Vertex* v);
-    virtual void removeVertex(int id);
-    virtual Vertex* vertex(int index);
-    virtual const Vertex* vertex(int index) const;
-    virtual int numVertices() const;
-    virtual int addEdge(const Edge& edge);
-    virtual int addEdge(int v1, int v2);
-    virtual int addFace(const QVector<int>& vertexIndexList);
-    virtual void replaceFace(int index, const QVector<int>& vertexIndexList);
-    virtual void removeFace( int id);
-    virtual int numFaces() const;
-    virtual Face* face(int index);
-    virtual int getFaceIndexAtPoint(const Point3& p) const;
-    virtual int getClosestPointAtPoint(const Point3 &p) const;
-    virtual QVector<int> getPointsInRadius(const Point3 &p, float radius) const;
-    virtual void adjustPointNormal(int index);
+    virtual size_t addVertex(const Point3& point);
+    virtual size_t addVertex(Vertex* v);
+    virtual void removeVertex(size_t id);
+    virtual Vertex* vertex(size_t index);
+    virtual const Vertex* vertex(size_t index) const;
+    virtual size_t numVertices() const;
+    virtual size_t addEdge(const Edge& edge);
+    virtual size_t addEdge(size_t v1, size_t v2);
+    virtual size_t addFace(const QVector<size_t>& vertexIndexList);
+    virtual void replaceFace(size_t index, const QVector<size_t>& vertexIndexList);
+    virtual void removeFace( size_t id);
+    virtual size_t numFaces() const;
+    virtual Face* face(size_t index);
+    virtual size_t getFaceIndexAtPoint(const Point3& p) const;
+    virtual size_t getClosestPointAtPoint(const Point3 &p) const;
+    virtual QVector<size_t> getPointsInRadius(const Point3 &p, float radius) const;
+    virtual void adjustPointNormal(size_t index);
     virtual void lock() const;
     virtual void unlock() const;
     
-    virtual QVector<int> selectedPoints() const;
-    virtual void setSelectedPoints(const QVector<int>& indicesArray);
+    virtual QVector<size_t> selectedPoints() const;
+    virtual void setSelectedPoints(const QVector<size_t>& indicesArray);
     
     virtual Iterator<Vertex> vertexIterator();
     virtual Iterator<Vertex> constVertexIterator() const;
@@ -105,7 +105,7 @@ protected:
     /**
      *
      */
-    int addEdge(Vertex* v1, Vertex* v2);
+    size_t addEdge(Vertex* v1, Vertex* v2);
     
     
     // inner classes
