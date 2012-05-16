@@ -20,23 +20,30 @@
 #ifndef IDOCUMENT_H
 #define IDOCUMENT_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include "IIterator.h"
+#include "Scene.h"
 
 class ISurface;
 class SceneNode;
-class Scene;
+
 
 /**
  * Interface that should implement every kind of document.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class IDocument : public QObject
+class IDocument : public QObject, public std::enable_shared_from_this<IDocument>
 {
     Q_OBJECT
 
 public:
+    typedef std::shared_ptr<IDocument>   SharedPtr;
+    typedef std::shared_ptr<const IDocument>   const_shared_ptr;
+    typedef std::weak_ptr<IDocument>     WeakPtr;
+    typedef std::weak_ptr<const IDocument>  const_weak_ptr;
+    typedef std::unique_ptr<IDocument>   Ptr;
+    
     enum ObjectType {
         Mesh,
         Box,
@@ -78,7 +85,7 @@ public:
     /**
      * 
      */
-    virtual QList<SceneNode*> getSelectedObjects() const = 0;
+    virtual QList<SceneNode::WeakPtr> getSelectedObjects() const = 0;
     
     virtual Iterator<SceneNode> sceneIterator() = 0;
     
@@ -87,24 +94,24 @@ public:
     /**
      * Get the root scene node of the document.
      */
-    virtual SceneNode* rootNode() = 0;
+    virtual SceneNode::WeakPtr rootNode() = 0;
     
     /**
      * Get the root node of the document
      */
-    virtual const SceneNode* rootNode() const = 0;
+    virtual SceneNode::WeakPtr rootNode() const = 0;
     
     /**
      * Get the scene object of the document. The scene object
      * is a container with all the objects or actors in the scene.
      */
-    virtual Scene* scene() = 0;
+    virtual Scene::WeakPtr scene() = 0;
     
     /**
      * Get the scene object of the document. The scene object
      * is a container with all the objects or actors in the scene.
      */
-    virtual Scene* scene() const = 0;
+    virtual Scene::WeakPtr scene() const = 0;
     
     
 signals:

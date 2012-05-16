@@ -19,8 +19,8 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "command/CommandBase.h"
-#include <QtOpenGL>
-#include <QMouseEvent>
+#include <QtOpenGL/QtOpenGL>
+#include <QtGui/QMouseEvent>
 #include "ConfigContainer.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
@@ -107,7 +107,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
 
     GlCanvas *canvas = view->getCanvas();
     Point3 p(e->x(), view->getCanvas()->height() - e->y(), 0.0);
-    canvas->mapScreenCoordsToWorldCoords(p, _initialWinPoint);
+    canvas->screenToWorld(p, _initialWinPoint);
     
     //_initialWinPoint = Point3(e->x(), _viewPort[3] - e->y(), wz);
     _currentWinPoint = _initialWinPoint;

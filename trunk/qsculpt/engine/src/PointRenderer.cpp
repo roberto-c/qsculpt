@@ -98,8 +98,8 @@ void PointRenderer::Impl::renderImmediate(const ISurface* mesh)
     glBegin(GL_POINTS);
     Iterator<Vertex> it = mesh->constVertexIterator();
     while(it.hasNext()) {
-        const Vertex& v = it.next();
-        glVertex3fv(v.position().data());
+        auto v = it.next();
+        glVertex3fv(v->position().data());
     }
     glEnd();
     mesh->unlock();
@@ -176,15 +176,15 @@ void PointRenderer::Impl::fillVertexBuffer(const ISurface* mesh, VertexBuffer* v
     Iterator<Vertex> it = mesh->constVertexIterator();
     int offset = 0;
     while(it.hasNext()) {
-        const Vertex& v = it.next();
-        vtxData[offset] = v.position().x();
+        auto v = it.next();
+        vtxData[offset] = v->position().x();
         offset++;
-        vtxData[offset] = v.position().y();
+        vtxData[offset] = v->position().y();
         offset++;
-        vtxData[offset] = v.position().z();
+        vtxData[offset] = v->position().z();
         offset++;
 
-        if(v.flags() & VF_Selected) {
+        if(v->flags() & VF_Selected) {
             vtxData[offset] = colorSelected.x();
             offset++;
             vtxData[offset] = colorSelected.y();
@@ -192,11 +192,11 @@ void PointRenderer::Impl::fillVertexBuffer(const ISurface* mesh, VertexBuffer* v
             vtxData[offset] = colorSelected.z();
             offset++;
         } else {
-            vtxData[offset] = v.color().x();
+            vtxData[offset] = v->color().x();
             offset++;
-            vtxData[offset] = v.color().y();
+            vtxData[offset] = v->color().y();
             offset++;
-            vtxData[offset] = v.color().z();
+            vtxData[offset] = v->color().z();
             offset++;
         }
 

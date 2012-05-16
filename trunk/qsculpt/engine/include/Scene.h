@@ -24,6 +24,7 @@
 #include <string>
 #include "IIterator.h"
 #include "ICollection.h"
+#include "SceneNode.h"
 
 class ISurface;
 class SceneNode;
@@ -38,59 +39,43 @@ namespace geometry {
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class Scene {
+class Scene : public SceneNode {
 public:
+    //typedef QSharedPointer<Scene>   SharedPtr;
+    //typedef QWeakPointer<Scene>     WeakPtr;
+    typedef std::shared_ptr<Scene>      SharedPtr;
+    typedef std::weak_ptr<Scene>        WeakPtr;
+    typedef std::unique_ptr<Scene>      Ptr;
+    
     Scene();
+    
     Scene(const std::string& name);
 
-    ~Scene();
-
-    void add(SceneNode* child);
-    
-    void remove(SceneNode* child);
+    virtual ~Scene();
     
     /**
      *
      */
-    SceneNode* item(size_t index) const ;
-    
-    /**
-     *
-     */
-    size_t count() const;
-    
-    /**
-     *
-     */
-    SceneNode* findByName(const QString& name);
+    SceneNode::SharedPtr findByName(const QString& name);
 
     /**
      * Returns the node with the specified instance ID. NULL if not found.
      */
-    SceneNode* findByIID(uint iid);
+    SceneNode::SharedPtr findByIID(uint iid);
     
     /**
      * Returns a list of nodes that intersects a given ray.
      */
     bool intersects(const geometry::Ray &ray, 
-                    data::ICollection<SceneNode*> *col);
+                    data::ICollection<SceneNode::WeakPtr> *col);
     
     /**
      * Returns a list of nodes that are intersected or contained by an Axis
      * Aligned Bounding Box (AABB)
      */
     bool intersects(const geometry::AABB &box,
-                    data::ICollection<SceneNode*> *col);
+                    data::ICollection<SceneNode::WeakPtr> *col);
     
-    /**
-     *
-     */
-    Iterator<SceneNode> iterator();
-    
-    /**
-     *
-     */
-    Iterator<SceneNode> constIterator() const;
 private:
     class SceneNodeIterator;
     class Impl;

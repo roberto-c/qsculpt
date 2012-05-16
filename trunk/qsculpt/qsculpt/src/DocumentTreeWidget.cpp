@@ -21,19 +21,20 @@
 #include "Stable.h"
 #include "DocumentTreeWidget.h"
 #include "IDocument.h"
-#include <QStandardItemModel>
 #include "ui_DocumentTreeWidget.h"
-#include <QStandardItemModel>
-#include <QStandardItem>
-#include <QItemSelectionModel>
+#include <QtGui/QStandardItemModel>
+#include <QtGui/QStandardItem>
+#include <QtGui/QItemSelectionModel>
+#include "SceneModel.h"
+
 
 static const QString TITLE("Document Tree");
 
 struct DocumentTreeWidget::Private
 {
     QScopedPointer<Ui::DocumentTreeWidget> ui;
-    QPointer<IDocument> doc;
-    QStandardItemModel model;
+    IDocument::SharedPtr doc;
+    SceneModel model;
     
     Private() : ui(new Ui::DocumentTreeWidget){}
 };
@@ -49,14 +50,16 @@ DocumentTreeWidget::~DocumentTreeWidget()
 {
 }
 
-IDocument* DocumentTreeWidget::document() const
+IDocument::SharedPtr DocumentTreeWidget::document() const
 {
     return _d->doc;
 }
 
-void DocumentTreeWidget::setDocument(IDocument* doc)
+void DocumentTreeWidget::setDocument(IDocument::SharedPtr doc)
 {
     _d->doc = doc;
+    auto ptr = doc->scene().lock();
+    _d->model.setScene(ptr);
     updateTree();
 }
 
@@ -85,7 +88,7 @@ void DocumentTreeWidget::updateTree()
                      this,
                      SLOT(itemActivated(QModelIndex)));
     
-    QStandardItem *parentItem = _d->model.invisibleRootItem();
-    parentItem->removeRows(0, parentItem->rowCount());
-    //parentItem->appendRow(reinterpret_cast<QStandardItem*>(_d->doc->rootNode()));
+//    QStandardItem *parentItem = _d->model.invisibleRootItem();
+//    parentItem->removeRows(0, parentItem->rowCount());
+//    //parentItem->appendRow(reinterpret_cast<QStandardItem*>(_d->doc->rootNode()));
 }

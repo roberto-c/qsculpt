@@ -21,7 +21,7 @@
 #include "command/CommandManager.h"
 
 #include "command/ICommand.h"
-#include <QAction>
+#include <QtGui/QAction>
 #include "Console.h"
 
 CommandManager::CommandManager()

@@ -17,7 +17,12 @@ GlslProgram::~GlslProgram()
 {
     glDeleteProgram(progId_);
 }
-    
+
+GLint GlslProgram::programID() const
+{
+    return progId_;
+}
+
 bool GlslProgram::GlslProgram::link()
 {
     glLinkProgram(progId_);
@@ -72,6 +77,11 @@ void GlslProgram::useProgram()
     THROW_IF_GLERROR(__func__);
 }
 
+void GlslProgram::releaseProgram()
+{
+    glUseProgram(0);
+    THROW_IF_GLERROR(__func__);
+}
 
 void GlslProgram::bindAttributeLocation(GLuint index, const std::string &name)
 {

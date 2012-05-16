@@ -22,8 +22,8 @@
 
 #include "command/CommandBase.h"
 #include "Point3D.h"
-#include <QList>
-#include <QPoint>
+#include <QtCore/QList>
+#include <QtCore/QPoint>
 
 class ISurface;
 class SceneNode;
@@ -141,14 +141,8 @@ public:
     virtual void paintGL(GlCanvas *c);
 
 private:
-    bool                _actionFinished;   /**< Flag to indicate that the command
-                                             * is modifying the object. */
-    Point3              _initial;          /**< Initial position of the object. */
-    Point3              _delta;            /**< Change of position between mouse
-                                             * movements */
-    Point3              _final;            /**< Final postion of the object. */
-    QPoint              _mousePosition;    /**< Initial mouse position */
-    QList<SceneNode*>    _objects;          /**< Object list to move */
+    class Impl;
+    QScopedPointer<Impl> d_;
 };
 
 #endif

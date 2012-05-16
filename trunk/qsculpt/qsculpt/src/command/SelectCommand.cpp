@@ -19,9 +19,9 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "command/SelectCommand.h"
-#include <QtOpenGL>
-#include <QMouseEvent>
-#include <QPointer>
+#include <QtOpenGL/QtOpenGL>
+#include <QtGui/QMouseEvent>
+#include <QtCore/QPointer>
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "IDocument.h"
@@ -105,15 +105,19 @@ void SelectCommand::execute()
                 
                 DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
                 assert(view);
-                SceneNode* n = view->getDocument()->scene()->findByIID(iid);
-                if (n && n->nodeType() == NT_Surface) 
-                {
-                    ISurface* s = static_cast<SurfaceNode*> (n)->surface();
-                    s->setSelected(true);
-                    s->setChanged(true);
-                    view->updateView();
-                    CONSOLE()->write(output.arg(iid));
-                    emit executed();
+                auto ptr = view->getDocument()->scene().lock();
+                if (ptr) {
+                    auto n = ptr->findByIID(iid);
+                    if (n && n->nodeType() == NT_Surface) 
+                    {
+                        auto node = std::dynamic_pointer_cast<SurfaceNode>(n);
+                        ISurface* s = node->surface();
+                        s->setSelected(true);
+                        s->setChanged(true);
+                        view->updateView();
+                        CONSOLE()->write(output.arg(iid));
+                        emit executed();
+                    }
                 }
             }
         }
@@ -126,7 +130,7 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
     if (_boxSelection) 
     {
         _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
-        view->getCanvas()->mapScreenCoordsToWorldCoords(_endPointWin, _endPoint);
+        view->getCanvas()->screenToWorld(_endPointWin, _endPoint);
         _drawBox = true;
         select();
     } 
@@ -151,7 +155,7 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
     if (_boxSelection) 
     {
         _startPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 0.0f);
-        view->getCanvas()->mapScreenCoordsToWorldCoords(_startPointWin, _startPoint);
+        view->getCanvas()->screenToWorld(_startPointWin, _startPoint);
     } 
     else 
     {
@@ -177,7 +181,7 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
     if (_boxSelection) 
     {
         _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
-        view->getCanvas()->mapScreenCoordsToWorldCoords(_endPointWin, _endPoint);
+        view->getCanvas()->screenToWorld(_endPointWin, _endPoint);
         _drawBox = false;
         select();
         emit executed();
@@ -196,13 +200,11 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 void SelectCommand::paintGL(GlCanvas *c)
 {
     if (_drawBox) {
-        c->disable(GL_LIGHTING);
         c->enable(GL_BLEND);
         c->disable(GL_DEPTH_TEST);
         c->setPen(QPen(QColor(49, 122, 255, 255)));
         c->setBrush(QBrush(QColor(49, 122, 255, 100)));
         c->drawRect(_startPointWin, _endPointWin);
-        c->enable(GL_LIGHTING);
         c->disable(GL_BLEND);
         c->enable(GL_DEPTH_TEST);
     }
@@ -239,21 +241,26 @@ void SelectCommand::selectVertices()
 
     Point3 p;
     ISurface *surface = NULL;
-    Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
+    auto ptr = view->getDocument()->scene().lock();
+    if (!ptr) {
+        qDebug() << __FILE__ << " : " << __LINE__ << " Scene destroyed";
+        return;
+    }
+    Iterator<SceneNode> nodeIt = ptr->iterator();
     while(nodeIt.hasNext())
     {
-        SceneNode *n = &nodeIt.next();
+        auto n = nodeIt.next();
         if (n->nodeType() != NT_Surface)
             continue;
         
-        surface = static_cast<SurfaceNode*> (n)->surface();
+        surface = std::dynamic_pointer_cast<SurfaceNode> (n)->surface();
         if(!surface) 
             continue;
         
         Iterator<Vertex> it = surface->vertexIterator();
         while(it.hasNext()) {
-            Vertex* v = &it.next();
-            view->getCanvas()->mapWorldCoordsToScreenCoords(v->position(), p);
+            auto v = it.next();
+            view->getCanvas()->worldToScreen(v->position(), p);
             //qDebug() << toString(v->position()) << toString(p);
             v->removeFlag(VF_Selected);
             if (box.contains(p)) {
@@ -278,14 +285,19 @@ void SelectCommand::selectSurface()
     Eigen::Affine3f trans;
     Point3 p;
     ISurface *surface = NULL;
-    Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
+    auto ptr = view->getDocument()->scene().lock();
+    if (!ptr) {
+        qDebug() << __FILE__ << " : " << __LINE__ << " Scene destroyed";
+        return;
+    }
+    Iterator<SceneNode> nodeIt = ptr->iterator();
     while(nodeIt.hasNext())
     {
-        SceneNode *n = &nodeIt.next();
+        auto n = nodeIt.next();
         if (n->nodeType() != NT_Surface)
             continue;
         
-        surface = static_cast<SurfaceNode*> (n)->surface();
+        surface = std::dynamic_pointer_cast<SurfaceNode> (n)->surface();
         if(!surface) 
             continue;
         
@@ -294,9 +306,9 @@ void SelectCommand::selectSurface()
         n->setSelected(false);
         Iterator<Vertex> it = surface->vertexIterator();
         while(it.hasNext()) {
-            Vertex* v = &it.next();
+            auto v = it.next();
             Vector3 vp = trans * v->position();
-            view->getCanvas()->mapWorldCoordsToScreenCoords(vp, p);
+            view->getCanvas()->worldToScreen(vp, p);
             if (box.contains(p)) {
                 surface->setSelected(true);
                 n->setSelected(true);
@@ -319,14 +331,19 @@ void SelectCommand::selectFaces()
 
     Point3 p;
     ISurface *surface = NULL;
-    Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
+    auto ptr = view->getDocument()->scene().lock();
+    if (!ptr) {
+        qDebug() << __FILE__ << " : " << __LINE__ << " Scene destroyed";
+        return;
+    }
+    Iterator<SceneNode> nodeIt = ptr->iterator();
     while(nodeIt.hasNext())
     {
-        SceneNode *n = &nodeIt.next();
+        auto n = nodeIt.next();
         if (n->nodeType() != NT_Surface)
             continue;
         
-        surface = static_cast<SurfaceNode*> (n)->surface();
+        surface = std::dynamic_pointer_cast<SurfaceNode>(n)->surface();
         if(!surface) 
             continue;
         
@@ -334,12 +351,12 @@ void SelectCommand::selectFaces()
         n->setSelected(false);
         Iterator<Face> it = surface->faceIterator();
         while(it.hasNext()) {
-            Face* f = &it.next();
+            auto f = it.next();
             f->removeFlag(FF_Selected);
             Iterator<Vertex> vtxIt = f->vertexIterator();
             while(vtxIt.hasNext()) {
-                Vertex* v = &vtxIt.next();
-                view->getCanvas()->mapWorldCoordsToScreenCoords(v->position(), p);
+                auto v = vtxIt.next();
+                view->getCanvas()->worldToScreen(v->position(), p);
                 //qDebug() << toString(v->position()) << toString(p);
                 if (box.contains(p)) {
                     f->addFlag(FF_Selected);
@@ -365,25 +382,30 @@ void SelectCommand::unselectAll()
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
     ISurface *surface = NULL;
-    Iterator<SceneNode> nodeIt = view->getDocument()->scene()->iterator();
+    auto ptr = view->getDocument()->scene().lock();
+    if (!ptr) {
+        qDebug() << __FILE__ << " : " << __LINE__ << " Scene destroyed";
+        return;
+    }
+    Iterator<SceneNode> nodeIt = ptr->iterator();
     while(nodeIt.hasNext())
     {
-        SceneNode *n = &nodeIt.next();
+        auto n = nodeIt.next();
         if (n->nodeType() != NT_Surface)
             continue;
         
-        surface = static_cast<SurfaceNode*> (n)->surface();
+        surface = std::dynamic_pointer_cast<SurfaceNode>(n)->surface();
         if(!surface) 
             continue;
         
         surface->setSelected(false);
         Iterator<Face> it = surface->faceIterator();
         while(it.hasNext()) {
-            Face* f = &it.next();
+            auto f = it.next();
             f->removeFlag(FF_Selected);
             Iterator<Vertex> vtxIt = f->vertexIterator();
             while(vtxIt.hasNext()) {
-                Vertex* v = &vtxIt.next();
+                auto v = vtxIt.next();
                 v->removeFlag(VF_Selected);
             }
         }

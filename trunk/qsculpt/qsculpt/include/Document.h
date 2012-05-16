@@ -20,7 +20,7 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
-#include <QList>
+#include <QtCore/QList>
 #include "IDocument.h"
 #include "IIterator.h"
 
@@ -34,7 +34,12 @@ class ISurface;
 class Document : public IDocument
 {
 public:
-     
+    typedef std::shared_ptr<Document>   SharedPtr;
+    typedef std::shared_ptr<const Document>   const_shared_ptr;
+    typedef std::weak_ptr<Document>     WeakPtr;
+    typedef std::weak_ptr<const Document>  const_weak_ptr;
+    typedef std::unique_ptr<Document>   Ptr;
+    
     Document();
 
     virtual ~Document();
@@ -43,11 +48,11 @@ public:
     virtual void loadFile(const QString& fileName);
     virtual void saveFile(const QString& fileName);
     virtual void selectObject(int iid);
-    virtual QList<SceneNode*> getSelectedObjects() const;
-    virtual SceneNode* rootNode();
-    virtual const SceneNode* rootNode() const;
-    virtual Scene* scene();
-    virtual Scene* scene() const;
+    virtual QList<SceneNode::WeakPtr> getSelectedObjects() const;
+    virtual SceneNode::WeakPtr rootNode();
+    virtual SceneNode::WeakPtr rootNode() const;
+    virtual Scene::WeakPtr scene();
+    virtual Scene::WeakPtr scene() const;
     virtual Iterator<SceneNode> sceneIterator();
     virtual Iterator<SceneNode> constSceneIterator() const;
     Iterator<ISurface> surfaceIterator();

@@ -21,7 +21,7 @@
 #ifndef MATERIAL_H_
 #define MATERIAL_H_
 
-#include <QAtomicInt>
+#include <QtCore/QAtomicInt>
 
 class GlslProgram;
 
@@ -34,18 +34,15 @@ class GlslProgram;
  */
 class Material
 {
-    static QAtomicInt NEXT_ID;
-    
-    int _id;
-    
 public:
     Material();
+    
     virtual ~Material();
     
     /**
      * Returns the instance ID of the material object.
      */
-    int iid() const { return _id; } ;
+    int iid() const ;
     
     /**
      * Setup all data to render an object using this material.
@@ -61,7 +58,65 @@ public:
     virtual void unload() = 0;
     
 protected:
-    GlslProgram * shaderProgram_;
+    GlslProgram * shaderProgram();
+    
+private:
+    struct Impl;
+    QScopedPointer<Impl> d_;
+};
+
+
+enum MaterialPropertyType {
+    Void = 0,
+    Int = 1,
+    Int16,
+    Int32,
+    Int64,
+    Float,
+    Double,
+    Vec2,
+    Vec3,
+    Vec4,
+    Mat2x2,
+    Mat2x3,
+    Mat2x4,
+    Mat3x2,
+    Mat3x3,
+    Mat3x4,
+    Mat4x2,
+    Mat4x3,
+    Mat4x4,
+    Texture1D,
+    Texture2D,
+    Texture3D
+    };
+
+struct MaterialProperty {
+    MaterialPropertyType type;
+    bool pointer;
+    bool input;
+    bool ouput;
+    bool uniform;
+    bool varying;
+};
+
+
+class MaterialNode
+{
+public:
+    /**
+     *
+     */
+    MaterialNode();
+    
+    virtual ~MaterialNode();
+    
+    bool connect(const std::string & name, 
+                 MaterialNode * node2, 
+                 const std::string & inputName);
+    
+protected:
+    bool registerProperty(const std::string & name, MaterialProperty type);
 };
 
 #endif

@@ -35,7 +35,11 @@ class Camera
 public:
     Camera();
 
+    Camera(const Camera & orig);
+    
     virtual ~Camera();
+    
+    Camera & operator=(const Camera & orig);
 
     void setPosition(const Point3& p);
 

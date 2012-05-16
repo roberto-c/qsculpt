@@ -137,15 +137,15 @@ void FlatRenderer::Impl::renderImmediate(const ISurface* mesh)
     //    int fcounter = 0;
     Iterator<Face> it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        const Face& f = it.next();
+        auto f = it.next();
         //        qDebug() << "face " << fcounter++;
-        Iterator<Vertex> vtxIt = f.constVertexIterator();
+        Iterator<Vertex> vtxIt = f->constVertexIterator();
         glBegin(GL_POLYGON);
         while(vtxIt.hasNext()) {
-            const Vertex& v = vtxIt.next();
-            qDebug() << "Vertex:" << toString(v.position());
-            glNormal3fv(v.normal().data());
-            glVertex3fv(v.position().data());
+            auto v = vtxIt.next();
+            qDebug() << "Vertex:" << toString(v->position());
+            glNormal3fv(v->normal().data());
+            glVertex3fv(v->position().data());
         }
         glEnd();
     }
@@ -226,7 +226,7 @@ void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     Iterator<Face> it = mesh->constFaceIterator();
     numFaces = 0; // number of faces after triangulation
     while(it.hasNext()) {
-        numFaces += it.next().numVertices() - 2;
+        numFaces += it.next()->numVertices() - 2;
     }
 
     size_t numVertices = numFaces*3;
@@ -235,7 +235,8 @@ void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     size_t offset = 0;
     it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        processPolygon(it.next(), vtxData, offset);
+        auto f = it.next();
+        processPolygon(*f, vtxData, offset);
     }
     // offset contains the number of vertices in the vtxData after being 
     // processed.
@@ -257,12 +258,12 @@ bool FlatRenderer::Impl::processPolygon(const Face & f,
     GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;
     
     Iterator<Vertex> vtxIt = f.constVertexIterator();
-    const Vertex * v1 = &(vtxIt.next());
-    const Vertex * v2 = &(vtxIt.next());
+    auto v1 = vtxIt.next();
+    auto v2 = vtxIt.next();
     Vector3 n;
     bool ncalc = false;
     while(vtxIt.hasNext()) {
-        const Vertex * v3 = &(vtxIt.next());
+        auto v3 = vtxIt.next();
         if (!ncalc) {
             n = (v2->position() - v1->position()).cross(v3->position() - v1->position());
             n.normalize();

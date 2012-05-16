@@ -38,21 +38,21 @@
 
 struct TransformCameraCommand::Impl
 {
-    Point3  initial,endPoint, centerPoint;
-    Vector3 startVector, endVector;
-    Vector3 initialVector;
-    float   radius;
-    float   startAngle;
-    float   endAngle;
-    bool    draw;
-    QList<SceneNode*> selectedObj;
-    Document doc;
-    QScopedPointer<IRenderer> renderer;
-    Eigen::Quaternionf rot;
-    Eigen::Transform3f t;
-    geometry::Ray ray;
-    geometry::Sphere sphere;
-    Camera  camera;
+    Point3                      initial,endPoint, centerPoint;
+    Vector3                     startVector, endVector;
+    Vector3                     initialVector;
+    float                       radius;
+    float                       startAngle;
+    float                       endAngle;
+    bool                        draw;
+    QList<SceneNode::WeakPtr>   selectedObj;
+    Document                    doc;
+    QScopedPointer<IRenderer>   renderer;
+    Eigen::Quaternionf          rot;
+    Eigen::Transform3f          t;
+    geometry::Ray               ray;
+    geometry::Sphere            sphere;
+    Camera                      camera;
     std::vector<Eigen::Affine3f> originalTransform;
     
     Impl() : 
@@ -90,22 +90,29 @@ struct TransformCameraCommand::Impl
 
 void TransformCameraCommand::Impl::setup()
 {
-    SceneNode * root = new SceneNode;
+    SceneNode::SharedPtr root(new SceneNode);
     
-    SurfaceNode *surface = new SurfaceNode(new Box, root);
+    SurfaceNode::SharedPtr surface(new SurfaceNode(new Box));
+    surface->setParent(root);
+    root->add(surface);
     surface->transform() *= Eigen::Translation<float,3>(1, 0, 0);
     surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
     
-    surface = new SurfaceNode(new Box, root);
+    surface = SurfaceNode::SharedPtr(new SurfaceNode(new Box));
+    surface->setParent(root);
+    root->add(surface);
     surface->transform() *= Eigen::Translation<float,3>(0, 1, 0);
     surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
     
-    surface = new SurfaceNode(new Box, root);
+    surface = SurfaceNode::SharedPtr(new SurfaceNode(new Box));
+    surface->setParent(root);
+    root->add(surface);
     surface->transform() *= Eigen::Translation<float,3>(0, 0, 1);
     surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
     
     root->transform() *= Eigen::Translation<float,3>(0,0,0);
-    doc.scene()->add(root);
+    auto ptr = doc.scene().lock();
+    if (ptr) ptr->add(root);
 }
 
 
@@ -166,13 +173,18 @@ void TransformCameraCommand::mouseMoveEvent(QMouseEvent* e)
         float angle = acos(dot);
         std::swap(_d->startVector, _d->endVector);
         
-        Eigen::AngleAxisf rot = Eigen::AngleAxisf(angle, axis);        
-        Iterator<SceneNode> it = _d->doc.scene()->iterator();
-        while (it.hasNext()) {
-            SceneNode* node = &it.next();
-            node->transform().rotate(rot);
+        Eigen::AngleAxisf rot = Eigen::AngleAxisf(angle, axis);
+        auto ptr = _d->doc.scene().lock();
+        if (ptr) {
+            Iterator<SceneNode> it = ptr->iterator();
+            while (it.hasNext()) {
+                auto node = it.next();
+                node->transform().rotate(rot);
+            }
         }
-        _d->selectedObj[0]->setTransform(_d->selectedObj[0]->transform().rotate(rot));
+        
+        auto obj = _d->selectedObj[0].lock();
+        obj->setTransform(obj->transform().rotate(rot));
     }
 }
 
@@ -186,7 +198,8 @@ void TransformCameraCommand::mousePressEvent(QMouseEvent* e)
         _d->draw = true;
         
         _d->originalTransform.clear();
-        _d->originalTransform.push_back(_d->selectedObj[0]->transform());
+        auto obj = _d->selectedObj[0].lock();
+        _d->originalTransform.push_back(obj->transform());
         
         _d->camera.setViewport(0, 0, view->getCanvas()->width(),
                                view->getCanvas()->height());
@@ -251,6 +264,7 @@ void TransformCameraCommand::paintGL(GlCanvas *c)
     
     if (_d->draw) {
         glClear(GL_DEPTH_BUFFER_BIT);
-        c->drawScene(_d->doc.scene());
+        auto s = _d->doc.scene().lock();
+        c->drawScene(s);
     }
 }

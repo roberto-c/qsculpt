@@ -77,15 +77,15 @@ void RendererPrivate::renderImmediate(const ISurface* mesh)
     
     Iterator<Face> it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        const Face& f = it.next();
-        Iterator<Vertex> vtxIt = f.constVertexIterator();
+        auto f = it.next();
+        Iterator<Vertex> vtxIt = f->constVertexIterator();
         glBegin(GL_LINE_LOOP);
         while(vtxIt.hasNext()) {
-            const Vertex& v = vtxIt.next();
+            auto v = vtxIt.next();
             // qDebug() << "Vertex:" << toString(v.position());
-            glVertex3f(v.position().x(),
-                       v.position().y(),
-                       v.position().z());
+            glVertex3f(v->position().x(),
+                       v->position().y(),
+                       v->position().z());
         }
         glEnd();
     }
@@ -170,20 +170,20 @@ void RendererPrivate::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     int offset = 0;
     Iterator<Face> it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        const Face& f = it.next();
+        auto f = it.next();
         //        qDebug() << "face " << fcounter++;
-        Iterator<Vertex> vtxIt = f.constVertexIterator();
+        Iterator<Vertex> vtxIt = f->constVertexIterator();
         while(vtxIt.hasNext()) {
-            const Vertex& v = vtxIt.next();
-            vtxData[offset].v[0] = v.position().x();
-            vtxData[offset].v[1] = v.position().y();
-            vtxData[offset].v[2] = v.position().z();
+            auto v = vtxIt.next();
+            vtxData[offset].v[0] = v->position().x();
+            vtxData[offset].v[1] = v->position().y();
+            vtxData[offset].v[2] = v->position().z();
             
-            vtxData[offset].n[0] = v.normal().x();
-            vtxData[offset].n[1] = v.normal().y();
-            vtxData[offset].n[2] = v.normal().z();
+            vtxData[offset].n[0] = v->normal().x();
+            vtxData[offset].n[1] = v->normal().y();
+            vtxData[offset].n[2] = v->normal().z();
             
-            if (f.flags() & FF_Selected) {
+            if (f->flags() & FF_Selected) {
                 memcpy(vtxData[offset].color, g_selectedColor,
                        sizeof(g_selectedColor)) ;
             }

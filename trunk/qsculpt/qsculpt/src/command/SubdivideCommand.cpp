@@ -19,9 +19,9 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "command/SubdivideCommand.h"
-#include <QtDebug>
-#include <QThread>
-#include <QProgressDialog>
+#include <QtCore/QtDebug>
+#include <QtCore/QThread>
+#include <QtGui/QProgressDialog>
 //#include <omp.h>
 #include "IDocument.h"
 #include "ISurface.h"
@@ -61,7 +61,7 @@ struct SubdivideCommand::Impl {
     
     void smoothNormals(ISurface& s);
     
-    Vector3 computeFaceNormal(Face & f);
+    Vector3 computeFaceNormal(Face::WeakPtr f);
     
     void diagnostiscs(ISurface & s);
 };
@@ -112,7 +112,7 @@ void SubdivideCommand::execute()
 
     dlg.show();
 
-    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+    auto doc = g_pApp->getMainWindow()->getCurrentDocument();
 
     if (!doc)
         return;
@@ -120,12 +120,13 @@ void SubdivideCommand::execute()
     _d->edgeMidPoint.clear();
     qDebug() << "Start time: " <<QDateTime::currentDateTime();
 
-    QList<SceneNode*> list = doc->getSelectedObjects();
-    foreach(SceneNode* node, list)
+    QList<SceneNode::WeakPtr> list = doc->getSelectedObjects();
+    foreach(SceneNode::WeakPtr n, list)
     {
+        auto node = n.lock();
         if (node->nodeType() != NT_Surface)
             continue;
-        ISurface * obj = static_cast<SurfaceNode*>(node)->surface();
+        ISurface * obj = std::dynamic_pointer_cast<SurfaceNode>(node)->surface();
         qDebug() << "Object found";
         qDebug() << "Num faces =" << obj->numFaces();
         QVector<Face*> facesToDelete;
@@ -133,7 +134,7 @@ void SubdivideCommand::execute()
         // mark all orginal points with -1
         Iterator<Vertex> it = obj->vertexIterator();
         while (it.hasNext()) {
-            it.next().addFlag(VF_User1);
+            it.next()->addFlag(VF_User1);
         }
         
         //#pragma omp parallel
@@ -172,17 +173,17 @@ void SubdivideCommand::Impl::addFaceMidPointVertex(ISurface& s)
     Iterator<Face> faceIt = s.faceIterator();
     // Create new vertices at the mid point of each edge
     while(faceIt.hasNext()){
-        Face & f = faceIt.next();
-        Iterator<Vertex> vtxIt = f.vertexIterator();
+        Face::SharedPtr f = faceIt.next();
+        Iterator<Vertex> vtxIt = f->vertexIterator();
         p.setZero();
         int val = 0;
         while (vtxIt.hasNext()) {
-            p += vtxIt.next().position();
+            p += vtxIt.next()->position();
             ++val;
         }
         p = p / val;
         Vertex * vtx = s.vertex(s.addVertex(p));
-        f.setUserData( static_cast<void*>(vtx) );
+        f->setUserData( static_cast<void*>(vtx) );
     }
 }
 
@@ -191,33 +192,33 @@ void SubdivideCommand::Impl::splitEdges(ISurface& s)
     Iterator<Edge> edgeIt = s.edgeIterator();
     // Create new vertices at the mid point of each edge
     while(edgeIt.hasNext()){
-        Edge& e = edgeIt.next();
-        if (e.userData() == NULL) {
+        auto e = edgeIt.next();
+        if (e->userData() == NULL) {
             // skip edges with no associated faces
             // every edge has to have two faces associated.
-            if (e.face() == NULL || e.pair()->face() == NULL) {
+            if (e->face() == NULL || e->pair()->face() == NULL) {
                 continue;
             }
                 
-            assert(e.face() && e.face()->userData());
-            assert(e.pair() && e.pair()->face() && e.pair()->face()->userData());
+            assert(e->face() && e->face()->userData());
+            assert(e->pair() && e->pair()->face() && e->pair()->face()->userData());
             
-            Vector3 p = (e.tail()->position() + e.head()->position()) * 0.5f;
+            Vector3 p = (e->tail()->position() + e->head()->position()) * 0.5f;
             
             Vector3 pos;
-            if (e.isFlagSet(EF_Crease)) {
+            if (e->isFlagSet(EF_Crease)) {
                 pos = p;
             } else {
-                Vertex * v1 = static_cast<Vertex*>(e.face()->userData());
-                Vertex * v2 = static_cast<Vertex*>(e.pair()->face()->userData());
+                Vertex * v1 = static_cast<Vertex*>(e->face()->userData());
+                Vertex * v2 = static_cast<Vertex*>(e->pair()->face()->userData());
                 Vector3 pf = (v1->position() + v2->position()) * 0.5f;
                 pos = (p+pf)/2;
             }
             
             Vertex * vtx = s.vertex(s.addVertex(pos));
-            e.setUserData( static_cast<void*>(vtx) );
-            assert(e.pair() != NULL && e.pair()->userData() == NULL);
-            e.pair()->setUserData( static_cast<void*>(vtx) );
+            e->setUserData( static_cast<void*>(vtx) );
+            assert(e->pair() != NULL && e->pair()->userData() == NULL);
+            e->pair()->setUserData( static_cast<void*>(vtx) );
             
         }
     }
@@ -232,30 +233,30 @@ void SubdivideCommand::Impl::createFaces(ISurface& s)
     Iterator<Face> faceIt = s.faceIterator();
     // Create new vertices at the mid point of each edge
     while(faceIt.hasNext()){
-        Face & f = faceIt.next();
+        auto f = faceIt.next();
         // skip face if it does not contain midpoint as it is probably a new
         // face.
-        if (f.userData() == NULL) {
+        if (f->userData() == NULL) {
             continue;
         }
         
         vtxIndex.clear();
         size_t numEdges = 0;
         faceCounter++;
-        Iterator<Edge> edgeIt = f.edgeIterator();
+        Iterator<Edge> edgeIt = f->edgeIterator();
         while (edgeIt.hasNext()) {
             // for each edge add the tail vertex and the the edge midpoint.
-            Edge & e = edgeIt.next();
-            vtxIndex.push_back(e.tail()->iid());
-            Vertex * v = static_cast<Vertex*>(e.userData());
+            auto e = edgeIt.next();
+            vtxIndex.push_back(e->tail()->iid());
+            Vertex * v = static_cast<Vertex*>(e->userData());
             assert(v != NULL);
             vtxIndex.push_back(v->iid());
-            if (e.isFlagSet(EF_Crease)) {
+            if (e->isFlagSet(EF_Crease)) {
                 v->addFlag(VF_Crease);
             }
             numEdges++;
         }
-        Vertex * v = static_cast<Vertex*>(f.userData());
+        Vertex * v = static_cast<Vertex*>(f->userData());
         assert(v != NULL);
         int faceCenter = v->iid();
         
@@ -276,16 +277,16 @@ void SubdivideCommand::Impl::computeNewPosition(ISurface& s)
     Iterator<Vertex> vtxIt = s.vertexIterator();
     // Create new vertices at the mid point of each edge
     while(vtxIt.hasNext()){
-        Vertex& v = vtxIt.next();
-        bool isOriginalPoint = v.isFlagSet(VF_User1);
+        auto v = vtxIt.next();
+        bool isOriginalPoint = v->isFlagSet(VF_User1);
         if (isOriginalPoint) {
             int n = 0;
             Vector3 fAvg;
-            Iterator<Face> faceIt = v.faceIterator();
+            Iterator<Face> faceIt = v->faceIterator();
             while (faceIt.hasNext()) {
-                Face & f = faceIt.next();
-                if (f.userData() != NULL) {
-                    fAvg += static_cast<Vertex*>(f.userData())->position();
+                auto f = faceIt.next();
+                if (f->userData() != NULL) {
+                    fAvg += static_cast<Vertex*>(f->userData())->position();
                     n++;
                 }
             }
@@ -295,18 +296,18 @@ void SubdivideCommand::Impl::computeNewPosition(ISurface& s)
             fAvg = fAvg / n;
             
             Vector3 eAvg;
-            Iterator<Edge> edgeIt = v.edgeIterator();
+            Iterator<Edge> edgeIt = v->edgeIterator();
             while (edgeIt.hasNext()) {
-                Edge & e = edgeIt.next();
-                if (e.userData() != NULL) {
-                    eAvg += static_cast<Vertex*>(e.userData())->position();
+                auto e = edgeIt.next();
+                if (e->userData() != NULL) {
+                    eAvg += static_cast<Vertex*>(e->userData())->position();
                 }
             }
             eAvg = eAvg / n;
             
             assert(n >= 3);
-            v.position() = (fAvg + (eAvg * 2.0f) + v.position()*(n-3)) / n;
-            v.removeFlag(VF_User1);
+            v->position() = (fAvg + (eAvg * 2.0f) + v->position()*(n-3)) / n;
+            v->removeFlag(VF_User1);
         }
     }
 }
@@ -316,13 +317,13 @@ void SubdivideCommand::Impl::removeOldFaces(ISurface& s)
     std::vector<int> faceIndex;
     Iterator<Face> faceIt = s.faceIterator();
     while(faceIt.hasNext()){
-        Face & f = faceIt.next();
+        auto f = faceIt.next();
         // skip face if it does not contain midpoint as it is probably a new
         // face and it should not be removed.
-        if (f.userData() == NULL) {
+        if (f->userData() == NULL) {
             continue;
         }
-        s.removeFace(f.iid());
+        s.removeFace(f->iid());
     }
 }
 
@@ -330,13 +331,13 @@ void SubdivideCommand::Impl::cleanUserData(ISurface& s)
 {
     Iterator<Edge> edgeIt = s.edgeIterator();
     while(edgeIt.hasNext()){
-        Edge& e = edgeIt.next();
-        e.setUserData(NULL);
-        e.pair()->setUserData(NULL);
+        auto e = edgeIt.next();
+        e->setUserData(NULL);
+        e->pair()->setUserData(NULL);
     }
     Iterator<Face> faceIt = s.faceIterator();
     while(faceIt.hasNext()){
-        faceIt.next().setUserData(NULL);
+        faceIt.next()->setUserData(NULL);
     }
 }
 
@@ -346,7 +347,7 @@ void SubdivideCommand::Impl::smoothNormals(ISurface& s)
     int counter = 0;
     Iterator<Vertex> it = s.vertexIterator();
     while(it.hasNext()){
-        Vertex* vtx = &it.next();
+        auto vtx = it.next();
         normal.setZero();
         Iterator<Face> it2 = vtx->faceIterator();
         counter = 0;
@@ -361,13 +362,14 @@ void SubdivideCommand::Impl::smoothNormals(ISurface& s)
     }
 }
 
-Vector3 SubdivideCommand::Impl::computeFaceNormal(Face & f)
+Vector3 SubdivideCommand::Impl::computeFaceNormal(Face::WeakPtr face)
 {
-    Iterator<Edge> it = f.edgeIterator();
-    Edge & e1 = it.next();
-    Edge & e2 = it.next();
-    Vector3 v1 = e2.tail()->position() - e2.head()->position();
-    Vector3 v2 = e1.head()->position() - e1.tail()->position();
+    auto f = face;
+    Iterator<Edge> it = f->edgeIterator();
+    auto e1 = it.next();
+    auto e2 = it.next();
+    Vector3 v1 = e2->tail()->position() - e2->head()->position();
+    Vector3 v2 = e1->head()->position() - e1->tail()->position();
     return v1.cross(v2).normalized();
 }
 
@@ -377,26 +379,27 @@ void SubdivideCommand::Impl::diagnostiscs(ISurface & s)
     qDebug() << "Checking edges with no faces associated...";
     Iterator<Edge> edgeIt = s.edgeIterator();
     while (edgeIt.hasNext()) {
-        Edge & e = edgeIt.next();
-        if (e.face() == NULL) {
-            qDebug() << "Edge with no face: " << e.iid();
+        auto e = edgeIt.next();
+        if (e->face() == NULL) {
+            qDebug() << "Edge with no face: " << e->iid();
         }
     }
     qDebug() << "Checking vertices with no edges associated...";
     Iterator<Vertex> vtxIt = s.vertexIterator();
     while (vtxIt.hasNext()) {
-        Vertex & v = vtxIt.next();
-        if (v.edge() == NULL) {
-            qDebug() << "Vertex with no edge: " << v.iid();
+        auto v = vtxIt.next();
+        if (v->edge() == NULL) {
+            qDebug() << "Vertex with no edge: " << v->iid();
         }
     }
 }
 
 
 struct EditSubdivideCommand::Impl {
-    SurfaceNode * surf;
-    PointRenderer renderer;
-    IID vtxIID;
+    SurfaceNode::SharedPtr  surf;
+    PointRenderer   renderer;
+    IID             vtxIID;
+    Point3          mouseScreen;
     
     Impl() : surf(NULL), vtxIID(0) 
     {
@@ -438,35 +441,36 @@ void EditSubdivideCommand::redo(){
     
 }
 
-    
-    /**
-     *
-     */
 void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
-    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+    auto doc = g_pApp->getMainWindow()->getCurrentDocument();
     
     if (!doc)
         return;
-    QList<SceneNode*> list = doc->getSelectedObjects();
-    foreach(SceneNode* node, list)
+    QList<SceneNode::WeakPtr> list = doc->getSelectedObjects();
+    foreach(SceneNode::WeakPtr n, list)
     {
+        auto node = n.lock();
         if (node->nodeType() != NT_Surface){
             continue;
         }
-        ISurface * s = static_cast<SurfaceNode*>(node)->surface();
+        ISurface * s = std::dynamic_pointer_cast<SurfaceNode>(node)->surface();
         if (dynamic_cast<Subdivision*>(s)) {
-            d_->surf = static_cast<SurfaceNode*>(node);
+            d_->surf = std::dynamic_pointer_cast<SurfaceNode>(node);
             break;
         }
     }
     
     if (d_->surf) {
         GlCanvas * canvas = g_pApp->getMainWindow()->getCurrentView()->getCanvas();
-        Point3 world, p, screen(e->x(), canvas->height() - e->y(), 0.1);
-        canvas->mapScreenCoordsToWorldCoords(screen, world);
-        p = d_->surf->worldToLocal(world);
+        
+        // Get the mouse coordinates to world coordinates.
+        float depth = canvas->depth(e->x(), e->y());
+        d_->mouseScreen = Point3(e->x(), canvas->height() - e->y(), depth);
+        Point3 world = canvas->screenToWorld(d_->mouseScreen);
+        // Then, from world coordinate to local objet coordinates
+        Point3 p = d_->surf->worldToLocal(world);
+        // Now, look for the vertex closest to such position and select it.
         d_->vtxIID = d_->surf->surface()->getClosestPointAtPoint(p);
-        qDebug() << "iid " << d_->vtxIID;
         d_->surf->surface()->vertex(d_->vtxIID)->addFlag(VF_Selected);
         d_->surf->surface()->setChanged(true);
         
@@ -474,11 +478,6 @@ void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
     }
 }
     
-    /**
-     * Called when a mouse release event ocurrs. This method is called by the
-     * widget (a QGLWidget).
-     *
-     */
 void EditSubdivideCommand::mouseReleaseEvent(QMouseEvent *e)
 {
     if (d_->surf && d_->vtxIID > 0) {
@@ -488,23 +487,25 @@ void EditSubdivideCommand::mouseReleaseEvent(QMouseEvent *e)
         g_pApp->getMainWindow()->getCurrentView()->updateView();
     }
 }
-    
-    /**
-     * Called when a mouse move event ocurrs. This method is called by the
-     * widget (a QGLWidget).
-     *
-     */
-void EditSubdivideCommand::mouseMoveEvent(QMouseEvent *e){
-    
+
+void EditSubdivideCommand::mouseMoveEvent(QMouseEvent *e)
+{
+    if (d_->surf && d_->vtxIID > 0) {
+        GlCanvas * canvas = g_pApp->getMainWindow()->getCurrentView()->getCanvas();
+        float depth = d_->mouseScreen.z();
+        d_->mouseScreen = Point3(e->x(), canvas->height() - e->y(), depth);
+        Point3 world = canvas->screenToWorld(d_->mouseScreen);
+        d_->surf->surface()->vertex(d_->vtxIID)->position() = d_->surf->worldToLocal(world);
+        d_->surf->surface()->setChanged(true);
+        
+        g_pApp->getMainWindow()->getCurrentView()->updateView();
+    }
 }
     
-    /**
-     * Used to display anything specific to the command as user feedback.
-     */
-void EditSubdivideCommand::paintGL(GlCanvas *c){
+void EditSubdivideCommand::paintGL(GlCanvas *c)
+{
 
     if (d_->surf) {
-        c->disable(GL_LIGHTING);
         c->disable(GL_DEPTH_TEST);
         glPushMatrix();
         glMultMatrixf(d_->surf->parentTransform().data());
@@ -512,7 +513,6 @@ void EditSubdivideCommand::paintGL(GlCanvas *c){
         d_->renderer.renderObject(d_->surf->surface());
         glPopMatrix();
         c->enable(GL_DEPTH_TEST);
-        c->enable(GL_LIGHTING);
     }
     
 }

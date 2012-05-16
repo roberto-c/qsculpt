@@ -21,7 +21,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <QString>
+#include <QtCore/QString>
 
 class ICommand;
 class ConsoleWindow;

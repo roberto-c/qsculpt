@@ -8,7 +8,7 @@
 #ifndef CUSTOMGLCONTEXT_H_
 #define CUSTOMGLCONTEXT_H_
 
-#include <QGLContext>
+#include <QtOpenGL/QGLContext>
 
 class CustomGLContext : public QGLContext {
     bool _useSoftwareRenderer;

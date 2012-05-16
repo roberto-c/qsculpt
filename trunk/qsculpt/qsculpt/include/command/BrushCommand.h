@@ -20,9 +20,9 @@
 #ifndef BRUSHCOMMAND_H
 #define BRUSHCOMMAND_H
 
-#include <QVector>
-#include <QHash>
-#include <QMap>
+#include <QtCore/QVector>
+#include <QtCore/QHash>
+#include <QtCore/QMap>
 #include "command/CommandBase.h"
 #include "DocumentView.h"
 #include "Point3D.h"

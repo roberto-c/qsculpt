@@ -20,7 +20,7 @@
 #ifndef COMMANDBASE_H
 #define COMMANDBASE_H
 
-#include <QtOpenGL>
+#include <QtOpenGL/QtOpenGL>
 #include "ICommand.h"
 #include "Point3D.h"
 #include "Camera.h"

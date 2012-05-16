@@ -21,15 +21,14 @@
 #ifndef DOCUMENTTREEWIDGET_H_
 #define DOCUMENTTREEWIDGET_H_
 
-#include <QDockWidget>
-#include <QModelIndex>
-
-class IDocument;
+#include <QtGui/QDockWidget>
+#include <QtCore/QModelIndex>
+#include "IDocument.h"
 
 class DocumentTreeWidget : public QDockWidget
 {
     Q_OBJECT
-    Q_PROPERTY(IDocument* document READ document WRITE setDocument)
+    Q_PROPERTY(IDocument::SharedPtr document READ document WRITE setDocument)
     
 public:
     DocumentTreeWidget(QWidget* parent);
@@ -38,12 +37,12 @@ public:
     /**
      * Gets the document to which this DocumentTree is associated to.
      */
-    IDocument* document() const;
+    IDocument::SharedPtr document() const;
     
     /**
      * Sets the document to which this DocumentTree instance is associated to.
      */
-    void setDocument(IDocument* doc);
+    void setDocument(IDocument::SharedPtr doc);
     
 public slots:
     void itemActivated(const QModelIndex &index);

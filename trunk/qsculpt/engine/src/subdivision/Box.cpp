@@ -53,7 +53,7 @@ void Box::initPoints()
     
     Iterator<Vertex> it = vertexIterator();
     while (it.hasNext()) {
-        it.next().addFlag(VF_Crease);
+        it.next()->addFlag(VF_Crease);
     }
     
     QVector<size_t> indexList(4);

@@ -26,26 +26,25 @@
 
 //namespace  {
     struct CenterMassFn {
-        Vector3 operator()(SceneNode*) {
+        Vector3 operator()(SceneNode::WeakPtr) {
             return Vector3();
         }
     };
 //};
 
 struct Scene::Impl {
-    QScopedPointer<SceneNode> root;
-    data::Octree<SceneNode*,CenterMassFn> octree;
+    //data::Octree<SceneNode::WeakPtr,CenterMassFn> octree;
     
-    Impl() : root(new SceneNode)
+    Impl()
     {
     }
 };
 
-Scene::Scene() : _d(new Impl())
+Scene::Scene() : SceneNode(), _d(new Impl())
 {
 }
 
-Scene::Scene(const std::string& /*name*/): _d(new Impl())
+Scene::Scene(const std::string& name): SceneNode(name.c_str()), _d(new Impl())
 {
 }
 
@@ -54,54 +53,27 @@ Scene::~Scene()
 {
 }
 
-void Scene::add(SceneNode* child)
-{
-    _d->root->add(child);
-}
-
-void Scene::remove(SceneNode* child)
-{
-    _d->root->remove(child);
-}
-
-SceneNode* Scene::item(size_t index) const 
-{
-    return _d->root->item(index);
-}
-
-size_t Scene::count() const
-{
-    return _d->root->count();
-}
-
-SceneNode* Scene::findByName(const QString& name)
+SceneNode::SharedPtr Scene::findByName(const QString& name)
 {
     return NULL;
 }
 
-SceneNode* Scene::findByIID(uint IID)
+SceneNode::SharedPtr Scene::findByIID(uint IID)
 {
     return NULL;
 }
 
 bool Scene::intersects(const geometry::Ray &ray, 
-                data::ICollection<SceneNode*> *col)
+                       data::ICollection<SceneNode::WeakPtr> *col)
 {
-    return _d->octree.findIntersect(ray, col);
+    return false;
+    //return _d->octree.findIntersect(ray, col);
 }
 
 bool Scene::intersects(const geometry::AABB &box, 
-                       data::ICollection<SceneNode*> *col)
+                       data::ICollection<SceneNode::WeakPtr> *col)
 {
-    return _d->octree.findIntersect(box, col);
+    return false;
+    //return _d->octree.findIntersect(box, col);
 }
 
-Iterator<SceneNode> Scene::iterator()
-{
-    return _d->root->iterator();
-}
-
-Iterator<SceneNode> Scene::constIterator() const
-{
-    return _d->root->constIterator();
-}

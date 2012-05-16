@@ -21,11 +21,11 @@
 #ifndef COMMANDMANAGER_H
 #define COMMANDMANAGER_H
 
-#include <QObject>
-#include <QString>
-#include <QHash>
-#include <QStack>
-#include <QUndoStack>
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QHash>
+#include <QtCore/QStack>
+#include <QtGui/QUndoStack>
 
 class ICommand;
 class QAction;

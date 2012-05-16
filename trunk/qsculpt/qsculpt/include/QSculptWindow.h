@@ -22,8 +22,8 @@
 #ifndef QSCULPTWINDOW_H
 #define QSCULPTWINDOW_H
 
-#include <QMainWindow>
-#include <QStack>
+#include <QtGui/QMainWindow>
+#include <QtCore/QStack>
 #include "ui_MainWindow.h"
 #include "IDocument.h"
 #include "CommandManager.h"
@@ -50,7 +50,7 @@ public:
      * Gets the current document. This document is the one that all commands
      * should operate on.
      */
-    const IDocument* getCurrentDocument() const;
+    IDocument::const_shared_ptr getCurrentDocument() const;
 
     /**
      * Gets the current document. This document is the one that all commands
@@ -58,7 +58,7 @@ public:
      * 
      * @return pointer to current document
      */
-    IDocument* getCurrentDocument();
+    IDocument::SharedPtr getCurrentDocument();
 
     /**
      * Get the current application command. This is the command that the
@@ -141,7 +141,7 @@ private:
     DocumentView*   m_documentView;
     CommandManager  m_commandManager;
     QString         m_curFile;
-    IDocument*      m_document;
+    IDocument::SharedPtr      m_document;
     ICommand*       m_currentCommand;
 
     QActionGroup*   m_toolActionGroup;

@@ -20,22 +20,23 @@
 #ifndef GLDISPLAY_H
 #define GLDISPLAY_H
 
-#include <QGLWidget>
-#include <QPoint>
-#include <QVector>
-#include <QPen>
-#include <QBrush>
+#include <QtOpenGL/QGLWidget>
+#include <QtCore/QPoint>
+#include <QtCore/QVector>
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
 #include "SpEnums.h"
 #include "Point3D.h"
 #include "BufferObject.h"
 #include "ISurface.h"
+#include "Color.h"
+#include "Scene.h"
 
 class DocumentView;
 class QMouseEvent;
 class QWheelEvent;
 class Camera;
 class IRenderer;
-class SceneNode;
 
 /**
  * Structure used to hold a hit return.
@@ -127,29 +128,50 @@ public:
     PointIndexList getSelectedVertices(GLint x, GLint y,
                                        GLint width, GLint height);
     /**
-     *
+     * Return the current active camera in the canvas.
      */
     Camera* getViewCamera();
 
     /**
-     *
+     * Return the current active camera in the canvas.
      */
-    void mapScreenCoordsToWorldCoords(double x, double y, double z,
-                                      double *wx, double *wy, double *wz);
-    /**
-     *
-     */
-    void mapScreenCoordsToWorldCoords(const Point3&, Point3&);
+    const Camera* getViewCamera() const;
     
     /**
-     *
+     * Map a point in screen coordinate system to world coordinate system
+     * using current active camera settings for doing the mapping.
      */
-    void mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
-                                      double *x, double *y, double *z);
+    void screenToWorld(double x, double y, double z,
+                                      double *wx, double *wy, double *wz) const;
     /**
-     *
+     * Map a point in screen coordinate system to world coordinate system
+     * using current active camera settings for doing the mapping.
      */
-    void mapWorldCoordsToScreenCoords(const Point3&, Point3&);
+    void screenToWorld(const Point3&, Point3&) const;
+    
+    /**
+     * Map a point in screen coordinate system to world coordinate system
+     * using current active camera settings for doing the mapping.
+     */
+    Point3 screenToWorld(const Point3&) const;
+    
+    /**
+     * Map a point in world coordinate system to screen coordinate system
+     * using current active camera settings for doing the mapping.
+     */
+    void worldToScreen(double wx, double wy, double wz,
+                                      double *x, double *y, double *z) const;
+    /**
+     * Map a point in worls coordinate system to screen coordinate system
+     * using current active camera settings for doing the mapping.
+     */
+    void worldToScreen(const Point3&, Point3&) const;
+    
+    /**
+     * Map a point in worls coordinate system to screen coordinate system
+     * using current active camera settings for doing the mapping.
+     */
+    Point3 worldToScreen(const Point3&) const;
     
     /**
      *
@@ -190,25 +212,63 @@ public:
     void disable(GLenum flag) { glDisable(flag); }
     
     /**
+     * This function sets the QPen to use to draw different primitves.
      *
+     * Following drawing command will use the color, width and more properties
+     * of provided QPen to draw.
      */
     void setPen(const QPen& pen);
     
     /**
-     *
+     * This function return the QPen used to draw.
      */
     const QPen& pen() const;
     
     /**
+     * This function sets the QBrush to use to draw different primitves.
      *
+     * Following drawing command will use the color, width and more properties
+     * of provided QBrush to draw.
      */
     void setBrush(const QBrush& pen);
     
     /**
-     *
+     * This function return the QBrush used to draw.
      */
     const QBrush& brush() const;
     
+    /**
+     * Returns the color under pixel at coordinate p. This function 
+     * ignores Z component.
+     */
+    Color color(const Point3 & p);
+    
+    /**
+     * Returns the color under pixel at screen coordinate (x,y). 
+     */
+    Color color(int x, int y);
+    
+    /**
+     * Returns the color under pixel at coordinate p. This function 
+     * ignores Z component.
+     */
+    uint colorUint(const Point3 & p);
+    
+    /**
+     * Returns the color under pixel at screen coordinate (x,y). 
+     */
+    uint colorUint(int x, int y);
+    
+    /**
+     * Returns the depth component at p in screen coordinates. This function 
+     * ignores Z component.
+     */
+    float depth(const Point3 & p);
+    
+    /**
+     * Returns the depth component at screen coordinates (x,y).
+     */
+    float depth(int x, int y);
     
     /**
      *
@@ -274,11 +334,14 @@ public:
     /**
      * Used to draw a scene hierarchy using the current renderer
      */
-    void drawScene(Scene* scene);
+    void drawScene(Scene::SharedPtr scene);
     
     
     /**
+     * Used to submit data to hw. Similar to glBegin()
      *
+     * Used to emulate glBegin()/ glEnd() from OpenGL. It will use temporary
+     * buffer to send data to GPU.
      */
     void begin(GLenum mode);
     
@@ -350,7 +413,7 @@ private:
                              float innerAxis1,
                              float innerAxis2);
     
-    void drawSceneNode(SceneNode* node);
+    void drawSceneNode(SceneNode::SharedPtr node);
 	
     struct Impl;
     QScopedPointer<Impl> _d;
