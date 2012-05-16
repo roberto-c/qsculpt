@@ -21,7 +21,7 @@
 #define TRANSFORMWIDGET_H
 
 #include "ui_TransformWidget.h"
-#include <QWidget>
+#include <QtGui/QWidget>
 
 class ICommand;
 /**

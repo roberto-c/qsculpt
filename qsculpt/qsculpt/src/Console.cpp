@@ -21,10 +21,10 @@
 #include "Console.h"
 #include "ConsoleWindow.h"
 
-#include <QHash>
+#include <QtCore/QHash>
 #include <string>
 #include <iostream>
-#include <QStringList>
+#include <QtCore/QStringList>
 #include "command/ICommand.h"
 #include "command/IConfigContainer.h"
 

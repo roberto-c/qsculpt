@@ -44,19 +44,20 @@ ICommand* AddSurfaceCommand::clone() const
 
 void AddSurfaceCommand::execute()
 {
-    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
-    if (doc)
+    IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
+    auto sceneptr = doc->scene().lock();
+    if (doc && sceneptr)
     {
-        _surface = new SurfaceNode(new Box);
+        _surface = SurfaceNode::SharedPtr(new SurfaceNode(new Box));
         _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
-        doc->scene()->add(_surface);
+        sceneptr->add(_surface);
         qDebug() << "IID=" << _surface->iid();
     }
 }
 
 void AddSurfaceCommand::undo()
 {
-//    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+//    IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
 //    if (doc && _surface)
 //    {
 //        doc->removeObject(_surface);
@@ -97,7 +98,7 @@ void RemoveSurfaceCommand::execute()
     int iid = _configContainer->getInt("IID");
     if (iid == 0 ) return;
     
-    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+    IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (!doc) return;
     
     NOT_IMPLEMENTED
@@ -173,7 +174,7 @@ struct SmoothSurfaceCommand::Impl {
         int counter = 0;
         Iterator<Vertex> it = surf->vertexIterator();
         while(it.hasNext()){
-            Vertex* vtx = &it.next();
+            auto vtx = it.next();
             normal.setZero();
             Iterator<Face> it2 = vtx->faceIterator();
             counter = 0;
@@ -188,13 +189,13 @@ struct SmoothSurfaceCommand::Impl {
         }
     }
     
-    Vector3 computeFaceNormal(Face & f)
+    Vector3 computeFaceNormal(Face::SharedPtr f)
     {
-        Iterator<Edge> it = f.edgeIterator();
-        Edge & e1 = it.next();
-        Edge & e2 = it.next();
-        Vector3 v1 = e2.tail()->position() - e2.head()->position();
-        Vector3 v2 = e1.head()->position() - e1.tail()->position();
+        Iterator<Edge> it = f->edgeIterator();
+        auto e1 = it.next();
+        auto e2 = it.next();
+        Vector3 v1 = e2->tail()->position() - e2->head()->position();
+        Vector3 v2 = e1->head()->position() - e1->tail()->position();
         return v1.cross(v2).normalized();
     }
 };
@@ -229,11 +230,11 @@ ICommand* SmoothSurfaceCommand::clone() const
 void SmoothSurfaceCommand::execute()
 {
     qDebug() << "Smooth Surface" ;
-    IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+    IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (doc)
     {
-        SceneNode * node = doc->getSelectedObjects().at(0);
-        SurfaceNode * surfNode = dynamic_cast<SurfaceNode*>(node);
+        auto node = doc->getSelectedObjects().at(0).lock();
+        auto surfNode = std::dynamic_pointer_cast<SurfaceNode>(node);
         d_->surf = surfNode ? surfNode->surface() : NULL;
     }
     if (d_->surf == NULL) {
@@ -243,12 +244,12 @@ void SmoothSurfaceCommand::execute()
     }
     
     // Build octree
-    data::Octree<Vertex*> vtxIdx;
-    Iterator<Vertex> vtxIt = d_->surf->vertexIterator();
-    while (vtxIt.hasNext()) {
-        Vertex * v = & vtxIt.next();
-        vtxIdx.add(v);
-    }
+//    data::Octree<Vertex*> vtxIdx;
+//    Iterator<Vertex> vtxIt = d_->surf->vertexIterator();
+//    while (vtxIt.hasNext()) {
+//        auto v = vtxIt.next();
+//        vtxIdx.add(v);
+//    }
 //    geometry::AABB box;
 //    vtxIdx.findIntersect(box, NULL);
     d_->computeNormals();
@@ -338,6 +339,7 @@ void AddFaceCommand::redo()
 
 struct TestCommand::Impl {
     Document            doc;
+    SceneNode::SharedPtr root;
     ISurface            *surf;
     Vertex              *vtx;
     Iterator<Face>      faceIt;
@@ -350,9 +352,14 @@ struct TestCommand::Impl {
 };
 
 void TestCommand::Impl::setup() {
-    SceneNode * root = new SceneNode;
+    root = SceneNode::SharedPtr(new SceneNode);
     surf = new Subdivision;
+    auto sceneptr = doc.scene().lock();
     QVector<int> vertexID;
+    
+    if (!root || !surf || !sceneptr) {
+        throw std::bad_alloc();
+    }
     
     //
     //   6  5  4
@@ -398,7 +405,9 @@ void TestCommand::Impl::setup() {
     face.push_back(vertexID[6]);
     qDebug() << "new face IID:" << surf->addFace(face);
     
-    new SurfaceNode(surf, root);
+    SurfaceNode::SharedPtr ptr(new SurfaceNode(surf));
+    ptr->setParent(root);
+    root->add(ptr);
     
     vtxIt = surf->vertexIterator();
     vtx = surf->vertex(vertexID[3]);
@@ -409,7 +418,7 @@ void TestCommand::Impl::setup() {
 
     
     root->transform() *= Eigen::Translation<float,3>(0.5f,0.5f,0);
-    doc.scene()->add(root);
+    sceneptr->add(root);
 }
 
 TestCommand::TestCommand()
@@ -478,9 +487,10 @@ void TestCommand::mousePressEvent(QMouseEvent *e)
 //    }
     
     if (_d->vtxIt.hasNext()) {
-        _d->vtxIt.peekNext().color() = Vector3(1,0.3f,0);
-        qDebug() << _d->vtxIt.peekNext().iid();
-        _d->vtxIt.next();
+        auto v = _d->vtxIt.next();
+        v->color() = Vector3(1,0.3f,0);
+        qDebug() << v->iid();
+        
         _d->surf->setChanged(true);
     } else {
         qDebug() << "No more elements";
@@ -511,6 +521,7 @@ void TestCommand::mouseMoveEvent(QMouseEvent *e)
  */
 void TestCommand::paintGL(GlCanvas *c)
 {
-    c->drawScene(_d->doc.scene());
+    auto s = _d->doc.scene().lock();
+    c->drawScene(s);
 }
 

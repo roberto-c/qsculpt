@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include <QMouseEvent>
-#include <QtOpenGL>
+#include <QtGui/QMouseEvent>
+#include <QtOpenGL/QtOpenGL>
 
 #include "command/MoveCommand.h"
 #include "IDocument.h"
@@ -31,9 +31,28 @@
 #include "DocumentView.h"
 #include "SceneNode.h"
 
+struct TransformCommand::Impl
+{
+    bool                        _actionFinished;   /**< Flag to indicate that the command
+                                            * is modifying the object. */
+    Point3                      _initial;          /**< Initial position of the object. */
+    Point3                      _delta;            /**< Change of position between mouse
+                                            * movements */
+    Point3                      _final;            /**< Final postion of the object. */
+    QPoint                      _mousePosition;    /**< Initial mouse position */
+    QList<SceneNode::WeakPtr>   _objects;          /**< Object list to move */
+    
+    Impl(){}
+    
+    Impl(const Impl& orig) 
+    :   _actionFinished(false), 
+        _initial(orig._initial),
+        _delta(orig._delta){}
+};
+
 TransformCommand::TransformCommand()
     : CommandBase(),
-    _actionFinished(false)
+    d_(new Impl)
 {
     _configContainer->setInt(CONF_ACTION, Move);
     _configContainer->setInt(CONF_MOVE_AXIS, XYAxis);
@@ -53,11 +72,7 @@ TransformCommand::TransformCommand()
 
 TransformCommand::TransformCommand(const TransformCommand& cpy)
 : CommandBase(cpy),
-_actionFinished(false),
-_initial(cpy._initial),
-_delta(cpy._delta),
-_final(cpy._final),
-_mousePosition(cpy._mousePosition)
+d_(new Impl(*cpy.d_))
 {
 }
 
@@ -129,9 +144,9 @@ void TransformCommand::execute()
         }
     }
 
-    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+    auto doc = g_pApp->getMainWindow()->getCurrentDocument();
 
-    QList<SceneNode*> objects = doc->getSelectedObjects();
+    QList<SceneNode::WeakPtr> objects = doc->getSelectedObjects();
     switch(action)
     {
         default:
@@ -139,17 +154,23 @@ void TransformCommand::execute()
             count = objects.size();
             if (count > 0) 
             {
-                _initial = objects[0]->transform().translation();
+                auto obj = objects[0].lock();
+                if (obj) {
+                    d_->_initial = obj->transform().translation();
+                }
             }
             for (int i = 0; i < count; i++)
             {
                 //_final.setPoint( mx, my, mz);
-				_final.x() = x;
-				_final.y() = y;
-				_final.z() = z;
+				d_->_final.x() = x;
+				d_->_final.y() = y;
+				d_->_final.z() = z;
                 
 //                objects[i]->displace(_initial - _final);
-                objects[i]->transform().translation() += _initial - _final;
+                auto obj = objects[i].lock();
+                if (obj) {
+                    obj->transform().translation() += d_->_initial - d_->_final;
+                }
             }
             CONSOLE()->write("move object");
             break;
@@ -172,23 +193,23 @@ void TransformCommand::activate(bool active)
     CommandBase::activate(active);
 
     Action action = (Action)_configContainer->getInt(CONF_MOVE_AXIS);
-    if (_actionFinished)
+    if (d_->_actionFinished)
     {
-        int count = _objects.count();
+        int count = d_->_objects.count();
         for (int i = 0; i < count; i++)
         {
-            if (action == Move)
-                _objects[i]->transform().translation() += _initial - _final;
-//            else if (action == Rotate)
-//                _objects[i]->setOrientation(0 ,0 ,0);
+            if (action == Move) {
+                auto obj = d_->_objects[i].lock();
+                obj->transform().translation() += d_->_initial - d_->_final;
+            }
         }
     }
-    _actionFinished = false;
+    d_->_actionFinished = false;
 
-    _objects.clear();
+    d_->_objects.clear();
 
     // TODO: Fix this code
-//    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+//    const IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
 //
 //    if (doc->getObjectsCount() > 0 )
 //    {
@@ -204,17 +225,17 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
     double dx = 0.0, dy = 0.0, dz = 0.0;
     double x = 0.0, y = 0.0, z = 0.0;
 
-    _mousePosition = e->pos();
+    d_->_mousePosition = e->pos();
     double modelMatrix[16], projMatrix[16];
     GLint viewPort[4];
 
     glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
     glGetIntegerv(GL_VIEWPORT, viewPort);
-    gluUnProject(_mousePosition.x(), viewPort[3] - _mousePosition.y(), 0, modelMatrix, projMatrix, viewPort, &x, &y, &z);
+    gluUnProject(d_->_mousePosition.x(), viewPort[3] - d_->_mousePosition.y(), 0, modelMatrix, projMatrix, viewPort, &x, &y, &z);
 
     //_final = Point3D(x, y, z);
-    Point3 delta = Point3(x, y, z) - _initial;
+    Point3 delta = Point3(x, y, z) - d_->_initial;
     //qDebug("Delta: %s", qPrintable(delta.toString()));
     dx = delta.x();
     dy = delta.y();
@@ -250,21 +271,21 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
             d.y() = dy;
             break;
     }
-    int count = _objects.count();
+    int count = d_->_objects.count();
     for (int i = 0; i < count; i++)
     {
-        SceneNode* obj = _objects[i];
+        auto obj = d_->_objects[i].lock();
         obj->transform().translation() += d;
     }
-    _initial = _initial + delta;
+    d_->_initial = d_->_initial + delta;
 }
 
 void TransformCommand::mousePressEvent(QMouseEvent* e)
 {
     //CommandBase::mousePressEvent(e);
 
-    _mousePosition = e->pos();
-    _actionFinished = true;
+    d_->_mousePosition = e->pos();
+    d_->_actionFinished = true;
 
     double x, y, z;
     float wz = 0.0f;
@@ -273,16 +294,16 @@ void TransformCommand::mousePressEvent(QMouseEvent* e)
     glGetDoublev(GL_PROJECTION_MATRIX, _projMatrix);
     glGetIntegerv(GL_VIEWPORT, _viewPort);
     glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-    gluUnProject(_mousePosition.x(), _viewPort[3] - _mousePosition.y(), 0, _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
+    gluUnProject(d_->_mousePosition.x(), _viewPort[3] - d_->_mousePosition.y(), 0, _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
 
-    _initial = Point3(x, y, z);
-    _final = _initial;
+    d_->_initial = Point3(x, y, z);
+    d_->_final = d_->_initial;
     //qDebug("Initial position: %s", qPrintable(_initial.toString()));
 
-    const IDocument* doc = g_pApp->getMainWindow()->getCurrentDocument();
+    auto doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (doc->getSelectedObjects().size() > 0 )
     {
-        _objects += doc->getSelectedObjects();
+        d_->_objects += doc->getSelectedObjects();
     }
 }
 
@@ -293,7 +314,7 @@ void TransformCommand::mouseReleaseEvent(QMouseEvent* e)
 
     //qDebug("Final position: %s", qPrintable(_final.toString()));
 
-    _actionFinished = false;
+    d_->_actionFinished = false;
     emit executed();
 }
 

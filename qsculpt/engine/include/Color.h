@@ -28,4 +28,36 @@ public:
     
     float a() const { return _d.w(); }
     void a(float v) { _d.w() = v; }
+    
+    static Color fromUintRGBA(uint color) {
+        Color c = Color(((color & 0xFF000000) >> 24) / 255.0,
+                        ((color & 0x00FF0000) >> 16) / 255.0,
+                        ((color & 0x0000FF00) >>  8) / 255.0,
+                        ((color & 0x000000FF) >>  0) / 255.0);
+        return c;
+    }
+    
+    static Color fromUintBGRA(uint color) {
+        Color c = Color(((color & 0x0000FF00) >> 8) / 255.0,
+                        ((color & 0x00FF0000) >> 16) / 255.0,
+                        ((color & 0xFF000000) >> 24) / 255.0,
+                        ((color & 0x000000FF) >>  0) / 255.0);
+        return c;
+    }
+    
+    static Color fromUintRGB(uint color) {
+        Color c = Color(((color & 0xFF000000) >> 24) / 255.0,
+                        ((color & 0x00FF0000) >> 16) / 255.0,
+                        ((color & 0x0000FF00) >>  8) / 255.0,
+                        1.0f);
+        return c;
+    }
+    
+    static Color fromUintBGR(uint color) {
+        Color c = Color(((color & 0x0000FF00) >> 8) / 255.0,
+                        ((color & 0x00FF0000) >> 16) / 255.0,
+                        ((color & 0xFF000000) >> 24) / 255.0,
+                        1.0f);
+        return c;
+    }
 };

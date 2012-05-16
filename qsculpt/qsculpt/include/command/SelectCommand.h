@@ -20,11 +20,11 @@
 #ifndef SELECTCOMMAND_H
 #define SELECTCOMMAND_H
 
-#include <QVector>
+#include <QtCore/QVector>
 #include "command/CommandBase.h"
 #include "DocumentView.h"
 #include "Point3D.h"
-#include <QPointer>
+#include <QtCore/QPointer>
 
 class TransformWidget;
 

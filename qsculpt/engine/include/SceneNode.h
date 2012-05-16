@@ -21,6 +21,7 @@
 #define SCENENODE_H
 
 #include <vector>
+#include <memory>
 #include "IIterator.h"
 #include "Vector.h"
 
@@ -38,13 +39,20 @@ enum NodeType {
  * This class inherit from QStandardItem to be able to be displayed
  * in the document tree widget.
  */
-class SceneNode 
+class SceneNode : public std::enable_shared_from_this<SceneNode>
 {
     struct Impl;
     QScopedPointer<Impl> _d;
 
 public:
-    SceneNode(const QString& = "", SceneNode * = NULL);
+    typedef std::shared_ptr<SceneNode>          SharedPtr;
+    typedef std::shared_ptr<const SceneNode>    const_shared_ptr;
+    typedef std::weak_ptr<SceneNode>            WeakPtr;
+    typedef std::weak_ptr<const SceneNode>      const_weak_ptr;
+    typedef std::unique_ptr<SceneNode>   Ptr;
+    
+    SceneNode(const QString& = "");
+    
     virtual ~SceneNode();
     
     uint iid() const;
@@ -56,16 +64,16 @@ public:
      *
      * This node is also added as child in the parent's children node list
      */
-    void setParent(SceneNode* parent);
+    void setParent(WeakPtr parent);
     
     /**
      * Return the parent node of this scene node.
      */
-    SceneNode* parent();
+    WeakPtr parent();
     /**
      * Return the parent node of this scene node.
      */
-    const SceneNode* parent() const;
+    const WeakPtr parent() const;
     
     /**
      * Return the name of the node.
@@ -123,18 +131,23 @@ public:
     /**
      *
      */
-    bool contains(const SceneNode* child) const ;
+    bool contains(const WeakPtr child) const ;
     
     /**
      * Add a new child node to this scene node
      */
-    void add(SceneNode* child);
+    void add(WeakPtr child);
     
     /**
      * Removes a node from this node. The node to remove must be a direct child
      * from this node.
      */
-    void remove(SceneNode* child);
+    void remove(WeakPtr child);
+    
+    /**
+     * Removed the node with an instance id of iid.
+     */
+    void remove(uint iid);
     
     /**
      * Returns the number of children nodes that this node has.
@@ -142,9 +155,16 @@ public:
     size_t count() const;
     
     /**
-     *
+     * Returns the item at position index.
      */
-    SceneNode* item(size_t index) const;
+    WeakPtr item(size_t index) const;
+    
+    /**
+     * This function returns the item index of a child of this node.
+     *
+     * @return true if node found, otherwise, false.
+     */
+    bool itemIndex(const WeakPtr child, size_t * index) const; 
     
     /**
      *
@@ -172,6 +192,10 @@ public:
     Iterator<SceneNode> constIterator() const ;
     
 private:
+    // disabled copy semantics for now
+    SceneNode(const SceneNode &);
+    SceneNode & operator=(const SceneNode &);
+    
     class SceneNodeIterator;
     
     friend class SceneNodeIterator;
@@ -179,20 +203,26 @@ private:
 
 class SurfaceNode : public SceneNode
 {
-    ISurface *_surface;
+    ISurface *surface_;
 
 public:
+    typedef std::shared_ptr<SurfaceNode>        SharedPtr;
+    typedef std::weak_ptr<const SurfaceNode>    WeakPtr;
+    typedef std::shared_ptr<SurfaceNode>        const_shared_ptr;
+    typedef std::weak_ptr<const SurfaceNode>    const_weak_ptr;
+    typedef std::unique_ptr<SurfaceNode>        Ptr;
+    
     /**
      *
      */
-    SurfaceNode(ISurface *surface, SceneNode * = NULL);
+    SurfaceNode(ISurface *surface = NULL);
     
     /**
      * Free resources used by this node.
      *
      * The surface is not deleted
      */
-    ~SurfaceNode();
+    virtual ~SurfaceNode();
     
     virtual NodeType nodeType() const { return NT_Surface; }
     
@@ -202,9 +232,22 @@ public:
     ISurface* surface() const;
     
     /**
+     * Returns the surface contained in this node.
+     */
+    ISurface* surface();
+    
+    /**
      * Set the surface contained in this node.
      */
     void setSurface(ISurface *surface);
+    
+private:
+    // disabled copy semantics for now
+    SurfaceNode(const SurfaceNode &);
+    SurfaceNode & operator=(const SurfaceNode &); 
 };
+
+Q_DECLARE_METATYPE(SceneNode*)
+Q_DECLARE_METATYPE(SurfaceNode*)
 
 #endif // SCENENODE_H_

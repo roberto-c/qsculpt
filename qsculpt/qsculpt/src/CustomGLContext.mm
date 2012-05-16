@@ -8,7 +8,7 @@
 
 #include "CustomGLContext.h"
 #import <AppKit/NSOpenGL.h>
-#import <CGLRenderers.h>
+#import <OpenGL/CGLRenderers.h>
 
 static void * tryFormat(QGLFormat format, bool useSoftwareRenderer = false) {
     static const int Max = 40;

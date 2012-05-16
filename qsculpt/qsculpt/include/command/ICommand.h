@@ -20,8 +20,8 @@
 #ifndef ICOMMAND_H
 #define ICOMMAND_H
 
-#include <QObject>
-#include <QUndoCommand>
+#include <QtCore/QObject>
+#include <QtGui/QUndoCommand>
 
 class IConfigContainer;
 class QMouseEvent;

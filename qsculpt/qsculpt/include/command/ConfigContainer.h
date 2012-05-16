@@ -21,9 +21,9 @@
 #define CONFIGCONTAINER_H
 
 #include "command/IConfigContainer.h"
-#include <QMap>
-#include <QString>
-#include <QVariant>
+#include <QtCore/QMap>
+#include <QtCore/QString>
+#include <QtCore/QVariant>
 #include "Point3D.h"
 
 /**

@@ -29,6 +29,8 @@ namespace physics {
                        Particle *input,
                        Particle *output,
                        int size) = 0;
+        
+        virtual ~IIntegrator() {}
     };
     
     class EulerIntegrator : public IIntegrator {

@@ -10,7 +10,7 @@
 
 #include "command/CommandBase.h"
 
-class SurfaceNode;
+#include "SceneNode.h"
 
 class AddSurfaceCommand : public CommandBase {
 public:
@@ -28,7 +28,7 @@ public:
     // End ICommand Interface
 
 private:
-    SurfaceNode* _surface;
+    SurfaceNode::SharedPtr _surface;
 };
 
 class RemoveSurfaceCommand : public CommandBase 
@@ -49,7 +49,7 @@ public:
     // End ICommand Interface
     
 private:
-    SurfaceNode* _surface;
+    SurfaceNode::SharedPtr _surface;
 };
 
 

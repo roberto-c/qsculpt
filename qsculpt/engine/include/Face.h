@@ -39,16 +39,22 @@ enum FaceFlags {
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
 class Face {
-    ISurface *_surface; // 4
-    Edge *_he; // 4
-    Vertex* _vertex; // 4
-    Face* _children; // 4
-
-    size_t _id; // 4
-    FaceFlags _flags; // 4
-    size_t _nVertices;
+public:
+    typedef Face* SharedPtr;
+    typedef Face* WeakPtr;
+    typedef Face* Ptr;
     
-    void * _userData;
+private:
+    ISurface*           _surface; // 4
+    Edge*               _he; // 4
+    Vertex::WeakPtr     _vertex; // 4
+    Face::WeakPtr       _children; // 4
+
+    size_t              _id; // 4
+    FaceFlags           _flags; // 4
+    size_t              _nVertices;
+    
+    void*               _userData;
     
 public:
     //qint32 hashValue; // 4

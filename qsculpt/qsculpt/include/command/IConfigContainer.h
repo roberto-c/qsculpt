@@ -20,7 +20,7 @@
 #ifndef ICONFIGCONTAINER_H
 #define ICONFIGCONTAINER_H
 
-#include <QString>
+#include <QtCore/QString>
 #include "Point3D.h"
 
 /**

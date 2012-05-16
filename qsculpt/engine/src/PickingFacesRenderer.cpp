@@ -132,8 +132,8 @@ void PickingFacesRenderer::renderImmediate(const ISurface* mesh, unsigned int /*
     glBegin(GL_POINTS);
     Iterator<Vertex> it = mesh->constVertexIterator();
     while(it.hasNext()) {
-        const Vertex& v = it.next();
-        glVertex3fv(v.position().data());
+        auto v = it.next();
+        glVertex3fv(v->position().data());
     }
     glEnd();
     mesh->unlock();
@@ -172,10 +172,10 @@ void PickingFacesRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo, G
     Iterator<Vertex> it = mesh->constVertexIterator();
     int offset = 0;
     while(it.hasNext()) {
-        const Vertex& v = it.next();
-        vtxData[offset].v[0] = v.position().x();
-        vtxData[offset].v[1] = v.position().y();
-        vtxData[offset].v[2] = v.position().z();
+        auto v = it.next();
+        vtxData[offset].v[0] = v->position().x();
+        vtxData[offset].v[1] = v->position().y();
+        vtxData[offset].v[2] = v->position().z();
         memcpy((void*)vtxData[offset].color, (const GLubyte*)&objId, sizeof(objId));
         offset++;
         objId++;
@@ -203,19 +203,19 @@ void PickingFacesRenderer::fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vb
     int offset = 0;
     Iterator<Face> it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        const Face& f = it.next();
+        auto f = it.next();
         qDebug() << "face " << fcounter++;
-        Iterator<Vertex> vtxIt = f.constVertexIterator();
+        Iterator<Vertex> vtxIt = f->constVertexIterator();
         while(vtxIt.hasNext()) {
-            const Vertex& v = vtxIt.next();
-            qDebug() << "Vertex:" << toString(v.position());
-            vtxData[offset].v[0] = v.position().x();
-            vtxData[offset].v[1] = v.position().y();
-            vtxData[offset].v[2] = v.position().z();
+            auto v = vtxIt.next();
+            qDebug() << "Vertex:" << toString(v->position());
+            vtxData[offset].v[0] = v->position().x();
+            vtxData[offset].v[1] = v->position().y();
+            vtxData[offset].v[2] = v->position().z();
             
-            vtxData[offset].n[0] = v.normal().x();
-            vtxData[offset].n[1] = v.normal().y();
-            vtxData[offset].n[2] = v.normal().z();
+            vtxData[offset].n[0] = v->normal().x();
+            vtxData[offset].n[1] = v->normal().y();
+            vtxData[offset].n[2] = v->normal().z();
             
             memcpy((void*)vtxData[offset].color, (const GLubyte*)&objId, sizeof(objId));
             offset++;

@@ -19,17 +19,17 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "GlView.h"
-#include <QtOpenGL>
+#include <QtOpenGL/QtOpenGL>
 #include <iostream>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QtAlgorithms>
-#include <QLineF>
-#include <QRectF>
-#include <QPolygonF>
-#include <QMatrix>
-#include <QBrush>
-#include <QPen>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QWheelEvent>
+#include <QtCore/QtAlgorithms>
+#include <QtCore/QLineF>
+#include <QtCore/QRectF>
+#include <QtGui/QPolygonF>
+#include <QtGui/QMatrix>
+#include <QtGui/QBrush>
+#include <QtGui/QPen>
 #include "Sphere.h"
 #include "Box.h"
 #include "IDocument.h"
@@ -267,9 +267,8 @@ void GlCanvas::initializeGL()
     enable( GL_DEPTH_TEST);
     enable( GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glShadeModel(GL_SMOOTH);
-    enable(GL_LIGHT0);
-    glSelectBuffer(SELECT_BUFFER_SIZE, _d->selectBuffer);
+    disable(GL_LIGHTING);
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     if (glIsEnabled(GL_DEPTH_TEST) == GL_FALSE)
         qDebug("Depth buffer not enabled.");
@@ -277,9 +276,6 @@ void GlCanvas::initializeGL()
     {
         qDebug("Depth buffer enabled. Precision: %d", format().depthBufferSize());
     }
-
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    enable(GL_COLOR_MATERIAL);
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -370,7 +366,6 @@ void GlCanvas::paintGL()
     }
     
     //glTranslatef(-100, -100, 0);
-    glDisable(GL_LIGHTING);
 
     if (_d->isGridVisible)
         drawGrid();
@@ -393,22 +388,6 @@ void GlCanvas::paintGL()
     glVertex3f( 0.0f, 0.0f, 0.0f );
     glVertex3f( 0.0f, 0.0f, 1.0f );
     glEnd();
-
-    switch(_d->drawingMode)
-    {
-    case Smooth:
-    case Wireframe:
-        glEnable(GL_LIGHTING);
-        glShadeModel(GL_SMOOTH);
-        break;
-    case Flat:
-        glEnable(GL_LIGHTING);
-        glShadeModel(GL_FLAT);
-        break;
-    case Texture:
-    case Points:
-        break;
-    }
 
     Eigen::Vector4f eyePosition, lightPosition(-1, 2, -2, 1);
     if (camera) {
@@ -434,8 +413,9 @@ void GlCanvas::paintGL()
         qDebug() << "Error " << e.error() << ": " << e.errorString();
     }
     
-    drawScene(g_pApp->getMainWindow()->getCurrentDocument()->scene());
-    glUseProgram(0);
+    auto ptr = g_pApp->getMainWindow()->getCurrentDocument()->scene().lock();
+    drawScene(ptr);
+    g_shaderProgram->releaseProgram();
 
 //    drawCursor();
 
@@ -447,7 +427,7 @@ void GlCanvas::paintGL()
     glFlush();
 }
 
-void GlCanvas::drawScene(Scene* scene)
+void GlCanvas::drawScene(Scene::SharedPtr scene)
 {
     if (_d->renderer == NULL)
         return;
@@ -456,24 +436,26 @@ void GlCanvas::drawScene(Scene* scene)
     while(it.hasNext())
     {
         glPushMatrix();
-        SceneNode *n = &it.next();
+        auto n = it.next();
         glMultMatrixf(n->transform().data());
         drawSceneNode(n);
         glPopMatrix();
     }
 }
 
-void GlCanvas::drawSceneNode(SceneNode* node)
+void GlCanvas::drawSceneNode(SceneNode::SharedPtr node)
 {
     ISurface* mesh;
-    SurfaceNode *s;
+    SurfaceNode::SharedPtr s;
     
     if (node->nodeType() == NT_Surface)
     {
-        s = static_cast<SurfaceNode*> (node);
+        s = std::dynamic_pointer_cast<SurfaceNode>(node);
         mesh = s->surface();
         if (mesh->isSelected()) {
+            g_shaderProgram->releaseProgram();
             drawBoundingBox(mesh);
+            g_shaderProgram->useProgram();
         }
         _d->renderer->renderObject(mesh);
     }
@@ -482,7 +464,7 @@ void GlCanvas::drawSceneNode(SceneNode* node)
     while(it.hasNext())
     {
         glPushMatrix();
-        SceneNode *n = &it.next();
+        auto n = it.next();
         glMultMatrixf(n->transform().data());
         drawSceneNode(n);
         glPopMatrix();
@@ -492,12 +474,6 @@ void GlCanvas::drawSceneNode(SceneNode* node)
 void GlCanvas::drawBoundingBox(const ISurface* mesh)
 {
     using namespace geometry;
-    
-    GLboolean lightEnabled = GL_FALSE;
-    lightEnabled = glIsEnabled(GL_LIGHTING);
-
-    if (lightEnabled == GL_TRUE)
-        glDisable(GL_LIGHTING);
 
     glColor3f(0.0, 1.0, 0.0);
     
@@ -537,9 +513,6 @@ void GlCanvas::drawBoundingBox(const ISurface* mesh)
     glVertex3f(minX, maxY, minZ);
     glVertex3f(minX, maxY, maxZ);
     glEnd();
-
-    if (lightEnabled == GL_TRUE)
-        glEnable(GL_LIGHTING);
 }
 
 void GlCanvas::drawGrid()
@@ -622,11 +595,11 @@ void GlCanvas::drawCursor()
 
             // Calculate the coordinates of the box to paint the bitmap
             double wx1, wy1, wz1;
-            mapScreenCoordsToWorldCoords(_d->cursorPosition.x() - _d->cursorImage.width()/2,
+            screenToWorld(_d->cursorPosition.x() - _d->cursorImage.width()/2,
                                          _d->cursorPosition.y() - _d->cursorImage.height() / 2,
                                          _d->cursorPosition.z(), &wx1, &wy1, &wz1);
             double wx2, wy2, wz2;
-            mapScreenCoordsToWorldCoords(_d->cursorPosition.x() + _d->cursorImage.width()/2,
+            screenToWorld(_d->cursorPosition.x() + _d->cursorImage.width()/2,
                                          _d->cursorPosition.y() + _d->cursorImage.height() / 2,
                                          _d->cursorPosition.z(), &wx2, &wy2, &wz2);
 
@@ -657,11 +630,6 @@ void GlCanvas::drawCursor()
 
 void GlCanvas::drawOrientationAxis()
 {
-    bool lightEnabled = glIsEnabled(GL_LIGHTING);
-
-    if (lightEnabled)
-        glDisable(GL_LIGHTING);
-
     // setup viewport, projection etc.:
     glViewport( 0, 0, 100, 100 );
     glMatrixMode( GL_PROJECTION );
@@ -703,9 +671,6 @@ void GlCanvas::drawOrientationAxis()
     glMatrixMode(GL_MODELVIEW);
 
     glViewport( _d->viewport[0], _d->viewport[1], _d->viewport[2], _d->viewport[3] );
-
-    if (lightEnabled)
-        glEnable(GL_LIGHTING);
 }
 
 void GlCanvas::mouseMoveEvent ( QMouseEvent * e )
@@ -812,14 +777,18 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
     unsigned int objId = 1;
     GLuint d = 0;
     ISurface* mesh;
-    Scene* doc= ((DocumentView*)parentWidget())->getDocument()->scene();
+    auto doc= ((DocumentView*)parentWidget())->getDocument()->scene().lock();
+    if (!doc) {
+        return l;
+    }
+    
     Iterator<SceneNode> it = doc->iterator();
     while(it.hasNext()) {
         glPushMatrix();
-        SceneNode* n = &it.next();
-        SurfaceNode* s;
+        auto n = it.next();
+        SurfaceNode::SharedPtr s;
         if (n->nodeType() == NT_Surface) {
-            s = static_cast<SurfaceNode*> (n);
+            s = std::dynamic_pointer_cast<SurfaceNode> (n);
             mesh = s->surface();
             Point3 p = s->localToWorld(Point3(0,0,0));
             glTranslatef(p.x(), p.y(), p.z());
@@ -853,15 +822,18 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
     GLuint* d = new GLuint[width * height];
     ISurface* mesh;
     
-    Scene* doc= ((DocumentView*)parentWidget())->getDocument()->scene();
+    auto doc= ((DocumentView*)parentWidget())->getDocument()->scene().lock();
+    if (!doc) {
+        return l;
+    }
     Iterator<SceneNode> it = doc->iterator();
     while(it.hasNext()) {
         memset(d, 0, width*height*sizeof(GLuint));
         glPushMatrix();
-        SceneNode* n = &it.next();
-        SurfaceNode* s;
+        auto n = it.next();
+        SurfaceNode::SharedPtr s;
         if (n->nodeType() == NT_Surface) {
-            s = static_cast<SurfaceNode*> (n);
+            s = std::dynamic_pointer_cast<SurfaceNode>(n);
             mesh = s->surface();
             Point3 p = s->localToWorld(Point3(0,0,0));
             glTranslatef(p.x(), p.y(), p.z());
@@ -898,6 +870,16 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
 }
 
 Camera* GlCanvas::getViewCamera()
+{
+    if (!_d->cameraList.contains(_d->viewType))
+    {
+        //qDebug("camera %d does not exists. Returning perspective camera.", _d->viewType);
+        return _d->cameraList[Perspective];
+    }
+    return _d->cameraList[_d->viewType];
+}
+
+const Camera* GlCanvas::getViewCamera() const
 {
     if (!_d->cameraList.contains(_d->viewType))
     {
@@ -945,36 +927,46 @@ QImage GlCanvas::getCursorImage()
     return _d->cursorImage;
 }
 
-void GlCanvas::mapScreenCoordsToWorldCoords(double x, double y, double z,
-                                            double *wx, double *wy, double *wz)
+void GlCanvas::screenToWorld(double x, double y, double z,
+                            double *wx, double *wy, double *wz) const
 {
     Point3 p(x, y, z);
-    Point3 o = getViewCamera()->eyeToWorld(p);
+    Point3 o = screenToWorld(p);
     if (wx) *wx = o.x();
     if (wy) *wy = o.y();
     if (wz) *wz = o.z();
 }
 
-void GlCanvas::mapScreenCoordsToWorldCoords(const Point3& winCoords,
-                                            Point3& world)
+void GlCanvas::screenToWorld(const Point3& winCoords,
+                            Point3& world) const
 {
-    world = getViewCamera()->eyeToWorld(winCoords);
+    world = screenToWorld(winCoords);
 }
 
-void GlCanvas::mapWorldCoordsToScreenCoords(double wx, double wy, double wz,
-                                            double *x, double *y, double *z)
+Point3 GlCanvas::screenToWorld(const Point3& p) const
+{
+    return getViewCamera()->eyeToWorld(p);
+}
+
+void GlCanvas::worldToScreen(double wx, double wy, double wz,
+                            double *x, double *y, double *z) const
 {
     Point3 p(wx, wy, wz);
-    Point3 o = getViewCamera()->worldToEye(p);
+    Point3 o = worldToScreen(p);
     if (x) *x = o.x();
     if (y) *y = o.y();
     if (z) *z = o.z();
 }
 
-void GlCanvas::mapWorldCoordsToScreenCoords(const Point3& world,
-                                            Point3& winCoords)
+void GlCanvas::worldToScreen(const Point3& world,
+                            Point3& winCoords) const
 {
-    winCoords = getViewCamera()->worldToEye(world);
+    winCoords = worldToScreen(world);
+}
+
+Point3 GlCanvas::worldToScreen(const Point3& p) const
+{
+    return getViewCamera()->worldToEye(p);
 }
 
 /**
@@ -1010,6 +1002,50 @@ const QBrush& GlCanvas::brush() const
 }
 
 
+Color GlCanvas::color(const Point3 & p)
+{
+    GLint x = p[0];
+    GLint y = p[1];
+    return color(x, y);
+}
+
+Color GlCanvas::color(int x, int y)
+{    
+    return Color::fromUintRGBA(colorUint(x, y));
+}
+
+uint GlCanvas::colorUint(const Point3 & p)
+{
+    GLint x = p[0];
+    GLint y = p[1];
+    return colorUint(x, y);
+}
+
+
+uint GlCanvas::colorUint(int x, int y)
+{
+    GLuint d;
+    
+    glReadPixels(x, _d->viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
+    
+    return d;
+}
+
+float GlCanvas::depth(const Point3 & p)
+{
+    GLint x = p[0];
+    GLint y = p[1];
+    return depth(x, y);
+}
+
+float GlCanvas::depth(int x, int y)
+{
+    float d;    
+    
+    glReadPixels(x, _d->viewport[3] - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &d);
+    return d;
+}
+
 void GlCanvas::begin(GLenum mode)
 {
     glBegin(mode);
@@ -1042,8 +1078,8 @@ void GlCanvas::drawLine2D(const Point3& p1, const Point3& p2)
     _d->pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0) {
         Point3 tmp1, tmp2;
-        mapScreenCoordsToWorldCoords(p1, tmp1);
-        mapScreenCoordsToWorldCoords(p2, tmp2);
+        screenToWorld(p1, tmp1);
+        screenToWorld(p2, tmp2);
         glColor4dv(c);
         if (!_d->flags & GLCANVAS_BEGIN) glBegin(GL_LINES);
         glVertex3fv(tmp1.data());
@@ -1069,10 +1105,10 @@ void GlCanvas::drawRectWinCoord(const Point3& c1, const Point3& c2)
     Point3 a3 = c2;
     Point3 a2 = Point3(a3.x(), a1.y(), a1.z());
     Point3 a4 = Point3(a1.x(), a3.y(), a1.z());
-    mapScreenCoordsToWorldCoords(a1, p1);
-    mapScreenCoordsToWorldCoords(a2, p2);
-    mapScreenCoordsToWorldCoords(a3, p3);
-    mapScreenCoordsToWorldCoords(a4, p4);
+    screenToWorld(a1, p1);
+    screenToWorld(a2, p2);
+    screenToWorld(a3, p3);
+    screenToWorld(a4, p4);
     _d->brush.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0) {
         glColor4dv(c);
@@ -1175,9 +1211,9 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     }
     int npoints = points.size();
     for (int i = 0; i < npoints; ++i) {
-        mapScreenCoordsToWorldCoords(points[i], points[i]);
+        screenToWorld(points[i], points[i]);
         if (drawInnerEllipse) {
-            mapScreenCoordsToWorldCoords(innerPoints[i], innerPoints[i]);
+            screenToWorld(innerPoints[i], innerPoints[i]);
         }
     }
     
@@ -1197,7 +1233,7 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     }
     else {
         Point3 c;
-        mapScreenCoordsToWorldCoords(center, c);
+        screenToWorld(center, c);
         for (int i = 0; i < npoints - 1; ++i) {
             glVertex3fv(points[i].data());
             glVertex3fv(c.data());

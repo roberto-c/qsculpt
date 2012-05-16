@@ -72,8 +72,8 @@ void Sphere::initPoints()
     // adjust normals
     Iterator<Vertex> it = vertexIterator();
     while (it.hasNext()) {
-        it.peekNext().normal() = it.peekNext().position();
-        it.peekNext().normal().normalize();
+        it.peekNext()->normal() = it.peekNext()->position();
+        it.peekNext()->normal().normalize();
         it.next();
     }
 	

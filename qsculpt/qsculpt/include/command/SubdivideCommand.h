@@ -20,7 +20,7 @@
 #ifndef SUBDIVIDECOMMAND_H
 #define SUBDIVIDECOMMAND_H
 
-#include <QThread>
+#include <QtCore/QThread>
 #include <utility>
 #include "command/CommandBase.h"
 

@@ -20,14 +20,14 @@
 #include "Stable.h"
 #include "DocumentView.h"
 #include <iostream>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QGridLayout>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QComboBox>
-#include <QLabel>
-#include <QSpacerItem>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QWheelEvent>
+#include <QtGui/QGridLayout>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QComboBox>
+#include <QtGui/QLabel>
+#include <QtGui/QSpacerItem>
 
 #include "subdivision/Sphere.h"
 #include "subdivision/Box.h"
@@ -131,14 +131,14 @@ void DocumentView::createWidgets()
     connect(_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));
 }
 
-void DocumentView::setDocument(IDocument* doc)
+void DocumentView::setDocument(IDocument::SharedPtr doc)
 {
     Q_ASSERT(doc);
 
     if (_document)
         _document->disconnect(this);
     _document = doc;
-    connect(_document, SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
+    connect(_document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
 };
 
 void DocumentView::setGridVisible(bool value)

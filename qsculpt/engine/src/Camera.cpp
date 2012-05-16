@@ -34,6 +34,40 @@ Camera::Camera()
 {
 }
 
+Camera::Camera(const Camera & orig) : 
+_projMat(orig._projMat),
+_viewMat(orig._viewMat),
+_viewportMat(orig._viewportMat),
+m_position(orig.m_position),
+m_target(orig.m_target),
+m_orientation(orig.m_orientation),
+m_colatitude(orig.m_colatitude),
+m_longitude(orig.m_longitude),
+m_distanceFromTarget(orig.m_distanceFromTarget)
+{
+    
+}
+
+Camera & Camera::operator=(const Camera & rhs)
+{
+    if (this == &rhs) { 
+        return *this;
+    }
+    
+    _projMat = rhs._projMat;
+    _viewportMat = rhs._viewportMat;
+    _viewMat = rhs._viewMat;
+    m_position = rhs.m_position;
+    m_target = rhs.m_target;
+    m_orientation = rhs.m_orientation;
+    m_colatitude = rhs.m_colatitude;
+    m_longitude = rhs.m_longitude;
+    m_distanceFromTarget = rhs.m_distanceFromTarget;
+    
+    updateViewMatrix();
+    
+    return *this;
+}
 
 Camera::~Camera()
 {

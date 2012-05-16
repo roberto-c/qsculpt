@@ -86,8 +86,8 @@ void PickingObjectRenderer::renderImmediate(const ISurface* mesh, unsigned int /
     glBegin(GL_POINTS);
     Iterator<Vertex> it = mesh->constVertexIterator();
     while(it.hasNext()) {
-        const Vertex& v = it.next();
-        glVertex3fv(v.position().data());
+        auto v = it.next();
+        glVertex3fv(v->position().data());
     }
     glEnd();
     mesh->unlock();
@@ -117,8 +117,7 @@ void PickingObjectRenderer::renderVbo(const ISurface* mesh, unsigned int objID)
     glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
     glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
 
-    glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT|GL_LIGHTING_BIT|GL_ENABLE_BIT);
-    glDisable(GL_LIGHTING);
+    glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT|GL_ENABLE_BIT);
     glShadeModel(GL_FLAT);
 
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -165,19 +164,19 @@ void PickingObjectRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     int offset = 0;
     Iterator<Face> it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        const Face& f = it.next();
+        auto f = it.next();
         //        qDebug() << "face " << fcounter++;
-        Iterator<Vertex> vtxIt = f.constVertexIterator();
+        Iterator<Vertex> vtxIt = f->constVertexIterator();
         while(vtxIt.hasNext()) {
-            const Vertex& v = vtxIt.next();
-            qDebug() << "Vertex:" << toString(v.position());
-            vtxData[offset++] = v.position().x();
-            vtxData[offset++] = v.position().y();
-            vtxData[offset++] = v.position().z();
+            auto v = vtxIt.next();
+            qDebug() << "Vertex:" << toString(v->position());
+            vtxData[offset++] = v->position().x();
+            vtxData[offset++] = v->position().y();
+            vtxData[offset++] = v->position().z();
             
-            vtxData[offset++] = v.normal().x();
-            vtxData[offset++] = v.normal().y();
-            vtxData[offset++] = v.normal().z();
+            vtxData[offset++] = v->normal().x();
+            vtxData[offset++] = v->normal().y();
+            vtxData[offset++] = v->normal().z();
         }        
     }
 

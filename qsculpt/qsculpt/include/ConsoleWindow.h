@@ -21,7 +21,7 @@
 #ifndef CONSOLEWINDOW_H
 #define CONSOLEWINDOW_H
 
-#include <QDockWidget>
+#include <QtGui/QDockWidget>
 
 namespace Ui {
     class ConsoleWindow;

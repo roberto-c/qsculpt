@@ -30,6 +30,12 @@ enum VertexFlags {
 
 class Vertex
 {
+public:
+    typedef Vertex*   SharedPtr;
+    typedef Vertex*   WeakPtr;
+    typedef Vertex*   Ptr;
+    
+private:
     static QAtomicInt NEXT_ID;
 
     Point3        _position; // 16

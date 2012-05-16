@@ -20,7 +20,7 @@
 #include "Stable.h"
 #include "QSculptApp.h"
 #include <stdexcept>
-#include <QWidget>
+#include <QtGui/QWidget>
 #include "QSculptWindow.h"
 #include "IDocument.h"
 

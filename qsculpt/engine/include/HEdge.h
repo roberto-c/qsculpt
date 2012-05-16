@@ -9,6 +9,8 @@
 #ifndef HEDGE_H_
 #define HEDGE_H_
 
+class Vertex;
+
 #include "IIterator.h"
 #include "Vertex.h"
 
@@ -25,15 +27,21 @@ enum EdgeFlags {
 };
 
 class Edge {
+public:
+    typedef Edge*   SharedPtr;
+    typedef Edge*   WeakPtr;
+    typedef Edge*   Ptr;
+
+private:
     static QAtomicInt NEXT_ID;
 
     size_t         _id;    // 4
     EdgeFlags   _flags; // 4
-    Edge        *_next; // 4
-    Edge        *_prev; // 4
-    Edge        *_pair; // 4
-    Vertex      *_head; // 4
-    Vertex      *_tail; // 4
+    Edge::WeakPtr        _next; // 4
+    Edge::WeakPtr        _prev; // 4
+    Edge::WeakPtr        _pair; // 4
+    Vertex::WeakPtr      _head; // 4
+    Vertex::WeakPtr      _tail; // 4
     Face        *_face; // 4
     void        *_userData; // 4
 

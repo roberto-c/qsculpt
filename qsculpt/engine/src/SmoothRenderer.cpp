@@ -98,13 +98,13 @@ void SmoothRenderer::Impl::renderImmediate(const ISurface* mesh)
     
     Iterator<Face> it = mesh->constFaceIterator();
 	while(it.hasNext()) {
-		const Face& f = it.next();
-        Iterator<Vertex> vtxIt = f.constVertexIterator();
+		auto f = it.next();
+        Iterator<Vertex> vtxIt = f->constVertexIterator();
         glBegin(GL_POLYGON);
         while(vtxIt.hasNext()) {
-            const Vertex& v = vtxIt.next();
-            glNormal3fv(v.normal().data());
-            glVertex3fv(v.position().data());
+            auto v = vtxIt.next();
+            glNormal3fv(v->normal().data());
+            glVertex3fv(v->position().data());
             // qDebug() << "Vertex:" << toString(v.position());
         }
         glEnd();
@@ -189,7 +189,7 @@ void SmoothRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     Iterator<Face> it = mesh->constFaceIterator();
     numFaces = 0; // number of faces after triangulation
     while(it.hasNext()) {
-        numFaces += it.next().numVertices() - 2;
+        numFaces += it.next()->numVertices() - 2;
     }
     
     size_t numVertices = numFaces*3;
@@ -198,7 +198,8 @@ void SmoothRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     size_t offset = 0;
     it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        processPolygon(it.next(), vtxData, offset);
+        auto f = it.next();
+        processPolygon(*f, vtxData, offset);
     }
     // offset contains the number of vertices in the vtxData after being 
     // processed.
@@ -220,11 +221,11 @@ bool SmoothRenderer::Impl::processPolygon(const Face & f,
     GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;
     
     Iterator<Vertex> vtxIt = f.constVertexIterator();
-    const Vertex * v1 = &(vtxIt.next());
-    const Vertex * v2 = &(vtxIt.next());
+    auto v1 = vtxIt.next();
+    auto v2 = vtxIt.next();
     Vector3 n;
     while(vtxIt.hasNext()) {
-        const Vertex * v3 = &(vtxIt.next());
+        auto v3 = vtxIt.next();
         processTriangle(*v1, *v2, *v3, vtxData, offset, color);
         v2 = v3;
     }

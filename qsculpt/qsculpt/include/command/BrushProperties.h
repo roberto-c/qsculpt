@@ -20,7 +20,7 @@
 #ifndef BRUSHPROPERTIES_H
 #define BRUSHPROPERTIES_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include "../ui/ui_BrushProperties.h"
 #include "command/BrushCommand.h"
 

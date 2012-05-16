@@ -29,7 +29,12 @@ template< typename T >
 class IIterator
 {
 public:
-    //virtual ~IIterator(){}
+    typedef typename T::SharedPtr  SharedPtr;
+    typedef typename T::WeakPtr    WeakPtr;
+    typedef typename T::Ptr        Ptr;
+    
+public:
+    virtual ~IIterator(){}
 
     /**
      * Function to copy iterators of the same type.
@@ -50,24 +55,24 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual T & next() = 0;
+    virtual SharedPtr next() = 0;
 
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual const T & next() const = 0;
+    virtual const SharedPtr next() const = 0;
     
     /**
      * Return the next element without advancing to the iterator
      */
-    virtual T & peekNext() {
+    virtual SharedPtr peekNext() {
         NOT_IMPLEMENTED
     };
     
     /**
      * Return the next element without advancing to the iterator
      */
-    virtual const T & peekNext() const {
+    virtual const SharedPtr peekNext() const {
         NOT_IMPLEMENTED
     };
 
@@ -75,13 +80,13 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual T & previous() = 0;
+    virtual SharedPtr previous() = 0;
 
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual const T & previous() const = 0;
+    virtual const SharedPtr previous() const = 0;
 
     /**
      * Set the current position to pos relative to origin.
@@ -102,9 +107,16 @@ public:
 template< typename T>
 class Iterator
 {
-    IIterator<T> *_it;
+public:
+    typedef typename T::SharedPtr  SharedPtr;
+    typedef typename T::WeakPtr    WeakPtr;
+    typedef typename T::Ptr        Ptr;
+
+private:
+    std::unique_ptr< IIterator<T> > _it;
 
 public:
+    
     /**
      * Iterator constructor. Sets up this iterator wrapper around the
      * passed iterator implementation class.
@@ -119,7 +131,7 @@ public:
     /**
      * Deletes the iterator implementation instance.
      */
-    ~Iterator() { delete _it; _it = NULL;}
+    ~Iterator() { }
 
     /**
      * Assignment operator.
@@ -127,7 +139,7 @@ public:
     Iterator& operator=(const Iterator<T>& it) {
         if (this == &it) return *this;
 
-        this->_it = it._it->clone();
+        this->_it = std::unique_ptr< IIterator<T> >(it._it->clone());
         return *this;
     }
 
@@ -145,7 +157,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    inline T & next() { 
+    inline SharedPtr next() { 
         assert(_it != 0);
         return _it->next();
     }
@@ -153,7 +165,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    inline const T & next() const { 
+    inline const SharedPtr next() const { 
         assert(_it != 0);
         return _it->next(); 
     }
@@ -161,7 +173,7 @@ public:
     /**
      * Return the next element without advancing to the iterator
      */
-    inline T & peekNext() { 
+    inline SharedPtr peekNext() { 
         assert(_it != 0);
         return _it->peekNext();
     }
@@ -169,7 +181,7 @@ public:
     /**
      * Return the next element without advancing to the iterator
      */
-    inline const T & peekNext() const { 
+    inline const SharedPtr peekNext() const { 
         assert(_it != 0);
         return _it->peekNext();
     }
@@ -178,7 +190,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    inline T & previous() { 
+    inline SharedPtr previous() { 
         assert(_it != 0);
         return _it->previous();
     }
@@ -187,7 +199,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    inline const T & previous() const { 
+    inline const SharedPtr previous() const { 
         assert(_it != 0);
         return _it->previous();
     }

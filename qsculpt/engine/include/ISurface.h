@@ -45,6 +45,11 @@ class ISurface : public QObject {
     Q_OBJECT
     
 public:
+    typedef std::shared_ptr<ISurface>   SharedPtr;
+    typedef std::weak_ptr<ISurface>     WeakPtr;
+    typedef std::unique_ptr<ISurface>   Ptr;
+    
+public:
     /**
      * Default contructor. The classes that implement this interface, should
      * have a default contructor that initiliazes the object with valid values.

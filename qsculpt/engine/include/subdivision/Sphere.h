@@ -33,7 +33,7 @@ class Sphere : public Subdivision
 public:
     Sphere();
 
-    ~Sphere();
+    virtual ~Sphere();
 
 protected:
     virtual void initPoints();

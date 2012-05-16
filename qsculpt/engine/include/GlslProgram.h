@@ -17,7 +17,12 @@ public:
     GlslProgram();
     
     ~GlslProgram();
-        
+    
+    /**
+     * Name or id of the shader program as known to OpenGL.
+     */
+    GLint programID() const;
+    
     /**
      *
      */
@@ -43,11 +48,20 @@ public:
     void attachShader(FragmentShader * shader);
     
     /**
-     * Sets the program to use.
+     * Binds this program to the current context.
      *
-     * The program has to be compiled, otherwise it will throw an error.
+     * Equivalent to calling glUseProgram(). The program has to be compiled,
+     * otherwise it will throw an error.
      */
     void useProgram();
+    
+    /**
+     * Makes the shader program to be no longer used. Switching to fixed
+     * pipeline.
+     *
+     * Equivalent to calling glUseProgram(0).
+     */
+    void releaseProgram();
     
     /**
      * Bind attribute name to the program

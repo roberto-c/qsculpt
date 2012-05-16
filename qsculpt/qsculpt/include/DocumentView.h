@@ -20,11 +20,12 @@
 #ifndef DOCUMENTVIEW_H
 #define DOCUMENTVIEW_H
 
-#include <QWidget>
-#include <QList>
-#include <QPoint>
+#include <QtGui/QWidget>
+#include <QtCore/QList>
+#include <QtCore/QPoint>
 #include "Point3D.h"
 #include "GlView.h"
+#include "IDocument.h"
 
 class ISurface;
 class IDocument;
@@ -63,14 +64,14 @@ public:
      *
      * @param doc document from which to get objects to draw.
      */
-    void setDocument(IDocument* doc);
+    void setDocument(IDocument::SharedPtr doc);
 
     /**
      * Get the view's document source.
      *
      * @return source document for this view.
      */
-    IDocument* getDocument() {
+    IDocument::SharedPtr getDocument() {
         return _document;
     };
 
@@ -193,7 +194,7 @@ public slots:
     void setDrawVertices(bool drawVertices);
     
 protected:
-    IDocument       *_document;
+    IDocument::SharedPtr       _document;
     GlCanvas        *_display;
     QComboBox       *_viewPerspective;
     QComboBox       *_drawingMode;

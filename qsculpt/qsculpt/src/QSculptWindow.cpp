@@ -18,11 +18,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include <QtGui>
-#include <QtOpenGL>
-#include <QDockWidget>
-#include <QFile>
-#include <QTextStream>
+#include <QtGui/QtGui>
+#include <QtOpenGL/QtOpenGL>
+#include <QtGui/QDockWidget>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
 
 #include "QSculptWindow.h"
 #include "DocumentView.h"
@@ -60,7 +60,6 @@ QSculptWindow::QSculptWindow()
 
 QSculptWindow::~QSculptWindow()
 {
-    delete m_document;
 }
 
 void QSculptWindow::createWidgets()
@@ -79,7 +78,8 @@ void QSculptWindow::createWidgets()
     connect(m_showGrid, SIGNAL(toggled(bool)), m_documentView, SLOT(setGridVisible(bool)));
     connect(m_showNormals, SIGNAL(toggled(bool)), m_documentView, SLOT(setNormalsVisible(bool)));
     connect(m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
-    connect(m_document, SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(documentChanged(IDocument::ChangeType)));
+    connect(m_document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)),
+            this, SLOT(documentChanged(IDocument::ChangeType)));
 
     //connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
     connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
@@ -250,12 +250,12 @@ void QSculptWindow::createWidgets()
     addDockWidget(Qt::RightDockWidgetArea, _docTree);
 }
 
-const IDocument* QSculptWindow::getCurrentDocument() const
+IDocument::const_shared_ptr QSculptWindow::getCurrentDocument() const
 {
     return m_document;
 }
 
-IDocument* QSculptWindow::getCurrentDocument()
+IDocument::SharedPtr QSculptWindow::getCurrentDocument()
 {
     return m_document;
 }
@@ -282,6 +282,10 @@ void QSculptWindow::newFile()
     if (maybeSave()) {
         //textEdit->clear();
         setCurrentFile("");
+//        Document * ndoc = new Document;
+//        m_documentView->setDocument(ndoc);
+//        delete m_document;
+//        m_document = ndoc;
     }
 }
 

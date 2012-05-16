@@ -20,12 +20,12 @@
 #ifndef QSCULPTAPP_H
 #define QSCULPTAPP_H
 
-#include <QApplication>
+#include <QtGui/QApplication>
+#include "IDocument.h"
 
 #define g_pApp g_pApp
 
 class QSculptWindow;
-class IDocument;
 
 /**
  * Contains methods or variables that are used in all the application.
@@ -60,7 +60,7 @@ public:
      * This function is used to retreive the document where the operations
      * are being executed on.
      */
-    IDocument* getCurrentDocument();
+    IDocument::SharedPtr getCurrentDocument();
     
     virtual bool	notify ( QObject * receiver, QEvent * e );
 

@@ -34,6 +34,7 @@
 #include "geometry/Ray.h"
 #include "geometry/Sphere.h"
 #include "math/Utils.h"
+#include "Color.h"
 
 struct OrbitCommand::Impl
 {
@@ -44,7 +45,7 @@ struct OrbitCommand::Impl
     float   startAngle;
     float   endAngle;
     bool    draw;
-    QList<SceneNode*> selectedObj;
+    QList<SceneNode::WeakPtr> selectedObj;
     Document doc;
     IRenderer *renderer;
     Eigen::Quaternionf rot;
@@ -89,22 +90,29 @@ struct OrbitCommand::Impl
 
 void OrbitCommand::Impl::setup()
 {
-    SceneNode * root = new SceneNode;
+    SceneNode::SharedPtr root(new SceneNode);
     
-    SurfaceNode *surface = new SurfaceNode(new Box, root);
-    surface->transform() *= Eigen::Translation<float,3>(1, 0, 0);
-    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
+    SurfaceNode::SharedPtr surface(new SurfaceNode());
+    surface->setSurface(new Sphere());
+    surface->setParent(root);
+    root->add(surface);
+    surface->surface()->setColor(Color(1.0,1.0,0.0, 0.2));
     
-    surface = new SurfaceNode(new Box, root);
-    surface->transform() *= Eigen::Translation<float,3>(0, 1, 0);
-    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
-    
-    surface = new SurfaceNode(new Box, root);
-    surface->transform() *= Eigen::Translation<float,3>(0, 0, 1);
-    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
+//    SurfaceNode *surface = new SurfaceNode(new Box, root);
+//    surface->transform() *= Eigen::Translation<float,3>(1, 0, 0);
+//    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
+//    
+//    surface = new SurfaceNode(new Box, root);
+//    surface->transform() *= Eigen::Translation<float,3>(0, 1, 0);
+//    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
+//    
+//    surface = new SurfaceNode(new Box, root);
+//    surface->transform() *= Eigen::Translation<float,3>(0, 0, 1);
+//    surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
     
     root->transform() *= Eigen::Translation<float,3>(0,0,0);
-    doc.scene()->add(root);
+    auto ptr = doc.scene().lock();
+    if (ptr) ptr->add(root);
 }
 
 OrbitCommand::OrbitCommand(ICommand *parent)
@@ -144,15 +152,19 @@ void OrbitCommand::mousePressEvent(QMouseEvent *e)
         _d->draw = true;
         
         _d->originalTransform.clear();
-        _d->originalTransform.push_back(_d->selectedObj[0]->transform());
+        
+        auto obj = _d->selectedObj[0].lock();
+        _d->originalTransform.push_back(obj->transform());
+        
+        _d->camera = *view->getCanvas()->getViewCamera();
         
         _d->camera.setViewport(0, 0, view->getCanvas()->width(),
                                view->getCanvas()->height());
-        float aspect = view->getCanvas()->width() / view->getCanvas()->height();
-        _d->camera.setOrthoMatrix(-aspect, aspect, -1, 1, -1, 1);
-        _d->camera.setTargetPoint( Point3( 0, 0, 0) );
-        _d->camera.setOrientationVector(Point3( 0, 1, 0) );
-        _d->camera.setPosition( Point3( 0, 0, 1));
+        //float aspect = view->getCanvas()->width() / view->getCanvas()->height();
+        //_d->camera.setOrthoMatrix(-aspect, aspect, -1, 1, -1, 1);
+        //_d->camera.setTargetPoint( Point3( 0, 0, 0) );
+        //_d->camera.setOrientationVector(Point3( 0, 1, 0) );
+        //_d->camera.setPosition( Point3( 0, 0, 1));
         
         _d->draw = true;
         _d->initial.x() = view->getCanvas()->width() / 2;
@@ -226,18 +238,28 @@ void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
         if (dot != dot) {
             return;
         }
+        auto obj = _d->selectedObj[0].lock();
+        auto parentptr = obj->parent().lock();
+        if (!parentptr) {
+            qDebug() << "Failed to obtain pointer";
+            return;
+        }
+        axis = parentptr->transform()*axis;
         dot = math::clamp(dot, -1.f, 1.f);
         float angle = acos(dot);
         std::swap(_d->startVector, _d->endVector);
         
         Eigen::AngleAxisf rot = Eigen::AngleAxisf(angle, axis);
         qDebug() << "Vector: " << toString(axis) << " @ " << angle;
-        Iterator<SceneNode> it = _d->doc.scene()->iterator();
-        while (it.hasNext()) {
-            SceneNode* node = &it.next();
-            node->transform().rotate(rot);
+        auto ptr = _d->doc.scene().lock();
+        if (ptr) {
+            Iterator<SceneNode> it = ptr->iterator();
+            while (it.hasNext()) {
+                auto node = it.next();
+                node->transform().rotate(rot);
+            }
         }
-        _d->selectedObj[0]->setTransform(_d->selectedObj[0]->transform().rotate(rot));
+        obj->setTransform(obj->transform().rotate(rot));
     }
 }
 
@@ -249,6 +271,13 @@ void OrbitCommand::paintGL(GlCanvas *c)
     
     if (_d->draw) {
         glClear(GL_DEPTH_BUFFER_BIT);
-        c->drawScene(_d->doc.scene());
+        auto ptr = _d->doc.scene().lock();
+        if (ptr) {
+            //c->drawScene(ptr.data());
+        }
+//        c->disable(GL_LIGHTING);
+//        c->drawLine(Point3(0,0,0), _d->initialVector);
+//        c->drawLine(Point3(0,0,0), _d->endVector);
+//        c->enable(GL_LIGHTING);
     }
 }
