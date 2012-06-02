@@ -45,8 +45,8 @@ class ISurface : public QObject {
     Q_OBJECT
     
 public:
-    typedef std::shared_ptr<ISurface>   SharedPtr;
-    typedef std::weak_ptr<ISurface>     WeakPtr;
+    typedef std::shared_ptr<ISurface>   shared_ptr;
+    typedef std::weak_ptr<ISurface>     weak_ptr;
     typedef std::unique_ptr<ISurface>   Ptr;
     
 public:

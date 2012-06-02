@@ -19,13 +19,15 @@
  ***************************************************************************/
 
 #include "Stable.h"
-#include "DocumentTreeWidget.h"
-#include "IDocument.h"
-#include "ui_DocumentTreeWidget.h"
 #include <QtGui/QStandardItemModel>
 #include <QtGui/QStandardItem>
 #include <QtGui/QItemSelectionModel>
-#include "SceneModel.h"
+
+
+#include "DocumentTreeWidget.h"
+#include "IDocument.h"
+#include "ui_DocumentTreeWidget.h"
+
 
 
 static const QString TITLE("Document Tree");
@@ -33,8 +35,7 @@ static const QString TITLE("Document Tree");
 struct DocumentTreeWidget::Private
 {
     QScopedPointer<Ui::DocumentTreeWidget> ui;
-    IDocument::SharedPtr doc;
-    SceneModel model;
+    IDocument::shared_ptr doc;
     
     Private() : ui(new Ui::DocumentTreeWidget){}
 };
@@ -50,23 +51,24 @@ DocumentTreeWidget::~DocumentTreeWidget()
 {
 }
 
-IDocument::SharedPtr DocumentTreeWidget::document() const
+IDocument::shared_ptr DocumentTreeWidget::document() const
 {
     return _d->doc;
 }
 
-void DocumentTreeWidget::setDocument(IDocument::SharedPtr doc)
+void DocumentTreeWidget::setDocument(IDocument::shared_ptr doc)
 {
     _d->doc = doc;
-    auto ptr = doc->scene().lock();
-    _d->model.setScene(ptr);
     updateTree();
 }
 
 void DocumentTreeWidget::itemActivated(const QModelIndex &index)
 {
     qDebug() << "Index selected";
-    
+    SceneNode::shared_ptr ptr = _d->doc->findItem(index.internalId());
+    if (ptr) {
+        ptr->setSelected(true);
+    }
 }
 
 void DocumentTreeWidget::updateTree()
@@ -80,15 +82,16 @@ void DocumentTreeWidget::updateTree()
         //_d->ui->nodeTree->model()->
         QItemSelectionModel *sm = _d->ui->nodeTree->selectionModel();
         QObject::disconnect(sm, 0, this, 0);
+        delete sm;
     }
-    _d->ui->nodeTree->setModel(&_d->model);
+    _d->ui->nodeTree->setModel(_d->doc.get());
     QItemSelectionModel *sm = _d->ui->nodeTree->selectionModel();
     QObject::connect(sm, 
                      SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
                      this,
                      SLOT(itemActivated(QModelIndex)));
     
-//    QStandardItem *parentItem = _d->model.invisibleRootItem();
-//    parentItem->removeRows(0, parentItem->rowCount());
-//    //parentItem->appendRow(reinterpret_cast<QStandardItem*>(_d->doc->rootNode()));
+    //QStandardItem *parentItem = _d->doc->invisibleRootItem();
+    //parentItem->removeRows(0, parentItem->rowCount());
+    //parentItem->appendRow(reinterpret_cast<QStandardItem*>(_d->doc->rootNode()));
 }

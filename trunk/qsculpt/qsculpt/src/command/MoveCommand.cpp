@@ -40,7 +40,7 @@ struct TransformCommand::Impl
                                             * movements */
     Point3                      _final;            /**< Final postion of the object. */
     QPoint                      _mousePosition;    /**< Initial mouse position */
-    QList<SceneNode::WeakPtr>   _objects;          /**< Object list to move */
+    QList<SceneNode::weak_ptr>   _objects;          /**< Object list to move */
     
     Impl(){}
     
@@ -146,7 +146,7 @@ void TransformCommand::execute()
 
     auto doc = g_pApp->getMainWindow()->getCurrentDocument();
 
-    QList<SceneNode::WeakPtr> objects = doc->getSelectedObjects();
+    QList<SceneNode::weak_ptr> objects = doc->getSelectedObjects();
     switch(action)
     {
         default:
@@ -209,7 +209,7 @@ void TransformCommand::activate(bool active)
     d_->_objects.clear();
 
     // TODO: Fix this code
-//    const IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
+//    const IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
 //
 //    if (doc->getObjectsCount() > 0 )
 //    {

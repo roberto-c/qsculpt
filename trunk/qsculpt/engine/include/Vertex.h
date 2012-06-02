@@ -31,8 +31,8 @@ enum VertexFlags {
 class Vertex
 {
 public:
-    typedef Vertex*   SharedPtr;
-    typedef Vertex*   WeakPtr;
+    typedef Vertex*   shared_ptr;
+    typedef Vertex*   weak_ptr;
     typedef Vertex*   Ptr;
     
 private:

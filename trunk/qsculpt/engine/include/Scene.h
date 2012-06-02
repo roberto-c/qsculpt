@@ -41,10 +41,10 @@ namespace geometry {
 */
 class Scene : public SceneNode {
 public:
-    //typedef QSharedPointer<Scene>   SharedPtr;
-    //typedef QWeakPointer<Scene>     WeakPtr;
-    typedef std::shared_ptr<Scene>      SharedPtr;
-    typedef std::weak_ptr<Scene>        WeakPtr;
+    //typedef QSharedPointer<Scene>   shared_ptr;
+    //typedef QWeakPointer<Scene>     weak_ptr;
+    typedef std::shared_ptr<Scene>      shared_ptr;
+    typedef std::weak_ptr<Scene>        weak_ptr;
     typedef std::unique_ptr<Scene>      Ptr;
     
     Scene();
@@ -56,25 +56,28 @@ public:
     /**
      *
      */
-    SceneNode::SharedPtr findByName(const QString& name);
+    SceneNode::shared_ptr findByName(const QString& name);
 
     /**
      * Returns the node with the specified instance ID. NULL if not found.
      */
-    SceneNode::SharedPtr findByIID(uint iid);
+    SceneNode::shared_ptr findByIID(uint iid);
+    
+    
+    
     
     /**
      * Returns a list of nodes that intersects a given ray.
      */
     bool intersects(const geometry::Ray &ray, 
-                    data::ICollection<SceneNode::WeakPtr> *col);
+                    data::ICollection<SceneNode::weak_ptr> *col);
     
     /**
      * Returns a list of nodes that are intersected or contained by an Axis
      * Aligned Bounding Box (AABB)
      */
     bool intersects(const geometry::AABB &box,
-                    data::ICollection<SceneNode::WeakPtr> *col);
+                    data::ICollection<SceneNode::weak_ptr> *col);
     
 private:
     class SceneNodeIterator;

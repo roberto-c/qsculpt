@@ -131,7 +131,7 @@ void DocumentView::createWidgets()
     connect(_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));
 }
 
-void DocumentView::setDocument(IDocument::SharedPtr doc)
+void DocumentView::setDocument(IDocument::shared_ptr doc)
 {
     Q_ASSERT(doc);
 

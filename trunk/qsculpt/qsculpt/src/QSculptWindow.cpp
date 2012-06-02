@@ -255,7 +255,7 @@ IDocument::const_shared_ptr QSculptWindow::getCurrentDocument() const
     return m_document;
 }
 
-IDocument::SharedPtr QSculptWindow::getCurrentDocument()
+IDocument::shared_ptr QSculptWindow::getCurrentDocument()
 {
     return m_document;
 }

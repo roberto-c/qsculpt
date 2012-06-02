@@ -58,7 +58,7 @@ public:
      * 
      * @return pointer to current document
      */
-    IDocument::SharedPtr getCurrentDocument();
+    IDocument::shared_ptr getCurrentDocument();
 
     /**
      * Get the current application command. This is the command that the
@@ -141,7 +141,7 @@ private:
     DocumentView*   m_documentView;
     CommandManager  m_commandManager;
     QString         m_curFile;
-    IDocument::SharedPtr      m_document;
+    IDocument::shared_ptr      m_document;
     ICommand*       m_currentCommand;
 
     QActionGroup*   m_toolActionGroup;

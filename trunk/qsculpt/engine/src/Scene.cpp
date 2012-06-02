@@ -26,14 +26,14 @@
 
 //namespace  {
     struct CenterMassFn {
-        Vector3 operator()(SceneNode::WeakPtr) {
+        Vector3 operator()(SceneNode::weak_ptr) {
             return Vector3();
         }
     };
 //};
 
 struct Scene::Impl {
-    //data::Octree<SceneNode::WeakPtr,CenterMassFn> octree;
+    //data::Octree<SceneNode::weak_ptr,CenterMassFn> octree;
     
     Impl()
     {
@@ -53,25 +53,29 @@ Scene::~Scene()
 {
 }
 
-SceneNode::SharedPtr Scene::findByName(const QString& name)
+SceneNode::shared_ptr Scene::findByName(const QString& name)
 {
     return NULL;
 }
 
-SceneNode::SharedPtr Scene::findByIID(uint IID)
+SceneNode::shared_ptr Scene::findByIID(uint IID)
 {
+    size_t index = 0;
+    if (itemIndexFromIid(IID, &index)) {
+        return item(index).lock();
+    }
     return NULL;
 }
 
 bool Scene::intersects(const geometry::Ray &ray, 
-                       data::ICollection<SceneNode::WeakPtr> *col)
+                       data::ICollection<SceneNode::weak_ptr> *col)
 {
     return false;
     //return _d->octree.findIntersect(ray, col);
 }
 
 bool Scene::intersects(const geometry::AABB &box, 
-                       data::ICollection<SceneNode::WeakPtr> *col)
+                       data::ICollection<SceneNode::weak_ptr> *col)
 {
     return false;
     //return _d->octree.findIntersect(box, col);

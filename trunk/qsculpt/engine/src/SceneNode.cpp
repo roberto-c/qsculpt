@@ -28,8 +28,8 @@ static QAtomicInt NEXTID;
 struct SceneNode::Impl {
     uint                                iid;
     bool                                isSelected;
-    SceneNode::WeakPtr                  parent;
-    std::vector<SceneNode::SharedPtr>   children;
+    SceneNode::weak_ptr                  parent;
+    std::vector<SceneNode::shared_ptr>   children;
     Eigen::Affine3f                     transform;
     std::string                         name;
     
@@ -45,8 +45,8 @@ struct SceneNode::Impl {
 class SceneNode::SceneNodeIterator : public IIterator<SceneNode>
 {
 public:
-    typedef SceneNode::SharedPtr    SharedPtr;
-    typedef SceneNode::WeakPtr      WeakPtr;
+    typedef SceneNode::shared_ptr    shared_ptr;
+    typedef SceneNode::weak_ptr      weak_ptr;
     typedef SceneNode::Ptr          Ptr;
     
     SceneNode::const_shared_ptr     _parent;
@@ -74,24 +74,24 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual SharedPtr next();
+    virtual shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual const SharedPtr next() const;
+    virtual const shared_ptr next() const;
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual SharedPtr previous();
+    virtual shared_ptr previous();
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual const SharedPtr previous() const;
+    virtual const shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -125,26 +125,26 @@ bool SceneNode::SceneNodeIterator::hasPrevious() const
     return false;
 }
 
-SceneNode::SceneNodeIterator::SharedPtr SceneNode::SceneNodeIterator::next()
+SceneNode::SceneNodeIterator::shared_ptr SceneNode::SceneNodeIterator::next()
 {
     //throw std::runtime_error("Not implemented");
-    SceneNode::SharedPtr ptr = _parent->_d->children[_index++];
+    SceneNode::shared_ptr ptr = _parent->_d->children[_index++];
     return  ptr;
 }
 
-const SceneNode::SceneNodeIterator::SharedPtr SceneNode::SceneNodeIterator::next() const
+const SceneNode::SceneNodeIterator::shared_ptr SceneNode::SceneNodeIterator::next() const
 {
     //throw std::runtime_error("Not implemented");
-    SceneNode::SharedPtr ptr = _parent->_d->children[_index++];
+    SceneNode::shared_ptr ptr = _parent->_d->children[_index++];
     return  ptr;
 }
 
-SceneNode::SceneNodeIterator::SharedPtr SceneNode::SceneNodeIterator::previous()
+SceneNode::SceneNodeIterator::shared_ptr SceneNode::SceneNodeIterator::previous()
 {
     throw std::runtime_error("Not implemented");
 }
 
-const SceneNode::SceneNodeIterator::SharedPtr SceneNode::SceneNodeIterator::previous() const
+const SceneNode::SceneNodeIterator::shared_ptr SceneNode::SceneNodeIterator::previous() const
 {
     throw std::runtime_error("Not implemented");
 }
@@ -184,7 +184,7 @@ void SceneNode::setName(const std::string & name) {
     _d->name = name;
 }
 
-void SceneNode::setParent(SceneNode::WeakPtr node)
+void SceneNode::setParent(SceneNode::weak_ptr node)
 {
     assert(_d);
     auto p = parent().lock();
@@ -200,24 +200,24 @@ void SceneNode::setParent(SceneNode::WeakPtr node)
     _d->parent = node;
 }
 
-SceneNode::WeakPtr SceneNode::parent()
+SceneNode::weak_ptr SceneNode::parent()
 {
     assert(_d);
     return _d->parent;
 }
 
-const SceneNode::WeakPtr SceneNode::parent() const
+const SceneNode::weak_ptr SceneNode::parent() const
 {
     assert(_d);
     return _d->parent;
 }
 
-bool SceneNode::contains(const SceneNode::WeakPtr child) const 
+bool SceneNode::contains(const SceneNode::weak_ptr child) const 
 {
     return itemIndex(child, NULL);
 }
 
-bool SceneNode::itemIndex(const SceneNode::WeakPtr child, size_t * index) const
+bool SceneNode::itemIndex(const SceneNode::weak_ptr child, size_t * index) const
 {
     assert(_d);
     auto c = child.lock();
@@ -232,7 +232,22 @@ bool SceneNode::itemIndex(const SceneNode::WeakPtr child, size_t * index) const
     return false;
 }
 
-void SceneNode::add(SceneNode::WeakPtr child)
+bool SceneNode::itemIndexFromIid(uint childIID, size_t * index) const
+{
+    assert(_d);
+    
+    size_t count = _d->children.size();
+    for (size_t i = 0; i < count; ++i) {
+        auto myc = _d->children[i]->iid();
+        if (myc == childIID) {
+            if (index) *index = i;
+            return true;
+        }
+    }
+    return false;
+}
+
+void SceneNode::add(SceneNode::weak_ptr child)
 {
     assert(_d);
     
@@ -250,7 +265,7 @@ void SceneNode::add(SceneNode::WeakPtr child)
     ptr->setParent(thisptr);
 }
 
-void SceneNode::remove(SceneNode::WeakPtr child)
+void SceneNode::remove(SceneNode::weak_ptr child)
 {
     assert(_d);
     
@@ -274,7 +289,7 @@ void SceneNode::remove(uint iid)
     if (it != _d->children.end()) {
         auto ptr = (*it);
         if (ptr) {
-            ptr->setParent(SceneNode::WeakPtr());
+            ptr->setParent(SceneNode::weak_ptr());
         }
         _d->children.erase(it);
     }
@@ -286,9 +301,10 @@ size_t SceneNode::count() const
     return _d->children.size();
 }
 
-SceneNode::WeakPtr SceneNode::item(size_t index) const
+SceneNode::weak_ptr SceneNode::item(size_t index) const
 {
     assert(_d);
+    assert(index < _d->children.size());
     return _d->children[index];
 }
 
@@ -327,7 +343,7 @@ Eigen::Affine3f SceneNode::parentTransform() const
     assert(_d);
     Eigen::Affine3f trans = Eigen::Affine3f::Identity();
     
-    SceneNode::SharedPtr node = _d->parent.lock();
+    SceneNode::shared_ptr node = _d->parent.lock();
     while (node) {
         trans = trans * node->transform();
         node = node->_d->parent.lock();

@@ -44,20 +44,19 @@ ICommand* AddSurfaceCommand::clone() const
 
 void AddSurfaceCommand::execute()
 {
-    IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
-    auto sceneptr = doc->scene().lock();
-    if (doc && sceneptr)
+    IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
+    if (doc)
     {
-        _surface = SurfaceNode::SharedPtr(new SurfaceNode(new Box));
+        _surface = SurfaceNode::shared_ptr(new SurfaceNode(new Box));
         _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
-        sceneptr->add(_surface);
+        doc->addItem(_surface);
         qDebug() << "IID=" << _surface->iid();
     }
 }
 
 void AddSurfaceCommand::undo()
 {
-//    IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
+//    IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
 //    if (doc && _surface)
 //    {
 //        doc->removeObject(_surface);
@@ -98,7 +97,7 @@ void RemoveSurfaceCommand::execute()
     int iid = _configContainer->getInt("IID");
     if (iid == 0 ) return;
     
-    IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
+    IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (!doc) return;
     
     NOT_IMPLEMENTED
@@ -189,7 +188,7 @@ struct SmoothSurfaceCommand::Impl {
         }
     }
     
-    Vector3 computeFaceNormal(Face::SharedPtr f)
+    Vector3 computeFaceNormal(Face::shared_ptr f)
     {
         Iterator<Edge> it = f->edgeIterator();
         auto e1 = it.next();
@@ -230,7 +229,7 @@ ICommand* SmoothSurfaceCommand::clone() const
 void SmoothSurfaceCommand::execute()
 {
     qDebug() << "Smooth Surface" ;
-    IDocument::SharedPtr doc = g_pApp->getMainWindow()->getCurrentDocument();
+    IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (doc)
     {
         auto node = doc->getSelectedObjects().at(0).lock();
@@ -339,7 +338,7 @@ void AddFaceCommand::redo()
 
 struct TestCommand::Impl {
     Document            doc;
-    SceneNode::SharedPtr root;
+    SceneNode::shared_ptr root;
     ISurface            *surf;
     Vertex              *vtx;
     Iterator<Face>      faceIt;
@@ -352,7 +351,7 @@ struct TestCommand::Impl {
 };
 
 void TestCommand::Impl::setup() {
-    root = SceneNode::SharedPtr(new SceneNode);
+    root = SceneNode::shared_ptr(new SceneNode);
     surf = new Subdivision;
     auto sceneptr = doc.scene().lock();
     QVector<int> vertexID;
@@ -405,7 +404,7 @@ void TestCommand::Impl::setup() {
     face.push_back(vertexID[6]);
     qDebug() << "new face IID:" << surf->addFace(face);
     
-    SurfaceNode::SharedPtr ptr(new SurfaceNode(surf));
+    SurfaceNode::shared_ptr ptr(new SurfaceNode(surf));
     ptr->setParent(root);
     root->add(ptr);
     

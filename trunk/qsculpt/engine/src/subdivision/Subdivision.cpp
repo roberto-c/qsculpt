@@ -144,34 +144,34 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next();
+    shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const;
+    const shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
      */
-    SharedPtr peekNext();
+    shared_ptr peekNext();
     
     /**
      * Returns the next element without advancing to the next
      */
-    const SharedPtr peekNext() const ;
+    const shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous();
+    shared_ptr previous();
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const;
+    const shared_ptr previous() const;
 
     /**
      * Set the current position to pos relative to origin.
@@ -220,34 +220,34 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next();
+    shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const;
+    const shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
      */
-    SharedPtr peekNext();
+    shared_ptr peekNext();
     
     /**
      * Returns the next element without advancing to the next
      */
-    const SharedPtr peekNext() const ;
+    const shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous();
+    shared_ptr previous();
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const;
+    const shared_ptr previous() const;
 
     /**
      * Set the current position to pos relative to origin.
@@ -307,7 +307,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next() {
+    shared_ptr next() {
         Edge * e = index_.value();
         ++index_;
         return e;
@@ -316,7 +316,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const {
+    const shared_ptr next() const {
         Edge * e = index_.value();
         ++index_;
         return e;
@@ -325,14 +325,14 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    SharedPtr peekNext() {
+    shared_ptr peekNext() {
         return index_.value();
     }
     
     /**
      * Returns the next element without advancing to the next
      */
-    const SharedPtr peekNext() const {
+    const shared_ptr peekNext() const {
         return index_.value();
     }
     
@@ -340,7 +340,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous() {
+    shared_ptr previous() {
         NOT_IMPLEMENTED
     }
     
@@ -348,7 +348,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const {
+    const shared_ptr previous() const {
         NOT_IMPLEMENTED
     }
     
@@ -636,7 +636,7 @@ size_t Subdivision::getFaceIndexAtPoint(const Point3& /*p*/) const
 size_t Subdivision::getClosestPointAtPoint(const Point3 & p) const
 {
     float d = MAXFLOAT;
-    Vertex::SharedPtr vtx = nullptr, tmpVtx = nullptr;
+    Vertex::shared_ptr vtx = nullptr, tmpVtx = nullptr;
     Point3 v;
     Iterator<Vertex> it = constVertexIterator();
     while (it.hasNext()) {
@@ -805,35 +805,35 @@ bool Subdivision::VertexIterator::hasPrevious() const
              _index != _surface->_d->_vertices->begin());
 }
 
-Subdivision::VertexIterator::SharedPtr Subdivision::VertexIterator::next()
+Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::next()
 {
     Vertex *v = _index.value();
     ++_index;
     return v;
 }
 
-const Subdivision::VertexIterator::SharedPtr Subdivision::VertexIterator::next() const
+const Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::next() const
 {
     Vertex *v = _index.value();
     ++_index;
     return v;
 }
 
-Subdivision::VertexIterator::SharedPtr Subdivision::VertexIterator::peekNext() {
+Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::peekNext() {
     return _index.value();
 }
 
-const Subdivision::VertexIterator::SharedPtr Subdivision::VertexIterator::peekNext() const {
+const Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::peekNext() const {
     return _index.value();
 }
 
-Subdivision::VertexIterator::SharedPtr Subdivision::VertexIterator::previous()
+Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::previous()
 {
     --_index;
     return _index.value();
 }
 
-const Subdivision::VertexIterator::SharedPtr Subdivision::VertexIterator::previous() const
+const Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::previous() const
 {
     --_index;
     return _index.value();
@@ -907,7 +907,7 @@ bool Subdivision::FaceIterator::hasPrevious() const
              _index != _surface->_d->_faces->begin());
 }
 
-Subdivision::FaceIterator::SharedPtr Subdivision::FaceIterator::next()
+Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::next()
 {
     Face *f = _index->second;
 
@@ -916,7 +916,7 @@ Subdivision::FaceIterator::SharedPtr Subdivision::FaceIterator::next()
     return f;
 }
 
-const Subdivision::FaceIterator::SharedPtr Subdivision::FaceIterator::next() const
+const Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::next() const
 {
     Face *f = _index->second;
     assert(f);
@@ -924,22 +924,22 @@ const Subdivision::FaceIterator::SharedPtr Subdivision::FaceIterator::next() con
     return f;
 }
 
-Subdivision::FaceIterator::SharedPtr Subdivision::FaceIterator::peekNext() {
+Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::peekNext() {
     return _index->second;
 }
 
-const Subdivision::FaceIterator::SharedPtr Subdivision::FaceIterator::peekNext() const {
+const Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::peekNext() const {
     return _index->second;
 }
 
 
-Subdivision::FaceIterator::SharedPtr Subdivision::FaceIterator::previous()
+Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::previous()
 {
     --_index;
     return _index->second;
 }
 
-const Subdivision::FaceIterator::SharedPtr Subdivision::FaceIterator::previous() const
+const Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::previous() const
 {
     --_index;
     return _index->second;

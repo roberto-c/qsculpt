@@ -61,7 +61,7 @@ struct SubdivideCommand::Impl {
     
     void smoothNormals(ISurface& s);
     
-    Vector3 computeFaceNormal(Face::WeakPtr f);
+    Vector3 computeFaceNormal(Face::weak_ptr f);
     
     void diagnostiscs(ISurface & s);
 };
@@ -120,8 +120,8 @@ void SubdivideCommand::execute()
     _d->edgeMidPoint.clear();
     qDebug() << "Start time: " <<QDateTime::currentDateTime();
 
-    QList<SceneNode::WeakPtr> list = doc->getSelectedObjects();
-    foreach(SceneNode::WeakPtr n, list)
+    QList<SceneNode::weak_ptr> list = doc->getSelectedObjects();
+    foreach(SceneNode::weak_ptr n, list)
     {
         auto node = n.lock();
         if (node->nodeType() != NT_Surface)
@@ -173,7 +173,7 @@ void SubdivideCommand::Impl::addFaceMidPointVertex(ISurface& s)
     Iterator<Face> faceIt = s.faceIterator();
     // Create new vertices at the mid point of each edge
     while(faceIt.hasNext()){
-        Face::SharedPtr f = faceIt.next();
+        Face::shared_ptr f = faceIt.next();
         Iterator<Vertex> vtxIt = f->vertexIterator();
         p.setZero();
         int val = 0;
@@ -362,7 +362,7 @@ void SubdivideCommand::Impl::smoothNormals(ISurface& s)
     }
 }
 
-Vector3 SubdivideCommand::Impl::computeFaceNormal(Face::WeakPtr face)
+Vector3 SubdivideCommand::Impl::computeFaceNormal(Face::weak_ptr face)
 {
     auto f = face;
     Iterator<Edge> it = f->edgeIterator();
@@ -396,7 +396,7 @@ void SubdivideCommand::Impl::diagnostiscs(ISurface & s)
 
 
 struct EditSubdivideCommand::Impl {
-    SurfaceNode::SharedPtr  surf;
+    SurfaceNode::shared_ptr  surf;
     PointRenderer   renderer;
     IID             vtxIID;
     Point3          mouseScreen;
@@ -446,8 +446,8 @@ void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
     
     if (!doc)
         return;
-    QList<SceneNode::WeakPtr> list = doc->getSelectedObjects();
-    foreach(SceneNode::WeakPtr n, list)
+    QList<SceneNode::weak_ptr> list = doc->getSelectedObjects();
+    foreach(SceneNode::weak_ptr n, list)
     {
         auto node = n.lock();
         if (node->nodeType() != NT_Surface){
