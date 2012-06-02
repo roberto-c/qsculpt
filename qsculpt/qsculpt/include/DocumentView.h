@@ -64,14 +64,14 @@ public:
      *
      * @param doc document from which to get objects to draw.
      */
-    void setDocument(IDocument::SharedPtr doc);
+    void setDocument(IDocument::shared_ptr doc);
 
     /**
      * Get the view's document source.
      *
      * @return source document for this view.
      */
-    IDocument::SharedPtr getDocument() {
+    IDocument::shared_ptr getDocument() {
         return _document;
     };
 
@@ -194,7 +194,7 @@ public slots:
     void setDrawVertices(bool drawVertices);
     
 protected:
-    IDocument::SharedPtr       _document;
+    IDocument::shared_ptr       _document;
     GlCanvas        *_display;
     QComboBox       *_viewPerspective;
     QComboBox       *_drawingMode;

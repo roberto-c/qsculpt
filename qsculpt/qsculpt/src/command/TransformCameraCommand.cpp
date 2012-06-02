@@ -45,7 +45,7 @@ struct TransformCameraCommand::Impl
     float                       startAngle;
     float                       endAngle;
     bool                        draw;
-    QList<SceneNode::WeakPtr>   selectedObj;
+    QList<SceneNode::weak_ptr>   selectedObj;
     Document                    doc;
     QScopedPointer<IRenderer>   renderer;
     Eigen::Quaternionf          rot;
@@ -90,21 +90,21 @@ struct TransformCameraCommand::Impl
 
 void TransformCameraCommand::Impl::setup()
 {
-    SceneNode::SharedPtr root(new SceneNode);
+    SceneNode::shared_ptr root(new SceneNode);
     
-    SurfaceNode::SharedPtr surface(new SurfaceNode(new Box));
+    SurfaceNode::shared_ptr surface(new SurfaceNode(new Box));
     surface->setParent(root);
     root->add(surface);
     surface->transform() *= Eigen::Translation<float,3>(1, 0, 0);
     surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
     
-    surface = SurfaceNode::SharedPtr(new SurfaceNode(new Box));
+    surface = SurfaceNode::shared_ptr(new SurfaceNode(new Box));
     surface->setParent(root);
     root->add(surface);
     surface->transform() *= Eigen::Translation<float,3>(0, 1, 0);
     surface->transform() *= Eigen::AlignedScaling3f(0.2,0.2,0.2);
     
-    surface = SurfaceNode::SharedPtr(new SurfaceNode(new Box));
+    surface = SurfaceNode::shared_ptr(new SurfaceNode(new Box));
     surface->setParent(root);
     root->add(surface);
     surface->transform() *= Eigen::Translation<float,3>(0, 0, 1);

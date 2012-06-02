@@ -60,7 +60,7 @@ public:
      * This function is used to retreive the document where the operations
      * are being executed on.
      */
-    IDocument::SharedPtr getCurrentDocument();
+    IDocument::shared_ptr getCurrentDocument();
     
     virtual bool	notify ( QObject * receiver, QEvent * e );
 

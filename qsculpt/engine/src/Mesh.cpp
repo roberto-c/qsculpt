@@ -96,8 +96,8 @@ struct Mesh::Impl {
 class Mesh::VertexIterator : public IIterator<Vertex>
 {	
 public:
-    typedef Vertex::SharedPtr SharedPtr;
-    typedef Vertex::WeakPtr WeakPtr;
+    typedef Vertex::shared_ptr shared_ptr;
+    typedef Vertex::weak_ptr weak_ptr;
     typedef Vertex::Ptr Ptr;
     
 private:
@@ -136,34 +136,34 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next();
+    shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const;
+    const shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
      */
-    SharedPtr peekNext();
+    shared_ptr peekNext();
     
     /**
      * Returns the next element without advancing to the next
      */
-    const SharedPtr peekNext() const ;
+    const shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous();
+    shared_ptr previous();
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const;
+    const shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -177,8 +177,8 @@ public:
 class Mesh::FaceIterator : public IIterator<Face>
 {
 public:
-    typedef Face::SharedPtr   SharedPtr;
-    typedef Face::WeakPtr     WeakPtr;
+    typedef Face::shared_ptr   shared_ptr;
+    typedef Face::weak_ptr     weak_ptr;
     typedef Face::Ptr   Ptr;
     
 private:
@@ -218,34 +218,34 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next();
+    shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const;
+    const shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
      */
-    SharedPtr peekNext();
+    shared_ptr peekNext();
     
     /**
      * Returns the next element without advancing to the next
      */
-    const SharedPtr peekNext() const ;
+    const shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous();
+    shared_ptr previous();
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const;
+    const shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -259,8 +259,8 @@ public:
 class Mesh::EdgeIterator : public IIterator<Edge>
 {
 public:
-    typedef Edge::SharedPtr SharedPtr;
-    typedef Edge::WeakPtr WeakPtr;
+    typedef Edge::shared_ptr shared_ptr;
+    typedef Edge::weak_ptr weak_ptr;
     typedef Edge::Ptr Ptr;
     
 private:
@@ -311,7 +311,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next() {
+    shared_ptr next() {
         Edge * e = index_.value();
         ++index_;
         return e;
@@ -320,7 +320,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const {
+    const shared_ptr next() const {
         Edge * e = index_.value();
         ++index_;
         return e;
@@ -329,14 +329,14 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    SharedPtr peekNext() {
+    shared_ptr peekNext() {
         return index_.value();
     }
     
     /**
      * Returns the next element without advancing to the next
      */
-    const SharedPtr peekNext() const {
+    const shared_ptr peekNext() const {
         return index_.value();
     }
     
@@ -344,7 +344,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous() {
+    shared_ptr previous() {
         NOT_IMPLEMENTED
     }
     
@@ -352,7 +352,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const {
+    const shared_ptr previous() const {
         NOT_IMPLEMENTED
     }
     
@@ -709,35 +709,35 @@ bool Mesh::VertexIterator::hasPrevious() const
      _index != _surface->_d->_vertices->begin());
 }
 
-Mesh::VertexIterator::SharedPtr Mesh::VertexIterator::next()
+Mesh::VertexIterator::shared_ptr Mesh::VertexIterator::next()
 {
     Vertex *v = _index.value();
     ++_index;
     return v;
 }
 
-const Mesh::VertexIterator::SharedPtr Mesh::VertexIterator::next() const
+const Mesh::VertexIterator::shared_ptr Mesh::VertexIterator::next() const
 {
     Vertex *v = _index.value();
     ++_index;
     return v;
 }
 
-Mesh::VertexIterator::SharedPtr Mesh::VertexIterator::peekNext() {
+Mesh::VertexIterator::shared_ptr Mesh::VertexIterator::peekNext() {
     return _index.value();
 }
 
-const Mesh::VertexIterator::SharedPtr Mesh::VertexIterator::peekNext() const {
+const Mesh::VertexIterator::shared_ptr Mesh::VertexIterator::peekNext() const {
     return _index.value();
 }
 
-Mesh::VertexIterator::SharedPtr Mesh::VertexIterator::previous()
+Mesh::VertexIterator::shared_ptr Mesh::VertexIterator::previous()
 {
     --_index;
     return _index.value();
 }
 
-const Mesh::VertexIterator::SharedPtr Mesh::VertexIterator::previous() const
+const Mesh::VertexIterator::shared_ptr Mesh::VertexIterator::previous() const
 {
     --_index;
     return _index.value();
@@ -809,7 +809,7 @@ bool Mesh::FaceIterator::hasPrevious() const
             _index != _surface->_d->_faces->begin());
 }
 
-Mesh::FaceIterator::SharedPtr Mesh::FaceIterator::next()
+Mesh::FaceIterator::shared_ptr Mesh::FaceIterator::next()
 {
     Face *f = _index->second;
     
@@ -818,7 +818,7 @@ Mesh::FaceIterator::SharedPtr Mesh::FaceIterator::next()
     return f;
 }
 
-const Mesh::FaceIterator::SharedPtr Mesh::FaceIterator::next() const
+const Mesh::FaceIterator::shared_ptr Mesh::FaceIterator::next() const
 {
     Face *f = _index->second;
     assert(f);
@@ -826,22 +826,22 @@ const Mesh::FaceIterator::SharedPtr Mesh::FaceIterator::next() const
     return f;
 }
 
-Mesh::FaceIterator::SharedPtr Mesh::FaceIterator::peekNext() {
+Mesh::FaceIterator::shared_ptr Mesh::FaceIterator::peekNext() {
     return _index->second;
 }
 
-const Mesh::FaceIterator::SharedPtr Mesh::FaceIterator::peekNext() const {
+const Mesh::FaceIterator::shared_ptr Mesh::FaceIterator::peekNext() const {
     return _index->second;
 }
 
 
-Mesh::FaceIterator::SharedPtr Mesh::FaceIterator::previous()
+Mesh::FaceIterator::shared_ptr Mesh::FaceIterator::previous()
 {
     --_index;
     return _index->second;
 }
 
-const Mesh::FaceIterator::SharedPtr Mesh::FaceIterator::previous() const
+const Mesh::FaceIterator::shared_ptr Mesh::FaceIterator::previous() const
 {
     --_index;
     return _index->second;

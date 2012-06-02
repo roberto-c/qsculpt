@@ -334,7 +334,7 @@ public:
     /**
      * Used to draw a scene hierarchy using the current renderer
      */
-    void drawScene(Scene::SharedPtr scene);
+    void drawScene(Scene::shared_ptr scene);
     
     
     /**
@@ -413,7 +413,7 @@ private:
                              float innerAxis1,
                              float innerAxis2);
     
-    void drawSceneNode(SceneNode::SharedPtr node);
+    void drawSceneNode(SceneNode::shared_ptr node);
 	
     struct Impl;
     QScopedPointer<Impl> _d;

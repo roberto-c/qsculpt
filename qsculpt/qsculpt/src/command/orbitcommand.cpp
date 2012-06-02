@@ -45,7 +45,7 @@ struct OrbitCommand::Impl
     float   startAngle;
     float   endAngle;
     bool    draw;
-    QList<SceneNode::WeakPtr> selectedObj;
+    QList<SceneNode::weak_ptr> selectedObj;
     Document doc;
     IRenderer *renderer;
     Eigen::Quaternionf rot;
@@ -90,9 +90,9 @@ struct OrbitCommand::Impl
 
 void OrbitCommand::Impl::setup()
 {
-    SceneNode::SharedPtr root(new SceneNode);
+    SceneNode::shared_ptr root(new SceneNode);
     
-    SurfaceNode::SharedPtr surface(new SurfaceNode());
+    SurfaceNode::shared_ptr surface(new SurfaceNode());
     surface->setSurface(new Sphere());
     surface->setParent(root);
     root->add(surface);

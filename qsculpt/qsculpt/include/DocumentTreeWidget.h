@@ -28,7 +28,7 @@
 class DocumentTreeWidget : public QDockWidget
 {
     Q_OBJECT
-    Q_PROPERTY(IDocument::SharedPtr document READ document WRITE setDocument)
+    Q_PROPERTY(IDocument::shared_ptr document READ document WRITE setDocument)
     
 public:
     DocumentTreeWidget(QWidget* parent);
@@ -37,12 +37,12 @@ public:
     /**
      * Gets the document to which this DocumentTree is associated to.
      */
-    IDocument::SharedPtr document() const;
+    IDocument::shared_ptr document() const;
     
     /**
      * Sets the document to which this DocumentTree instance is associated to.
      */
-    void setDocument(IDocument::SharedPtr doc);
+    void setDocument(IDocument::shared_ptr doc);
     
 public slots:
     void itemActivated(const QModelIndex &index);

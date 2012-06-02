@@ -28,7 +28,7 @@ public:
     // End ICommand Interface
 
 private:
-    SurfaceNode::SharedPtr _surface;
+    SurfaceNode::shared_ptr _surface;
 };
 
 class RemoveSurfaceCommand : public CommandBase 
@@ -49,7 +49,7 @@ public:
     // End ICommand Interface
     
 private:
-    SurfaceNode::SharedPtr _surface;
+    SurfaceNode::shared_ptr _surface;
 };
 
 

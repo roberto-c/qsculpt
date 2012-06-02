@@ -45,9 +45,9 @@ class SceneNode : public std::enable_shared_from_this<SceneNode>
     QScopedPointer<Impl> _d;
 
 public:
-    typedef std::shared_ptr<SceneNode>          SharedPtr;
+    typedef std::shared_ptr<SceneNode>          shared_ptr;
     typedef std::shared_ptr<const SceneNode>    const_shared_ptr;
-    typedef std::weak_ptr<SceneNode>            WeakPtr;
+    typedef std::weak_ptr<SceneNode>            weak_ptr;
     typedef std::weak_ptr<const SceneNode>      const_weak_ptr;
     typedef std::unique_ptr<SceneNode>   Ptr;
     
@@ -64,16 +64,16 @@ public:
      *
      * This node is also added as child in the parent's children node list
      */
-    void setParent(WeakPtr parent);
+    void setParent(weak_ptr parent);
     
     /**
      * Return the parent node of this scene node.
      */
-    WeakPtr parent();
+    weak_ptr parent();
     /**
      * Return the parent node of this scene node.
      */
-    const WeakPtr parent() const;
+    const weak_ptr parent() const;
     
     /**
      * Return the name of the node.
@@ -131,18 +131,18 @@ public:
     /**
      *
      */
-    bool contains(const WeakPtr child) const ;
+    bool contains(const weak_ptr child) const ;
     
     /**
      * Add a new child node to this scene node
      */
-    void add(WeakPtr child);
+    void add(weak_ptr child);
     
     /**
      * Removes a node from this node. The node to remove must be a direct child
      * from this node.
      */
-    void remove(WeakPtr child);
+    void remove(weak_ptr child);
     
     /**
      * Removed the node with an instance id of iid.
@@ -157,14 +157,22 @@ public:
     /**
      * Returns the item at position index.
      */
-    WeakPtr item(size_t index) const;
+    weak_ptr item(size_t index) const;
     
     /**
      * This function returns the item index of a child of this node.
      *
      * @return true if node found, otherwise, false.
      */
-    bool itemIndex(const WeakPtr child, size_t * index) const; 
+    bool itemIndex(const weak_ptr child, size_t * index) const; 
+    
+    /**
+     * This function returns the item index of a child of this node with the
+     * ID iid.
+     *
+     * @return true if node found, otherwise, false.
+     */
+    bool itemIndexFromIid(uint childIID, size_t * index) const; 
     
     /**
      *
@@ -206,8 +214,8 @@ class SurfaceNode : public SceneNode
     ISurface *surface_;
 
 public:
-    typedef std::shared_ptr<SurfaceNode>        SharedPtr;
-    typedef std::weak_ptr<const SurfaceNode>    WeakPtr;
+    typedef std::shared_ptr<SurfaceNode>        shared_ptr;
+    typedef std::weak_ptr<const SurfaceNode>    weak_ptr;
     typedef std::shared_ptr<SurfaceNode>        const_shared_ptr;
     typedef std::weak_ptr<const SurfaceNode>    const_weak_ptr;
     typedef std::unique_ptr<SurfaceNode>        Ptr;

@@ -35,15 +35,15 @@ static QAtomicInt NEXT_ID(0);
 class SurfaceIterator : public IIterator<ISurface>
 {
 public:
-    typedef std::shared_ptr<ISurface> SharedPtr;
-    typedef std::weak_ptr<ISurface> WeakPtr;
+    typedef std::shared_ptr<ISurface> shared_ptr;
+    typedef std::weak_ptr<ISurface> weak_ptr;
     typedef std::unique_ptr<ISurface> Ptr;
     
 private:
-    Document::SharedPtr _doc;
+    Document::shared_ptr _doc;
 
 public:
-    SurfaceIterator(Document::WeakPtr surface) ;
+    SurfaceIterator(Document::weak_ptr surface) ;
     
     ~SurfaceIterator() ;
 
@@ -66,24 +66,24 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual SharedPtr next();
+    virtual shared_ptr next();
 
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual const SharedPtr next() const;
+    virtual const shared_ptr next() const;
 
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual SharedPtr previous();
+    virtual shared_ptr previous();
 
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual const SharedPtr previous() const;
+    virtual const shared_ptr previous() const;
 
     /**
      * Set the current position to pos relative to origin.
@@ -97,14 +97,14 @@ public:
 class SceneIterator : public IIterator<SceneNode>
 {
 public:
-    typedef std::shared_ptr<SceneNode>      SharedPtr;
-    typedef std::weak_ptr<SceneNode>        WeakPtr;
+    typedef std::shared_ptr<SceneNode>      shared_ptr;
+    typedef std::weak_ptr<SceneNode>        weak_ptr;
     typedef std::weak_ptr<const SceneNode>  const_weak_ptr;
     typedef std::unique_ptr<SceneNode>      Ptr;
     
 private:
     Document::const_shared_ptr  _doc;
-    Scene::SharedPtr            _scene;
+    Scene::shared_ptr            _scene;
     mutable int                 _current;
     
 public:
@@ -131,24 +131,24 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual SharedPtr next();
+    virtual shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual const SharedPtr next() const;
+    virtual const shared_ptr next() const;
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual SharedPtr previous();
+    virtual shared_ptr previous();
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual const SharedPtr previous() const;
+    virtual const shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -161,8 +161,8 @@ public:
 
 
 struct Document::Impl {
-    Scene::SharedPtr       scene;
-    SceneNode::SharedPtr   rootNode;
+    Scene::shared_ptr       scene;
+    SceneNode::shared_ptr   rootNode;
     
     Impl() :scene(new Scene),
         rootNode(new SceneNode("Scene")) {
@@ -304,9 +304,9 @@ void Document::selectObject(int iid)
 //    }
 }
 
-QList<SceneNode::WeakPtr> Document::getSelectedObjects() const
+QList<SceneNode::weak_ptr> Document::getSelectedObjects() const
 {
-    QList<SceneNode::WeakPtr> selectedObjectList;
+    QList<SceneNode::weak_ptr> selectedObjectList;
     selectedObjectList.clear();
 
     Iterator<SceneNode> it = constSceneIterator();
@@ -327,27 +327,144 @@ QList<SceneNode::WeakPtr> Document::getSelectedObjects() const
     return selectedObjectList;
 }
 
-SceneNode::WeakPtr Document::rootNode()
+SceneNode::weak_ptr Document::rootNode()
 {
     return _d->rootNode;
 }
 
-SceneNode::WeakPtr Document::rootNode() const
+SceneNode::weak_ptr Document::rootNode() const
 {
     return _d->rootNode;
 }
 
 
-Scene::WeakPtr Document::scene()
+Scene::weak_ptr Document::scene()
 {
     return _d->scene;
 }
 
-Scene::WeakPtr Document::scene() const
+Scene::weak_ptr Document::scene() const
 {
     return _d->scene;
 }
 
+int Document::columnCount(const QModelIndex & parent) const
+{
+    return 1;
+}
+
+QVariant Document::data (const QModelIndex & index, 
+                           int role ) const
+{
+    if (role == Qt::DisplayRole) {
+        QVariant data(QString("Name"));
+        return data;
+    }
+    return QVariant();
+}
+
+QModelIndex Document::index (int row, 
+                               int column, 
+                               const QModelIndex & parent ) const
+{
+    assert(_d && _d->scene);
+    
+    SceneNode::shared_ptr p = NULL;
+    if (parent.isValid()) {
+        p = _d->scene->findByIID(parent.internalId());
+    }
+    if (p) {
+        p = p->item(row).lock();
+    } else if (_d->scene) {
+        auto ptr = _d->scene->item(row);
+        p = ptr.lock();
+    }
+    if (!p) {
+        //return createIndex(-1, -1, 0);
+        return QModelIndex();
+    }
+    return createIndex(row, 0, p->iid());
+}
+
+QModelIndex Document::parent ( const QModelIndex & index ) const
+{
+    assert(_d && _d->scene);
+    
+    if (!index.isValid()) {
+        //throw std::runtime_error("Invalid index");
+        return QModelIndex();
+    }
+    
+    SceneNode::shared_ptr p = _d->scene->findByIID(index.internalId());
+    int row = -1;
+    
+    if (p) {
+        size_t n = 0;
+        row = p->itemIndex(p, &n) ? n : -1;
+    } else {
+        if (_d->scene) {
+            p = _d->scene;
+            size_t n = 0;
+            row = p->itemIndex(p, &n) ? n : -1;
+        }
+    }
+    if (!p) {
+        //return createIndex(-1, -1, 0);
+        return QModelIndex();
+    }
+    return createIndex(row, 0, p->iid());
+}
+
+int Document::rowCount ( const QModelIndex & parent ) const
+{
+    assert(_d && _d->scene);
+    
+    if (parent.isValid()) {
+        SceneNode::shared_ptr p = _d->scene->findByIID(parent.internalId());
+        if (p) {
+            return p->count();
+        }
+    }
+    if (_d->scene) {
+        return _d->scene->count();
+    }
+    return 0;
+}
+
+SceneNode::shared_ptr Document::findItem(uint iid) 
+{
+    SceneNode::shared_ptr p;
+    return _d->scene->findByIID(iid);
+}
+
+bool Document::insertRow ( int row, const QModelIndex & parent )
+{
+    return false;
+}
+
+void Document::addItem(SceneNode::shared_ptr node, 
+                     const QModelIndex & parent)
+{
+    assert(_d && _d->scene);
+    
+    int rows = rowCount(parent);
+    beginInsertRows(parent, rows, rows);
+    
+    SceneNode::shared_ptr p;
+    if (parent.isValid()) {
+        p = _d->scene->findByIID(parent.internalId());
+    }
+    
+    if (!p) {
+        p = _d->scene;
+    }
+    if (p) {
+        p->add(node);
+    } else {
+        qDebug() << "failed to add node.";
+    }
+    endInsertRows();
+}
 
 Iterator<SceneNode> Document::sceneIterator()
 {
@@ -369,7 +486,7 @@ Iterator<ISurface> Document::surfaceIterator()
 
 
 /// Iterator definition
-SurfaceIterator::SurfaceIterator(Document::WeakPtr doc)
+SurfaceIterator::SurfaceIterator(Document::weak_ptr doc)
     :	_doc(doc)
 {
     assert(!doc.expired());
@@ -402,13 +519,13 @@ bool SurfaceIterator::hasPrevious() const
     return false;
 }
 
-ISurface::SharedPtr SurfaceIterator::next()
+ISurface::shared_ptr SurfaceIterator::next()
 {
     //NOT_IMPLEMENTED
     throw std::runtime_error("Not implemented");
 }
 
-const ISurface::SharedPtr SurfaceIterator::next() const
+const ISurface::shared_ptr SurfaceIterator::next() const
 {
     //NOT_IMPLEMENTED
     throw std::runtime_error("Not implemented");
@@ -418,14 +535,14 @@ const ISurface::SharedPtr SurfaceIterator::next() const
 //    return *f;
 }
 
-ISurface::SharedPtr SurfaceIterator::previous()
+ISurface::shared_ptr SurfaceIterator::previous()
 {
     throw std::runtime_error("Not implemented");
 //    --_index;
 //    return *_index.value();
 }
 
-const ISurface::SharedPtr SurfaceIterator::previous() const
+const ISurface::shared_ptr SurfaceIterator::previous() const
 {
     throw std::runtime_error("Not implemented");
 //    --_index;
@@ -502,16 +619,16 @@ bool SceneIterator::hasPrevious() const
     return false;
 }
 
-SceneNode::SharedPtr SceneIterator::next()
+SceneNode::shared_ptr SceneIterator::next()
 {
     //NOT_IMPLEMENTED
     //throw std::runtime_error("Not implemented");
-    SceneNode::WeakPtr n = _scene->item(_current);
+    SceneNode::weak_ptr n = _scene->item(_current);
     _current++;
     return n.lock();
 }
 
-const SceneNode::SharedPtr SceneIterator::next() const
+const SceneNode::shared_ptr SceneIterator::next() const
 {
     //NOT_IMPLEMENTED
     //throw std::runtime_error("Not implemented");
@@ -519,19 +636,19 @@ const SceneNode::SharedPtr SceneIterator::next() const
     //    assert(f);
     //    ++_index;
     //    return *f;
-    SceneNode::WeakPtr n = _scene->item(_current);
+    SceneNode::weak_ptr n = _scene->item(_current);
     _current++;
     return n.lock();
 }
 
-SceneNode::SharedPtr SceneIterator::previous()
+SceneNode::shared_ptr SceneIterator::previous()
 {
     throw std::runtime_error("Not implemented");
     //    --_index;
     //    return *_index.value();
 }
 
-const SceneNode::SharedPtr SceneIterator::previous() const
+const SceneNode::shared_ptr SceneIterator::previous() const
 {
     throw std::runtime_error("Not implemented");
     //    --_index;

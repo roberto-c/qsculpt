@@ -40,15 +40,15 @@ enum FaceFlags {
  */
 class Face {
 public:
-    typedef Face* SharedPtr;
-    typedef Face* WeakPtr;
+    typedef Face* shared_ptr;
+    typedef Face* weak_ptr;
     typedef Face* Ptr;
     
 private:
     ISurface*           _surface; // 4
     Edge*               _he; // 4
-    Vertex::WeakPtr     _vertex; // 4
-    Face::WeakPtr       _children; // 4
+    Vertex::weak_ptr     _vertex; // 4
+    Face::weak_ptr       _children; // 4
 
     size_t              _id; // 4
     FaceFlags           _flags; // 4

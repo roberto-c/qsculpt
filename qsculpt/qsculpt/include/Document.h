@@ -34,9 +34,9 @@ class ISurface;
 class Document : public IDocument
 {
 public:
-    typedef std::shared_ptr<Document>   SharedPtr;
+    typedef std::shared_ptr<Document>   shared_ptr;
     typedef std::shared_ptr<const Document>   const_shared_ptr;
-    typedef std::weak_ptr<Document>     WeakPtr;
+    typedef std::weak_ptr<Document>     weak_ptr;
     typedef std::weak_ptr<const Document>  const_weak_ptr;
     typedef std::unique_ptr<Document>   Ptr;
     
@@ -48,14 +48,39 @@ public:
     virtual void loadFile(const QString& fileName);
     virtual void saveFile(const QString& fileName);
     virtual void selectObject(int iid);
-    virtual QList<SceneNode::WeakPtr> getSelectedObjects() const;
-    virtual SceneNode::WeakPtr rootNode();
-    virtual SceneNode::WeakPtr rootNode() const;
-    virtual Scene::WeakPtr scene();
-    virtual Scene::WeakPtr scene() const;
+    virtual QList<SceneNode::weak_ptr> getSelectedObjects() const;
+    virtual SceneNode::weak_ptr rootNode();
+    virtual SceneNode::weak_ptr rootNode() const;
+    virtual Scene::weak_ptr scene();
+    virtual Scene::weak_ptr scene() const;
     virtual Iterator<SceneNode> sceneIterator();
     virtual Iterator<SceneNode> constSceneIterator() const;
     Iterator<ISurface> surfaceIterator();
+    
+    virtual SceneNode::shared_ptr findItem(uint iid);
+    
+    /**
+     * Returns the number of columns for this model.
+     *
+     * From QAbstractItemModel
+     */
+    virtual int	columnCount ( const QModelIndex & parent = QModelIndex() ) const;
+    
+    virtual QVariant	data ( const QModelIndex & index, 
+                              int role = Qt::DisplayRole ) const;
+    
+    virtual QModelIndex	index (int row, 
+                               int column, 
+                               const QModelIndex & parent = QModelIndex() ) const;
+    
+    virtual QModelIndex	parent ( const QModelIndex & index ) const;
+    
+    virtual int	rowCount ( const QModelIndex & parent = QModelIndex() ) const;
+    
+    virtual bool insertRow ( int row, const QModelIndex & parent = QModelIndex() );
+    
+    virtual void addItem(SceneNode::shared_ptr node, 
+                         const QModelIndex & parent = QModelIndex());
 // End IDocument interface
     
 private:

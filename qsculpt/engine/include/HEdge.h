@@ -28,8 +28,8 @@ enum EdgeFlags {
 
 class Edge {
 public:
-    typedef Edge*   SharedPtr;
-    typedef Edge*   WeakPtr;
+    typedef Edge*   shared_ptr;
+    typedef Edge*   weak_ptr;
     typedef Edge*   Ptr;
 
 private:
@@ -37,11 +37,11 @@ private:
 
     size_t         _id;    // 4
     EdgeFlags   _flags; // 4
-    Edge::WeakPtr        _next; // 4
-    Edge::WeakPtr        _prev; // 4
-    Edge::WeakPtr        _pair; // 4
-    Vertex::WeakPtr      _head; // 4
-    Vertex::WeakPtr      _tail; // 4
+    Edge::weak_ptr        _next; // 4
+    Edge::weak_ptr        _prev; // 4
+    Edge::weak_ptr        _pair; // 4
+    Vertex::weak_ptr      _head; // 4
+    Vertex::weak_ptr      _tail; // 4
     Face        *_face; // 4
     void        *_userData; // 4
 

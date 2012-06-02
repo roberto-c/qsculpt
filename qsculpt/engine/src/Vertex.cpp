@@ -17,16 +17,16 @@
 class Vertex::VertexIterator : public IIterator<Vertex>
 {
 public:
-    typedef Vertex::SharedPtr   SharedPtr;
-    typedef Vertex::WeakPtr     WeakPtr;
+    typedef Vertex::shared_ptr   shared_ptr;
+    typedef Vertex::weak_ptr     weak_ptr;
     typedef Vertex::Ptr         Ptr;
     
 private:
     friend class Vertex;
 
-    Vertex::SharedPtr         _v;
-    mutable Edge::SharedPtr   _iniHe;
-    mutable Edge::SharedPtr   _nextHe;
+    Vertex::shared_ptr         _v;
+    mutable Edge::shared_ptr   _iniHe;
+    mutable Edge::shared_ptr   _nextHe;
     mutable bool        _firstIt;
 
 protected:
@@ -56,34 +56,34 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next();
+    shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const;
+    const shared_ptr next() const;
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr peekNext();
+    shared_ptr peekNext();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr peekNext() const;
+    const shared_ptr peekNext() const;
 
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous();
+    shared_ptr previous();
 
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const;
+    const shared_ptr previous() const;
 
     /**
      * Set the current position to pos relative to origin.
@@ -97,17 +97,17 @@ public:
 class Vertex::FaceIterator : public IIterator<Face>
 {
 public:
-    typedef Face::SharedPtr   SharedPtr;
-    typedef Face::WeakPtr     WeakPtr;
+    typedef Face::shared_ptr   shared_ptr;
+    typedef Face::weak_ptr     weak_ptr;
     typedef Face::Ptr         Ptr;
     
 private:
 
     friend class Vertex;
     
-    Vertex::SharedPtr       _v;
-    mutable Edge::SharedPtr _iniHe;
-    mutable Edge::SharedPtr _nextHe;
+    Vertex::shared_ptr       _v;
+    mutable Edge::shared_ptr _iniHe;
+    mutable Edge::shared_ptr _nextHe;
     mutable bool            _firstIt;
     
 protected:
@@ -137,34 +137,34 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next();
+    shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const;
+    const shared_ptr next() const;
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr peekNext();
+    shared_ptr peekNext();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr peekNext() const;
+    const shared_ptr peekNext() const;
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous();
+    shared_ptr previous();
         
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const;
+    const shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -178,16 +178,16 @@ public:
 class Vertex::EdgeIterator : public IIterator<Edge>
 {
 public:
-    typedef Edge::SharedPtr     SharedPtr;
-    typedef Edge::WeakPtr       WeakPtr;
+    typedef Edge::shared_ptr     shared_ptr;
+    typedef Edge::weak_ptr       weak_ptr;
     typedef Edge::Ptr           Ptr;
     
 private:
     friend class Vertex;
     
-    Vertex::SharedPtr           _v;
-    mutable Edge::SharedPtr     _iniHe;
-    mutable Edge::SharedPtr     _nextHe;
+    Vertex::shared_ptr           _v;
+    mutable Edge::shared_ptr     _iniHe;
+    mutable Edge::shared_ptr     _nextHe;
     mutable bool                _firstIt;
     
 protected:
@@ -217,34 +217,34 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr next();
+    shared_ptr next();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr next() const;
+    const shared_ptr next() const;
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    SharedPtr peekNext();
+    shared_ptr peekNext();
     
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const SharedPtr peekNext() const;
+    const shared_ptr peekNext() const;
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    SharedPtr previous();
+    shared_ptr previous();
     
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const SharedPtr previous() const;
+    const shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -378,7 +378,7 @@ bool Vertex::VertexIterator::hasPrevious() const
     return false;
 }
 
-Vertex::VertexIterator::SharedPtr Vertex::VertexIterator::next()
+Vertex::VertexIterator::shared_ptr Vertex::VertexIterator::next()
 {
     assert(_nextHe != NULL);
     _firstIt = false;
@@ -387,7 +387,7 @@ Vertex::VertexIterator::SharedPtr Vertex::VertexIterator::next()
     return v;
 }
 
-const Vertex::VertexIterator::SharedPtr Vertex::VertexIterator::next() const
+const Vertex::VertexIterator::shared_ptr Vertex::VertexIterator::next() const
 {
     assert(_nextHe != NULL);
     _firstIt = false;
@@ -396,22 +396,22 @@ const Vertex::VertexIterator::SharedPtr Vertex::VertexIterator::next() const
     return v;
 }
 
-Vertex::VertexIterator::SharedPtr Vertex::VertexIterator::peekNext()
+Vertex::VertexIterator::shared_ptr Vertex::VertexIterator::peekNext()
 {
     return _nextHe->head();
 }
 
-const Vertex::VertexIterator::SharedPtr Vertex::VertexIterator::peekNext() const
+const Vertex::VertexIterator::shared_ptr Vertex::VertexIterator::peekNext() const
 {
     return _nextHe->head();
 }
 
-Vertex::VertexIterator::SharedPtr Vertex::VertexIterator::previous()
+Vertex::VertexIterator::shared_ptr Vertex::VertexIterator::previous()
 {
     NOT_IMPLEMENTED
 }
 
-const Vertex::VertexIterator::SharedPtr Vertex::VertexIterator::previous() const
+const Vertex::VertexIterator::shared_ptr Vertex::VertexIterator::previous() const
 {
     NOT_IMPLEMENTED
 }
@@ -453,7 +453,7 @@ bool Vertex::FaceIterator::hasPrevious() const
 }
 
 
-Vertex::FaceIterator::SharedPtr Vertex::FaceIterator::next()
+Vertex::FaceIterator::shared_ptr Vertex::FaceIterator::next()
 {
     assert(_nextHe != NULL);
     _firstIt = false;
@@ -462,7 +462,7 @@ Vertex::FaceIterator::SharedPtr Vertex::FaceIterator::next()
     return f;    
 }
 
-const Vertex::FaceIterator::SharedPtr Vertex::FaceIterator::next() const
+const Vertex::FaceIterator::shared_ptr Vertex::FaceIterator::next() const
 {
     assert(_nextHe != NULL);
     _firstIt = false;
@@ -471,22 +471,22 @@ const Vertex::FaceIterator::SharedPtr Vertex::FaceIterator::next() const
     return f;    
 }
 
-Vertex::FaceIterator::SharedPtr Vertex::FaceIterator::peekNext()
+Vertex::FaceIterator::shared_ptr Vertex::FaceIterator::peekNext()
 {
     return _nextHe->face();
 }
 
-const Vertex::FaceIterator::SharedPtr Vertex::FaceIterator::peekNext() const
+const Vertex::FaceIterator::shared_ptr Vertex::FaceIterator::peekNext() const
 {
     return _nextHe->face();
 }
 
-Vertex::FaceIterator::SharedPtr Vertex::FaceIterator::previous()
+Vertex::FaceIterator::shared_ptr Vertex::FaceIterator::previous()
 {
     NOT_IMPLEMENTED
 }
 
-const Vertex::FaceIterator::SharedPtr Vertex::FaceIterator::previous() const
+const Vertex::FaceIterator::shared_ptr Vertex::FaceIterator::previous() const
 {
     NOT_IMPLEMENTED
 }
@@ -529,7 +529,7 @@ bool Vertex::EdgeIterator::hasPrevious() const
 }
 
 
-Vertex::EdgeIterator::SharedPtr Vertex::EdgeIterator::next()
+Vertex::EdgeIterator::shared_ptr Vertex::EdgeIterator::next()
 {
     assert(_nextHe != NULL);
     _firstIt = false;
@@ -538,7 +538,7 @@ Vertex::EdgeIterator::SharedPtr Vertex::EdgeIterator::next()
     return e;
 }
 
-const Vertex::EdgeIterator::SharedPtr Vertex::EdgeIterator::next() const
+const Vertex::EdgeIterator::shared_ptr Vertex::EdgeIterator::next() const
 {
     assert(_nextHe != NULL);
     _firstIt = false;
@@ -547,22 +547,22 @@ const Vertex::EdgeIterator::SharedPtr Vertex::EdgeIterator::next() const
     return e;
 }
 
-Vertex::EdgeIterator::SharedPtr Vertex::EdgeIterator::peekNext()
+Vertex::EdgeIterator::shared_ptr Vertex::EdgeIterator::peekNext()
 {
     return _nextHe;
 }
 
-const Vertex::EdgeIterator::SharedPtr Vertex::EdgeIterator::peekNext() const
+const Vertex::EdgeIterator::shared_ptr Vertex::EdgeIterator::peekNext() const
 {
     return _nextHe;
 }
 
-Vertex::EdgeIterator::SharedPtr Vertex::EdgeIterator::previous()
+Vertex::EdgeIterator::shared_ptr Vertex::EdgeIterator::previous()
 {
     NOT_IMPLEMENTED
 }
 
-const Vertex::EdgeIterator::SharedPtr Vertex::EdgeIterator::previous() const
+const Vertex::EdgeIterator::shared_ptr Vertex::EdgeIterator::previous() const
 {
     NOT_IMPLEMENTED
 }

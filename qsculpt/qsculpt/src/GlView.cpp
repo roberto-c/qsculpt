@@ -427,7 +427,7 @@ void GlCanvas::paintGL()
     glFlush();
 }
 
-void GlCanvas::drawScene(Scene::SharedPtr scene)
+void GlCanvas::drawScene(Scene::shared_ptr scene)
 {
     if (_d->renderer == NULL)
         return;
@@ -443,10 +443,10 @@ void GlCanvas::drawScene(Scene::SharedPtr scene)
     }
 }
 
-void GlCanvas::drawSceneNode(SceneNode::SharedPtr node)
+void GlCanvas::drawSceneNode(SceneNode::shared_ptr node)
 {
     ISurface* mesh;
-    SurfaceNode::SharedPtr s;
+    SurfaceNode::shared_ptr s;
     
     if (node->nodeType() == NT_Surface)
     {
@@ -786,7 +786,7 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
     while(it.hasNext()) {
         glPushMatrix();
         auto n = it.next();
-        SurfaceNode::SharedPtr s;
+        SurfaceNode::shared_ptr s;
         if (n->nodeType() == NT_Surface) {
             s = std::dynamic_pointer_cast<SurfaceNode> (n);
             mesh = s->surface();
@@ -831,7 +831,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
         memset(d, 0, width*height*sizeof(GLuint));
         glPushMatrix();
         auto n = it.next();
-        SurfaceNode::SharedPtr s;
+        SurfaceNode::shared_ptr s;
         if (n->nodeType() == NT_Surface) {
             s = std::dynamic_pointer_cast<SurfaceNode>(n);
             mesh = s->surface();

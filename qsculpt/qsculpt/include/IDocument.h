@@ -21,6 +21,7 @@
 #define IDOCUMENT_H
 
 #include <QtCore/QObject>
+#include <QtCore/QAbstractItemModel>
 #include "IIterator.h"
 #include "Scene.h"
 
@@ -33,14 +34,14 @@ class SceneNode;
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class IDocument : public QObject, public std::enable_shared_from_this<IDocument>
+class IDocument : public QAbstractItemModel, public std::enable_shared_from_this<IDocument>
 {
     Q_OBJECT
 
 public:
-    typedef std::shared_ptr<IDocument>   SharedPtr;
+    typedef std::shared_ptr<IDocument>   shared_ptr;
     typedef std::shared_ptr<const IDocument>   const_shared_ptr;
-    typedef std::weak_ptr<IDocument>     WeakPtr;
+    typedef std::weak_ptr<IDocument>     weak_ptr;
     typedef std::weak_ptr<const IDocument>  const_weak_ptr;
     typedef std::unique_ptr<IDocument>   Ptr;
     
@@ -77,6 +78,33 @@ public:
      */
     virtual void saveFile(const QString& fileName) = 0;
 
+    
+    /**
+     * This method add a new item into the document.
+     *
+     * The item is an scene node and it is inserted under the parent stated by
+     * the parent QModelIndex. If the index is invalid, then the node is
+     * inserted at the root level.
+     *
+     * @param node Shared pointer to the node to insert. The implementation of
+     * this class will share ownership of the node. 
+     *
+     * @param parent QModelIndex which should be the parent. The node will be
+     * inserted as a child of parent node. If parent is invalid, the node is
+     * going to be inerted as child of the root node.
+     */
+    virtual void addItem(SceneNode::shared_ptr node, 
+                         const QModelIndex & parent = QModelIndex()) = 0;
+    
+    /**
+     * This method searches for a node item with an IID of iid.
+     *
+     * The item is retained by this Document.
+     *
+     * @param iid instance id of the item to find
+     */
+    virtual SceneNode::shared_ptr findItem(uint iid) = 0;
+    
     /**
      * 
      */
@@ -85,7 +113,7 @@ public:
     /**
      * 
      */
-    virtual QList<SceneNode::WeakPtr> getSelectedObjects() const = 0;
+    virtual QList<SceneNode::weak_ptr> getSelectedObjects() const = 0;
     
     virtual Iterator<SceneNode> sceneIterator() = 0;
     
@@ -94,25 +122,24 @@ public:
     /**
      * Get the root scene node of the document.
      */
-    virtual SceneNode::WeakPtr rootNode() = 0;
+    virtual SceneNode::weak_ptr rootNode() = 0;
     
     /**
      * Get the root node of the document
      */
-    virtual SceneNode::WeakPtr rootNode() const = 0;
+    virtual SceneNode::weak_ptr rootNode() const = 0;
     
     /**
      * Get the scene object of the document. The scene object
      * is a container with all the objects or actors in the scene.
      */
-    virtual Scene::WeakPtr scene() = 0;
+    virtual Scene::weak_ptr scene() = 0;
     
     /**
      * Get the scene object of the document. The scene object
      * is a container with all the objects or actors in the scene.
      */
-    virtual Scene::WeakPtr scene() const = 0;
-    
+    virtual Scene::weak_ptr scene() const = 0;
     
 signals:
     void changed(IDocument::ChangeType type, ISurface* object);
