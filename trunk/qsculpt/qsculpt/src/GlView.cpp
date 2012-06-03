@@ -452,7 +452,7 @@ void GlCanvas::drawSceneNode(SceneNode::shared_ptr node)
     {
         s = std::dynamic_pointer_cast<SurfaceNode>(node);
         mesh = s->surface();
-        if (mesh->isSelected()) {
+        if (node->isSelected()) {
             g_shaderProgram->releaseProgram();
             drawBoundingBox(mesh);
             g_shaderProgram->useProgram();

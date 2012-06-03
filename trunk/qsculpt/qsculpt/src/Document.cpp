@@ -353,14 +353,65 @@ int Document::columnCount(const QModelIndex & parent) const
     return 1;
 }
 
+Qt::ItemFlags Document::flags ( const QModelIndex & index ) const
+{
+    //return QAbstractItemModel::flags(index);
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+}
+
 QVariant Document::data (const QModelIndex & index, 
                            int role ) const
 {
     if (role == Qt::DisplayRole) {
-        QVariant data(QString("Name"));
-        return data;
+        SceneNode::shared_ptr p = NULL;
+        if (index.isValid()) {
+            p = _d->scene->findByIID(index.internalId());
+        }
+        if (p) {
+            QString str = QString("%1 (%2)")
+                        .arg(QString(p->name().c_str()))
+                        .arg(p->iid());
+            QVariant data(str);
+            return data;
+        } else {
+            QString str = QString("Unamed");
+            QVariant data(str);
+            return data;
+        }
+    } else if (role == Qt::EditRole) {
+        qDebug() << "data: EditRole";
     }
     return QVariant();
+}
+
+bool Document::setData (const QModelIndex & index,
+                        const QVariant & value, 
+                        int role)
+{
+    if (role == Qt::DisplayRole) {
+        SceneNode::shared_ptr p = NULL;
+        if (index.isValid()) {
+            p = _d->scene->findByIID(index.internalId());
+        }
+        if (p) {
+            p->setName(value.toString().toStdString());
+            emit dataChanged(index, index);
+            return true;
+        }
+        return false;
+    } else if (role == Qt::EditRole) {
+        SceneNode::shared_ptr p = NULL;
+        if (index.isValid()) {
+            p = _d->scene->findByIID(index.internalId());
+        }
+        if (p) {
+            p->setName(value.toString().toStdString());
+            emit dataChanged(index, index);
+            return true;
+        }
+        return false;
+    }
+    return QAbstractItemModel::setData(index, value, role);
 }
 
 QModelIndex Document::index (int row, 
