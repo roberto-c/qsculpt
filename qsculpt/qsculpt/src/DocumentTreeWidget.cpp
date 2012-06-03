@@ -27,6 +27,9 @@
 #include "DocumentTreeWidget.h"
 #include "IDocument.h"
 #include "ui_DocumentTreeWidget.h"
+#include "DocumentView.h"
+#include "QSculptApp.h"
+#include "QSculptWindow.h"
 
 
 
@@ -65,9 +68,34 @@ void DocumentTreeWidget::setDocument(IDocument::shared_ptr doc)
 void DocumentTreeWidget::itemActivated(const QModelIndex &index)
 {
     qDebug() << "Index selected";
-    SceneNode::shared_ptr ptr = _d->doc->findItem(index.internalId());
-    if (ptr) {
-        ptr->setSelected(true);
+//    SceneNode::shared_ptr ptr = _d->doc->findItem(index.internalId());
+//    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+//    if (ptr && view) {
+//        ptr->setSelected(true);
+//        view->updateView();
+//    }
+}
+
+void DocumentTreeWidget::onSelectionChanged(const QItemSelection & selected,
+                                      const QItemSelection & deselected )
+{
+    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    SceneNode::shared_ptr ptr;
+    
+    foreach(QModelIndex index, selected.indexes()) {
+        ptr = _d->doc->findItem(index.internalId());
+        if (ptr) {
+            ptr->setSelected(true);
+        }
+    }
+    foreach(QModelIndex index, deselected.indexes()) {
+        ptr = _d->doc->findItem(index.internalId());
+        if (ptr) {
+            ptr->setSelected(false);
+        }
+    }
+    if (view) {
+        view->updateView();
     }
 }
 
@@ -90,6 +118,11 @@ void DocumentTreeWidget::updateTree()
                      SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
                      this,
                      SLOT(itemActivated(QModelIndex)));
+    
+    QObject::connect(sm, 
+                     SIGNAL(selectionChanged(const QItemSelection &,const QItemSelection &)),
+                     this,
+                     SLOT(onSelectionChanged(const QItemSelection &,const QItemSelection &)));
     
     //QStandardItem *parentItem = _d->doc->invisibleRootItem();
     //parentItem->removeRows(0, parentItem->rowCount());

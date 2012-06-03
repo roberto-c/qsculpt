@@ -47,6 +47,13 @@ public:
 public slots:
     void itemActivated(const QModelIndex &index);
     
+    /**
+     * Handles the selection / deselection of item in the model view.
+     *
+     */
+    void onSelectionChanged(const QItemSelection & selected,
+                            const QItemSelection & deselected );
+    
 private:
     void updateTree();
     

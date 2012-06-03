@@ -81,6 +81,13 @@ public:
     
     virtual void addItem(SceneNode::shared_ptr node, 
                          const QModelIndex & parent = QModelIndex());
+    
+    virtual bool setData (const QModelIndex & index,
+                            const QVariant & value, 
+                          int role = Qt::EditRole );
+    
+    virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
+
 // End IDocument interface
     
 private:
