@@ -41,18 +41,25 @@
 #include "MeshEditCommands.h"
 #include "SceneNode.h"
 #include "Box.h"
+#include "ui_MainWindow.h"
+
+struct QSculptWindow::Impl : public Ui::MainWindow {
+    DocumentView*               documentView;
+    CommandManager              commandManager;
+    QString                     curFile;
+    IDocument::shared_ptr       document;
+    ICommand*                   currentCommand;
+    
+    QActionGroup*               toolActionGroup;
+    QDockWidget*                dockCommandOptions;
+    QToolBar*                   toolsToolbar;
+    Console*                    console;
+    DocumentTreeWidget*         docTree;
+};
 
 QSculptWindow::QSculptWindow()
-    : m_documentView(new DocumentView(this)),
-    m_document(new Document),
-    m_currentCommand(NULL),
-    m_toolActionGroup(NULL),
-    m_dockCommandOptions(NULL),
-    m_toolsToolbar(NULL)
+    : d_(new Impl)
 {
-    Q_CHECK_PTR(m_documentView);
-    Q_CHECK_PTR(m_document);
-
     createWidgets();
 
     readSettings();
@@ -64,50 +71,52 @@ QSculptWindow::~QSculptWindow()
 
 void QSculptWindow::createWidgets()
 {
-    setupUi(this);
-    m_documentView->setDocument(m_document);
+    d_->setupUi(this);
+    d_->documentView = new DocumentView(this);
+    d_->document = std::make_shared<Document>();
+    d_->documentView->setDocument(d_->document);
 
-    setCentralWidget(m_documentView);
+    setCentralWidget(d_->documentView);
 
-    m_dockCommandOptions = new QDockWidget("Options", NULL);
-    Q_CHECK_PTR(m_dockCommandOptions);
-    m_dockCommandOptions->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, m_dockCommandOptions);
+    d_->dockCommandOptions = new QDockWidget("Options", NULL);
+    Q_CHECK_PTR(d_->dockCommandOptions);
+    d_->dockCommandOptions->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, d_->dockCommandOptions);
 
-    m_viewFullscreen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
-    connect(m_showGrid, SIGNAL(toggled(bool)), m_documentView, SLOT(setGridVisible(bool)));
-    connect(m_showNormals, SIGNAL(toggled(bool)), m_documentView, SLOT(setNormalsVisible(bool)));
-    connect(m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
-    connect(m_document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)),
+    d_->m_viewFullscreen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+    connect(d_->m_showGrid, SIGNAL(toggled(bool)), d_->documentView, SLOT(setGridVisible(bool)));
+    connect(d_->m_showNormals, SIGNAL(toggled(bool)), d_->documentView, SLOT(setNormalsVisible(bool)));
+    connect(d_->m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
+    connect(d_->document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)),
             this, SLOT(documentChanged(IDocument::ChangeType)));
 
-    //connect(m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
-    connect(m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
+    //connect(d_->m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
+    connect(d_->m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
 
-    _console = Console::instance();
+    d_->console = Console::instance();
     
-    _docTree = new DocumentTreeWidget(this);
-    _docTree->setDocument(m_document);
+    d_->docTree = new DocumentTreeWidget(this);
+    d_->docTree->setDocument(d_->document);
 
     QAction *action = NULL;
     ICommand* cmd = NULL;
 
     //action = new QAction("AddSurface", this);
     cmd = new AddSurfaceCommand;
-    m_commandManager.registerCommand("AddBox", m_addBox, cmd);
+    d_->commandManager.registerCommand("AddBox", d_->m_addBox, cmd);
     
-    action = m_commandManager.createUndoAction(this);
+    action = d_->commandManager.createUndoAction(this);
     Q_CHECK_PTR(action);
     action->setShortcut(QKeySequence::Undo);
-    menuEdit->addAction(action);
-    action = m_commandManager.createRedoAction(this);
+    d_->menuEdit->addAction(action);
+    action = d_->commandManager.createRedoAction(this);
     Q_CHECK_PTR(action);
     action->setShortcut(QKeySequence::Redo);
-    menuEdit->addAction(action);
+    d_->menuEdit->addAction(action);
 
-    m_toolActionGroup = new QActionGroup(this);
-    Q_CHECK_PTR(m_toolActionGroup);
-    m_toolsToolbar = addToolBar("Tools");
+    d_->toolActionGroup = new QActionGroup(this);
+    Q_CHECK_PTR(d_->toolActionGroup);
+    d_->toolsToolbar = addToolBar("Tools");
 
     
     action = new QAction("Select", this);
@@ -118,10 +127,10 @@ void QSculptWindow::createWidgets()
     action->setToolTip("Select an object.");
     action->setCheckable(true);
     action->setIcon(QIcon(":/img_select.png"));
-    menuTools->addAction(action);
-    m_toolActionGroup->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("Select", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolActionGroup->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("Select", action, cmd);
 
     action = new QAction("SelectFaces", this);
     cmd = new SelectCommand;
@@ -129,10 +138,10 @@ void QSculptWindow::createWidgets()
     action->setToolTip("Select faces.");
     action->setCheckable(true);
     action->setIcon(QIcon(":/img_select.png"));
-    menuTools->addAction(action);
-    m_toolActionGroup->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("SelectFaces", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolActionGroup->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("SelectFaces", action, cmd);
 
     action = new QAction("SelectVertices", this);
     cmd = new SelectCommand;
@@ -140,19 +149,19 @@ void QSculptWindow::createWidgets()
     action->setToolTip("Select vertices.");
     action->setCheckable(true);
     action->setIcon(QIcon(":/img_select.png"));
-    menuTools->addAction(action);
-    m_toolActionGroup->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("SelectVertices", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolActionGroup->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("SelectVertices", action, cmd);
 
     cmd = new OrbitCommand;
     action = new QAction("Orbit", this);
     action->setCheckable(true);
     action->setToolTip("Orbit view");
-    menuTools->addAction(action);
-    m_toolActionGroup->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("Orbit", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolActionGroup->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("Orbit", action, cmd);
 
 	action = new QAction("Move", this);
 	cmd = new TransformCommand;
@@ -162,10 +171,10 @@ void QSculptWindow::createWidgets()
 	action->setToolTip("Move an object.");
     action->setCheckable(true);
 	//action->setEnabled(false);
-	menuTools->addAction(action);
-	m_toolActionGroup->addAction(action);
-	m_toolsToolbar->addAction(action);
-	m_commandManager.registerCommand("Move", action, cmd);
+	d_->menuTools->addAction(action);
+	d_->toolActionGroup->addAction(action);
+	d_->toolsToolbar->addAction(action);
+	d_->commandManager.registerCommand("Move", action, cmd);
     
     action = new QAction("Rotate", this);
 	cmd = new TransformCommand;
@@ -175,10 +184,10 @@ void QSculptWindow::createWidgets()
 	action->setToolTip("Rotate an object.");
     action->setCheckable(true);
 	//action->setEnabled(false);
-	menuTools->addAction(action);
-	m_toolActionGroup->addAction(action);
-	m_toolsToolbar->addAction(action);
-	m_commandManager.registerCommand("Rotate", action, cmd);
+	d_->menuTools->addAction(action);
+	d_->toolActionGroup->addAction(action);
+	d_->toolsToolbar->addAction(action);
+	d_->commandManager.registerCommand("Rotate", action, cmd);
 
     action = new QAction("Brush", this);
     cmd = new BrushCommand;
@@ -188,13 +197,13 @@ void QSculptWindow::createWidgets()
     action->setToolTip("Deform the object using different kinds of brushes.");
     action->setCheckable(true);
     action->setIcon(QIcon(":/img_brush.png"));
-    menuTools->addAction(action);
-    m_toolActionGroup->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("Brush", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolActionGroup->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("Brush", action, cmd);
 
-    menuTools->addSeparator();
-    m_toolsToolbar->addSeparator();
+    d_->menuTools->addSeparator();
+    d_->toolsToolbar->addSeparator();
 
     action = new QAction("Subdivide", this);
     cmd = new SubdivideCommand;
@@ -202,9 +211,9 @@ void QSculptWindow::createWidgets()
     Q_CHECK_PTR(cmd);
     action->setToolTip("Subdivides each object face.");
     action->setIcon(QIcon(":/img_subdivide.png"));
-    menuTools->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("Subdivide", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("Subdivide", action, cmd);
     
     action = new QAction("EditSubdivide", this);
     cmd = new EditSubdivideCommand;
@@ -212,31 +221,31 @@ void QSculptWindow::createWidgets()
     Q_CHECK_PTR(cmd);
     action->setToolTip("Move subdivision control points");
     action->setIcon(QIcon(":/img_subdivide.png"));
-    menuTools->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("EditSubdivide", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("EditSubdivide", action, cmd);
 
     cmd = new SmoothSurfaceCommand;
     action = new QAction("SmoothSurface", this);
-    menuTools->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("SmoothSurface", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("SmoothSurface", action, cmd);
     
     cmd = new TestCommand;
     action = new QAction("Test", this);
-    menuTools->addAction(action);
-    m_toolsToolbar->addAction(action);
-    m_commandManager.registerCommand("Test", action, cmd);
+    d_->menuTools->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("Test", action, cmd);
     
-    connect(&m_commandManager, SIGNAL(commandActivated(QString)),
+    connect(&d_->commandManager, SIGNAL(commandActivated(QString)),
             this, SLOT(commandActivated(QString)));
 
     // Activate default tool
-    m_commandManager.setActiveCommand("Select");
+    d_->commandManager.setActiveCommand("Select");
 
-    connect(m_save, SIGNAL(activated()), this, SLOT(save()));
-    connect(m_saveAs, SIGNAL(activated()), this, SLOT(saveAs()));
-    connect(m_open, SIGNAL(activated()), this, SLOT(open()));
+    connect(d_->m_save, SIGNAL(activated()), this, SLOT(save()));
+    connect(d_->m_saveAs, SIGNAL(activated()), this, SLOT(saveAs()));
+    connect(d_->m_open, SIGNAL(activated()), this, SLOT(open()));
 
     if (layout())
     {
@@ -244,32 +253,40 @@ void QSculptWindow::createWidgets()
     	layout()->setSpacing(0);
     }
 
-    _console->consoleWindow()->setParent(this);
-    this->addDockWidget(Qt::BottomDockWidgetArea, _console->consoleWindow());
+    d_->console->consoleWindow()->setParent(this);
+    this->addDockWidget(Qt::BottomDockWidgetArea, d_->console->consoleWindow());
     
-    addDockWidget(Qt::RightDockWidgetArea, _docTree);
+    addDockWidget(Qt::RightDockWidgetArea, d_->docTree);
 }
 
 IDocument::const_shared_ptr QSculptWindow::getCurrentDocument() const
 {
-    return m_document;
+    return d_->document;
 }
 
 IDocument::shared_ptr QSculptWindow::getCurrentDocument()
 {
-    return m_document;
+    return d_->document;
 }
 
 DocumentView* QSculptWindow::getCurrentView() const
 {
-    return m_documentView;
+    return d_->documentView;
+}
+
+QWidget* QSculptWindow::toolWidget(const QString & key) const
+{
+    if (key == "DocTree") {
+        return d_->docTree;
+    }
+    return NULL;
 }
 
 void QSculptWindow::closeEvent(QCloseEvent *event)
 {
     if (maybeSave()) {
         writeSettings();
-        _console->consoleWindow()->close();
+        d_->console->consoleWindow()->close();
         event->accept();
     } else {
         event->ignore();
@@ -283,9 +300,9 @@ void QSculptWindow::newFile()
         //textEdit->clear();
         setCurrentFile("");
 //        Document * ndoc = new Document;
-//        m_documentView->setDocument(ndoc);
-//        delete m_document;
-//        m_document = ndoc;
+//        d_->documentView->setDocument(ndoc);
+//        delete d_->document;
+//        d_->document = ndoc;
     }
 }
 
@@ -300,10 +317,10 @@ void QSculptWindow::open()
 
 bool QSculptWindow::save()
 {
-    if (m_curFile.isEmpty()) {
+    if (d_->curFile.isEmpty()) {
         return saveAs();
     } else {
-        return saveFile(m_curFile);
+        return saveFile(d_->curFile);
     }
 }
 
@@ -366,9 +383,9 @@ bool QSculptWindow::maybeSave()
 void QSculptWindow::loadFile(const QString &fileName)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (m_document)
+    if (d_->document)
     {
-        m_document->loadFile( fileName );
+        d_->document->loadFile( fileName );
     }
     QApplication::restoreOverrideCursor();
 
@@ -379,9 +396,9 @@ void QSculptWindow::loadFile(const QString &fileName)
 bool QSculptWindow::saveFile(const QString &fileName)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (m_document)
+    if (d_->document)
     {
-        m_document->saveFile( fileName );
+        d_->document->saveFile( fileName );
     }
     QApplication::restoreOverrideCursor();
 
@@ -392,14 +409,14 @@ bool QSculptWindow::saveFile(const QString &fileName)
 
 void QSculptWindow::setCurrentFile(const QString &fileName)
 {
-    m_curFile = fileName;
+    d_->curFile = fileName;
     setWindowModified(false);
 
     QString shownName;
-    if (m_curFile.isEmpty())
+    if (d_->curFile.isEmpty())
         shownName = "untitled.txt";
     else
-        shownName = strippedName(m_curFile);
+        shownName = strippedName(d_->curFile);
 
     setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("Application")));
 }
@@ -411,13 +428,13 @@ QString QSculptWindow::strippedName(const QString &fullFileName)
 
 void QSculptWindow::addBox()
 {
-    //m_document->addObject( IDocument::Box );
+    //d_->document->addObject( IDocument::Box );
 }
 
 void QSculptWindow::addSphere()
 {
-    //m_document->addObject( IDocument::Sphere );
-    //	QList<IObject3D*> objects = m_document->getSelectedObjects();
+    //d_->document->addObject( IDocument::Sphere );
+    //	QList<IObject3D*> objects = d_->document->getSelectedObjects();
     //	if (objects.size() > 0)
     //	{
     //		IObject3D* mesh = objects[0];
@@ -441,12 +458,12 @@ void QSculptWindow::addSphere()
 
 void QSculptWindow::showGrid(bool val)
 {
-    m_documentView->setGridVisible( val );
+    d_->documentView->setGridVisible( val );
 }
 
 ICommand* QSculptWindow::getSelectedCommand() const
 {
-    return m_commandManager.getActiveCommand();
+    return d_->commandManager.getActiveCommand();
 }
 
 void QSculptWindow::documentChanged(IDocument::ChangeType /*type*/)
@@ -460,18 +477,18 @@ void QSculptWindow::setOptionsWidget(QWidget* widget)
     if (widget)
     {
         // Get the current widget on the dock and hide it
-        QWidget* wid = m_dockCommandOptions->widget();
+        QWidget* wid = d_->dockCommandOptions->widget();
         if (wid)
         {
             wid->hide();
         }
         // Set the new widget on the dock and be sure
         // it's visible
-        m_dockCommandOptions->setWidget(widget);
+        d_->dockCommandOptions->setWidget(widget);
         if (widget)
         {
             widget->show();
-            m_dockCommandOptions->show();
+            d_->dockCommandOptions->show();
         }
     }
 }
@@ -480,7 +497,7 @@ void QSculptWindow::commandActivated(QString name)
 {
     qDebug() << "QSculptWindow::commandActivated";
     Q_UNUSED(name);
-    ICommand* cmd = m_commandManager.getActiveCommand();
+    ICommand* cmd = d_->commandManager.getActiveCommand();
     if (cmd)
     {
 
@@ -493,19 +510,19 @@ void QSculptWindow::viewFullscreen(bool value)
     if (value)
     {
         showFullScreen();
-        if (m_dockCommandOptions)
+        if (d_->dockCommandOptions)
         {
-            m_dockCommandOptions->setWindowOpacity(0.75);
-            m_documentView->grabMouse(true);
+            d_->dockCommandOptions->setWindowOpacity(0.75);
+            d_->documentView->grabMouse(true);
         }
     }
     else
     {
         showNormal();
-        if (m_dockCommandOptions)
+        if (d_->dockCommandOptions)
         {
-            m_dockCommandOptions->setWindowOpacity(1.0);
-            m_documentView->grabMouse(false);
+            d_->dockCommandOptions->setWindowOpacity(1.0);
+            d_->documentView->grabMouse(false);
         }
     }
 }

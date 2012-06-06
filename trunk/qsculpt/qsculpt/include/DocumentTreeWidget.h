@@ -44,6 +44,11 @@ public:
      */
     void setDocument(IDocument::shared_ptr doc);
     
+    /**
+     *
+     */
+    QModelIndexList selectedIndexes() const;
+    
 public slots:
     void itemActivated(const QModelIndex &index);
     
