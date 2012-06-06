@@ -21,6 +21,7 @@
 #include "HEdge.h"
 #include "Octree.h"
 #include "Color.h"
+#include "DocumentTreeWidget.h"
 
 AddSurfaceCommand::AddSurfaceCommand()
 : CommandBase("AddSurface")
@@ -45,11 +46,17 @@ ICommand* AddSurfaceCommand::clone() const
 void AddSurfaceCommand::execute()
 {
     IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
-    if (doc)
+    DocumentTreeWidget * treewdt = qobject_cast<DocumentTreeWidget*>( g_pApp->getMainWindow()->toolWidget("DocTree"));
+    if (doc && treewdt)
     {
         _surface = SurfaceNode::shared_ptr(new SurfaceNode(new Box));
         _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
-        doc->addItem(_surface);
+        QModelIndexList list = treewdt->selectedIndexes();
+        if (list.length() == 1) {
+            doc->addItem(_surface, list.first());
+        } else {
+            doc->addItem(_surface);
+        }
         qDebug() << "IID=" << _surface->iid();
     }
 }

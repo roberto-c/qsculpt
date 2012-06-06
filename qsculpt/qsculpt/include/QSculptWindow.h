@@ -24,7 +24,7 @@
 
 #include <QtGui/QMainWindow>
 #include <QtCore/QStack>
-#include "ui_MainWindow.h"
+
 #include "IDocument.h"
 #include "CommandManager.h"
 
@@ -38,7 +38,7 @@ class DocumentTreeWidget;
 /**
  * SolidPaint3D main window.
  */
-class QSculptWindow : public QMainWindow, private Ui::MainWindow
+class QSculptWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -80,6 +80,19 @@ public:
      */
     void setOptionsWidget( QWidget* widget);
 
+    /**
+     * This method is used to get the pointer to one of the docking widget.
+     *
+     * The caller should cast the widget to the correct widget to use if needed.
+     *
+     * @param key id of the widget to retrieve. Each widget is added to a lookup
+     * table. This parameter is the index in that lookup table.
+     *
+     * @return The widget registered with the given key. Null if the key is not
+     * found. 
+     */
+    QWidget* toolWidget(const QString & key) const;
+    
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -138,17 +151,8 @@ private:
     void setCurrentFile(const QString &fileName);
     QString strippedName(const QString &fullFileName);
 
-    DocumentView*   m_documentView;
-    CommandManager  m_commandManager;
-    QString         m_curFile;
-    IDocument::shared_ptr      m_document;
-    ICommand*       m_currentCommand;
-
-    QActionGroup*   m_toolActionGroup;
-    QDockWidget*    m_dockCommandOptions;
-    QToolBar*       m_toolsToolbar;
-    Console*         _console;
-    DocumentTreeWidget* _docTree;
+    struct Impl;
+    QScopedPointer<Impl> d_;
 };
 
 
