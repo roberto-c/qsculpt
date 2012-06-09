@@ -30,6 +30,9 @@
 #include "SceneNode.h"
 #include "Scene.h"
 
+#define PLASTILINA_TRACE_DISABLE = 1
+#include "Logging.h"
+
 static QAtomicInt NEXT_ID(0);
 
 class SurfaceIterator : public IIterator<ISurface>
@@ -162,11 +165,22 @@ public:
 
 struct Document::Impl {
     Scene::shared_ptr       scene;
-    SceneNode::shared_ptr   rootNode;
     
-    Impl() :scene(new Scene),
-        rootNode(new SceneNode("Scene")) {
-        
+    Impl() :scene(std::make_shared<Scene>()) 
+    {
+    }
+    
+    void getSelectedNodesRecursive(const SceneNode::shared_ptr & node,
+                                   QList<SceneNode::weak_ptr> & list) 
+    {
+        Iterator<SceneNode> it = node->constIterator();
+        while (it.hasNext()) {
+            auto n = it.next();
+            if (n->isSelected()) {
+                list.append(n);
+            }
+            getSelectedNodesRecursive(n, list);
+        }
     }
 };
 
@@ -297,11 +311,10 @@ void Document::saveFile(const QString& fileName)
 
 void Document::selectObject(int iid)
 {
-//    ISurface *s = getObject(iid);
-//    if (s)
-//    {
-//        s->setSelected(true);
-//    }
+    auto node = findItem(iid);
+    if (node) {
+        node->setSelected(true);
+    }
 }
 
 QList<SceneNode::weak_ptr> Document::getSelectedObjects() const
@@ -309,34 +322,9 @@ QList<SceneNode::weak_ptr> Document::getSelectedObjects() const
     QList<SceneNode::weak_ptr> selectedObjectList;
     selectedObjectList.clear();
 
-    Iterator<SceneNode> it = constSceneIterator();
-    while (it.hasNext()) {
-        auto n = it.next();
-        if (n->isSelected()) {
-            selectedObjectList.append(n);
-        }
-//        if (n->nodeType() == NT_Surface)
-//        {
-//            ISurface *s = static_cast<SurfaceNode*>(n)->surface();
-//            if (s->isSelected())
-//            {
-//                selectedObjectList.append(n);
-//            }
-//        }
-    }
+    _d->getSelectedNodesRecursive(_d->scene, selectedObjectList);
     return selectedObjectList;
 }
-
-SceneNode::weak_ptr Document::rootNode()
-{
-    return _d->rootNode;
-}
-
-SceneNode::weak_ptr Document::rootNode() const
-{
-    return _d->rootNode;
-}
-
 
 Scene::weak_ptr Document::scene()
 {
@@ -350,18 +338,28 @@ Scene::weak_ptr Document::scene() const
 
 int Document::columnCount(const QModelIndex & parent) const
 {
+    TRACEFUNCTION();
+//    qDebug() << "Args1: " << parent;
+//    qDebug() << 1;
     return 1;
 }
 
 Qt::ItemFlags Document::flags ( const QModelIndex & index ) const
 {
+    TRACEFUNCTION();
+    qDebug() << "Args1: " << index;
     //return QAbstractItemModel::flags(index);
-    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+    auto ret = QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+    qDebug() << ret;
+    return ret;
 }
 
 QVariant Document::data (const QModelIndex & index, 
                            int role ) const
 {
+    TRACEFUNCTION();
+//    qDebug() << "Arg1: " << index << " Arg2:" << role;
+    QVariant ret;
     if (role == Qt::DisplayRole) {
         SceneNode::shared_ptr p = NULL;
         if (index.isValid()) {
@@ -371,23 +369,24 @@ QVariant Document::data (const QModelIndex & index,
             QString str = QString("%1 (%2)")
                         .arg(QString(p->name().c_str()))
                         .arg(p->iid());
-            QVariant data(str);
-            return data;
+            ret = str;
         } else {
             QString str = QString("Unamed");
-            QVariant data(str);
-            return data;
+            ret = str;
         }
     } else if (role == Qt::EditRole) {
-        qDebug() << "data: EditRole";
+//        qDebug() << "data: EditRole";
     }
-    return QVariant();
+//    qDebug() << ret;
+    return ret;
 }
 
 bool Document::setData (const QModelIndex & index,
                         const QVariant & value, 
                         int role)
 {
+    TRACEFUNCTION();
+//    qDebug() << "Arg1: " << index << " Arg2:" << value << " Arg3:" << role;
     if (role == Qt::DisplayRole) {
         SceneNode::shared_ptr p = NULL;
         if (index.isValid()) {
@@ -418,7 +417,11 @@ QModelIndex Document::index (int row,
                                int column, 
                                const QModelIndex & parent ) const
 {
+    TRACEFUNCTION();
+//    qDebug() << "Arg1: " << row << " Arg2:" << column << " Arg3:" << parent;
     assert(_d && _d->scene);
+    
+    QModelIndex index;
     
     SceneNode::shared_ptr p = NULL;
     if (parent.isValid()) {
@@ -426,76 +429,86 @@ QModelIndex Document::index (int row,
     }
     if (p) {
         p = p->item(row).lock();
-    } else if (_d->scene) {
-        auto ptr = _d->scene->item(row);
-        p = ptr.lock();
+    } else {
+        p = _d->scene->item(row).lock();
     }
-    if (!p) {
-        //return createIndex(-1, -1, 0);
-        return QModelIndex();
+    if (p) {
+        index = createIndex(row, 0, p->iid());
     }
-    return createIndex(row, 0, p->iid());
+//    qDebug() << index;
+    return index;
 }
 
 QModelIndex Document::parent ( const QModelIndex & index ) const
 {
+    TRACEFUNCTION();
+//    qDebug() << "Arg1: " << index;
     assert(_d && _d->scene);
     
+    QModelIndex ret;
     if (!index.isValid()) {
-        //throw std::runtime_error("Invalid index");
-        return QModelIndex();
+//        qDebug() << ret;
+        return ret;
     }
     
-    SceneNode::shared_ptr p = _d->scene->findByIID(index.internalId());
+    SceneNode::shared_ptr ptr = _d->scene->findByIID(index.internalId());
+    SceneNode::shared_ptr parent;
     int row = -1;
     
-    if (p) {
+    if (ptr) {
         size_t n = 0;
-        row = p->itemIndex(p, &n) ? n : -1;
-    } else {
-        if (_d->scene) {
-            p = _d->scene;
-            size_t n = 0;
-            row = p->itemIndex(p, &n) ? n : -1;
+        parent = ptr->parent().lock();
+        if (parent && parent->itemIndex(ptr, &n)) {
+            row = n;
         }
+    } 
+    if (parent && row > -1) {
+        ret = createIndex(row, 0, parent->iid());
     }
-    if (!p) {
-        //return createIndex(-1, -1, 0);
-        return QModelIndex();
-    }
-    return createIndex(row, 0, p->iid());
+//    qDebug() << ret;
+    return ret;
 }
 
 int Document::rowCount ( const QModelIndex & parent ) const
 {
-    assert(_d && _d->scene);
+    TRACEFUNCTION();
+//    qDebug() << "Arg1: " << parent;
     
+    assert(_d && _d->scene);
+    int ret = 0;
+    SceneNode::shared_ptr p;
     if (parent.isValid()) {
-        SceneNode::shared_ptr p = _d->scene->findByIID(parent.internalId());
-        if (p) {
-            return p->count();
-        }
+        p = _d->scene->findByIID(parent.internalId());
+    } else {
+        p = _d->scene;
     }
-    if (_d->scene) {
-        return _d->scene->count();
+    if (p) {
+        ret = p->count();
     }
-    return 0;
+//    qDebug() << ret;
+    return ret;
 }
 
 SceneNode::shared_ptr Document::findItem(uint iid) 
 {
+    TRACEFUNCTION();
+    qDebug() << "Arg1: " << iid;
     SceneNode::shared_ptr p;
     return _d->scene->findByIID(iid);
 }
 
 bool Document::insertRow ( int row, const QModelIndex & parent )
 {
+    TRACEFUNCTION();
+//    qDebug() << "Arg1: " << row << " Arg2:" << parent;
     return false;
 }
 
 void Document::addItem(SceneNode::shared_ptr node, 
                      const QModelIndex & parent)
 {
+    TRACEFUNCTION();
+//    qDebug() << "Arg1: " << node->iid() << " Arg2:" << parent;
     assert(_d && _d->scene);
     
     int rows = rowCount(parent);

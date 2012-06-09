@@ -304,7 +304,9 @@ size_t SceneNode::count() const
 SceneNode::weak_ptr SceneNode::item(size_t index) const
 {
     assert(_d);
-    assert(index < _d->children.size());
+//    assert(index < _d->children.size());
+    if (index >= _d->children.size())
+        return SceneNode::weak_ptr();
     return _d->children[index];
 }
 

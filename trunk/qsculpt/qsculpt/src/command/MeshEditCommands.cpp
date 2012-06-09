@@ -53,7 +53,11 @@ void AddSurfaceCommand::execute()
         _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
         QModelIndexList list = treewdt->selectedIndexes();
         if (list.length() == 1) {
-            doc->addItem(_surface, list.first());
+            QModelIndex index = list.first();
+            qDebug() << "InternalID: " << index.internalId();
+            qDebug() << "Row: " << index.row();
+            qDebug() << "Column: " << index.column();
+            doc->addItem(_surface, index);
         } else {
             doc->addItem(_surface);
         }

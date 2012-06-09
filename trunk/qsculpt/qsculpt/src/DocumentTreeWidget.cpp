@@ -132,8 +132,4 @@ void DocumentTreeWidget::updateTree()
                      SIGNAL(selectionChanged(const QItemSelection &,const QItemSelection &)),
                      this,
                      SLOT(onSelectionChanged(const QItemSelection &,const QItemSelection &)));
-    
-    //QStandardItem *parentItem = _d->doc->invisibleRootItem();
-    //parentItem->removeRows(0, parentItem->rowCount());
-    //parentItem->appendRow(reinterpret_cast<QStandardItem*>(_d->doc->rootNode()));
 }

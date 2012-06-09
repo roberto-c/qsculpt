@@ -49,8 +49,6 @@ public:
     virtual void saveFile(const QString& fileName);
     virtual void selectObject(int iid);
     virtual QList<SceneNode::weak_ptr> getSelectedObjects() const;
-    virtual SceneNode::weak_ptr rootNode();
-    virtual SceneNode::weak_ptr rootNode() const;
     virtual Scene::weak_ptr scene();
     virtual Scene::weak_ptr scene() const;
     virtual Iterator<SceneNode> sceneIterator();

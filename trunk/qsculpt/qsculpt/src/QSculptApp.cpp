@@ -60,6 +60,8 @@ bool QSculptApp::notify ( QObject * receiver, QEvent * e )
  * application window.
  */
 int main( int argc, char ** argv ) {
+    qInstallMsgHandler(myMessageOutput);
+    
     QSculptApp a( argc, argv );
     
 	g_pApp = (QSculptApp*)QSculptApp::instance();
