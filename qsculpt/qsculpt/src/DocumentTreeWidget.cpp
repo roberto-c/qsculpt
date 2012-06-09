@@ -74,6 +74,16 @@ QModelIndexList DocumentTreeWidget::selectedIndexes() const
     return sm->selectedIndexes();
 }
 
+void DocumentTreeWidget::selectIndex(const QModelIndex & index)
+{
+    QItemSelectionModel * sm = _d->ui->nodeTree->selectionModel();
+    if (!sm) {
+        throw std::runtime_error("DocumentTreeWidget::selectedIndexes: Invalid selectionModel");
+    }
+    sm->clearSelection();
+    sm->select(index, QItemSelectionModel::Select);
+}
+
 void DocumentTreeWidget::itemActivated(const QModelIndex &index)
 {
     qDebug() << "Index selected";

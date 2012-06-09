@@ -452,14 +452,21 @@ QModelIndex Document::parent ( const QModelIndex & index ) const
     }
     
     SceneNode::shared_ptr ptr = _d->scene->findByIID(index.internalId());
-    SceneNode::shared_ptr parent;
+    SceneNode::shared_ptr parent, grandparent;
     int row = -1;
     
+    // we need to obtaing the position of parent below its parent (i.e. the
+    // grand parent of index)
     if (ptr) {
-        size_t n = 0;
         parent = ptr->parent().lock();
-        if (parent && parent->itemIndex(ptr, &n)) {
-            row = n;
+        if (parent) {
+            grandparent = parent->parent().lock();
+            if (grandparent) {
+                size_t n = 0;
+                if (grandparent->itemIndex(parent, &n)) {
+                    row = n;
+                }
+            }
         }
     } 
     if (parent && row > -1) {
@@ -495,6 +502,30 @@ SceneNode::shared_ptr Document::findItem(uint iid)
     qDebug() << "Arg1: " << iid;
     SceneNode::shared_ptr p;
     return _d->scene->findByIID(iid);
+}
+
+QModelIndex Document::findItemIndex(uint iid)
+{
+    assert(_d && _d->scene);
+    
+    QModelIndex ret;
+    
+    SceneNode::shared_ptr ptr = _d->scene->findByIID(iid);
+    SceneNode::shared_ptr parent;
+    int row = -1;
+    
+    if (ptr) {
+        size_t n = 0;
+        parent = ptr->parent().lock();
+        if (parent && parent->itemIndex(ptr, &n)) {
+            row = n;
+        }
+    } 
+    if (ptr && row > -1) {
+        ret = createIndex(row, 0, ptr->iid());
+    }
+    //    qDebug() << ret;
+    return ret;
 }
 
 bool Document::insertRow ( int row, const QModelIndex & parent )

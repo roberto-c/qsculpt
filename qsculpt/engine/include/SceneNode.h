@@ -51,7 +51,7 @@ public:
     typedef std::weak_ptr<const SceneNode>      const_weak_ptr;
     typedef std::unique_ptr<SceneNode>   Ptr;
     
-    SceneNode(const QString& = "");
+    SceneNode(const std::string& = "");
     
     virtual ~SceneNode();
     
@@ -220,6 +220,10 @@ public:
     typedef std::weak_ptr<const SurfaceNode>    const_weak_ptr;
     typedef std::unique_ptr<SurfaceNode>        Ptr;
     
+    /**
+     *
+     */
+    SurfaceNode(const std::string & name = "NoName", ISurface *surface = NULL);
     /**
      *
      */

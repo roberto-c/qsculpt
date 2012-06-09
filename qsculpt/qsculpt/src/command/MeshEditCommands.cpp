@@ -49,14 +49,14 @@ void AddSurfaceCommand::execute()
     DocumentTreeWidget * treewdt = qobject_cast<DocumentTreeWidget*>( g_pApp->getMainWindow()->toolWidget("DocTree"));
     if (doc && treewdt)
     {
-        _surface = SurfaceNode::shared_ptr(new SurfaceNode(new Box));
+        QString cmdName = _configContainer->getString("0");
+        QString cmdArg1 = _configContainer->getString("1");
+        if (cmdArg1.isEmpty()) cmdArg1 = "Unamed";
+        _surface = std::make_shared<SurfaceNode>(cmdArg1.toStdString(), new Box);
         _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
         QModelIndexList list = treewdt->selectedIndexes();
         if (list.length() == 1) {
             QModelIndex index = list.first();
-            qDebug() << "InternalID: " << index.internalId();
-            qDebug() << "Row: " << index.row();
-            qDebug() << "Column: " << index.column();
             doc->addItem(_surface, index);
         } else {
             doc->addItem(_surface);

@@ -49,6 +49,13 @@ public:
      */
     QModelIndexList selectedIndexes() const;
     
+    /**
+     * Set the index as selected. Clears previously set indices.
+     *
+     * @param index QModelIndex to select.
+     */
+    void selectIndex(const QModelIndex & index);
+    
 public slots:
     void itemActivated(const QModelIndex &index);
     

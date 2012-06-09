@@ -34,6 +34,7 @@
 #include "Console.h"
 #include "Scene.h"
 #include "SceneNode.h"
+#include "DocumentTreeWidget.h"
 
 QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
@@ -105,19 +106,15 @@ void SelectCommand::execute()
                 
                 DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
                 assert(view);
-                auto ptr = view->getDocument()->scene().lock();
-                if (ptr) {
-                    auto n = ptr->findByIID(iid);
-                    if (n && n->nodeType() == NT_Surface) 
-                    {
-                        auto node = std::dynamic_pointer_cast<SurfaceNode>(n);
-                        ISurface* s = node->surface();
-                        s->setSelected(true);
-                        s->setChanged(true);
-                        view->updateView();
-                        CONSOLE()->write(output.arg(iid));
-                        emit executed();
-                    }
+                auto doc = view->getDocument();
+                DocumentTreeWidget * treewdt = qobject_cast<DocumentTreeWidget*>( g_pApp->getMainWindow()->toolWidget("DocTree"));
+                if (doc && treewdt) {
+                    QModelIndex index = doc->findItemIndex(iid);
+                    treewdt->selectIndex(index);
+                    doc->selectObject(iid);
+                    view->updateView();
+                    CONSOLE()->write(output.arg(iid));
+                    emit executed();
                 }
             }
         }
