@@ -33,7 +33,7 @@ struct SceneNode::Impl {
     Eigen::Affine3f                     transform;
     std::string                         name;
     
-    Impl() : iid(0), isSelected(false) {
+    Impl(const std::string & name) : iid(0), isSelected(false),name(name) {
         qDebug() << __PRETTY_FUNCTION__;
     }
     
@@ -155,12 +155,11 @@ bool SceneNode::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
 }    
 
 
-SceneNode::SceneNode(const QString& name)
-: _d(new Impl)
+SceneNode::SceneNode(const std::string& name)
+: _d(new Impl(name))
 {
     _d->iid = NEXTID.fetchAndAddRelaxed(1);
     
-    //this->setText(name);
     _d->transform = Eigen::Affine3f::Identity();
 }
 
@@ -384,7 +383,13 @@ Iterator<SceneNode> SceneNode::constIterator() const
     return it;
 }
 
-
+SurfaceNode::SurfaceNode(const std::string & name, 
+                         ISurface *surface)
+: SceneNode(name),
+  surface_(surface)
+{
+    
+}
 SurfaceNode::SurfaceNode(ISurface *surface)
 : SceneNode(""),
  surface_(surface)

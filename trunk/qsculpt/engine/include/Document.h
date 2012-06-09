@@ -56,6 +56,7 @@ public:
     Iterator<ISurface> surfaceIterator();
     
     virtual SceneNode::shared_ptr findItem(uint iid);
+    virtual QModelIndex findItemIndex(uint iid);
     
     /**
      * Returns the number of columns for this model.

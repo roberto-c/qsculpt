@@ -106,6 +106,14 @@ public:
     virtual SceneNode::shared_ptr findItem(uint iid) = 0;
     
     /**
+     * Return the QModelIndex that corresponds to an SceneNode with ID iid.
+     *
+     * @param iid Instance ID of the node to look for.
+     * @return QModelIndex representing the node.
+     */
+    virtual QModelIndex findItemIndex(uint iid) = 0;
+    
+    /**
      * 
      */
     virtual void selectObject(int iid) = 0;
