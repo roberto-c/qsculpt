@@ -38,7 +38,27 @@ struct Scene::Impl {
     Impl()
     {
     }
+    
+    SceneNode::shared_ptr findByIidRecursive(SceneNode::shared_ptr root,
+                                             uint IID);
 };
+
+SceneNode::shared_ptr Scene::Impl::findByIidRecursive(SceneNode::shared_ptr root,
+                                                      uint IID)
+{
+    auto it = root->iterator();
+    while (it.hasNext()) {
+        auto e = it.next();
+        if (e->iid() == IID) {
+            return e;
+        }
+        e = findByIidRecursive(e, IID);
+        if (e) {
+            return e;
+        }
+    }
+    return NULL;
+}
 
 Scene::Scene() : SceneNode(), _d(new Impl())
 {
@@ -60,11 +80,8 @@ SceneNode::shared_ptr Scene::findByName(const QString& name)
 
 SceneNode::shared_ptr Scene::findByIID(uint IID)
 {
-    size_t index = 0;
-    if (itemIndexFromIid(IID, &index)) {
-        return item(index).lock();
-    }
-    return NULL;
+    auto thisptr = shared_from_this();
+    return _d->findByIidRecursive(thisptr, IID);
 }
 
 bool Scene::intersects(const geometry::Ray &ray, 

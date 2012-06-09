@@ -120,16 +120,6 @@ public:
     virtual Iterator<SceneNode> constSceneIterator() const = 0;
     
     /**
-     * Get the root scene node of the document.
-     */
-    virtual SceneNode::weak_ptr rootNode() = 0;
-    
-    /**
-     * Get the root node of the document
-     */
-    virtual SceneNode::weak_ptr rootNode() const = 0;
-    
-    /**
      * Get the scene object of the document. The scene object
      * is a container with all the objects or actors in the scene.
      */

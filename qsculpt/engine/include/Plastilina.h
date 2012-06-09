@@ -62,6 +62,7 @@ unsigned int qHash(const std::pair<int, int> & v);
 
 #include "GlException.h"
 
+
 inline bool printGlError()
 {
 	bool result = false;
@@ -97,3 +98,6 @@ inline bool printGlError()
     }
 
 #endif
+
+void myMessageOutput(QtMsgType type, const char *msg);
+
