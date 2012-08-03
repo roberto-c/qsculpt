@@ -17,49 +17,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "Stable.h"
+#include "geometry/Plane.h"
+#include "geometry/Ray.h"
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
-
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
-
-class ISurface;
-
-/**
- * Used to manipulate a mesh.
- */
-class SurfaceViewController : public IRenderable
+namespace geometry
 {
-public:
-    /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
-     */
-    SurfaceViewController(ISurface* surface);
-    
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
+    float Plane::DEFAULT_TOL = 0.0001f;
+    Point3 Plane::DEFAULT_POSITION = Point3(0, 0, 0);
+    Vector3 Plane::DEFAULT_ORIENTATION = Vector3(0, 0, 1);
 
-    
-    void paintGL();
-    
-private:
-    struct PrivateData;
-    PrivateData* d;
-};
+    Plane::Plane(const Point3 & c, const Vector3& n)
+        : Eigen::Hyperplane<float, 3>(n, c)
+    {
+    }
 
-#endif // MESHCONTROLLER_H
+    float Plane::intersect(const Ray &ray, Point3 *p, float ep) const
+    {
+        return ray.intersect(*this, p, ep);
+    }
+}

@@ -17,58 +17,76 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef QSCULPTAPP_H
-#define QSCULPTAPP_H
+#ifndef SCENE_H
+#define SCENE_H
 
-#include <QtGui/QApplication>
-#include "CoreEngine/IDocument.h"
 
-#define g_pApp g_pApp
+#include <string>
+#include <CoreEngine/IIterator.h>
+#include <CoreEngine/ICollection.h>
+#include <CoreEngine/SceneNode.h>
 
-class QSculptWindow;
+class ISurface;
+class SceneNode;
 
-/**
- * Contains methods or variables that are used in all the application.
- * 
- * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
-class QSculptApp : public QApplication
-{
-public:
-    /**
-     * Application's constructor that receives arguments. Constructs an instance of
-     * the main window.
-     */
-    QSculptApp(int& argc, char** argv);
-    
-    /**
-     * Default detructor of the application
-     */
-    virtual ~QSculptApp();
-
-    /**
-     * Get the main widget of the application. The main widget generally is the
-     * main window.
-     * 
-     * @return a pointer to the main widget
-     */
-    QSculptWindow* getMainWindow();
-    
-    /**
-     * Get the current document.
-     *
-     * This function is used to retreive the document where the operations
-     * are being executed on.
-     */
-    IDocument::shared_ptr getCurrentDocument();
-    
-    virtual bool	notify ( QObject * receiver, QEvent * e );
-
-private:
-    QSculptWindow* m_mainWindow; /**< main widget of the application. */
+namespace geometry {
+    class Ray;
+    class AABB;
 };
 
-extern QSculptApp* g_pApp;
+/**
+ * Contains all the scene data. All 3D objects reference data from the scene.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+*/
+class Scene : public SceneNode {
+public:
+    //typedef QSharedPointer<Scene>   shared_ptr;
+    //typedef QWeakPointer<Scene>     weak_ptr;
+    typedef std::shared_ptr<Scene>      shared_ptr;
+    typedef std::weak_ptr<Scene>        weak_ptr;
+    typedef std::unique_ptr<Scene>      Ptr;
+    
+    Scene();
+    
+    Scene(const std::string& name);
+
+    virtual ~Scene();
+    
+    /**
+     *
+     */
+    SceneNode::shared_ptr findByName(const std::string& name);
+
+    /**
+     * Returns the node with the specified instance ID. NULL if not found.
+     */
+    SceneNode::shared_ptr findByIID(uint iid);
+    
+    
+    
+    
+    /**
+     * Returns a list of nodes that intersects a given ray.
+     */
+    bool intersects(const geometry::Ray &ray, 
+                    data::ICollection<SceneNode::weak_ptr> *col);
+    
+    /**
+     * Returns a list of nodes that are intersected or contained by an Axis
+     * Aligned Bounding Box (AABB)
+     */
+    bool intersects(const geometry::AABB &box,
+                    data::ICollection<SceneNode::weak_ptr> *col);
+    
+private:
+    class SceneNodeIterator;
+    class Impl;
+    
+    std::unique_ptr<Impl> _d;
+    
+    friend class SceneNodeIterator;
+};
 
 #endif
 

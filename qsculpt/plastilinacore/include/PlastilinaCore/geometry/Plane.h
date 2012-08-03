@@ -18,48 +18,28 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
+#ifndef PLANE_H
+#define PLANE_H
 
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
+#include <Eigen/Geometry>
+#include <CoreEngine/Point3D.h>
 
-class ISurface;
-
-/**
- * Used to manipulate a mesh.
- */
-class SurfaceViewController : public IRenderable
+namespace geometry
 {
-public:
+    class Ray;
     /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
+     * Class that represent a 3d plane.
      */
-    SurfaceViewController(ISurface* surface);
-    
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
+    class Plane : public Eigen::Hyperplane<float, 3>
+    {
+        static float DEFAULT_TOL;
+        static Point3 DEFAULT_POSITION;
+        static Vector3 DEFAULT_ORIENTATION;
 
-    
-    void paintGL();
-    
-private:
-    struct PrivateData;
-    PrivateData* d;
+    public:
+        Plane(const Point3 &center = DEFAULT_POSITION, const Vector3 &normal = DEFAULT_ORIENTATION);
+
+        float intersect(const Ray& ray, Point3 *p = NULL, float ep = DEFAULT_TOL) const;
+    };
 };
-
-#endif // MESHCONTROLLER_H
+#endif // PLANE_H

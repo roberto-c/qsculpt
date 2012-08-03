@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,49 +17,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "Stable.h"
+#include "Point3D.h"
+#include "Quad.h"
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
-
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
-
-class ISurface;
-
-/**
- * Used to manipulate a mesh.
- */
-class SurfaceViewController : public IRenderable
+Quad::Quad()
+: Subdivision()
 {
-public:
-    /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
-     */
-    SurfaceViewController(ISurface* surface);
-    
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
+    initPoints();
+    initTriangles();
+}
 
-    
-    void paintGL();
-    
-private:
-    struct PrivateData;
-    PrivateData* d;
-};
+Quad::~Quad()
+{
+}
 
-#endif // MESHCONTROLLER_H
+void Quad::initPoints()
+{
+    //qDebug("Box::initPoints()");
+}
+
+void Quad::initTriangles()
+{
+    //qDebug("Box::initTriangles()");
+    double hw = 1.0;
+    double hh = 1.0;
+    double hd = 0.0;
+
+    std::vector<size_t> indexList(4);
+    indexList[0] = addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
+    indexList[1] = addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
+    indexList[2] = addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
+    indexList[3] = addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
+    addFace( indexList );
+    //qDebug("Box::initTriangles() end");
+}

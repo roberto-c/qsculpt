@@ -207,15 +207,6 @@ void TransformCommand::activate(bool active)
     d_->_actionFinished = false;
 
     d_->_objects.clear();
-
-    // TODO: Fix this code
-//    const IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
-//
-//    if (doc->getObjectsCount() > 0 )
-//    {
-//        _objects += doc->getSelectedObjects();
-//        _initial = _objects.first()->getPosition();
-//    }
 }
 
 void TransformCommand::mouseMoveEvent(QMouseEvent* e)

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,49 +17,30 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef IPICKINGRENDERER_H_
+#define IPICKINGRENDERER_H_
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
-
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
+#include <CoreEngine/BufferObject.h>
+#include <CoreEngine/IRenderer.h>
 
 class ISurface;
 
-/**
- * Used to manipulate a mesh.
- */
-class SurfaceViewController : public IRenderable
+class PickingObjectRenderer
 {
-public:
-    /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
-     */
-    SurfaceViewController(ISurface* surface);
-    
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
-
-    
-    void paintGL();
-    
+public:	
+	PickingObjectRenderer();
+	virtual ~PickingObjectRenderer();
+	
+	virtual void renderObject(const ISurface* mesh, GLuint objId);
+	
 private:
-    struct PrivateData;
-    PrivateData* d;
+	void renderVbo(const ISurface* mesh, unsigned int objID);
+	void renderImmediate(const ISurface* mesh, unsigned int objID);
+	
+	VertexBuffer* getVBO(ISurface* mesh);
+	
+	void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
+	void fillPointVertexBuffer(ISurface* mesh, VertexBuffer* vbo, VertexBuffer* cbo);
 };
 
-#endif // MESHCONTROLLER_H
+#endif

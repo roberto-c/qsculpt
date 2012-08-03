@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
- *   roberto.cabral@gmail.com   *
+ *   Copyright (C) 2012 by Juan Roberto Cabral Flores                      *
+ *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,49 +17,61 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "Plastilina.h"
+#include "Material.h"
+#include "GlslProgram.h"
+#include "ResourcesManager.h"
+#include <atomic>
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
+static std::atomic_int NEXT_ID;
 
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
-
-class ISurface;
-
-/**
- * Used to manipulate a mesh.
- */
-class SurfaceViewController : public IRenderable
-{
-public:
-    /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
-     */
-    SurfaceViewController(ISurface* surface);
-    
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
-
-    
-    void paintGL();
-    
-private:
-    struct PrivateData;
-    PrivateData* d;
+struct Material::Impl {
+    int id;
+    std::unique_ptr<GlslProgram> shaderProgram;
 };
 
-#endif // MESHCONTROLLER_H
+Material::Material() : d_(new Impl)
+{
+}
+
+Material::~Material()
+{
+    
+}
+
+int Material::iid() const { 
+    return d_->id;
+}
+
+GlslProgram * Material::shaderProgram() {
+    return d_->shaderProgram.get();
+}
+
+
+struct CookTorrance::Impl
+{
+    VertexShader    vtxShader;
+    FragmentShader  fragShader;
+};
+
+CookTorrance::CookTorrance()
+: Material(),
+d(new Impl)
+{
+    d->vtxShader.loadFromFile(ResourcesManager::resourcesDirectory() + "/Shaders/CookTorrance.vs");
+    d->fragShader.loadFromFile(ResourcesManager::resourcesDirectory() + "/Shaders/CookTorrance.fs");
+}
+
+CookTorrance::~CookTorrance()
+{
+    
+}
+
+void CookTorrance::load()
+{
+}
+
+void CookTorrance::unload()
+{
+    
+}

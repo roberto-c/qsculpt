@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
- *   roberto.cabral@gmail.com   *
+ *   Copyright (C) 2008 by Juan Roberto Cabral Flores                      *
+ *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,49 +17,46 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef BOX_H
+#define BOX_H
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
-
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
-
-class ISurface;
+#include <CoreEngine/subdivision/Subdivision.h>
 
 /**
- * Used to manipulate a mesh.
- */
-class SurfaceViewController : public IRenderable
+ * Draw a 3D box.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
+*/
+class Box : public Subdivision
 {
 public:
-    /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
-     */
-    SurfaceViewController(ISurface* surface);
-    
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
+    Box();
 
+    virtual ~Box();
     
-    void paintGL();
+protected:
+    /**
+     * Initializes the points vector.
+     */
+    virtual void initPoints();
     
 private:
-    struct PrivateData;
-    PrivateData* d;
+    Point3 m_vertex[8];
+
 };
 
-#endif // MESHCONTROLLER_H
+class Plane : public Subdivision {
+public:
+    Plane();
+    
+    /**
+     * Create a plane composed of MxN faces.
+     */
+    Plane(int m, int n);
+    
+    virtual ~Plane();
+    
+    void initPoints(int m, int n);
+};
+
+#endif

@@ -24,7 +24,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
-#include "Point3D.h"
+#include "CoreEngine/Point3D.h"
 
 /**
  * Implementation of IConfigContainer interface
