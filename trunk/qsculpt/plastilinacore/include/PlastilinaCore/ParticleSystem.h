@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2011 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,48 +18,60 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
+#ifndef PARTICLESYSTEM_H_
+#define PARTICLESYSTEM_H_
 
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
+#include <CoreEngine/Utilities.h>
 
-class ISurface;
-
-/**
- * Used to manipulate a mesh.
- */
-class SurfaceViewController : public IRenderable
-{
-public:
-    /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
-     */
-    SurfaceViewController(ISurface* surface);
+namespace physics {
+    class Particle;
     
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
-
-    
-    void paintGL();
-    
-private:
-    struct PrivateData;
-    PrivateData* d;
+    class ParticleSystem {
+        struct Impl;
+        std::unique_ptr<Impl> _d;
+        
+    public:
+        enum IntegratorType {
+            Euler
+        };
+        
+        ParticleSystem();
+        
+        /**
+         * 
+         */
+        void addParticle(Particle *p);
+        
+        /**
+         *
+         */
+        void removeParticle(Particle *p);
+        
+        /**
+         * Set the integrator used in the particle system
+         */
+        void setIntegratorType(IntegratorType type);
+        
+        /**
+         * Returns the integrator used in the particle system
+         */
+        IntegratorType integrator();
+        
+        /**
+         * 
+         */
+        void reset();
+        
+        /**
+         * Calculate the next step in the simulation
+         */
+        void step(double time);
+        
+        /**
+         * Set a function object to use to reset the simulation system
+         */
+        void setResetFunctor(utils::Functor fn);
+    };
 };
 
-#endif // MESHCONTROLLER_H
+#endif

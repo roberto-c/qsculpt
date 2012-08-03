@@ -365,7 +365,7 @@ void TestCommand::Impl::setup() {
     root = SceneNode::shared_ptr(new SceneNode);
     surf = new Subdivision;
     auto sceneptr = doc.scene().lock();
-    QVector<int> vertexID;
+    std::vector<int> vertexID;
     
     if (!root || !surf || !sceneptr) {
         throw std::bad_alloc();
@@ -386,7 +386,7 @@ void TestCommand::Impl::setup() {
     vertexID.push_back(surf->addVertex(Point3(0.0f, 0.5f, 0))); // 7
     vertexID.push_back(surf->addVertex(Point3(0.5f, 0.5f, 0))); // 8
     
-    QVector<size_t> face;
+    std::vector<size_t> face;
     face.clear();
     face.push_back(vertexID[0]);
     face.push_back(vertexID[1]);

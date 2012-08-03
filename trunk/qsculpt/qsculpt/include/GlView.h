@@ -25,12 +25,12 @@
 #include <QtCore/QVector>
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
-#include "SpEnums.h"
-#include "Point3D.h"
-#include "BufferObject.h"
-#include "ISurface.h"
-#include "Color.h"
-#include "Scene.h"
+#include "CoreEngine/SpEnums.h"
+#include "CoreEngine/Point3D.h"
+#include "CoreEngine/BufferObject.h"
+#include "CoreEngine/ISurface.h"
+#include "CoreEngine/Color.h"
+#include "CoreEngine/Scene.h"
 
 class DocumentView;
 class QMouseEvent;

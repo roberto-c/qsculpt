@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,49 +17,44 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef POINT3D_H
+#define POINT3D_H
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
+#include <Eigen/Geometry>
+#include <vector>
 
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
+typedef Eigen::Vector3f Point3;
+typedef Eigen::Vector3f Vector3;
+typedef Eigen::Vector4f Point4;
+typedef Eigen::Vector4f Vector4;
 
-class ISurface;
+typedef std::vector<int> PointIndexList;
 
-/**
- * Used to manipulate a mesh.
- */
-class SurfaceViewController : public IRenderable
+//Q_DECLARE_METATYPE(Point3)
+
+inline std::string toString(const Vector3& v)
 {
-public:
-    /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
-     */
-    SurfaceViewController(ISurface* surface);
+	std::ostringstream str;
+    str << v;
+//	str += "(" + std::string::number(v[0]) + "," + 
+//	std::string::number(v[1]) + "," +
+//	std::string::number(v[2]) + ")";
     
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
+	return str.str();
+}
 
-    
-    void paintGL();
-    
-private:
-    struct PrivateData;
-    PrivateData* d;
-};
+inline std::string toString(const Vector4& v)
+{
+    std::ostringstream str;
+    str << v;
 
-#endif // MESHCONTROLLER_H
+//	std::string str;
+//	str += "(" + std::string::number(v[0]) + "," + 
+//	std::string::number(v[1]) + "," +
+//	std::string::number(v[2]) + "," +
+//    std::string::number(v[3]) + ")";
+	return str.str();
+}
+
+#endif
+

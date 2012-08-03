@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2006 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,49 +17,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef SPHERE_H
+#define SPHERE_H
 
-#ifndef MESHCONTROLLER_H
-#define MESHCONTROLLER_H
+#include <CoreEngine/subdivision/Subdivision.h>
 
-#include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
-
-class ISurface;
-
+struct GLUquadric;
 /**
- * Used to manipulate a mesh.
+ * Class that implement a sphere object.
+ *
+ * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class SurfaceViewController : public IRenderable
+class Sphere : public Subdivision
 {
 public:
-    /**
-     * Constructor of a controller
-     *
-     * @param surface surface to which this controller sends commands to
-     */
-    SurfaceViewController(ISurface* surface);
-    
-    virtual ~SurfaceViewController();
-    
-    /**
-     *
-     */
-    void setPosition(const Point3& pos);
-    Point3 position() const;
-    
-    /**
-     * Rotates the surface around a given axis by the given angle.
-     */
-    void setRotation(const Vector3& axis, float angle);
-    void setRotation(const Eigen::Quaternionf& r);
-    Eigen::Quaternionf rotation();
+    Sphere();
 
-    
-    void paintGL();
-    
-private:
-    struct PrivateData;
-    PrivateData* d;
+    virtual ~Sphere();
+
+protected:
+    virtual void initPoints();
+	
+	Point3 evalCoords(float s, float u);
+
+    GLUquadric* m_pquadratic;
+
 };
 
-#endif // MESHCONTROLLER_H
+#endif
+

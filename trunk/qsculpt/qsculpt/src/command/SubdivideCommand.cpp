@@ -25,6 +25,7 @@
 //#include <omp.h>
 #include "IDocument.h"
 #include "ISurface.h"
+#include "Subdivision.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "DocumentView.h"
@@ -127,6 +128,16 @@ void SubdivideCommand::execute()
         if (node->nodeType() != NT_Surface)
             continue;
         ISurface * obj = std::dynamic_pointer_cast<SurfaceNode>(node)->surface();
+        Subdivision * subSurface = dynamic_cast<Subdivision*>(obj);
+        if (subSurface) {
+            qDebug() << "Subdivision::addResolutionLevel";
+            subSurface->addResolutionLevel();
+            obj->setChanged(true);
+            qDebug() << "Num Faces: " << obj->numFaces();
+            qDebug() << "Num Vertices: " << obj->numVertices();
+            continue;
+        }
+        
         qDebug() << "Object found";
         qDebug() << "Num faces =" << obj->numFaces();
         QVector<Face*> facesToDelete;
