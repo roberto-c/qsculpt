@@ -20,7 +20,7 @@
 #ifndef GEOMETRY_SPHERE_H_
 #define GEOMETRY_SPHERE_H_
 
-#include "Point3D.h"
+#include <PlastilinaCore/Point3D.h>
 
 namespace geometry {
     class Sphere {

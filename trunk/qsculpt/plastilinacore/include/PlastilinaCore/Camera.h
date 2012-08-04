@@ -20,7 +20,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <CoreEngine/Point3D.h>
+#include <PlastilinaCore/Point3D.h>
 
 /**
  * @class Camera

@@ -21,10 +21,10 @@
 #include "glitem.h"
 #include "GlView.h"
 
-#include "Box.h"
+#include <PlastilinaCore/subdivision/Box.h>
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "IRenderer.h"
+#include <PlastilinaCore/IRenderer.h>
 #include "DocumentView.h"
 
 namespace Plastilina {

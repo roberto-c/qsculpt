@@ -2,8 +2,8 @@
 // libsolidpaint3d.pch will be the pre-compiled header
 // stdafx.obj will contain the pre-compiled type information
 
-#include "Stable.h"
-#include "Logging.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/Logging.h>
 
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file

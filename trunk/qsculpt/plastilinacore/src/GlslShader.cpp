@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <CoreEngine/GlslShader.h>
+#include <PlastilinaCore/GlslShader.h>
 
 template <GLenum SHADERTYPE>
 GlslShader<SHADERTYPE>::GlslShader() : shaderId_(0)

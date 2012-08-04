@@ -10,13 +10,13 @@
 
 #include "SubdivisionTest.h"
 
-#include "CoreEngine/ISurface.h"
-#include "CoreEngine/Subdivision/Subdivision.h"
-#include "CoreEngine/Subdivision/Box.h"
-#include "CoreEngine/Subdivision/Sphere.h"
+#include "PlastilinaCore/ISurface.h"
+#include "PlastilinaCore/Subdivision/Subdivision.h"
+#include "PlastilinaCore/Subdivision/Box.h"
+#include "PlastilinaCore/Subdivision/Sphere.h"
 
 #include "DocumentModelTest.h"
-#include "CoreEngine/Logging.h"
+#include "PlastilinaCore/Logging.h"
 
 struct NIID {
     typedef uint size_t;
@@ -222,42 +222,42 @@ int SubdivisionTest::test() {
     Subdivision * surface = static_cast<Subdivision*>(node1->surface());
     assert(surface);
     
-    std::cerr << "Sizeof(NIID): " << sizeof(NIID);
-    std::cerr << "Sizeof(NVertex): " << sizeof(NVertex);
-    std::cerr << "Sizeof(NEdge): " << sizeof(NEdge);
-    std::cerr << "Sizeof(NFace): " << sizeof(NFace);
-    std::cerr;
+    std::cerr << "Sizeof(NIID): " << sizeof(NIID) << std::endl;
+    std::cerr << "Sizeof(NVertex): " << sizeof(NVertex)<< std::endl;
+    std::cerr << "Sizeof(NEdge): " << sizeof(NEdge)<< std::endl;
+    std::cerr << "Sizeof(NFace): " << sizeof(NFace)<< std::endl;
+    std::cerr << std::endl;
     
-    std::cerr << "Vertex size: " << sizeof(Vertex);
-    std::cerr << "Face size: " << sizeof(Face);
-    std::cerr << "int size: " << sizeof(int);
-    std::cerr << "size_t size: " << sizeof(size_t);
-    std::cerr << "ptr size: " << sizeof(void*);
-    std::cerr << "Point3: " << sizeof(Point3);
-    std::cerr;
+    std::cerr << "Vertex size: " << sizeof(Vertex)<< std::endl;
+    std::cerr << "Face size: " << sizeof(Face)<< std::endl;
+    std::cerr << "int size: " << sizeof(int)<< std::endl;
+    std::cerr << "size_t size: " << sizeof(size_t)<< std::endl;
+    std::cerr << "ptr size: " << sizeof(void*)<< std::endl;
+    std::cerr << "Point3: " << sizeof(Point3)<< std::endl;
+    std::cerr<< std::endl;
     
     //return 0;
     
-    std::cerr << "Vertex: " << surface->numVertices();
-    std::cerr << "Faces: " << surface->numFaces();
+    std::cerr << "Vertex: " << surface->numVertices()<< std::endl;
+    std::cerr << "Faces: " << surface->numFaces()<< std::endl;
     surface->addResolutionLevel();
-    std::cerr << "Vertex: " << surface->numVertices();
-    std::cerr << "Faces: " << surface->numFaces();
+    std::cerr << "Vertex: " << surface->numVertices()<< std::endl;
+    std::cerr << "Faces: " << surface->numFaces()<< std::endl;
     surface->addResolutionLevel();
-    std::cerr << "Vertex: " << surface->numVertices();
-    std::cerr << "Faces: " << surface->numFaces();
+    std::cerr << "Vertex: " << surface->numVertices()<< std::endl;
+    std::cerr << "Faces: " << surface->numFaces()<< std::endl;
     surface->addResolutionLevel();
-    std::cerr << "Vertex: " << surface->numVertices();
-    std::cerr << "Faces: " << surface->numFaces();
+    std::cerr << "Vertex: " << surface->numVertices()<< std::endl;
+    std::cerr << "Faces: " << surface->numFaces()<< std::endl;
     surface->addResolutionLevel();
-    std::cerr << "Vertex: " << surface->numVertices();
-    std::cerr << "Faces: " << surface->numFaces();
+    std::cerr << "Vertex: " << surface->numVertices()<< std::endl;
+    std::cerr << "Faces: " << surface->numFaces()<< std::endl;
     surface->addResolutionLevel();
-    std::cerr << "Vertex: " << surface->numVertices();
-    std::cerr << "Faces: " << surface->numFaces();
+    std::cerr << "Vertex: " << surface->numVertices()<< std::endl;
+    std::cerr << "Faces: " << surface->numFaces()<< std::endl;
     surface->addResolutionLevel();
-    std::cerr << "Vertex: " << surface->numVertices();
-    std::cerr << "Faces: " << surface->numFaces();
+    std::cerr << "Vertex: " << surface->numVertices()<< std::endl;
+    std::cerr << "Faces: " << surface->numFaces()<< std::endl;
     
     printModelRecursive(doc);
     return 0;

@@ -23,7 +23,7 @@
 
 #include <QtGui/QDockWidget>
 #include <QtCore/QModelIndex>
-#include "IDocument.h"
+#include <PlastilinaCore/IDocument.h>
 
 class DocumentTreeWidget : public QDockWidget
 {

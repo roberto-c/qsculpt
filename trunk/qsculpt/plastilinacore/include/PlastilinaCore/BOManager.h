@@ -21,7 +21,7 @@
 #define BOMANAGER_H_
 
 #include <unordered_map>
-#include <CoreEngine/BufferObject.h>
+#include <PlastilinaCore/BufferObject.h>
 
 class ISurface;
 

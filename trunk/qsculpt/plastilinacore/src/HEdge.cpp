@@ -6,9 +6,9 @@
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
-#include "Stable.h"
-#include "HEdge.h"
-#include "Vertex.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/HEdge.h>
+#include <PlastilinaCore/Vertex.h>
 
 
 class Edge::VertexIterator : public IIterator<Vertex>

@@ -17,12 +17,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "Scene.h"
-#include "SceneNode.h"
-#include "geometry/Ray.h"
-#include "geometry/Aabb.h"
-#include "Octree.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/geometry/Ray.h>
+#include <PlastilinaCore/geometry/Aabb.h>
+#include <PlastilinaCore/Octree.h>
 
 //namespace  {
     struct CenterMassFn {

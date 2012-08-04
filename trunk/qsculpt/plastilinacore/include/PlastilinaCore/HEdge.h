@@ -12,9 +12,9 @@
 class Vertex;
 
 #include <atomic>
-#include <CoreEngine/IIterator.h>
-#include <CoreEngine/Vertex.h>
-#include <CoreEngine/Face.h>
+#include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/Vertex.h>
+#include <PlastilinaCore/Face.h>
 
 
 enum EdgeFlags {

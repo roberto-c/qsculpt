@@ -12,8 +12,8 @@
 
 #if defined __cplusplus
 
-#include <CoreEngine/Plastilina.h>
-
+#include <PlastilinaCore/Plastilina.h>
+#include <PlastilinaCore/Logging.h>
 #endif
 
 #endif

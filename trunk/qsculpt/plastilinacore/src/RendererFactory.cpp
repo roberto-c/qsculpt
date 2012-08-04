@@ -1,10 +1,10 @@
-#include "Stable.h"
-#include "RendererFactory.h"
-#include "SpEnums.h"
-#include "PointRenderer.h"
-#include "FlatRenderer.h"
-#include "WireframeRenderer.h"
-#include "SmoothRenderer.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/RendererFactory.h>
+#include <PlastilinaCore/SpEnums.h>
+#include <PlastilinaCore/PointRenderer.h>
+#include <PlastilinaCore/FlatRenderer.h>
+#include <PlastilinaCore/WireframeRenderer.h>
+#include <PlastilinaCore/SmoothRenderer.h>
 
 RendererFactory::RendererFactory()
 {

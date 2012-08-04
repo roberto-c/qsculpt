@@ -24,7 +24,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
-#include "CoreEngine/Point3D.h"
+#include "PlastilinaCore/Point3D.h"
 
 /**
  * Implementation of IConfigContainer interface

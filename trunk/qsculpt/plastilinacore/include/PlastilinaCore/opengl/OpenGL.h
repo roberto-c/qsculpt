@@ -1,13 +1,13 @@
 //
 //  OpenGL.h
-//  CoreEngine
+//  PlastilinaCore
 //
 //  Created by Juan Roberto Cabral Flores on 7/28/12.
 //
 //
 
-#ifndef CoreEngine_OpenGL_h
-#define CoreEngine_OpenGL_h
+#ifndef PlastilinaCore_OpenGL_h
+#define PlastilinaCore_OpenGL_h
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>

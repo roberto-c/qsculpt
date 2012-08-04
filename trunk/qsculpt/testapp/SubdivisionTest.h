@@ -9,7 +9,7 @@
 #ifndef qsculpt_SubdivisionTest_h
 #define qsculpt_SubdivisionTest_h
 
-#include "CoreEngine/Document.h"
+#include "PlastilinaCore/Document.h"
 
 class SubdivisionTest {
     Document::shared_ptr    doc;

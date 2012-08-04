@@ -21,8 +21,8 @@
 #define QUADTREE_H
 
 #include <vector>
-#include <CoreEngine/Point3D.h>
-#include <CoreEngine/ICollection.h>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/ICollection.h>
 
 namespace data
 {

@@ -22,7 +22,7 @@
 
 #ifdef __cplusplus
 
-#include <CoreEngine/Plastilina.h>
+#include <PlastilinaCore/Plastilina.h>
 
 #endif /* defined __cplusplus */
 

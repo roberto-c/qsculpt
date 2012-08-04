@@ -12,6 +12,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QAbstractItemModel>
 
+#include <PlastilinaCore/SceneNode.h>
+
 class DocumentModel : public QAbstractItemModel, public std::enable_shared_from_this<DocumentModel>
 {
 public:
@@ -29,7 +31,7 @@ public:
      * inserted as a child of parent node. If parent is invalid, the node is
      * going to be inerted as child of the root node.
      */
-    virtual void addItem(SceneNode::shared_ptr node, 
+    virtual void addItem(const SceneNode::shared_ptr & node,
                          const QModelIndex & parent = QModelIndex()) = 0;
     
     /**

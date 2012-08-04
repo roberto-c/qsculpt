@@ -20,7 +20,7 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include <CoreEngine/subdivision/Subdivision.h>
+#include <PlastilinaCore/subdivision/Subdivision.h>
 
 /**
  * Draw a 3D box.

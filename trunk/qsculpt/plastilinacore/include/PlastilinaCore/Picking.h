@@ -20,8 +20,8 @@
 #ifndef IPICKINGRENDERER_H_
 #define IPICKINGRENDERER_H_
 
-#include <CoreEngine/BufferObject.h>
-#include <CoreEngine/IRenderer.h>
+#include <PlastilinaCore/BufferObject.h>
+#include <PlastilinaCore/IRenderer.h>
 
 class ISurface;
 

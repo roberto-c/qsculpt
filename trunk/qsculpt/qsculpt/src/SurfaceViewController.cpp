@@ -20,7 +20,7 @@
 
 #include "Stable.h"
 #include "SurfaceViewController.h"
-#include "ISurface.h"
+#include <PlastilinaCore/ISurface.h>
 
 struct SurfaceViewController::PrivateData
 {

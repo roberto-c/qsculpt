@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include <CoreEngine/Stable.h>
-#include <CoreEngine/subdivision/Sphere.h>
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/subdivision/Sphere.h>
 #include <math.h>
 
 Sphere::Sphere()

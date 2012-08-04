@@ -9,7 +9,7 @@
 #ifndef qsculpt_FrameBufferObject_h
 #define qsculpt_FrameBufferObject_h
 
-#include <CoreEngine/Texture.h>
+#include <PlastilinaCore/Texture.h>
 
 class FrameBufferObject : private Texture
 {

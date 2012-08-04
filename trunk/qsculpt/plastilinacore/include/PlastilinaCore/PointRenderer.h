@@ -1,8 +1,8 @@
 #ifndef POINTRENDERER_H_
 #define POINTRENDERER_H_
 
-#include <CoreEngine/IRenderer.h>
-#include <CoreEngine/BufferObject.h>
+#include <PlastilinaCore/IRenderer.h>
+#include <PlastilinaCore/BufferObject.h>
 
 /**
  * Renders surface object as point meshes.

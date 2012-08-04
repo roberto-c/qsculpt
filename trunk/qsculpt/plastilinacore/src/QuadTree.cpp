@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "Stable.h"
-#include "Quadtree.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/Quadtree.h>
 
 namespace data
 {

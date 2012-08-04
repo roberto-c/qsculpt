@@ -8,10 +8,10 @@
  */
 
 
-#include "Stable.h"
-#include "Vertex.h"
-#include "HEdge.h"
-#include "Face.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/Vertex.h>
+#include <PlastilinaCore/HEdge.h>
+#include <PlastilinaCore/Face.h>
 #include <sstream>
 
 class Vertex::VertexIterator : public IIterator<Vertex>

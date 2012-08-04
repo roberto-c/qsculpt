@@ -23,9 +23,9 @@
 #include <QtGui/QWidget>
 #include <QtCore/QList>
 #include <QtCore/QPoint>
-#include "Point3D.h"
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/IDocument.h>
 #include "GlView.h"
-#include "IDocument.h"
 
 class ISurface;
 class IDocument;

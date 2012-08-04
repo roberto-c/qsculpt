@@ -20,8 +20,8 @@
 #ifndef IDOCUMENT_H
 #define IDOCUMENT_H
 
-#include <CoreEngine/IIterator.h>
-#include <CoreEngine/Scene.h>
+#include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/Scene.h>
 
 class ISurface;
 class SceneNode;

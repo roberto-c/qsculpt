@@ -22,7 +22,7 @@
 #define MESHCONTROLLER_H
 
 #include "IRenderable.h"
-#include "CoreEngine/Point3D.h"
+#include "PlastilinaCore/Point3D.h"
 
 class ISurface;
 

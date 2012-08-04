@@ -23,8 +23,8 @@
 
 #include <vector>
 #include <set>
-#include <CoreEngine/IIterator.h>
-#include <CoreEngine/Point3D.h>
+#include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/Point3D.h>
 
 
 /**

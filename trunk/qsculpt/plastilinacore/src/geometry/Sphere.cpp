@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "geometry/Sphere.h"
-#include "Point3D.h"
+#include <PlastilinaCore/geometry/Sphere.h>
+#include <PlastilinaCore/Point3D.h>
 
 // static definitions
 namespace geometry {

@@ -2,8 +2,8 @@
 #define RENDERERFACTORY_H_
 
 
-#include <CoreEngine/SpEnums.h>
-#include <CoreEngine/IRenderer.h>
+#include <PlastilinaCore/SpEnums.h>
+#include <PlastilinaCore/IRenderer.h>
 
 class RendererFactory
 {

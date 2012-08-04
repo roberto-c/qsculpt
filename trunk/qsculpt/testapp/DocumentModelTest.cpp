@@ -8,12 +8,12 @@
 
 #include <iostream>
 
-#include "CoreEngine/Document.h"
-#include "CoreEngine/ISurface.h"
-#include "CoreEngine/Subdivision/Subdivision.h"
+#include <PlastilinaCore/Document.h>
+#include "PlastilinaCore/ISurface.h"
+#include "PlastilinaCore/Subdivision/Subdivision.h"
 
 #include "DocumentModelTest.h"
-#include "CoreEngine/Logging.h"
+#include "PlastilinaCore/Logging.h"
 
 static void printModelRecursive(const Document::shared_ptr & doc, 
                                 const SceneNode::shared_ptr& parent = SceneNode::shared_ptr())

@@ -12,8 +12,8 @@
 
 #include <Eigen/Core>
 #include <atomic>
-#include <CoreEngine/Point3D.h>
-#include <CoreEngine/IIterator.h>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/IIterator.h>
 
 class Edge;
 class Face;

@@ -1,7 +1,7 @@
 #ifndef FLATRENDERER_H_
 #define FLATRENDERER_H_
 
-#include <CoreEngine/IRenderer.h>
+#include <PlastilinaCore/IRenderer.h>
 
 class VertexBuffer;
 class Face;

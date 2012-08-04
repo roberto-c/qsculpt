@@ -11,9 +11,9 @@
 #define DATAVECTOR_H_
 
 #include <limits>
-#include <CoreEngine/ICollection.h>
-#include <CoreEngine/geometry/ray.h>
-#include <CoreEngine/Utilities.h>
+#include <PlastilinaCore/ICollection.h>
+#include <PlastilinaCore/geometry/ray.h>
+#include <PlastilinaCore/Utilities.h>
 
 namespace data {
     template <typename Type>

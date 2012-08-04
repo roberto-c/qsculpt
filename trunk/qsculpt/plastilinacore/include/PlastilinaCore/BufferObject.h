@@ -21,7 +21,7 @@
 #ifndef BUFFEROBJECT_H_
 #define BUFFEROBJECT_H_
 
-#include <CoreEngine/Point3D.h>
+#include <PlastilinaCore/Point3D.h>
 
 class BufferObject
 {

@@ -17,11 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "PickingFacesRenderer.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/PickingFacesRenderer.h>
 
-#include "ISurface.h"
-#include "BOManager.h"
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/BOManager.h>
 
 #define BO_POOL_NAME "PickingVertexRendererPool"
 #define BO_FLAT_POOL_NAME "PickingVertexRendererPool_Flat"

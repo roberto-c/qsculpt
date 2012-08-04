@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "Stable.h"
-#include "IIntegrator.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/IIntegrator.h>
     
 namespace physics {
     class Particle;

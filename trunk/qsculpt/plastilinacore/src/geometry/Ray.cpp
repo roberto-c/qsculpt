@@ -17,10 +17,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "geometry/Ray.h"
-#include "geometry/Plane.h"
-#include "geometry/Sphere.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/geometry/Ray.h>
+#include <PlastilinaCore/geometry/Plane.h>
+#include <PlastilinaCore/geometry/Sphere.h>
 
 namespace geometry
 {
