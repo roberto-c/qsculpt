@@ -21,9 +21,10 @@
 #define STABLE_H_ 
 
 #if defined __cplusplus
-
-#include <CoreEngine/Plastilina.h>
-
+#include <QtCore/QtGlobal>
+#include <QtCore/QDebug>
+#include <PlastilinaCore/Plastilina.h>
+#include <PlastilinaCore/Logging.h>
 #endif /* defined __cplusplus */
 
 #endif /* STABLE_H_ */

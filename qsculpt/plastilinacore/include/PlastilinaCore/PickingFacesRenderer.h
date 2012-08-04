@@ -20,8 +20,8 @@
 #ifndef PICKINGVERTEXRENDERER_H_
 #define PICKINGVERTEXRENDERER_H_
 
-#include <CoreEngine/BufferObject.h>
-#include <CoreEngine/IRenderer.h>
+#include <PlastilinaCore/BufferObject.h>
+#include <PlastilinaCore/IRenderer.h>
 
 class ISurface;
 

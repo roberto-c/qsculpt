@@ -1,7 +1,7 @@
 #ifndef WIREFRAMERENDERER_H_
 #define WIREFRAMERENDERER_H_
 
-#include <CoreEngine/IRenderer.h>
+#include <PlastilinaCore/IRenderer.h>
 
 class WireframeRenderer : public IRenderer
 {

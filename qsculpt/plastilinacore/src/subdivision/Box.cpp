@@ -17,9 +17,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "Point3D.h"
-#include "subdivision/Box.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/subdivision/Box.h>
 
 Box::Box()
     : Subdivision()

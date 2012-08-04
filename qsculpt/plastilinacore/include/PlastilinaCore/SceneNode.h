@@ -22,8 +22,8 @@
 
 #include <vector>
 #include <memory>
-#include <CoreEngine/IIterator.h>
-#include <CoreEngine/Vector.h>
+#include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/Vector.h>
 
 class ISurface;
 class Material;

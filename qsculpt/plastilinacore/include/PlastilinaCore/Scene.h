@@ -22,9 +22,9 @@
 
 
 #include <string>
-#include <CoreEngine/IIterator.h>
-#include <CoreEngine/ICollection.h>
-#include <CoreEngine/SceneNode.h>
+#include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/ICollection.h>
+#include <PlastilinaCore/SceneNode.h>
 
 class ISurface;
 class SceneNode;

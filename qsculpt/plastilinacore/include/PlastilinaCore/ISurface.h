@@ -20,12 +20,12 @@
 #ifndef IOBJECT3D_H
 #define IOBJECT3D_H
 
-#include <CoreEngine/Point3D.h>
-#include <CoreEngine/SpEnums.h>
-#include <CoreEngine/IIterator.h>
-#include <CoreEngine/Vertex.h>
-#include <CoreEngine/Face.h>
-#include <CoreEngine/geometry/Aabb.h>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/SpEnums.h>
+#include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/Vertex.h>
+#include <PlastilinaCore/Face.h>
+#include <PlastilinaCore/geometry/Aabb.h>
 
 
 /*

@@ -20,7 +20,7 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include <CoreEngine/subdivision/Subdivision.h>
+#include <PlastilinaCore/subdivision/Subdivision.h>
 
 struct GLUquadric;
 /**

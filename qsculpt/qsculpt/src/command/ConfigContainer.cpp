@@ -20,6 +20,8 @@
 #include "Stable.h"
 #include "command/ConfigContainer.h"
 
+Q_DECLARE_METATYPE(Point3);
+
 ConfigContainer::ConfigContainer(): IConfigContainer()
 {
 }

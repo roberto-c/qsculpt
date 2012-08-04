@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Juan Roberto Cabral Flores                      *
+ *   Copyright (C) 2011 by Juan Roberto Cabral Flores                      *
  *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,46 +17,26 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef BOX_H
-#define BOX_H
+#ifndef DATA_FUNCTORS_H
+#define DATA_FUNCTORS_H
 
-#include <PlastilinaCore/subdivision/Subdivision.h>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/Utilities.h>
 
-/**
- * Draw a 3D box.
- *
- * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
-class Box : public Subdivision
-{
-public:
-    Box();
+using utils::getReference;
 
-    virtual ~Box();
-    
-protected:
-    /**
-     * Initializes the points vector.
-     */
-    virtual void initPoints();
-    
-private:
-    Point3 m_vertex[8];
-
-};
-
-class Plane : public Subdivision {
-public:
-    Plane();
-    
-    /**
-     * Create a plane composed of MxN faces.
-     */
-    Plane(int m, int n);
-    
-    virtual ~Plane();
-    
-    void initPoints(int m, int n);
+namespace data {
+    template<typename T>
+    struct ImplicitConvToPoint {
+        Vector3 operator()(const T & data) {
+            T d = getReference(data);
+            return static_cast<Vector3>(*d);
+        };
+        
+        Vector3 * operator()(const T * data) {
+            return static_cast<Vector3*>(data);
+        };
+    };
 };
 
 #endif

@@ -21,8 +21,8 @@
 #ifndef OCTREENODE_H
 #define OCTREENODE_H
 
-#include <CoreEngine/ICollection.h>
-#include <CoreEngine/Octree.h>
+#include <PlastilinaCore/ICollection.h>
+#include <PlastilinaCore/Octree.h>
 
 using namespace data;
 

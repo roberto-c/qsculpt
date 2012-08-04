@@ -10,7 +10,7 @@
 #include <OpenCL/opencl.h>
 #include "cl.hpp"
 
-#include <CoreEngine/Plastilina.h>
+#include <PlastilinaCore/Plastilina.h>
 #include <mach-o/dyld.h> // for application directory
 
 #include <iostream>
@@ -25,25 +25,25 @@
 
 #include "TestApp.h"
 
-#include "CoreEngine/Vertex.h"
-#include "CoreEngine/HEdge.h"
-#include "CoreEngine/Face.h"
-#include "CoreEngine/Point3D.h"
-#include "CoreEngine/Octree.h"
-#include "CoreEngine/Vector.h"
-#include "CoreEngine/Scene.h"
-#include "CoreEngine/SceneNode.h"
-#include "CoreEngine/subdivision/Sphere.h"
-#include "CoreEngine/subdivision/Box.h"
-#include "CoreEngine/subdivision/Subdivision.h"
-#include "CoreEngine/geometry/Sphere.h"
-#include "CoreEngine/geometry/Ray.h"
-#include "CoreEngine/FlatRenderer.h"
-#include "CoreEngine/Camera.h"
+#include "PlastilinaCore/Vertex.h"
+#include "PlastilinaCore/HEdge.h"
+#include "PlastilinaCore/Face.h"
+#include "PlastilinaCore/Point3D.h"
+#include "PlastilinaCore/Octree.h"
+#include "PlastilinaCore/Vector.h"
+#include "PlastilinaCore/Scene.h"
+#include "PlastilinaCore/SceneNode.h"
+#include "PlastilinaCore/subdivision/Sphere.h"
+#include "PlastilinaCore/subdivision/Box.h"
+#include "PlastilinaCore/subdivision/Subdivision.h"
+#include "PlastilinaCore/geometry/Sphere.h"
+#include "PlastilinaCore/geometry/Ray.h"
+#include "PlastilinaCore/FlatRenderer.h"
+#include "PlastilinaCore/Camera.h"
 
-#include "CoreEngine/GlslShader.h"
-#include "CoreEngine/GlslProgram.h"
-#include "CoreEngine/Color.h"
+#include "PlastilinaCore/GlslShader.h"
+#include "PlastilinaCore/GlslProgram.h"
+#include "PlastilinaCore/Color.h"
 
 
 std::string get_app_path() {
@@ -57,7 +57,7 @@ std::string get_app_path() {
     } else {
         exepath.push_back('\0');
     }
-    std::string p("/Users/rcabral/sample2.bmp"); //p(exepath.data());
+    std::string p(exepath.data());
     boost::filesystem::path path(p);
     
     if (boost::filesystem::is_regular_file(path)) {
@@ -270,7 +270,7 @@ void TestApp::display()
     glLoadMatrixf(d->camera.modelView().data());
     
     try {
-        //d->glslProgram->useProgram();
+        d->glslProgram->useProgram();
         Iterator<SceneNode> it = d->scene->constIterator();
         while (it.hasNext()) {
             auto n = it.next();

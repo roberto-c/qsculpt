@@ -10,7 +10,7 @@
 #ifndef IITERATOR_H_
 #define IITERATOR_H_
 
-#include <CoreEngine/Plastilina.h>
+#include <PlastilinaCore/Plastilina.h>
 
 // TODO: Check if it the need to optimize iterator design. To many indirections?
 

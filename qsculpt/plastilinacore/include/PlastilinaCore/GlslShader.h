@@ -12,7 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <CoreEngine/opengl/OpenGL.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 
 template <GLenum SHADERTYPE>
 class GlslShader

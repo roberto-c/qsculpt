@@ -22,7 +22,7 @@
 #define RAY_H
 
 #include <Eigen/Geometry>
-#include <CoreEngine/Point3D.h>
+#include <PlastilinaCore/Point3D.h>
 
 
 

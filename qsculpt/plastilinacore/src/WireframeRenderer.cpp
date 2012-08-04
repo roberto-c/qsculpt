@@ -1,9 +1,9 @@
-#include "Stable.h"
+#include <PlastilinaCore/Stable.h>
 #include <cstddef>
-#include "WireframeRenderer.h"
-#include "ISurface.h"
-#include "BOManager.h"
-#include "Color.h"
+#include <PlastilinaCore/WireframeRenderer.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/Color.h>
 
 #define BO_POOL_NAME "WireframeRendererPool"
 

@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <QtGui/QWidget>
 #include "QSculptWindow.h"
-#include "IDocument.h"
+#include <PlastilinaCore/IDocument.h>
 
 
 QSculptApp* g_pApp = NULL;
@@ -59,9 +59,7 @@ bool QSculptApp::notify ( QObject * receiver, QEvent * e )
  * applicatoin object to process them. Creates and show the main
  * application window.
  */
-int main( int argc, char ** argv ) {
-    qInstallMsgHandler(myMessageOutput);
-    
+int main( int argc, char ** argv ) {    
     QSculptApp a( argc, argv );
     
 	g_pApp = (QSculptApp*)QSculptApp::instance();

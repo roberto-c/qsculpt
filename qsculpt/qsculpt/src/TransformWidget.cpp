@@ -21,7 +21,7 @@
 #include "TransformWidget.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "IDocument.h"
+#include <PlastilinaCore/IDocument.h>
 #include "DocumentView.h"
 #include "MoveCommand.h"
 #include "IConfigContainer.h"

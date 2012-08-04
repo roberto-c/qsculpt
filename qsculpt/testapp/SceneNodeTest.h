@@ -9,10 +9,10 @@
 #ifndef qsculpt_SceneNodeTest_h
 #define qsculpt_SceneNodeTest_h
 
-#include "CoreEngine/Scene.h"
-#include "CoreEngine/SceneNode.h"
-#include "CoreEngine/subdivision/Subdivision.h"
-#include "CoreEngine/Camera.h"
+#include "PlastilinaCore/Scene.h"
+#include "PlastilinaCore/SceneNode.h"
+#include "PlastilinaCore/subdivision/Subdivision.h"
+#include "PlastilinaCore/Camera.h"
 
 class SubdivisionClosestPointTest {
     Camera camera;

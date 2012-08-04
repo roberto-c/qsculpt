@@ -9,9 +9,9 @@
 #include <iostream>
 #include "DocumentModel.h"
 
-#include "Document.h"
-#include "Scene.h"
-#include "SceneNode.h"
+#include <PlastilinaCore/Document.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/SceneNode.h>
 
 int DocumentModel::columnCount(const QModelIndex & parent) const
 {

@@ -7,10 +7,10 @@
  *
  */
 
-#include <CoreEngine/Stable.h>
-#include <CoreEngine/Face.h>
-#include <CoreEngine/HEdge.h>
-#include <CoreEngine/ISurface.h>
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/Face.h>
+#include <PlastilinaCore/HEdge.h>
+#include <PlastilinaCore/ISurface.h>
 
 class Face::VertexIterator : public IIterator<Vertex>
 {

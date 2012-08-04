@@ -29,9 +29,9 @@
 #include <QtGui/QLabel>
 #include <QtGui/QSpacerItem>
 
-#include "subdivision/Sphere.h"
-#include "subdivision/Box.h"
-#include "IDocument.h"
+#include <PlastilinaCore/subdivision/Sphere.h>
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/IDocument.h>
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "ICommand.h"
@@ -135,10 +135,10 @@ void DocumentView::setDocument(IDocument::shared_ptr doc)
 {
     Q_ASSERT(doc);
 
-    if (_document)
-        _document->disconnect(this);
+//    if (_document)
+//        _document->disconnect(this);
     _document = doc;
-    connect(_document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
+//    connect(_document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
 };
 
 void DocumentView::setGridVisible(bool value)

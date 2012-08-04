@@ -17,10 +17,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Plastilina.h"
-#include "Material.h"
-#include "GlslProgram.h"
-#include "ResourcesManager.h"
+#include <PlastilinaCore/Plastilina.h>
+#include <PlastilinaCore/Material.h>
+#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/ResourcesManager.h>
 #include <atomic>
 
 static std::atomic_int NEXT_ID;

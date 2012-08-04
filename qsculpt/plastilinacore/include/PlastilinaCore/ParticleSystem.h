@@ -21,7 +21,7 @@
 #ifndef PARTICLESYSTEM_H_
 #define PARTICLESYSTEM_H_
 
-#include <CoreEngine/Utilities.h>
+#include <PlastilinaCore/Utilities.h>
 
 namespace physics {
     class Particle;

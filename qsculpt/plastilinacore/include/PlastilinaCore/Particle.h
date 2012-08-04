@@ -21,7 +21,7 @@
 #ifndef PARTICLE_H_
 #define PARTICLE_H_
 
-#include <CoreEngine/Point3D.h>
+#include <PlastilinaCore/Point3D.h>
 
 namespace physics {
     class Particle {

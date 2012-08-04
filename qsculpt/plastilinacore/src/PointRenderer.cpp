@@ -17,10 +17,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "PointRenderer.h"
-#include "ISurface.h"
-#include "BOManager.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/PointRenderer.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/BOManager.h>
 
 #define BO_POOL_NAME "PointRendererPool"
 

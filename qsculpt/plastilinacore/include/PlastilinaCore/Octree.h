@@ -23,12 +23,12 @@
 #include <vector>
 #include <set>
 
-#include <CoreEngine/Point3D.h>
-#include <CoreEngine/ICollection.h>
-#include <CoreEngine/OctreeNode.h>
-#include <CoreEngine/data/Functors.h>
-#include <CoreEngine/geometry/Aabb.h>
-#include <CoreEngine/geometry/Ray.h>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/ICollection.h>
+#include <PlastilinaCore/OctreeNode.h>
+#include <PlastilinaCore/data/Functors.h>
+#include <PlastilinaCore/geometry/Aabb.h>
+#include <PlastilinaCore/geometry/Ray.h>
 
 namespace data {
     template<typename T, typename ToPointFn=data::ImplicitConvToPoint<T> > class Octree;

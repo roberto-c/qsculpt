@@ -20,8 +20,8 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
-#include <CoreEngine/IDocument.h>
-#include <CoreEngine/IIterator.h>
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/IIterator.h>
 
 class ISurface;
 

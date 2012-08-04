@@ -17,19 +17,19 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Plastilina.h"
-#include "Document.h"
+#include <PlastilinaCore/Plastilina.h>
+#include <PlastilinaCore/Document.h>
 
-#include "ISurface.h"
-#include "subdivision/Box.h"
-#include "subdivision/Sphere.h"
-#include "Mesh.h"
-#include "Quad.h"
-#include "SceneNode.h"
-#include "Scene.h"
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/subdivision/Sphere.h>
+#include <PlastilinaCore/Mesh.h>
+#include <PlastilinaCore/Quad.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/Scene.h>
 
 #define PLASTILINA_TRACE_DISABLE = 1
-#include "Logging.h"
+#include <PlastilinaCore/Logging.h>
 
 static std::atomic_int NEXT_ID(0);
 

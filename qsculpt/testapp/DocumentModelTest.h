@@ -9,7 +9,7 @@
 #ifndef qsculpt_DocumentModelTest_h
 #define qsculpt_DocumentModelTest_h
 
-#include "CoreEngine/Document.h"
+#include "PlastilinaCore/Document.h"
 
 class DocumentModelTest {
     Document::shared_ptr    doc;

@@ -25,7 +25,7 @@
 #include <QtGui/QMainWindow>
 #include <QtCore/QStack>
 
-#include "IDocument.h"
+#include <PlastilinaCore/IDocument.h>
 #include "CommandManager.h"
 
 class QTextEdit;

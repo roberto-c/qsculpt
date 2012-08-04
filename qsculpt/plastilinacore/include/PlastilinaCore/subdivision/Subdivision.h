@@ -11,9 +11,9 @@
 
 #include <vector>
 #include <utility>
-#include <CoreEngine/ISurface.h>
-#include <CoreEngine/SceneNode.h>
-#include <CoreEngine/geometry/Aabb.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/geometry/Aabb.h>
 
 class Vertex;
 class Edge;

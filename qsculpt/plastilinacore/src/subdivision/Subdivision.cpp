@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "subdivision/Subdivision.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/subdivision/Subdivision.h>
 
 #include <math.h>
 #include <Eigen/Core>
@@ -26,13 +26,13 @@
 #include <unordered_map>
 #include <atomic>
 
-#include "subdivision/Box.h"
-#include "Point3D.h"
-#include "Scene.h"
-#include "HEdge.h"
-#include "geometry/Aabb.h"
-#include "Color.h"
-#include "Mesh.h"
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/HEdge.h>
+#include <PlastilinaCore/geometry/Aabb.h>
+#include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/Mesh.h>
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))

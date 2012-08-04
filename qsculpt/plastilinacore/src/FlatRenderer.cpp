@@ -17,14 +17,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Stable.h"
-#include "FlatRenderer.h"
-#include "ISurface.h"
-#include "BOManager.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/FlatRenderer.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/BOManager.h>
 #include <cstddef>
 #include <iostream>
-#include "GlslProgram.h"
-#include "Color.h"
+#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/Color.h>
 
 
 using namespace std;

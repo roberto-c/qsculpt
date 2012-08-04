@@ -17,9 +17,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "ParticleSystem.h"
-#include "Particle.h"
-#include "IIntegrator.h"
+#include <PlastilinaCore/ParticleSystem.h>
+#include <PlastilinaCore/Particle.h>
+#include <PlastilinaCore/IIntegrator.h>
 
 
 #define MAX_NUM_PARTICLES (100)

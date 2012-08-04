@@ -10,8 +10,8 @@
 #ifndef FACE_H_
 #define FACE_H_
 
-#include <CoreEngine/Vertex.h>
-#include <CoreEngine/IIterator.h>
+#include <PlastilinaCore/Vertex.h>
+#include <PlastilinaCore/IIterator.h>
 
 class Edge;
 class ISurface;
