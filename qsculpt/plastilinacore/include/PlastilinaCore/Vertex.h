@@ -14,6 +14,7 @@
 #include <atomic>
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/Color.h>
 
 class Edge;
 class Face;
@@ -42,7 +43,7 @@ private:
 
     Point3        _position; // 12
     Vector3       _normal;  // 12
-    Vector3       _color;   // 12
+    Color         _color;   // 12
     size_t        _id;      // 4
     VertexFlags   _flags;   // 4
     Edge        * _he;      // 8
@@ -60,7 +61,7 @@ public:
      */
     Vertex(const Point3 & position,
            const Vector3 & normal = Vector3(0, 1, 0),
-           const Vector3 & color = Vector3(1, 1, 1)
+           const Color & color = Color(1, 1, 1, 1)
                                    );
 
     /**
@@ -86,8 +87,8 @@ public:
     /**
      * Get / sets the color attribute of the vertex;
      */
-    Vector3 color() const { return _color; }
-    Vector3& color() { return _color; }
+    Color color() const { return _color; }
+    Color& color() { return _color; }
 
     /**
      * Gets / sets the normal attribute for this vertex instance

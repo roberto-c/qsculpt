@@ -20,7 +20,7 @@ public:
     
 	virtual ~PointRenderer();
 
-	virtual void renderObject(const ISurface* mesh);
+	virtual void renderObject(const ISurface* mesh, const Material * mat);
     
     /**
      * Set the point size to use when rendering points

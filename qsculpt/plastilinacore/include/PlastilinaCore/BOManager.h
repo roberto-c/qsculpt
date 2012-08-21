@@ -22,6 +22,7 @@
 
 #include <unordered_map>
 #include <PlastilinaCore/BufferObject.h>
+#include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 class ISurface;
 
@@ -34,11 +35,11 @@ class ISurface;
  */
 class BOManager 
 {
-
-	typedef std::unordered_map<GLuint, BufferObject*> IdBufferObjectMap;
+	typedef std::unordered_map<GLuint, BufferObject*>   IdBufferObjectMap;
+    typedef std::unordered_map<GLuint, VAO*>            IdVaoMap;
 	typedef std::unordered_map<GLuint, const ISurface*> BOMeshMap;
 	typedef std::unordered_map<const ISurface*, GLuint> MeshBOMap;
-	typedef std::unordered_map<std::string, MeshBOMap> BOPool;
+	typedef std::unordered_map<std::string, MeshBOMap>  BOPool;
 	
 public:
 	static BOManager* getInstance();
@@ -58,8 +59,12 @@ public:
 	 *
 	 * TODO: describe the notion of pool's on this class.
 	 */
-	VertexBuffer* createVBO(const std::string& poolName, const ISurface* mesh);
-	IndexBuffer* createIBO(const std::string& poolName, const ISurface* mesh);
+	VertexBuffer*   createVBO(const std::string& poolName,
+                              const ISurface* mesh);
+	IndexBuffer*    createIBO(const std::string& poolName,
+                              const ISurface* mesh);
+    VAO*            createVAO(const std::string& poolName,
+                              const ISurface* mesh);
 	
 	/**
 	 * Free the buffer object resources.
@@ -69,6 +74,7 @@ public:
 	 * the buffer object with the mesh stablished with Create*BO
 	 */
 	void destroyBO(const std::string& poolName, BufferObject* vbo);
+    void destroyBO(const std::string& poolName, VAO* vao);
 	
 	/**
 	 * Free all the BOs binded to an specific mesh.
@@ -91,12 +97,15 @@ public:
 	 * Gets the 3D object binded to the specified buffer object.
 	 */
 	ISurface* getMesh(const BufferObject* vbo);
+    
+    ISurface* getMesh(const VAO* vao);
 	
 	/**
 	 * Gets the BO associated to the mesh inside an specific BO pool.
 	 */
-	VertexBuffer* getVBO(const std::string& poolName, const ISurface* mesh);
-	IndexBuffer* getIBO(const std::string& poolName, const ISurface* mesh);
+	VertexBuffer*   getVBO(const std::string& poolName, const ISurface* mesh);
+	IndexBuffer*    getIBO(const std::string& poolName, const ISurface* mesh);
+    VAO*            getVAO(const std::string& poolName, const ISurface* mesh);
 	
 //public slots:
 	void invalidateBO(ISurface* obj);
@@ -105,11 +114,9 @@ private:
 	BOManager();
 	
 private:
-	IdBufferObjectMap m_boMap;
-	BOPool m_vboPool;
-	BOPool m_iboPool;
-	BOMeshMap m_boMeshMap;
-	
+    struct Impl;
+    std::unique_ptr<Impl> d;
+    
 	static BOManager* m_instance;
 };
 

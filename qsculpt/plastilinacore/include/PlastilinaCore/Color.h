@@ -7,15 +7,22 @@
 //  Created by Juan Roberto Cabral Flores on 8/2/11.
 //  Copyright 2011 plastilinaware. All rights reserved.
 //
+#include "Eigen/Core"
 
 class Color {
-    Vector4 _d;
+    Eigen::Vector4f _d;
     
 public:
-    Color() : _d(Vector4(1, 1, 1,1)) {}
-    Color(float r, float g, float b, float a=1.0) : _d(Vector4(r, g, b, a)) {}
+    Color() : _d(Eigen::Vector4f(1, 1, 1,1)) {}
     
+    Color(const Eigen::Vector4f & color) : _d(color)
+    {
+    }
     
+    Color(float r, float g, float b, float a=1.0) : _d(Eigen::Vector4f(r, g, b, a)) {}
+    
+    Eigen::Vector4f & data() { return _d; }
+    Eigen::Vector4f data() const {return _d; }
     
     float r() const { return _d.x(); }
     void r(float v) { _d.x() = v; }

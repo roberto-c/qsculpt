@@ -78,19 +78,7 @@ void PickingObjectRenderer::renderObject(const ISurface* mesh, GLuint objId)
 
 void PickingObjectRenderer::renderImmediate(const ISurface* mesh, unsigned int /*objID*/)
 {    
-    mesh->lock();
-    size_t numVertices = mesh->numVertices();
-    if (numVertices == 0)
-        return;
-    
-    glBegin(GL_POINTS);
-    Iterator<Vertex> it = mesh->constVertexIterator();
-    while(it.hasNext()) {
-        auto v = it.next();
-        glVertex3fv(v->position().data());
-    }
-    glEnd();
-    mesh->unlock();
+
 }
 
 void PickingObjectRenderer::renderVbo(const ISurface* mesh, unsigned int objID)
@@ -101,7 +89,7 @@ void PickingObjectRenderer::renderVbo(const ISurface* mesh, unsigned int objID)
 
     ISurface* obj = const_cast<ISurface*>(mesh);
     VertexBuffer *vbo = getVBO(obj);
-    if (vbo == NULL || vbo->getBufferID() == 0)
+    if (vbo == NULL || vbo->objectID() == 0)
     {
         std::cerr << "Failed to create VBO. Fallback to immediate mode" ;
         renderImmediate(mesh, objID);
@@ -114,26 +102,24 @@ void PickingObjectRenderer::renderVbo(const ISurface* mesh, unsigned int objID)
         vbo->setNeedUpdate(false);
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
-    glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
-
-    glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT|GL_ENABLE_BIT);
-    glShadeModel(GL_FLAT);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo->objectID());
+//    glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
+//
+//    glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT|GL_ENABLE_BIT);
+//    glShadeModel(GL_FLAT);
+//
+//    glEnableClientState(GL_VERTEX_ARRAY);
 
     glPointSize(1.0f);
-    glColor4ub( objID & 0xff,(objID>>8) & 0xff, (objID>>16) & 0xff, (objID>>24) & 0xff);
+//    glColor4ub( objID & 0xff,(objID>>8) & 0xff, (objID>>16) & 0xff, (objID>>24) & 0xff);
     
     GLuint nElements = static_cast<GLuint>( mesh->numFaces()*4 );
-    glDrawArrays(GL_QUADS, 0, nElements);
+//    glDrawArrays(GL_QUADS, 0, nElements);
 
-    glPopAttrib();
-
-    printGlError();
+//    glPopAttrib();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDisableClientState(GL_VERTEX_ARRAY);
+//    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 VertexBuffer* PickingObjectRenderer::getVBO(ISurface* mesh)
@@ -149,7 +135,7 @@ VertexBuffer* PickingObjectRenderer::getVBO(ISurface* mesh)
 
 void PickingObjectRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 {
-    if (mesh == NULL || vbo->getBufferID() == 0)
+    if (mesh == NULL || vbo->objectID() == 0)
         return;
 
     size_t numFaces = mesh->numFaces();

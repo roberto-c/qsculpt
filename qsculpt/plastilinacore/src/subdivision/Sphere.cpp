@@ -31,13 +31,13 @@ Sphere::Sphere()
 
 Sphere::~Sphere()
 {
-    //gluDeleteQuadric(m_pquadratic);
 }
 
 void Sphere::initPoints()
 {	
 #define NUM_LAT 32U
 #define NUM_PAR 16U
+
     typedef std::vector<size_t>::size_type size_type;
     
 	float lat_step = M_PI * 2 / NUM_LAT;
@@ -92,8 +92,8 @@ Point3 Sphere::evalCoords(float s, float u)
 	Point3 vtx;
 	
 	vtx[0] = cosf(s) * sinf(u);
-	vtx[1] = sinf(s) * sinf(u);
-	vtx[2] = cosf(u);
+	vtx[1] = cosf(u);
+	vtx[2] = sinf(s) * sinf(u);
 	
 	return vtx;
 }

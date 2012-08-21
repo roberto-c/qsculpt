@@ -20,7 +20,7 @@ public:
 	 * Render the object using flat shading. The drawing of the mesh is done
 	 * by using VBOs if supported or if there are enabled.
 	 */
-	void renderObject(const ISurface* mesh);
+	void renderObject(const ISurface* mesh, const Material * mat);
     
     /**
      * Set the program shader used for flat rendering. If no set, then it will use

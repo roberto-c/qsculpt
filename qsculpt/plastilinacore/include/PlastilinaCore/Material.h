@@ -26,6 +26,8 @@
 
 class GlslProgram;
 class LightNode;
+class SceneNode;
+class IDocument;
 
 /**
  * Defines the appeareance of the surface or a renderable object.
@@ -48,8 +50,11 @@ public:
     /**
      * Setup all data to render an object using this material.
      *
-     * This function must be implemented by subclasses to bind all necesary 
-     * resources, like shaders, textures, lighting parameters, etc.
+     * This function can be used to load static and external resources used
+     * by the material, like shader source code and additional resources.
+     *
+     * This function should be called just once, at the initialization of the
+     * material.
      */
     virtual void load()=0;
     
@@ -58,8 +63,19 @@ public:
      */
     virtual void unload() = 0;
     
-protected:
-    GlslProgram * shaderProgram();
+    
+    /**
+     * Sets up material with variables and properties needed
+     *
+     * This function must be implemented by subclasses to bind all necesary
+     * resources, like shaders, textures, lighting parameters, etc.
+     */
+    virtual void setup(const std::shared_ptr<SceneNode> & doc) = 0;
+    
+    /**
+     * Gets the shader program used for implementing the material.
+     */
+    GlslProgram * shaderProgram() const;
     
 private:
     struct Impl;
@@ -131,6 +147,7 @@ public:
     
     virtual void load();
     virtual void unload();
+    virtual void setup(const std::shared_ptr<SceneNode> & doc);
     
     void setColor(const Eigen::Vector4f & c);
     Eigen::Vector4f color();

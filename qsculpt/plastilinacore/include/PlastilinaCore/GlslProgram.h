@@ -64,9 +64,45 @@ public:
     void releaseProgram();
     
     /**
+     * Get the number of active attributes for this program.
+     *
+     * This is meant to be called after the program has been linked, once that
+     * the compiler / linker can determine which attributes declared in the
+     * shader(s) source are used.
+     *
+     * @return number of attributes used in the program.
+     */
+    GLint activeAttributes();
+    
+    /**
      * Bind attribute name to the program
      */
     void bindAttributeLocation(GLuint index, const std::string & name);
+    
+    /**
+     * Returns the attribute location for a given attribute name.
+     *
+     * @param name name of the attribute
+     *
+     * @return the location index of attribute. -1 if an error is encountered.
+     */
+    GLint attributeLocation(const std::string & name);
+    
+    /**
+     * Returns informations about a given active attribute.
+     *
+     * @param index index of the attribute. Must be between 0 and 
+     * ACTIVE_ATTRIBUTES.
+     * @param name string object to hold the name into. It is optional, passing
+     * NULL in this parameter will not return the name of the attribute.
+     * @param type pointer to an enum to store the OpenGL type for the attribute.
+     * This is optional, if NULL, then no attempt to get the type is done.
+     * @param size size for the type returned in units of the given type.
+     */
+    void activeAttrib(GLint index,
+                      std::string * name,
+                      GLenum * type,
+                      GLint * size);
     
     /**
      * Get the location of a uniform variable.
@@ -159,6 +195,17 @@ public:
      * @param val value to set.
      */
     void setUniform(GLint index, const Eigen::Vector4f & val);
+    
+    /**
+     * Set the value of uniform variable at location index.
+     *
+     * The location is obtained by calling the function uniformLocation()
+     *
+     * @param index location index of uniform to set the value.
+     * @param val value to set.
+     */
+    void setUniform(GLint index, const Eigen::Matrix4f & val);
+    
 private:
     GLuint progId_;
 };

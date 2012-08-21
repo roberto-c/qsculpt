@@ -10,9 +10,12 @@
 #define PlastilinaCore_OpenGL_h
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
+#include <OpenGL/gl3ext.h>
+#include <OpenGL/OpenGL.h>
 #else
-#include <GL/gl.h>
+#include <GL/gl3.h>
+#include <GL/gl3ext.h>
 #endif
 
 #endif
