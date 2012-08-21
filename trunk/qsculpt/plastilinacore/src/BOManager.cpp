@@ -114,7 +114,7 @@ VAO* BOManager::createVAO(const std::string& poolName, const ISurface* mesh)
     if (bo)
     {
         d->m_boMeshMap[bo->objectID()] = mesh;
-        d->m_iboPool[poolName][mesh]= bo->objectID();
+        d->m_vaoPool[poolName][mesh]= bo->objectID();
         d->m_vaoMap[bo->objectID()] = bo;
     }
     return bo;

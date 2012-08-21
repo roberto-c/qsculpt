@@ -110,28 +110,25 @@ void SmoothRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 	// Set the depth function to the correct value
 	glDepthFunc(GL_LESS);
 
-    
     vao->bind();
-    
+    vbo->bind();
 	if (vbo->needUpdate())
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-    }
-    
-        vbo->bind();
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, v));
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, n));
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, color));
         
-        mat->shaderProgram()->useProgram();
-        GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
-        glDrawArrays(GL_TRIANGLES, 0, numVertices);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, v));
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, n));
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, color));
+    }
+    mat->shaderProgram()->useProgram();
+    GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+    glDrawArrays(GL_TRIANGLES, 0, numVertices);
+    
     vao->release();
-	vbo->release();
 }
 
 VertexBuffer* SmoothRenderer::Impl::getVBO(ISurface* mesh)

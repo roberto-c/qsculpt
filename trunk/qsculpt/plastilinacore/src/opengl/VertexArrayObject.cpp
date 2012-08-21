@@ -21,7 +21,7 @@ namespace opengl {
     VertexArrayObject::~VertexArrayObject()
     {
         glDeleteVertexArrays(1, &vao_);
-        vao_ = -1;
+        vao_ = 0;
     }
     
     GLuint VertexArrayObject::objectID() const
