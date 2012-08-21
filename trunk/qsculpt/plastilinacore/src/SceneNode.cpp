@@ -34,11 +34,11 @@ struct SceneNode::Impl {
     std::string                         name;
     
     Impl(const std::string & name) : iid(0), isSelected(false),name(name) {
-        std::cerr << __PRETTY_FUNCTION__;
+        std::cerr << __PRETTY_FUNCTION__ << std::endl;
     }
     
     ~Impl() {
-        std::cerr << __PRETTY_FUNCTION__;
+        std::cerr << __PRETTY_FUNCTION__ << std::endl;
     }
 };
 
@@ -165,7 +165,7 @@ SceneNode::SceneNode(const std::string& name)
 
 SceneNode::~SceneNode()
 {
-    std::cerr << __PRETTY_FUNCTION__ << ": " << name().c_str();
+    std::cerr << __PRETTY_FUNCTION__ << ": " << name().c_str() << std::endl;
 }
 
 uint SceneNode::iid() const { 
@@ -415,3 +415,69 @@ void SurfaceNode::setSurface(ISurface *surface)
     surface_ = surface;
 }
 
+std::shared_ptr<Material> SurfaceNode::material() const
+{
+    return material_;
+}
+
+/**
+ * Set the material used for this surface.
+ */
+void SurfaceNode::setMaterial(const std::shared_ptr<Material> & mat)
+{
+    material_ = mat;
+}
+
+
+
+LightNode::LightNode(const std::string & name)
+: SceneNode(name)
+{
+    
+}
+
+LightNode::~LightNode()
+{
+    
+}
+
+void LightNode::setColor(const Eigen::Vector4f & color)
+{
+    
+}
+
+Eigen::Vector4f LightNode::color() const
+{
+    return Eigen::Vector4f(1, 1, 1, 1);
+}
+
+
+struct CameraNode::Impl
+{
+    std::shared_ptr<Camera> camera;
+};
+
+CameraNode::CameraNode(const std::shared_ptr<Camera> & cam,
+                       const std::string & name)
+: SceneNode(name),
+    d(new Impl)
+{
+    if (d) {
+        d->camera = cam;
+    }
+}
+
+CameraNode::~CameraNode()
+{
+    
+}
+
+void CameraNode::setCamera(const std::shared_ptr<Camera> & cam)
+{
+    d->camera = cam;
+}
+
+std::shared_ptr<Camera> CameraNode::camera() const
+{
+    return d->camera;
+}

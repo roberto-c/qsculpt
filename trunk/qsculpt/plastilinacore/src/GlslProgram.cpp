@@ -83,10 +83,52 @@ void GlslProgram::releaseProgram()
     THROW_IF_GLERROR(__func__);
 }
 
+GLint GlslProgram::activeAttributes()
+{
+    GLint res = 0;
+    glGetProgramiv(progId_, GL_ACTIVE_ATTRIBUTES, &res);
+    THROW_IF_GLERROR(__func__);
+    return res;
+}
+
 void GlslProgram::bindAttributeLocation(GLuint index, const std::string &name)
 {
     glBindAttribLocation(progId_, index, name.c_str());
     THROW_IF_GLERROR(__func__);
+}
+
+GLint GlslProgram::attributeLocation(const std::string & name)
+{
+    GLint loc = glGetAttribLocation(progId_, name.c_str());
+    THROW_IF_GLERROR(__func__);
+    return loc;
+}
+
+void GlslProgram::activeAttrib(GLint index,
+                               std::string * name,
+                               GLenum * type,
+                               GLint * size)
+{
+    if (!name && !type) {
+        return;
+    }
+
+    GLsizei length = 0;
+    std::vector<GLchar> buffer;
+
+    if (name) {
+        glGetActiveAttrib(progId_, index, 0, &length, size, type, NULL);
+        THROW_IF_GLERROR(__func__);
+        if (length > 0){
+            length++;
+            buffer.resize(length);
+        }
+    }
+    glGetActiveAttrib(progId_, index, length, NULL, size, type, buffer.data());
+    THROW_IF_GLERROR(__func__);
+    if (name) {
+        name->assign(buffer.begin(),buffer.end());
+    }
 }
 
 GLint GlslProgram::uniformLocation(const std::string &name)
@@ -144,3 +186,7 @@ void GlslProgram::setUniform(GLint index, const Eigen::Vector4f & value)
     THROW_IF_GLERROR(__func__);
 }
 
+void GlslProgram::setUniform(GLint index, const Eigen::Matrix4f & val)
+{
+    glUniformMatrix4fv(index, 1, GL_FALSE, val.data());
+}

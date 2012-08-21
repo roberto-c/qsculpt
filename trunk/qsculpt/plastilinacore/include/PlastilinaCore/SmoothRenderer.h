@@ -15,7 +15,7 @@ public:
 	SmoothRenderer();
 	virtual ~SmoothRenderer();
 
-	virtual void renderObject(const ISurface* mesh);	
+	virtual void renderObject(const ISurface* mesh, const Material * mat);	
 };
 
 #endif /*SMOOTHRENDERER_H_*/

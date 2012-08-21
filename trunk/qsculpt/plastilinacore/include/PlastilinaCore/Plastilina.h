@@ -37,11 +37,15 @@
 #include <iterator>
 
 #ifdef __APPLE__
+#include <OpenGL/gl3.h>
+#include <OpenGL/gl3ext.h>
 #include <OpenGL/OpenGL.h>
-#include <OpenGL/glu.h>
+//#include <OpenGL/OpenGL.h>
+//#include <OpenGL/glu.h>
 #else
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include <gl/gl3.h>
+//#include <gl/gl.h>
+//#include <gl/glu.h>
 #endif /* __APPLE__ */
 
 
@@ -53,20 +57,6 @@ namespace Eigen {
 
 #include "GlException.h"
 
-
-inline bool printGlError()
-{
-	bool result = false;
-	GLenum error = glGetError();
-	while( error != GL_NO_ERROR )
-	{
-		result = true;
-		const GLubyte* strError = gluErrorString(error);
-        std::cout << "GLError: code: " << error << " " << (const char*)strError;
-		error = glGetError();
-	}
-	return result;
-}
 
 #define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
 

@@ -21,6 +21,7 @@
 #include <PlastilinaCore/PointRenderer.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/Material.h>
 
 #define BO_POOL_NAME "PointRendererPool"
 
@@ -34,7 +35,7 @@ struct PointRenderer::Impl {
      * Draw the mesh using OpenGL VBOs.
      * The VBOs are re-build when the mesh has been changed since the last draw.
      */
-    void renderVbo(const ISurface* mesh);
+    void renderVbo(const ISurface* mesh, const Material * mat);
 
     /**
      * Draw the mesh using the glBeing()/glEnd() and friends functions.
@@ -71,9 +72,9 @@ PointRenderer::~PointRenderer()
     BOManager::getInstance()->destroyPool(d_->name.c_str());
 }
 
-void PointRenderer::renderObject(const ISurface* mesh)
+void PointRenderer::renderObject(const ISurface* mesh, const Material * mat)
 {
-    d_->renderVbo(mesh);
+    d_->renderVbo(mesh, mat);
 }
 
 void PointRenderer::setPointSize(float size)
@@ -88,22 +89,10 @@ float PointRenderer::pointSize()
 
 void PointRenderer::Impl::renderImmediate(const ISurface* mesh)
 {
-    mesh->lock();
-    size_t numVertices = mesh->numVertices();
-    if (numVertices == 0)
-        return;
 
-    glBegin(GL_POINTS);
-    Iterator<Vertex> it = mesh->constVertexIterator();
-    while(it.hasNext()) {
-        auto v = it.next();
-        glVertex3fv(v->position().data());
-    }
-    glEnd();
-    mesh->unlock();
 }
 
-void PointRenderer::Impl::renderVbo(const ISurface* mesh)
+void PointRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 {
     //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
     if (mesh == NULL)
@@ -111,7 +100,7 @@ void PointRenderer::Impl::renderVbo(const ISurface* mesh)
 
     ISurface* obj = const_cast<ISurface*>(mesh);
     VertexBuffer *vbo = getVBO(obj);
-    if (vbo == NULL || vbo->getBufferID() == 0)
+    if (vbo == NULL || vbo->objectID() == 0)
     {
         std::cerr << "Failed to create VBO. Fallback to immediate mode" ;
         renderImmediate(mesh);
@@ -124,18 +113,18 @@ void PointRenderer::Impl::renderVbo(const ISurface* mesh)
         vbo->setNeedUpdate(false);
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
-    glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
-    glColorPointer(3, GL_FLOAT, 6*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
-
-    glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-
-    glEnable(GL_POINT_SMOOTH);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo->objectID());
+//    glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
+//    glColorPointer(3, GL_FLOAT, 6*sizeof(GLfloat), (const GLvoid*)(3*sizeof(GLfloat)));
+//
+//    glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT);
+//
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glEnableClientState(GL_COLOR_ARRAY);
+//
+//    glEnable(GL_POINT_SMOOTH);
     glPointSize(pointSize);
-    glColor3f(1.0f, 1.0f, 1.0f);
+//    glColor3f(1.0f, 1.0f, 1.0f);
     GLsizei nVertices = static_cast<GLsizei>(obj->numVertices());
     glDrawArrays(GL_POINTS, 0, nVertices);
 
@@ -145,10 +134,10 @@ void PointRenderer::Impl::renderVbo(const ISurface* mesh)
     //	glDrawArrays(GL_POINTS, 0, obj->getPointList().size());
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+//    glDisableClientState(GL_COLOR_ARRAY);
 
-    glPopAttrib();
+//    glPopAttrib();
 }
 
 VertexBuffer* PointRenderer::Impl::getVBO(const ISurface* mesh)
@@ -190,11 +179,11 @@ void PointRenderer::Impl::fillVertexBuffer(const ISurface* mesh, VertexBuffer* v
             vtxData[offset] = colorSelected.z();
             offset++;
         } else {
-            vtxData[offset] = v->color().x();
+            vtxData[offset] = v->color().r();
             offset++;
-            vtxData[offset] = v->color().y();
+            vtxData[offset] = v->color().g();
             offset++;
-            vtxData[offset] = v->color().z();
+            vtxData[offset] = v->color().b();
             offset++;
         }
 

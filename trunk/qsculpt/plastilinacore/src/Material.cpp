@@ -27,7 +27,7 @@ static std::atomic_int NEXT_ID;
 
 struct Material::Impl {
     int id;
-    std::unique_ptr<GlslProgram> shaderProgram;
+    GlslProgram shaderProgram;
 };
 
 Material::Material() : d_(new Impl)
@@ -43,8 +43,8 @@ int Material::iid() const {
     return d_->id;
 }
 
-GlslProgram * Material::shaderProgram() {
-    return d_->shaderProgram.get();
+GlslProgram * Material::shaderProgram() const {
+    return &d_->shaderProgram;
 }
 
 
@@ -72,6 +72,11 @@ void CookTorrance::load()
 }
 
 void CookTorrance::unload()
+{
+    
+}
+
+void CookTorrance::setup(const std::shared_ptr<SceneNode> & doc)
 {
     
 }

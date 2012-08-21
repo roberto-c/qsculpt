@@ -43,7 +43,7 @@ public:
 	/**
 	 *
 	 */
-	GLuint getBufferID() const {
+	GLuint objectID() const {
 		return m_vboID;
 	};
 	
@@ -92,6 +92,16 @@ public:
 	 */
 	bool destroy();
 	
+    /**
+     * Bind the buffer object to its target.
+     */
+    bool bind();
+    
+    /**
+     * Unbind the buffer object.
+     */
+    bool release();
+    
 protected:
 	/**
 	 * Initializes a Buffer Object (BO)
@@ -141,6 +151,27 @@ inline bool BufferObject::destroy()
 	return result;
 }
 
+inline bool BufferObject::bind()
+{
+    bool ret = false;
+    
+    glBindBuffer(m_boTarget, m_vboID);
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(ret);
+    ret = true;
+    return ret;
+}
+
+inline bool BufferObject::release()
+{
+    bool ret = false;
+    
+    glBindBuffer(m_boTarget, 0);
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(ret);
+    ret = true;
+    return ret;
+}
 
 /**
  *

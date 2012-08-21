@@ -88,9 +88,9 @@ EdgePool::EdgePool() {
 }
 
 Edge * EdgePool::allocate(Vertex * v1, Vertex * v2) {
-    element.insert(element.end(), Edge(v1, v2));
-    return &element.at(element.size() - 1);
-    //return new Vertex(p);
+    //element.insert(element.end(), Edge(v1, v2));
+    //return &element.at(element.size() - 1);
+    return new Edge(v1, v2);
 }
 
 void EdgePool::delloacate(Edge *ptr) {
@@ -582,6 +582,10 @@ const geometry::AABB& Subdivision::boundingBox() const
 void Subdivision::setColor(const Color& color)
 {
     _d->_color = color;
+    auto it = vertexIterator();
+    while (it.hasNext()) {
+        it.next()->color() = color;
+    }
 }
 
 Color Subdivision::color() const
@@ -605,6 +609,7 @@ size_t Subdivision::addVertex(const Point3& point)
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
     
     Vertex* vertex = _d->_vtxPool.allocate(point);// new Vertex(point);
+    vertex->color() = _d->_color;
 //    size_t index = _d->_vtxPool.free[0];
 //    _d->_vtxPool.free.pop_back();
 //    Vertex* vertex = NULL;

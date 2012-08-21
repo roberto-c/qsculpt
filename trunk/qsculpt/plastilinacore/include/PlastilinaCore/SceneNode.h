@@ -27,6 +27,7 @@
 
 class ISurface;
 class Material;
+class Camera;
 
 enum NodeType {
     NT_Normal,
@@ -281,6 +282,39 @@ public:
     
     void setColor(const Eigen::Vector4f & color);
     Eigen::Vector4f color() const;
+};
+
+/**
+ * SceneNode that contains a camera
+ *
+ *
+ */
+class CameraNode : public SceneNode
+{
+public:
+    typedef std::shared_ptr<CameraNode>        shared_ptr;
+    typedef std::weak_ptr<const CameraNode>    weak_ptr;
+    typedef std::shared_ptr<CameraNode>        const_shared_ptr;
+    typedef std::weak_ptr<const CameraNode>    const_weak_ptr;
+    
+    CameraNode(const std::shared_ptr<Camera> & cam = NULL,
+               const std::string & name = "Camera");
+    
+    virtual ~CameraNode();
+    
+    /**
+     * Set the camera object this node refers to
+     */
+    void setCamera(const std::shared_ptr<Camera> & cam);
+    
+    /**
+     * Gets a pointer to the camera object this node refers to
+     */
+    std::shared_ptr<Camera> camera() const;
+    
+private:
+    struct Impl;
+    std::unique_ptr<Impl> d;
 };
 
 #endif // SCENENODE_H_

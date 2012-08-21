@@ -24,13 +24,7 @@ public:
      * Draw the mesh using OpenGL VBOs.
      * The VBOs are re-build when the mesh has been changed since the last draw.
      */
-    static void renderVbo(const ISurface* mesh);
-
-    /**
-     * Draw the mesh using the glBeing()/glEnd() and friends functions.
-     * This method is a fallback method if the  VBOs are not supported.
-     */
-    static void renderImmediate(const ISurface* mesh);
+    static void renderVbo(const ISurface* mesh, const Material * mat);
 
     /**
      *
@@ -53,44 +47,12 @@ WireframeRenderer::~WireframeRenderer()
     std::cerr << "WireframeRenderer destructor";
 }
 
-void WireframeRenderer::renderObject(const ISurface* mesh)
+void WireframeRenderer::renderObject(const ISurface* mesh, const Material * mat)
 {
-    RendererPrivate::renderVbo(mesh);
+    RendererPrivate::renderVbo(mesh, mat);
 }
 
-void RendererPrivate::renderImmediate(const ISurface* mesh)
-{
-    //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
-    if (mesh == NULL)
-        return;
-
-    Color color(1,1,1,1); //mesh->getPointList().at(f.normal[j]).color;
-    if (mesh->isSelected())
-    {
-        glColor3d(color.r(), color.g() + 0.3, color.b());
-    }
-    else
-    {
-        glColor3d(color.r(), color.g(), color.b());
-    }
-    
-    Iterator<Face> it = mesh->constFaceIterator();
-    while(it.hasNext()) {
-        auto f = it.next();
-        Iterator<Vertex> vtxIt = f->constVertexIterator();
-        glBegin(GL_LINE_LOOP);
-        while(vtxIt.hasNext()) {
-            auto v = vtxIt.next();
-            // std::cerr << "Vertex:" << toString(v.position());
-            glVertex3f(v->position().x(),
-                       v->position().y(),
-                       v->position().z());
-        }
-        glEnd();
-    }
-}
-
-void RendererPrivate::renderVbo(const ISurface* mesh)
+void RendererPrivate::renderVbo(const ISurface* mesh, const Material * mat)
 {
     //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
     if (mesh == NULL)
@@ -99,10 +61,9 @@ void RendererPrivate::renderVbo(const ISurface* mesh)
     ISurface* obj = const_cast<ISurface*>(mesh);
     
     VertexBuffer* vbo = getVBO(obj);
-    if (vbo == NULL || vbo->getBufferID() == 0)
+    if (vbo == NULL || vbo->objectID() == 0)
     {
         std::cerr << "Failed to create VBO. Fallback to immediate mode" ;
-        renderImmediate(mesh);
         return;
     }
     // Set the depth function to the correct value
@@ -114,29 +75,29 @@ void RendererPrivate::renderVbo(const ISurface* mesh)
         vbo->setNeedUpdate(false);
     }
     
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glEnableClientState(GL_NORMAL_ARRAY);
+//    glEnableClientState(GL_COLOR_ARRAY);
     
-    glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
-    glColorPointer(4, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, color));
-    glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, n));
-    glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, v));
+    glBindBuffer(GL_ARRAY_BUFFER, vbo->objectID());
+//    glColorPointer(4, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, color));
+//    glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, n));
+//    glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, v));
     
-    Color color(1,1,1,1);
-    if (mesh->isSelected())
-        glColor3d(color.r(), color.g() + 0.3, color.b());
-    else
-        glColor3d(color.r(), color.g(), color.b());
+//    Color color(1,1,1,1);
+//    if (mesh->isSelected())
+//        glColor3d(color.r(), color.g() + 0.3, color.b());
+//    else
+//        glColor3d(color.r(), color.g(), color.b());
     
     //std::cerr << "Draw mesh";
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawArrays(GL_QUADS, 0, (GLsizei)obj->numFaces()*4);
+    glDrawArrays(GL_LINES, 0, (GLsizei)obj->numFaces()*4);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+//    glDisableClientState(GL_NORMAL_ARRAY);
+//    glDisableClientState(GL_COLOR_ARRAY);
     
     //std::cerr << "Mesh rendered";
 }
@@ -155,7 +116,7 @@ VertexBuffer* RendererPrivate::getVBO(ISurface* mesh)
 void RendererPrivate::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 {
     //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
-    if (mesh == NULL || vbo->getBufferID() == 0)
+    if (mesh == NULL || vbo->objectID() == 0)
         return;
     
     size_t numFaces = mesh->numFaces();

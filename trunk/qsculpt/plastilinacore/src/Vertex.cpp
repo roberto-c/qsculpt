@@ -261,7 +261,7 @@ std::atomic_int Vertex::NEXT_ID(1);
 Vertex::Vertex() 
     : _position(Point3(0, 0, 0)),
     _normal(Vector3(0, 1, 0)),
-    _color(Vector3(1, 1, 1)),
+    _color(Color(1, 1, 1, 1)),
     _flags(VF_None),
     _he(NULL),
     _userData(NULL)
@@ -271,7 +271,7 @@ Vertex::Vertex()
 
 Vertex::Vertex(const Point3 & position, 
                const Vector3 & normal,
-               const Vector3 & color)
+               const Color & color)
                    : _position(position),
                    _normal(normal.normalized()),
                    _color(color),
@@ -312,7 +312,7 @@ bool Vertex::operator==(const Vertex& v) const
         return true;
 
     return (_position == v._position && _normal == v._normal
-            && _color == v._color);
+            && _color.data() == v._color.data());
 }
 
 bool Vertex::operator!=(const Vertex& v) const

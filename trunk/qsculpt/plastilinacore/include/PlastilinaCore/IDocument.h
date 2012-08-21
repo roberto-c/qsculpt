@@ -75,24 +75,6 @@ public:
      * Save file
      */
     virtual void saveFile(const std::string& fileName) = 0;
-
-    
-    /**
-     * This method add a new item into the document.
-     *
-     * The item is an scene node and it is inserted under the parent stated by
-     * the parent QModelIndex. If the index is invalid, then the node is
-     * inserted at the root level.
-     *
-     * @param node Shared pointer to the node to insert. The implementation of
-     * this class will share ownership of the node. 
-     *
-     * @param parent QModelIndex which should be the parent. The node will be
-     * inserted as a child of parent node. If parent is invalid, the node is
-     * going to be inerted as child of the root node.
-     */
-//    virtual void addItem(SceneNode::shared_ptr node, 
-//                         const QModelIndex & parent = QModelIndex()) = 0;
     
     /**
      * This method searches for a node item with an IID of iid.
@@ -102,14 +84,6 @@ public:
      * @param iid instance id of the item to find
      */
     virtual SceneNode::shared_ptr findItem(uint iid) = 0;
-    
-//    /**
-//     * Return the QModelIndex that corresponds to an SceneNode with ID iid.
-//     *
-//     * @param iid Instance ID of the node to look for.
-//     * @return QModelIndex representing the node.
-//     */
-//    virtual QModelIndex findItemIndex(uint iid) = 0;
     
     /**
      * 
@@ -121,8 +95,18 @@ public:
      */
     virtual std::vector<SceneNode::weak_ptr> getSelectedObjects() const = 0;
     
+    /**
+     * Returns an iterator to the scene nodes.
+     *
+     * This iterators only iterates over the direct children of the document.
+     */
     virtual Iterator<SceneNode> sceneIterator() = 0;
     
+    /**
+     * Returns an iterator to the scene nodes.
+     *
+     * This iterators only iterates over the direct children of the document.
+     */
     virtual Iterator<SceneNode> constSceneIterator() const = 0;
     
     /**

@@ -22,16 +22,17 @@
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/Material.h>
+#include <PlastilinaCore/GlslShader.h>
+#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 #define BO_POOL_NAME "SmoothRendererPool"
 
-static GLfloat g_selectedColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
-static GLfloat g_normalColor[] =   {0.8f, 0.8f, 0.8f, 1.0f};
-
 typedef struct tagSmoothVtxStruct
 {
-    GLfloat v[3];
-    GLfloat n[3];
+    GLfloat v[4];
+    GLfloat n[4];
     GLfloat color[4];
 } SmoothVtxStruct;
 
@@ -42,19 +43,18 @@ struct SmoothRenderer::Impl {
 	 * Draw the mesh using OpenGL VBOs.
 	 * The VBOs are re-build when the mesh has been changed since the last draw.
 	 */
-	void renderVbo(const ISurface* mesh);
-	
-	/**
-	 * Draw the mesh using the glBeing()/glEnd() and friends functions.
-	 * This method is a fallback method if the  VBOs are not supported.
-	 */
-	void renderImmediate(const ISurface* mesh);
+	void renderVbo(const ISurface* mesh, const Material * mat);
 	
 	/**
 	 *
 	 */
 	VertexBuffer* getVBO(ISurface* mesh);
 	
+    /**
+	 *
+	 */
+	VAO* getVAO(ISurface* mesh);
+    
 	/**
 	 * Fill vertex buffer with the mesh data.
 	 */
@@ -68,51 +68,26 @@ struct SmoothRenderer::Impl {
                          const Vertex & v2,
                          const Vertex & v3,
                          std::vector<SmoothVtxStruct> & buffer,
-                         size_t & pos,
-                         GLfloat color[4]);
+                         size_t & pos);
 };
 
 SmoothRenderer::SmoothRenderer() : _d(new Impl)
 {
-	std::cerr << "SmoothRenderer constructor";
+	std::cerr << "SmoothRenderer constructor\n";
 }
 
 SmoothRenderer::~SmoothRenderer()
 {
-	std::cerr << "SmoothRenderer destructor";
+	std::cerr << "SmoothRenderer destructor\n";
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
-void SmoothRenderer::renderObject(const ISurface* mesh)
+void SmoothRenderer::renderObject(const ISurface* mesh, const Material * mat)
 {
-	_d->renderVbo(mesh);
+	_d->renderVbo(mesh, mat);
 }
 
-void SmoothRenderer::Impl::renderImmediate(const ISurface* mesh)
-{	
-	if (mesh->isSelected())
-		glColor3d(0.0, 1.0, 0.0);
-	else
-		glColor3d(0.8, 0.8, 0.8);
-
-    
-    Iterator<Face> it = mesh->constFaceIterator();
-	while(it.hasNext()) {
-		auto f = it.next();
-        Iterator<Vertex> vtxIt = f->constVertexIterator();
-        glBegin(GL_POLYGON);
-        while(vtxIt.hasNext()) {
-            auto v = vtxIt.next();
-            glNormal3fv(v->normal().data());
-            glVertex3fv(v->position().data());
-            // std::cerr << "Vertex:" << toString(v.position());
-        }
-        glEnd();
-	}
-    
-}
-
-void SmoothRenderer::Impl::renderVbo(const ISurface* mesh)
+void SmoothRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 {
 	//std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
 	if (mesh == NULL)
@@ -120,48 +95,43 @@ void SmoothRenderer::Impl::renderVbo(const ISurface* mesh)
 	
 	ISurface* obj = const_cast<ISurface*>(mesh);
 	VertexBuffer* vbo= getVBO(obj);
-	if (vbo == NULL || vbo->getBufferID() == 0)
+	if (vbo == NULL || vbo->objectID() == 0)
 	{
-		std::cerr << "Failed to create VBO. Fallback to immediate mode" ;
-		renderImmediate(mesh);
+		std::cerr << "Failed to create VBO.\n" ;
 		return;
 	}
-	
+    VAO* vao = getVAO(obj);
+    if (vao == NULL || vao->objectID() == 0)
+	{
+		std::cerr << "Failed to create VAO.\n" ;
+		return;
+	}
+
 	// Set the depth function to the correct value
 	glDepthFunc(GL_LESS);
-	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-	
+
+    
+    vao->bind();
+    
 	if (vbo->needUpdate())
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-	}
-	
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
-    glColorPointer(4, GL_FLOAT, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, color));
-    glNormalPointer(GL_FLOAT, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, n));
-    glVertexPointer(3, GL_FLOAT, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, v));
-    	
-	Color color(1, 1, 1, 1);
-	if (mesh->isSelected())
-	{
-		glColor3d(color.r(), color.g() + 0.3, color.b());
-	}
-	else
-	{
-		glColor3d(color.r(), color.g(), color.b());
-	}
-	
-    GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
-    glDrawArrays(GL_TRIANGLES, 0, numVertices);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+    }
+    
+        vbo->bind();
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, v));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, n));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, color));
+        
+        mat->shaderProgram()->useProgram();
+        GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+        glDrawArrays(GL_TRIANGLES, 0, numVertices);
+    vao->release();
+	vbo->release();
 }
 
 VertexBuffer* SmoothRenderer::Impl::getVBO(ISurface* mesh)
@@ -175,10 +145,21 @@ VertexBuffer* SmoothRenderer::Impl::getVBO(ISurface* mesh)
 	return vbo;	
 }
 
+VAO* SmoothRenderer::Impl::getVAO(ISurface* mesh)
+{
+	VAO* vao = NULL;
+	vao = BOManager::getInstance()->getVAO(BO_POOL_NAME, mesh);
+	if (vao == NULL)
+	{
+		vao = BOManager::getInstance()->createVAO(BO_POOL_NAME, mesh);
+	}
+	return vao;
+}
+
 void SmoothRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 {
     //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
-    if (mesh == NULL || vbo->getBufferID() == 0)
+    if (mesh == NULL || vbo->objectID() == 0)
         return;
     
     size_t numFaces = mesh->numFaces();
@@ -204,6 +185,7 @@ void SmoothRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     // processed.
     GLuint dataSize = static_cast<GLuint>(offset*sizeof(SmoothVtxStruct));
     vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
+    THROW_IF_GLERROR(__func__);
     
     //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }
@@ -217,7 +199,7 @@ bool SmoothRenderer::Impl::processPolygon(const Face & f,
         std::cerr << "Incomplete polygon. A polygon should have at least 3 vertices";
         return false;
     }
-    GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;
+    //GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;
     
     Iterator<Vertex> vtxIt = f.constVertexIterator();
     auto v1 = vtxIt.next();
@@ -225,7 +207,7 @@ bool SmoothRenderer::Impl::processPolygon(const Face & f,
     Vector3 n;
     while(vtxIt.hasNext()) {
         auto v3 = vtxIt.next();
-        processTriangle(*v1, *v2, *v3, vtxData, offset, color);
+        processTriangle(*v1, *v2, *v3, vtxData, offset);
         v2 = v3;
     }
     return true;
@@ -235,34 +217,39 @@ bool SmoothRenderer::Impl::processTriangle(const Vertex & v1,
                                          const Vertex & v2,
                                          const Vertex & v3,
                                          std::vector<SmoothVtxStruct> & vtxData,
-                                         size_t & offset, 
-                                         GLfloat color[4])
+                                         size_t & offset)
 {
     vtxData[offset].v[0] = v1.position().x();
     vtxData[offset].v[1] = v1.position().y();
     vtxData[offset].v[2] = v1.position().z();
+    vtxData[offset].v[3] = 1;
     vtxData[offset].n[0] = v1.normal().x();
     vtxData[offset].n[1] = v1.normal().y();
     vtxData[offset].n[2] = v1.normal().z();
-    memcpy(vtxData[offset].color, color, sizeof(vtxData[offset].color)) ;
+    vtxData[offset].n[3] = 0;
+    memcpy(vtxData[offset].color, v1.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
     vtxData[offset].v[0] = v2.position().x();
     vtxData[offset].v[1] = v2.position().y();
     vtxData[offset].v[2] = v2.position().z();
+    vtxData[offset].v[3] = 1;
     vtxData[offset].n[0] = v2.normal().x();
     vtxData[offset].n[1] = v2.normal().y();
     vtxData[offset].n[2] = v2.normal().z();
-    memcpy(vtxData[offset].color, color, sizeof(vtxData[offset].color)) ;
+    vtxData[offset].n[3] = 0;
+    memcpy(vtxData[offset].color, v2.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
     vtxData[offset].v[0] = v3.position().x();
     vtxData[offset].v[1] = v3.position().y();
     vtxData[offset].v[2] = v3.position().z();
+    vtxData[offset].v[3] = 1;
     vtxData[offset].n[0] = v3.normal().x();
     vtxData[offset].n[1] = v3.normal().y();
     vtxData[offset].n[2] = v3.normal().z();
-    memcpy(vtxData[offset].color, color, sizeof(vtxData[offset].color)) ;
+    vtxData[offset].n[3] = 0;
+    memcpy(vtxData[offset].color, v3.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
     return true;

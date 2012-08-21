@@ -29,6 +29,9 @@ namespace core {
     }
 
     const char* GlException::errorString() const throw() {
-        return (const char*)gluErrorString(error_);
+        //
+        //return (const char*)gluErrorString(error_);
+        const char * err = "\0";
+        return err;
     }
 }

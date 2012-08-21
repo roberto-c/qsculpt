@@ -25,7 +25,7 @@
 #include <iostream>
 #include <PlastilinaCore/GlslProgram.h>
 #include <PlastilinaCore/Color.h>
-
+#include <PlastilinaCore/Material.h>
 
 using namespace std;
 
@@ -60,7 +60,7 @@ struct FlatRenderer::Impl {
 	 * Draw the mesh using OpenGL VBOs.
 	 * The VBOs are re-build when the mesh has been changed since the last draw.
 	 */
-	void renderVbo(const ISurface* mesh);
+	void renderVbo(const ISurface* mesh, const Material * mat);
 	
 	/**
 	 * Draw the mesh using the glBeing()/glEnd() and friends functions.
@@ -85,10 +85,8 @@ struct FlatRenderer::Impl {
     bool processTriangle(const Vertex & v1,
                          const Vertex & v2,
                          const Vertex & v3,
-                         const Vector3 & normal,
                          std::vector<FlatVtxStruct> & buffer,
-                         size_t & pos,
-                         GLfloat color[4]);
+                         size_t & pos);
 };
 
 FlatRenderer::FlatRenderer() : _d(new Impl)
@@ -107,50 +105,18 @@ void FlatRenderer::setShaderProgram(GlslProgram * shader)
     _d->shaderProgram = shader;
 }
 
-void FlatRenderer::renderObject(const ISurface* mesh)
+void FlatRenderer::renderObject(const ISurface* mesh, const Material * mat)
 {
-    _d->renderVbo(mesh);
-    //renderImmediate(mesh);
+    _d->renderVbo(mesh, mat);
+    //_d->renderImmediate(mesh);
 }
 
 void FlatRenderer::Impl::renderImmediate(const ISurface* mesh)
 {
-    //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
-    if (mesh == NULL)
-        return;
 
-    // Set the depth function to the correct value
-    glDepthFunc(GL_LESS);
-
-    Color color(1, 1, 1, 1); //mesh->getPointList().at(f.normal[j]).color;
-    if (mesh->isSelected())
-    {
-        glColor3d(color.r(), color.g() + 0.3, color.b());
-    }
-    else
-    {
-        glColor3d(color.r(), color.g(), color.b());
-    }
-
-
-    //    int fcounter = 0;
-    Iterator<Face> it = mesh->constFaceIterator();
-    while(it.hasNext()) {
-        auto f = it.next();
-        //        std::cerr << "face " << fcounter++;
-        Iterator<Vertex> vtxIt = f->constVertexIterator();
-        glBegin(GL_POLYGON);
-        while(vtxIt.hasNext()) {
-            auto v = vtxIt.next();
-            std::cerr << "Vertex:" << toString(v->position());
-            glNormal3fv(v->normal().data());
-            glVertex3fv(v->position().data());
-        }
-        glEnd();
-    }
 }
 
-void FlatRenderer::Impl::renderVbo(const ISurface* mesh)
+void FlatRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 {
     //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
     if (mesh == NULL)
@@ -159,7 +125,7 @@ void FlatRenderer::Impl::renderVbo(const ISurface* mesh)
     ISurface* obj = const_cast<ISurface*>(mesh);
 
     VertexBuffer* vbo = getVBO(obj);
-    if (vbo == NULL || vbo->getBufferID() == 0)
+    if (vbo == NULL || vbo->objectID() == 0)
     {
         std::cerr << "Failed to create VBO. Fallback to immediate mode" ;
         renderImmediate(mesh);
@@ -174,29 +140,29 @@ void FlatRenderer::Impl::renderVbo(const ISurface* mesh)
         vbo->setNeedUpdate(false);
     }
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glEnableClientState(GL_NORMAL_ARRAY);
+//    glEnableClientState(GL_COLOR_ARRAY);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo->getBufferID());
-    glColorPointer(4, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, color));
-    glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, n));
-    glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, v));
+    glBindBuffer(GL_ARRAY_BUFFER, vbo->objectID());
+//    glColorPointer(4, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, color));
+//    glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, n));
+//    glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, v));
 
     Color color(1,1,1,1);
-    if (mesh->isSelected())
-        glColor3d(color.r(), color.g() + 0.3, color.b());
-    else
-        glColor3d(color.r(), color.g(), color.b());
+//    if (mesh->isSelected())
+//        glColor3d(color.r(), color.g() + 0.3, color.b());
+//    else
+//        glColor3d(color.r(), color.g(), color.b());
 
     //std::cerr << "Draw mesh";
     GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+//    glDisableClientState(GL_NORMAL_ARRAY);
+//    glDisableClientState(GL_COLOR_ARRAY);
 
     //std::cerr << "Mesh rendered";
 }
@@ -215,7 +181,7 @@ VertexBuffer* FlatRenderer::Impl::getVBO(ISurface* mesh)
 void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 {
     //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
-    if (mesh == NULL || vbo->getBufferID() == 0)
+    if (mesh == NULL || vbo->objectID() == 0)
         return;
 
     size_t numFaces = mesh->numFaces();
@@ -225,7 +191,10 @@ void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     Iterator<Face> it = mesh->constFaceIterator();
     numFaces = 0; // number of faces after triangulation
     while(it.hasNext()) {
-        numFaces += it.next()->numVertices() - 2;
+        auto face = it.next();
+        if (face) {
+            numFaces += face->numVertices() - 2;
+        }
     }
 
     size_t numVertices = numFaces*3;
@@ -254,21 +223,14 @@ bool FlatRenderer::Impl::processPolygon(const Face & f,
         std::cerr << "Incomplete polygon. A polygon should have at least 3 vertices";
         return false;
     }
-    GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;
     
     Iterator<Vertex> vtxIt = f.constVertexIterator();
     auto v1 = vtxIt.next();
     auto v2 = vtxIt.next();
     Vector3 n;
-    bool ncalc = false;
     while(vtxIt.hasNext()) {
         auto v3 = vtxIt.next();
-        if (!ncalc) {
-            n = (v2->position() - v1->position()).cross(v3->position() - v1->position());
-            n.normalize();
-            ncalc = true;
-        }
-        processTriangle(*v1, *v2, *v3, n, vtxData, offset, color);
+        processTriangle(*v1, *v2, *v3, vtxData, offset);
         v2 = v3;
     }
     return true;
@@ -277,18 +239,18 @@ bool FlatRenderer::Impl::processPolygon(const Face & f,
 bool FlatRenderer::Impl::processTriangle(const Vertex & v1,
                                          const Vertex & v2,
                                          const Vertex & v3,
-                                         const Vector3 & normal,
                                          std::vector<FlatVtxStruct> & vtxData,
-                                         size_t & offset, 
-                                         GLfloat color[4])
+                                         size_t & offset)
 {
+    Vector3 normal = (v2.position() - v1.position()).cross(v3.position() - v1.position());
+    normal.normalize();
     vtxData[offset].v[0] = v1.position().x();
     vtxData[offset].v[1] = v1.position().y();
     vtxData[offset].v[2] = v1.position().z();
     vtxData[offset].n[0] = normal.x();
     vtxData[offset].n[1] = normal.y();
     vtxData[offset].n[2] = normal.z();
-    memcpy(vtxData[offset].color, color, sizeof(vtxData[offset].color)) ;
+    memcpy(vtxData[offset].color, v1.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
     vtxData[offset].v[0] = v2.position().x();
@@ -297,7 +259,7 @@ bool FlatRenderer::Impl::processTriangle(const Vertex & v1,
     vtxData[offset].n[0] = normal.x();
     vtxData[offset].n[1] = normal.y();
     vtxData[offset].n[2] = normal.z();
-    memcpy(vtxData[offset].color, color, sizeof(vtxData[offset].color)) ;
+    memcpy(vtxData[offset].color, v2.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
     vtxData[offset].v[0] = v3.position().x();
@@ -306,7 +268,7 @@ bool FlatRenderer::Impl::processTriangle(const Vertex & v1,
     vtxData[offset].n[0] = normal.x();
     vtxData[offset].n[1] = normal.y();
     vtxData[offset].n[2] = normal.z();
-    memcpy(vtxData[offset].color, color, sizeof(vtxData[offset].color)) ;
+    memcpy(vtxData[offset].color, v3.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
     return true;
