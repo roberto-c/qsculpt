@@ -24,24 +24,26 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
+#include <PlastilinaCore/Document.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Material/PhongMaterial.h>
 #include "QSculptWindow.h"
 #include "DocumentView.h"
-#include "Document.h"
 #include "MoveCommand.h"
 #include "TransformWidget.h"
 #include "SelectCommand.h"
 #include "BrushCommand.h"
 #include "SubdivideCommand.h"
 #include "orbitcommand.h"
-#include "ISurface.h"
 #include "Console.h"
 #include "ConsoleWindow.h"
 #include "IConfigContainer.h"
 #include "DocumentTreeWidget.h"
 #include "MeshEditCommands.h"
-#include "SceneNode.h"
-#include "Box.h"
 #include "ui_MainWindow.h"
+#include "DocumentModel.h"
 
 struct QSculptWindow::Impl : public Ui::MainWindow {
     DocumentView*               documentView;
@@ -55,6 +57,7 @@ struct QSculptWindow::Impl : public Ui::MainWindow {
     QToolBar*                   toolsToolbar;
     Console*                    console;
     DocumentTreeWidget*         docTree;
+    std::shared_ptr<DocumentModel> docModel;
 };
 
 QSculptWindow::QSculptWindow()
@@ -73,8 +76,7 @@ void QSculptWindow::createWidgets()
 {
     d_->setupUi(this);
     d_->documentView = new DocumentView(this);
-    d_->document = std::make_shared<Document>();
-    d_->documentView->setDocument(d_->document);
+    
 
     setCentralWidget(d_->documentView);
 
@@ -87,16 +89,13 @@ void QSculptWindow::createWidgets()
     connect(d_->m_showGrid, SIGNAL(toggled(bool)), d_->documentView, SLOT(setGridVisible(bool)));
     connect(d_->m_showNormals, SIGNAL(toggled(bool)), d_->documentView, SLOT(setNormalsVisible(bool)));
     connect(d_->m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
-    connect(d_->document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)),
-            this, SLOT(documentChanged(IDocument::ChangeType)));
-
-    //connect(d_->m_addBox, SIGNAL(activated()), this, SLOT(addBox()));
-    connect(d_->m_addSphere, SIGNAL(activated()), this, SLOT(addSphere()));
+    //connect(d_->document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)),
+    //        this, SLOT(documentChanged(IDocument::ChangeType)));
 
     d_->console = Console::instance();
     
     d_->docTree = new DocumentTreeWidget(this);
-    d_->docTree->setDocument(d_->document);
+    d_->docTree->setDocument(d_->docModel);
 
     QAction *action = NULL;
     ICommand* cmd = NULL;
@@ -243,6 +242,7 @@ void QSculptWindow::createWidgets()
     // Activate default tool
     d_->commandManager.setActiveCommand("Select");
 
+    connect(d_->m_new,SIGNAL(activated()),this,SLOT(newFile()));
     connect(d_->m_save, SIGNAL(activated()), this, SLOT(save()));
     connect(d_->m_saveAs, SIGNAL(activated()), this, SLOT(saveAs()));
     connect(d_->m_open, SIGNAL(activated()), this, SLOT(open()));
@@ -299,19 +299,28 @@ void QSculptWindow::newFile()
     if (maybeSave()) {
         //textEdit->clear();
         setCurrentFile("");
-//        Document * ndoc = new Document;
-//        d_->documentView->setDocument(ndoc);
-//        delete d_->document;
-//        d_->document = ndoc;
+        
+        d_->document = std::make_shared<Document>();
+        d_->docModel = std::make_shared<DocumentModel>(d_->document);
+        d_->documentView->setDocument(d_->document);
+        
+        auto node = std::make_shared<SurfaceNode>("test", new ::Box);
+        auto mat = std::make_shared<PhongMaterial>();
+        mat->load();
+        node->setMaterial(mat);
+        d_->docModel->addItem(node);
+        CameraNode::shared_ptr cam = std::make_shared<CameraNode>();
+        d_->docModel->addItem(cam);
+        d_->docTree->setDocument(d_->docModel);
     }
 }
 
 void QSculptWindow::open()
 {
     if (maybeSave()) {
-        QString fileName = QFileDialog::getOpenFileName(this);
-        if (!fileName.isEmpty())
-            loadFile(fileName);
+//        QString fileName = QFileDialog::getOpenFileName(this);
+//        if (!fileName.isEmpty())
+//            loadFile(fileName);
     }
 }
 
@@ -363,20 +372,6 @@ void QSculptWindow::writeSettings()
 
 bool QSculptWindow::maybeSave()
 {
-    /*
-    if (textEdit->document()->isModified()) {
-        int ret = QMessageBox::warning(this, tr("Application"),
-                      tr("The document has been modified.\n"
-                        "Do you want to save your changes?"),
-                      QMessageBox::Yes | QMessageBox::Default,
-                      QMessageBox::No,
-                      QMessageBox::Cancel | QMessageBox::Escape);
-        if (ret == QMessageBox::Yes)
-            return save();
-        else if (ret == QMessageBox::Cancel)
-            return false;
-    }
-    */
     return true;
 }
 
@@ -385,7 +380,7 @@ void QSculptWindow::loadFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (d_->document)
     {
-        d_->document->loadFile( fileName );
+        d_->document->loadFile( fileName.toStdString() );
     }
     QApplication::restoreOverrideCursor();
 
@@ -398,7 +393,7 @@ bool QSculptWindow::saveFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (d_->document)
     {
-        d_->document->saveFile( fileName );
+        d_->document->saveFile( fileName.toStdString() );
     }
     QApplication::restoreOverrideCursor();
 
@@ -424,36 +419,6 @@ void QSculptWindow::setCurrentFile(const QString &fileName)
 QString QSculptWindow::strippedName(const QString &fullFileName)
 {
     return QFileInfo(fullFileName).fileName();
-}
-
-void QSculptWindow::addBox()
-{
-    //d_->document->addObject( IDocument::Box );
-}
-
-void QSculptWindow::addSphere()
-{
-    //d_->document->addObject( IDocument::Sphere );
-    //	QList<IObject3D*> objects = d_->document->getSelectedObjects();
-    //	if (objects.size() > 0)
-    //	{
-    //		IObject3D* mesh = objects[0];
-    //		int numVertices = mesh->getPointList().size();
-    //		for (int i = 0; i < numVertices; ++i)
-    //		{
-    //			qDebug("Vertex %s - Normal %s",
-    //				   qPrintable(mesh->getPointList().at(i).toString()),
-    //				   qPrintable(mesh->getNormalList().at(i).toString())
-    //				   );
-    //		}
-    //		int numFaces = mesh->getFaceList().size();
-    //		for (int i = 0; i < numFaces; ++i)
-    //		{
-    //			Face f = mesh->getFaceList().at(i);
-    //			qDebug("Face Index %d (%d, %d, %d, %d)", i, f.point[0],
-    //				   f.point[1], f.point[2], f.point[3]);
-    //		}
-    //	}
 }
 
 void QSculptWindow::showGrid(bool val)

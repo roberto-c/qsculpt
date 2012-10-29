@@ -54,18 +54,20 @@ public:
     virtual Iterator<SceneNode> constSceneIterator() const;
     Iterator<ISurface> surfaceIterator();
     
-    virtual SceneNode::shared_ptr findItem(uint iid);
+    virtual SceneNode::shared_ptr   findItem(uint iid);
         
-    virtual SceneNode::shared_ptr	index (int row, 
-                               const SceneNode::shared_ptr & parent = NULL ) const;
+    virtual SceneNode::shared_ptr   index (int row,
+                                           const SceneNode::shared_ptr & parent = NULL ) const;
     
-    virtual SceneNode::shared_ptr parent ( const SceneNode::shared_ptr & index ) const;
+    virtual SceneNode::shared_ptr   parent ( const SceneNode::shared_ptr & index ) const;
     
     virtual size_t	
     childrenCount ( const SceneNode::shared_ptr & parent = NULL ) const;
     
     virtual void addItem(const SceneNode::shared_ptr & node, 
                          const SceneNode::shared_ptr & parent = NULL);
+
+    CameraNode::shared_ptr          getCamera() const;
 
 // End IDocument interface
     

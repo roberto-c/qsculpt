@@ -410,7 +410,7 @@ public:
 
 void Subdivision::Impl::subdivide(Subdivision * surf) {
     assert(surf);
-    std::vector<uint> faceToDelete;
+    std::vector<unsigned long> faceToDelete;
     VtxPairEdgeMap edgePoints;
     Point3 p;
     

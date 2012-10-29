@@ -105,16 +105,6 @@ private slots:
     void documentWasModified();
 
     /**
-     * Add a new box object to the document.
-     */
-    void addBox();
-
-    /**
-     * Add a new sphere object to the document.
-     */
-    void addSphere();
-
-    /**
      * Show a grid as a helper guide.
      */
     void showGrid(bool val);

@@ -95,6 +95,7 @@ public:
      */
     virtual std::vector<SceneNode::weak_ptr> getSelectedObjects() const = 0;
     
+    virtual CameraNode::shared_ptr getCamera() const = 0;
     /**
      * Returns an iterator to the scene nodes.
      *

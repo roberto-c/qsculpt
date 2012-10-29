@@ -21,13 +21,14 @@
 #include "command/CommandBase.h"
 #include <QtOpenGL/QtOpenGL>
 #include <QtGui/QMouseEvent>
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Camera.h>
+
 #include "ConfigContainer.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "IDocument.h"
-#include "ISurface.h"
 #include "DocumentView.h"
-#include "Camera.h"
 #include "GlView.h"
 
 CommandBase::CommandBase(ICommand* parent)
@@ -115,7 +116,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     _currentPoint = _intialPoint;
     //qDebug("wz: %f %s", wz, qPrintable(m_intialPoint.toString()));
 
-    _currentCamera = view->getViewCamera();
+    _currentCamera = view->getViewCamera().get();
     *_intialCameraState = *_currentCamera;
 
     // In perspective view, we allow the user to change the orientation of the view. 
@@ -144,16 +145,10 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
 	{
 		return;
 	}
-    GLdouble x = 0.0,
-        y = 0.0,
-        z = 0.0;
     GLfloat wz = 0.0f;
 
     glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-    gluUnProject(e->x(), _viewPort[3] - e->y(), wz, _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
-
-
-    Point3 currPoint = Point3(x, y, z);
+    Point3 currPoint = _currentCamera->eyeToWorld(e->x(), _viewPort[3] - e->y(), wz);
     Point3 currWinPoint = Point3(e->x(), _viewPort[3] - e->y(), wz);
     if (_panViewMode)
     {

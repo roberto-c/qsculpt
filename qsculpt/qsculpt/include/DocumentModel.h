@@ -13,10 +13,15 @@
 #include <QtCore/QAbstractItemModel>
 
 #include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/IDocument.h>
 
 class DocumentModel : public QAbstractItemModel, public std::enable_shared_from_this<DocumentModel>
 {
 public:
+    DocumentModel(const std::shared_ptr<IDocument> & doc);
+    
+    virtual ~DocumentModel();
+    
     /**
      * This method add a new item into the document.
      *
@@ -32,7 +37,7 @@ public:
      * going to be inerted as child of the root node.
      */
     virtual void addItem(const SceneNode::shared_ptr & node,
-                         const QModelIndex & parent = QModelIndex()) = 0;
+                         const QModelIndex & parent = QModelIndex());
     
     /**
      * Return the QModelIndex that corresponds to an SceneNode with ID iid.
@@ -40,9 +45,12 @@ public:
      * @param iid Instance ID of the node to look for.
      * @return QModelIndex representing the node.
      */
-    virtual QModelIndex findItemIndex(uint iid) = 0;
+    virtual QModelIndex findItemIndex(uint iid) const;
     
-    //virtual QModelIndex findItemIndex(uint iid);
+    /**
+     *
+     */
+    virtual SceneNode::shared_ptr findItem(uint iid) const;
     
     /**
      * Returns the number of columns for this model.
@@ -63,15 +71,16 @@ public:
     virtual int	rowCount ( const QModelIndex & parent = QModelIndex() ) const;
     
     virtual bool insertRow ( int row, const QModelIndex & parent = QModelIndex() );
-    
-    virtual void addItem(SceneNode::shared_ptr node, 
-                         const QModelIndex & parent = QModelIndex());
-    
+        
     virtual bool setData (const QModelIndex & index,
                           const QVariant & value, 
                           int role = Qt::EditRole );
     
     virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
+    
+private:
+    struct Impl;
+    std::shared_ptr<Impl> d;
 };
 
 #endif

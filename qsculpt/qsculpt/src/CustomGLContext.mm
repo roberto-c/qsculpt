@@ -61,6 +61,12 @@ static void * tryFormat(QGLFormat format, bool useSoftwareRenderer = false) {
         attribs[cnt++] = NSOpenGLPFARendererID;
         attribs[cnt++] = kCGLRendererAppleSWID;
     }
+    
+    if (format.profile() == format.CoreProfile) {
+        attribs[cnt++] = NSOpenGLPFAOpenGLProfile;
+        attribs[cnt++] = NSOpenGLProfileVersion3_2Core;
+    }
+    
     //if (devType == QInternal::Pbuffer)
     //    attribs[cnt++] = NSOpenGLPFAPixelBuffer;
     attribs[cnt] = 0;

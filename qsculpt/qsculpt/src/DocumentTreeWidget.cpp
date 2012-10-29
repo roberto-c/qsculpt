@@ -23,14 +23,13 @@
 #include <QtGui/QStandardItem>
 #include <QtGui/QItemSelectionModel>
 
-
+#include <PlastilinaCore/IDocument.h>
 #include "DocumentTreeWidget.h"
-#include "IDocument.h"
 #include "ui_DocumentTreeWidget.h"
 #include "DocumentView.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-
+#include "DocumentModel.h"
 
 
 static const QString TITLE("Document Tree");
@@ -38,7 +37,7 @@ static const QString TITLE("Document Tree");
 struct DocumentTreeWidget::Private
 {
     QScopedPointer<Ui::DocumentTreeWidget> ui;
-    IDocument::shared_ptr doc;
+    std::shared_ptr<DocumentModel> doc;
     
     Private() : ui(new Ui::DocumentTreeWidget){}
 };
@@ -54,12 +53,12 @@ DocumentTreeWidget::~DocumentTreeWidget()
 {
 }
 
-IDocument::shared_ptr DocumentTreeWidget::document() const
+std::shared_ptr<DocumentModel> DocumentTreeWidget::document() const
 {
     return _d->doc;
 }
 
-void DocumentTreeWidget::setDocument(IDocument::shared_ptr doc)
+void DocumentTreeWidget::setDocument(const std::shared_ptr<DocumentModel> & doc)
 {
     _d->doc = doc;
     updateTree();

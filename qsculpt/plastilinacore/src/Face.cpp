@@ -223,7 +223,7 @@ Face::~Face()
 }
 
 // TODO: implement a correct and fast hash
-uint Face::hashCode() const
+unsigned long Face::hashCode() const
 {
     return _id;
 //    return qHash(_id);

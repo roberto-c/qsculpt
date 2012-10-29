@@ -43,7 +43,7 @@ public:
     typedef Face* weak_ptr;
     typedef Face* Ptr;
     
-    typedef uint size_t;
+    typedef unsigned long size_t;
     
 private:
     ISurface*           _surface; // 4
@@ -80,7 +80,7 @@ public:
     /**
      * Get the hash code for this instance
      */
-    inline uint hashCode() const;
+    inline unsigned long hashCode() const;
 
     /**
      * Gets the instance id of the vertex.

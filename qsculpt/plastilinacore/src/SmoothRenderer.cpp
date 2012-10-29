@@ -73,12 +73,12 @@ struct SmoothRenderer::Impl {
 
 SmoothRenderer::SmoothRenderer() : _d(new Impl)
 {
-	std::cerr << "SmoothRenderer constructor\n";
+	std::cerr << "SmoothRenderer constructor" << std::endl;
 }
 
 SmoothRenderer::~SmoothRenderer()
 {
-	std::cerr << "SmoothRenderer destructor\n";
+	std::cerr << "SmoothRenderer destructor" << std::endl;
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
@@ -90,20 +90,20 @@ void SmoothRenderer::renderObject(const ISurface* mesh, const Material * mat)
 void SmoothRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 {
 	//std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
-	if (mesh == NULL)
+	if (mesh == NULL || mat == NULL)
 		return;
 	
 	ISurface* obj = const_cast<ISurface*>(mesh);
 	VertexBuffer* vbo= getVBO(obj);
 	if (vbo == NULL || vbo->objectID() == 0)
 	{
-		std::cerr << "Failed to create VBO.\n" ;
+		std::cerr << "Failed to create VBO."  << std::endl;
 		return;
 	}
     VAO* vao = getVAO(obj);
     if (vao == NULL || vao->objectID() == 0)
 	{
-		std::cerr << "Failed to create VAO.\n" ;
+		std::cerr << "Failed to create VAO."  << std::endl;
 		return;
 	}
 
@@ -116,13 +116,29 @@ void SmoothRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-        
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, v));
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, n));
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SmoothVtxStruct), (GLvoid*)offsetof(SmoothVtxStruct, color));
+	
+		GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
+		if (attColor >= 0) {
+			glEnableVertexAttribArray(attColor);
+			glVertexAttribPointer(attColor, 4, GL_FLOAT, GL_FALSE,
+								  sizeof(SmoothVtxStruct),
+								  (GLvoid*)offsetof(SmoothVtxStruct, color));
+		}
+		GLint attVtx = mat->shaderProgram()->attributeLocation("glVertex");
+		if (attVtx >= 0) {
+			glEnableVertexAttribArray(attVtx);
+			glVertexAttribPointer(attVtx, 4, GL_FLOAT, GL_FALSE,
+								  sizeof(SmoothVtxStruct),
+								  (GLvoid*)offsetof(SmoothVtxStruct, v));
+		}
+		GLint attNormal = mat->shaderProgram()->attributeLocation("glNormal");
+		if (attNormal >= 0) {
+			glEnableVertexAttribArray(attNormal);
+			glVertexAttribPointer(attNormal, 4, GL_FLOAT, GL_FALSE,
+								  sizeof(SmoothVtxStruct),
+								  (GLvoid*)offsetof(SmoothVtxStruct, n));
+		}
+		THROW_IF_GLERROR("Failed to get attribute");
     }
     mat->shaderProgram()->useProgram();
     GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
@@ -193,7 +209,7 @@ bool SmoothRenderer::Impl::processPolygon(const Face & f,
 {
     size_t nVtx = f.numVertices();
     if (nVtx < 3) {
-        std::cerr << "Incomplete polygon. A polygon should have at least 3 vertices";
+        std::cerr << "Incomplete polygon. A polygon should have at least 3 vertices" << std::endl;
         return false;
     }
     //GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;

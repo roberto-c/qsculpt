@@ -30,21 +30,24 @@
 #include <QtGui/QMatrix>
 #include <QtGui/QBrush>
 #include <QtGui/QPen>
-#include "Sphere.h"
-#include "Box.h"
-#include "IDocument.h"
+#include <PlastilinaCore/subdivision/Sphere.h>
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/GlslShader.h>
+#include <PlastilinaCore/Camera.h>
+#include <PlastilinaCore/RendererFactory.h>
+#include <PlastilinaCore/PickingFacesRenderer.h>
+#include <PlastilinaCore/Picking.h>
+#include <PlastilinaCore/Material.h>
 #include "QSculptWindow.h"
 #include "QSculptApp.h"
 #include "ICommand.h"
 #include "DocumentView.h"
-#include "Camera.h"
-#include "RendererFactory.h"
-#include "Picking.h"
-#include "PickingFacesRenderer.h"
-#include "Scene.h"
-#include "SceneNode.h"
-#include "GlslProgram.h"
-#include "GlslShader.h"
+
+
 
 PickingObjectRenderer g_picking;
 PickingFacesRenderer g_pickingVertices;
@@ -66,6 +69,8 @@ struct Rect {
 };
 
 #define GLCANVAS_BEGIN  (0x0001)
+
+typedef QMap<int, std::shared_ptr<Camera> > CameraContainer;
 
 struct GlCanvas::Impl {
     bool            isGridVisible;        /**< Grid visibility flag */
@@ -117,43 +122,43 @@ struct GlCanvas::Impl {
         
         selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
         
-        Camera* camera = new Camera();
+        auto camera = std::make_shared<Camera>();
         camera->setTargetPoint( Point3( 0, 0, 0) );
         camera->setOrientationVector(Point3( 0, 1, 0) );
         camera->setPosition( Point3( 0, 0, 1));
         cameraList[Front] = camera;
         
-        camera = new Camera();
+        camera = std::make_shared<Camera>();
         camera->setTargetPoint( Point3( 0, 0, 0) );
         camera->setOrientationVector( Point3( 0, 1, 0) );
         camera->setPosition( Point3( 0, 0, -1));
         cameraList[Back] = camera;
         
-        camera = new Camera();
+        camera = std::make_shared<Camera>();
         camera->setTargetPoint( Point3( 0, 0, 0) );
         camera->setOrientationVector( Point3( 0, 0, -1) );
         camera->setPosition( Point3( 0, 1, 0) );
         cameraList[Top] = camera;
         
-        camera = new Camera();
+        camera = std::make_shared<Camera>();
         camera->setTargetPoint( Point3( 0, 0, 0) );
         camera->setOrientationVector( Point3( 0, 0, 1) );
         camera->setPosition( Point3( 0, -1, 0) );
         cameraList[Bottom] = camera;
         
-        camera = new Camera();
+        camera = std::make_shared<Camera>();
         camera->setTargetPoint( Point3( 0, 0, 0) );
         camera->setOrientationVector( Point3( 0, 1, 0) );
         camera->setPosition( Point3(-1, 0, 0) );
         cameraList[Left] = camera;
         
-        camera = new Camera();
+        camera = std::make_shared<Camera>();
         camera->setTargetPoint( Point3( 0, 0, 0) );
         camera->setOrientationVector( Point3( 0, 1, 0) );
         camera->setPosition( Point3( 1, 0, 0) );
         cameraList[Right] = camera;
         
-        camera = new Camera();
+        camera = std::make_shared<Camera>();
         camera->setTargetPoint( Point3( 0, 0, 0) );
         camera->setOrientationVector( Point3( 0, 0, 1) );
         camera->setPosition( Point3( 0.75, 0.75, 0.75) );
@@ -163,15 +168,7 @@ struct GlCanvas::Impl {
     ~Impl() {
         if (selectBuffer)
             delete [] selectBuffer;
-        
-        QMutableMapIterator<int, Camera*> it(cameraList);
-        while(it.hasNext())
-        {
-            it.next();
-            delete it.value();
-            it.remove();
-        }
-        
+                
         delete renderer;
         renderer = NULL;
         
@@ -267,7 +264,6 @@ void GlCanvas::initializeGL()
     enable( GL_DEPTH_TEST);
     enable( GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    disable(GL_LIGHTING);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     if (glIsEnabled(GL_DEPTH_TEST) == GL_FALSE)
@@ -277,47 +273,10 @@ void GlCanvas::initializeGL()
         qDebug("Depth buffer enabled. Precision: %d", format().depthBufferSize());
     }
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, NULL);
-
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
-
-    qDebug() << "hasOGL Shaders: " << QGLShaderProgram::hasOpenGLShaderPrograms();
-    g_shaderProgram = new GlslProgram();
-    g_shaderVertex = new VertexShader();
-    g_shaderFragment = new FragmentShader();
-
-    g_shaderProgram->attachShader(g_shaderVertex);
-    g_shaderProgram->attachShader(g_shaderFragment);
-
-    QString path = g_pApp->applicationDirPath();
-    try {
-        QString filename = path + QString("/../Resources/shaders/phong.vs");
-        if (!g_shaderVertex->loadFromFile(filename.toStdString())) {
-            qDebug() << "Failed to load file";
-        } else if (!g_shaderVertex->compile()) {
-            qDebug() << "Failed to compile shader";
-            qDebug() << g_shaderVertex->infoLog().c_str();
-        }
-        filename = path + QString("/../Resources/shaders/phong.fs");
-        if (!g_shaderFragment->loadFromFile(filename.toStdString())) {
-            qDebug() << "Failed to load file";
-        } if (!g_shaderFragment->compile()) {
-            qDebug() << "Failed to compile shader";
-            qDebug() << g_shaderFragment->infoLog().c_str();
-        }
-        
-        if (g_shaderVertex->compileStatus() && 
-            g_shaderFragment->compileStatus() &&
-            !g_shaderProgram->link()) {
-            qDebug() << "Failed to link shaders";
-            qDebug() << g_shaderProgram->buildLog().c_str();
-        }
-    } catch (core::GlException & e) {
-        std::cerr   << "Failed to compile shaders: " << e.what() 
-                    << " error " << e.error()
-                    << ": " << e.errorString() << std::endl;
-    }
+    
+    std::string str((const char*)glGetString(GL_VERSION));
+    qDebug() << "GLVersion: " << str.c_str();
 }
 
 void GlCanvas::resizeGL( int w, int h )
@@ -327,22 +286,11 @@ void GlCanvas::resizeGL( int w, int h )
 
     // setup viewport, projection etc. for OpenGL:
     glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( -DEFAULT_HEIGHT / 2 * _d->zoomFactor * _d->aspectRatio,
-             DEFAULT_HEIGHT / 2 * _d->zoomFactor * _d->aspectRatio,
-             -DEFAULT_HEIGHT / 2 * _d->zoomFactor,
-             DEFAULT_HEIGHT / 2 * _d->zoomFactor,
-             -1000.0,
-             1000.0 );
-
-    glMatrixMode( GL_MODELVIEW );
-
     glGetIntegerv(GL_VIEWPORT, _d->viewport);
 
     // Now update the cameras to have the same viewport and projection
     // information
-    foreach(Camera* c, _d->cameraList) {
+    foreach(std::shared_ptr<Camera> c, _d->cameraList) {
         c->setViewport(0, 0, w, h);
         c->setOrthoMatrix( -DEFAULT_HEIGHT / 2 * _d->zoomFactor * _d->aspectRatio,
                            DEFAULT_HEIGHT / 2 * _d->zoomFactor * _d->aspectRatio,
@@ -357,67 +305,28 @@ void GlCanvas::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glBindTexture(GL_TEXTURE_2D, 0);
-    glLoadIdentity();
 
-    Camera* camera = _d->cameraList.contains(_d->viewType) ? _d->cameraList[_d->viewType] : NULL;
-    if (camera)
-    {
-        glLoadMatrixf(camera->modelView().data());
+    IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
+    if (doc) {
+        auto scene = doc->scene().lock();
+        CameraNode::shared_ptr cam = doc->getCamera();
+        if (cam) {
+            std::shared_ptr<Camera> camera = _d->cameraList.contains(_d->viewType) ? _d->cameraList[_d->viewType] : NULL;
+            cam->setCamera(camera);
+        } else {
+            qDebug() << "Failed to get camera!";
+        }
+        
+        if (_d->isGridVisible)
+            drawGrid();
+
+        glLineWidth(1);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        enable(GL_BLEND);
+        enable(GL_LINE_SMOOTH);        
+        
+        drawScene(scene);
     }
-    
-    //glTranslatef(-100, -100, 0);
-
-    if (_d->isGridVisible)
-        drawGrid();
-
-    glLineWidth(1);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    enable(GL_BLEND);
-    enable(GL_LINE_SMOOTH);
-
-    glBegin( GL_LINES );
-    glColor3f( 1.0, 0.0, 0.0 );
-    glVertex3f( 0.0f, 0.0f, 0.0f );
-    glVertex3f( 1.0f, 0.0f, 0.0f );
-
-    glColor3f( 0.0, 1.0, 0.0 );
-    glVertex3f( 0.0f, 0.0f, 0.0f );
-    glVertex3f( 0.0f, 1.0f, 0.0f );
-
-    glColor3f( 0.0, 0.0, 1.0 );
-    glVertex3f( 0.0f, 0.0f, 0.0f );
-    glVertex3f( 0.0f, 0.0f, 1.0f );
-    glEnd();
-
-    Eigen::Vector4f eyePosition, lightPosition(-1, 2, -2, 1);
-    if (camera) {
-        eyePosition = camera->getPosition().homogeneous();
-        lightPosition = eyePosition;
-    }
-
-    uint loc;
-    try {
-        g_shaderProgram->useProgram();
-        loc = g_shaderProgram->uniformLocation("eyePosition");
-        g_shaderProgram->setUniform(loc, eyePosition);
-        loc = g_shaderProgram->uniformLocation("lightPosition");
-        g_shaderProgram->setUniform(loc, lightPosition);
-        loc = g_shaderProgram->uniformLocation("diffuseColor");
-        g_shaderProgram->setUniform(loc, Eigen::Vector4f(0.5f, 0.2f, 1.0f, 1.0f));
-        loc = g_shaderProgram->uniformLocation("specularColor");
-        g_shaderProgram->setUniform(loc, Eigen::Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
-        loc = g_shaderProgram->uniformLocation("exponent");
-        g_shaderProgram->setUniform(loc, 220.0f);
-    } catch (core::GlException & e) {
-        qDebug() << "GlException - " << e.what();
-        qDebug() << "Error " << e.error() << ": " << e.errorString();
-    }
-    
-    auto ptr = g_pApp->getMainWindow()->getCurrentDocument()->scene().lock();
-    drawScene(ptr);
-    g_shaderProgram->releaseProgram();
-
-//    drawCursor();
 
     ICommand* cmd = g_pApp->getMainWindow()->getSelectedCommand();
     if (cmd) {
@@ -432,42 +341,40 @@ void GlCanvas::drawScene(Scene::shared_ptr scene)
     if (_d->renderer == NULL)
         return;
     
-    Iterator<SceneNode> it = scene->iterator();
-    while(it.hasNext())
-    {
-        glPushMatrix();
-        auto n = it.next();
-        glMultMatrixf(n->transform().data());
-        drawSceneNode(n);
-        glPopMatrix();
+    try {
+        Iterator<SceneNode> it = scene->constIterator();
+        while (it.hasNext()) {
+            auto n = it.next();
+            drawSceneNode(scene, n);
+        }
+    } catch(core::GlException & e) {
+        std::cerr   << "GLException: " << e.what() << std::endl
+        << e.error() << ": " << e.errorString() << std::endl;
     }
 }
 
-void GlCanvas::drawSceneNode(SceneNode::shared_ptr node)
+void GlCanvas::drawSceneNode(Scene::shared_ptr & scene,
+                             SceneNode::shared_ptr & node)
 {
-    ISurface* mesh;
     SurfaceNode::shared_ptr s;
     
     if (node->nodeType() == NT_Surface)
     {
-        s = std::dynamic_pointer_cast<SurfaceNode>(node);
-        mesh = s->surface();
-        if (node->isSelected()) {
-            g_shaderProgram->releaseProgram();
-            drawBoundingBox(mesh);
-            g_shaderProgram->useProgram();
+        auto s = std::dynamic_pointer_cast<SurfaceNode>(node);
+        if (s) {
+            if (s->material() && s->material()->shaderProgram()) {
+                s->material()->shaderProgram()->useProgram();
+                s->material()->setup(scene);
+            }
+            _d->renderer->renderObject(s->surface(),s->material().get());
         }
-        _d->renderer->renderObject(mesh);
     }
     
     Iterator<SceneNode> it = node->iterator();
     while(it.hasNext())
     {
-        glPushMatrix();
         auto n = it.next();
-        glMultMatrixf(n->transform().data());
-        drawSceneNode(n);
-        glPopMatrix();
+        drawSceneNode(scene, n);
     }
 }
 
@@ -475,85 +382,20 @@ void GlCanvas::drawBoundingBox(const ISurface* mesh)
 {
     using namespace geometry;
 
-    glColor3f(0.0, 1.0, 0.0);
+
     
-    AABB bb = mesh->boundingBox();
-    float minX = bb.min().x() - 0.1;
-    float minY = bb.min().y() - 0.1;
-    float minZ = bb.min().z() - 0.1;
-    float maxX = bb.max().x() + 0.1;
-    float maxY = bb.max().y() + 0.1;
-    float maxZ = bb.max().z() + 0.1;
-    
-    glColor3f(0.0, 1.0, 0.0);
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(minX, minY, minZ);
-    glVertex3f(maxX, minY, minZ);
-    glVertex3f(maxX, maxY, minZ);
-    glVertex3f(minX, maxY, minZ);
-    glEnd();
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(minX, minY, maxZ);
-    glVertex3f(maxX, minY, maxZ);
-    glVertex3f(maxX, maxY, maxZ);
-    glVertex3f(minX, maxY, maxZ);
-    glEnd();
-
-    glBegin(GL_LINES);
-    glVertex3f(minX, minY, minZ);
-    glVertex3f(minX, minY, maxZ);
-
-    glVertex3f(maxX, minY, minZ);
-    glVertex3f(maxX, minY, maxZ);
-
-    glVertex3f(maxX, maxY, minZ);
-    glVertex3f(maxX, maxY, maxZ);
-
-    glVertex3f(minX, maxY, minZ);
-    glVertex3f(minX, maxY, maxZ);
-    glEnd();
+//    AABB bb = mesh->boundingBox();
+//    float minX = bb.min().x() - 0.1;
+//    float minY = bb.min().y() - 0.1;
+//    float minZ = bb.min().z() - 0.1;
+//    float maxX = bb.max().x() + 0.1;
+//    float maxY = bb.max().y() + 0.1;
+//    float maxZ = bb.max().z() + 0.1;    
 }
 
 void GlCanvas::drawGrid()
 {
-    const double GRID_PLANE_Z = 0.0;
-    glLineWidth(0.5);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    enable(GL_BLEND);
-    enable(GL_LINE_SMOOTH);
-    disable(GL_DEPTH_TEST);
 
-    glBegin(GL_LINES);
-
-    glColor3f(0.3, 0.3, 0.3);
-    for (double j = -5.0; j < 5.0; j+=0.2)
-    {
-        if ( int((j+50.0) * 10) % 10 == 0)
-            continue;
-        glVertex3f( j, -5.0, GRID_PLANE_Z);
-        glVertex3f( j,  5.0, GRID_PLANE_Z);
-
-        glVertex3f(-5.0, j, GRID_PLANE_Z);
-        glVertex3f( 5.0, j, GRID_PLANE_Z);
-    }
-    glEnd();
-
-    glLineWidth(2.0);
-
-    glBegin(GL_LINES);
-    glColor3f(0.25, 0.25, 0.25);
-    for (double i = -5.0; i <= 5.0; i += 1.0)
-    {
-        glVertex3f( i, -5.0, GRID_PLANE_Z);
-        glVertex3f( i,  5.0, GRID_PLANE_Z);
-
-        glVertex3f(-5.0, i, GRID_PLANE_Z);
-        glVertex3f( 5.0, i, GRID_PLANE_Z);
-    }
-    glEnd();
-    glLineWidth(1.0);
-    enable(GL_DEPTH_TEST);
 }
 
 void GlCanvas::drawCursor()
@@ -569,60 +411,7 @@ void GlCanvas::drawCursor()
         break;
     case Image:
         {
-            // Store current state of feature that we could modify
-            bool blendState = glIsEnabled(GL_BLEND);
-            bool textureState = glIsEnabled(GL_TEXTURE_2D);
-            bool depthTestState = glIsEnabled(GL_DEPTH_TEST);
 
-            // Enable the texture and set the blend parameters
-            enable(GL_TEXTURE_2D);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            enable(GL_BLEND);
-
-            // Disable depth test so we dont modify previusly rendered information
-            if (depthTestState)
-                glDisable( GL_DEPTH_TEST);
-
-            // Store the current matrix to restore it later
-            glPushMatrix();
-
-            // Start from a clean transformation matrix
-            glLoadIdentity();
-
-            // Setup the texture and color
-            glBindTexture(GL_TEXTURE_2D, _d->textureId);
-            glColor3f(1.0f, 1.0f, 0.0f);
-
-            // Calculate the coordinates of the box to paint the bitmap
-            double wx1, wy1, wz1;
-            screenToWorld(_d->cursorPosition.x() - _d->cursorImage.width()/2,
-                                         _d->cursorPosition.y() - _d->cursorImage.height() / 2,
-                                         _d->cursorPosition.z(), &wx1, &wy1, &wz1);
-            double wx2, wy2, wz2;
-            screenToWorld(_d->cursorPosition.x() + _d->cursorImage.width()/2,
-                                         _d->cursorPosition.y() + _d->cursorImage.height() / 2,
-                                         _d->cursorPosition.z(), &wx2, &wy2, &wz2);
-
-            // Draw Bitmap cursor as a textured quad
-            glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f);
-            glVertex3f(wx1, wy1, wz1);
-            glTexCoord2f(1.0f, 0.0f);
-            glVertex3f(wx1, wy2, 0.0f);
-            glTexCoord2f(1.0f, 1.0f);
-            glVertex3f(wx2, wy2, 0.0f);
-            glTexCoord2f(0.0f, 1.0f);
-            glVertex3f(wx2, wy1, 0.0f);
-            glEnd();
-            glPopMatrix();
-
-            // Restore previus states
-            if (blendState == false)
-                disable(GL_BLEND);
-            if (textureState == false)
-                disable(GL_TEXTURE_2D);
-            if (depthTestState)
-                disable( GL_DEPTH_TEST);
         }
         break;
     }
@@ -630,47 +419,7 @@ void GlCanvas::drawCursor()
 
 void GlCanvas::drawOrientationAxis()
 {
-    // setup viewport, projection etc.:
-    glViewport( 0, 0, 100, 100 );
-    glMatrixMode( GL_PROJECTION );
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho( -1.5 * _d->aspectRatio, 1.5 * _d->aspectRatio, 1.5, -1.5, 2.0, -2.0 );
 
-
-    glMatrixMode( GL_MODELVIEW );
-
-    Camera* camera = _d->cameraList.contains(_d->viewType) ? _d->cameraList[_d->viewType] : NULL;
-    if (camera)
-    {
-        gluLookAt( camera->getPosition().x(), camera->getPosition().y(),
-                   camera->getPosition().z(), camera->getTargetPoint().x(),
-                   camera->getTargetPoint().y(), camera->getTargetPoint().z(),
-                   camera->getOrientationVector().x(),
-                   camera->getOrientationVector().y(),
-                   camera->getOrientationVector().z());
-        //qDebug(qPrintable(camera->toString()));
-    }
-
-    glBegin( GL_LINES );
-    glColor3f( 1.0, 0.0, 0.0 );
-    glVertex3f( 0.0f, 0.0f, 0.0f );
-    glVertex3f( 1.0f, 0.0f, 0.0f );
-
-    glColor3f( 0.0, 1.0, 0.0 );
-    glVertex3f( 0.0f, 0.0f, 0.0f );
-    glVertex3f( 0.0f, 1.0f, 0.0f );
-
-    glColor3f( 0.0, 0.0, 1.0 );
-    glVertex3f( 0.0f, 0.0f, 0.0f );
-    glVertex3f( 0.0f, 0.0f, 1.0f );
-    glEnd();
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-
-    glViewport( _d->viewport[0], _d->viewport[1], _d->viewport[2], _d->viewport[3] );
 }
 
 void GlCanvas::mouseMoveEvent ( QMouseEvent * e )
@@ -784,25 +533,24 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
     
     Iterator<SceneNode> it = doc->iterator();
     while(it.hasNext()) {
-        glPushMatrix();
         auto n = it.next();
         SurfaceNode::shared_ptr s;
         if (n->nodeType() == NT_Surface) {
             s = std::dynamic_pointer_cast<SurfaceNode> (n);
             mesh = s->surface();
-            Point3 p = s->localToWorld(Point3(0,0,0));
-            glTranslatef(p.x(), p.y(), p.z());
+            //Point3 p = s->localToWorld(Point3(0,0,0));
+
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             g_picking.renderObject(mesh, objId);
             glReadPixels(x, _d->viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
             
             if (d == objId)
-                l.append(mesh);
+                l.push_back(mesh);
             
             objId++;
         }
-        glPopMatrix();
+
     }
 
     return l;
@@ -829,14 +577,14 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
     Iterator<SceneNode> it = doc->iterator();
     while(it.hasNext()) {
         memset(d, 0, width*height*sizeof(GLuint));
-        glPushMatrix();
+
         auto n = it.next();
         SurfaceNode::shared_ptr s;
         if (n->nodeType() == NT_Surface) {
             s = std::dynamic_pointer_cast<SurfaceNode>(n);
             mesh = s->surface();
-            Point3 p = s->localToWorld(Point3(0,0,0));
-            glTranslatef(p.x(), p.y(), p.z());
+            //Point3 p = s->localToWorld(Point3(0,0,0));
+
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             g_pickingVertices.renderObject(mesh, objId);
@@ -860,7 +608,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
             
             objId++;
         }
-        glPopMatrix();
+
     }    
 
     delete [] d;
@@ -869,7 +617,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
     return l;
 }
 
-Camera* GlCanvas::getViewCamera()
+std::shared_ptr<Camera> GlCanvas::getViewCamera()
 {
     if (!_d->cameraList.contains(_d->viewType))
     {
@@ -879,7 +627,7 @@ Camera* GlCanvas::getViewCamera()
     return _d->cameraList[_d->viewType];
 }
 
-const Camera* GlCanvas::getViewCamera() const
+const std::shared_ptr<Camera> GlCanvas::getViewCamera() const
 {
     if (!_d->cameraList.contains(_d->viewType))
     {
@@ -1048,14 +796,12 @@ float GlCanvas::depth(int x, int y)
 
 void GlCanvas::begin(GLenum mode)
 {
-    glBegin(mode);
     _d->flags |= GLCANVAS_BEGIN;
 }
 
 void GlCanvas::end()
 {
     _d->flags &= ~GLCANVAS_BEGIN;
-    glEnd();
 }
 
 
@@ -1064,11 +810,11 @@ void GlCanvas::drawLine(const Point3& p1, const Point3& p2)
     double c[4];
     _d->pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0) {
-        glColor4dv(c);
-        if (!_d->flags & GLCANVAS_BEGIN) glBegin(GL_LINES);
-        glVertex3fv(p1.data());
-        glVertex3fv(p2.data());
-        if (!_d->flags & GLCANVAS_BEGIN) glEnd();
+//        glColor4dv(c);
+//        if (!_d->flags & GLCANVAS_BEGIN) glBegin(GL_LINES);
+//        glVertex3fv(p1.data());
+//        glVertex3fv(p2.data());
+//        if (!_d->flags & GLCANVAS_BEGIN) glEnd();
     }
 }
 
@@ -1077,14 +823,14 @@ void GlCanvas::drawLine2D(const Point3& p1, const Point3& p2)
     double c[4];
     _d->pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0) {
-        Point3 tmp1, tmp2;
-        screenToWorld(p1, tmp1);
-        screenToWorld(p2, tmp2);
-        glColor4dv(c);
-        if (!_d->flags & GLCANVAS_BEGIN) glBegin(GL_LINES);
-        glVertex3fv(tmp1.data());
-        glVertex3fv(tmp2.data());
-        if (!_d->flags & GLCANVAS_BEGIN) glEnd();
+//        Point3 tmp1, tmp2;
+//        screenToWorld(p1, tmp1);
+//        screenToWorld(p2, tmp2);
+//        glColor4dv(c);
+//        if (!_d->flags & GLCANVAS_BEGIN) glBegin(GL_LINES);
+//        glVertex3fv(tmp1.data());
+//        glVertex3fv(tmp2.data());
+//        if (!_d->flags & GLCANVAS_BEGIN) glEnd();
     }
 }
 
@@ -1111,25 +857,25 @@ void GlCanvas::drawRectWinCoord(const Point3& c1, const Point3& c2)
     screenToWorld(a4, p4);
     _d->brush.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0) {
-        glColor4dv(c);
-        glBegin(GL_QUADS);
-        glVertex3fv(p1.data());
-        glVertex3fv(p2.data());
-        glVertex3fv(p3.data());
-        glVertex3fv(p4.data());
-        glEnd();
+//        glColor4dv(c);
+//        glBegin(GL_QUADS);
+//        glVertex3fv(p1.data());
+//        glVertex3fv(p2.data());
+//        glVertex3fv(p3.data());
+//        glVertex3fv(p4.data());
+//        glEnd();
     }
 
     _d->pen.color().getRgbF(&c[0], &c[1], &c[2], &c[3]);
     if (c[3] > 0 ) {
-        glColor4dv(c);
-        glBegin(GL_LINE_LOOP);
-        glVertex3fv(p1.data());
-        glVertex3fv(p2.data());
-        glVertex3fv(p3.data());
-        glVertex3fv(p4.data());
-        glVertex3fv(p1.data());
-        glEnd();
+//        glColor4dv(c);
+//        glBegin(GL_LINE_LOOP);
+//        glVertex3fv(p1.data());
+//        glVertex3fv(p2.data());
+//        glVertex3fv(p3.data());
+//        glVertex3fv(p4.data());
+//        glVertex3fv(p1.data());
+//        glEnd();
     }
 }
 
@@ -1219,44 +965,44 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center,
     
     double color[4];
     _d->brush.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
-    glColor4dv(color);
-    glBegin(GL_TRIANGLES);
-    if (drawInnerEllipse) {
-        for (int i = 0; i < npoints - 1; ++i) {
-            glVertex3fv(points[i].data());
-            glVertex3fv(innerPoints[i].data());
-            glVertex3fv(points[i+1].data());
-            glVertex3fv(innerPoints[i].data());
-            glVertex3fv(points[i+1].data());
-            glVertex3fv(innerPoints[i+1].data());
-        }
-    }
-    else {
-        Point3 c;
-        screenToWorld(center, c);
-        for (int i = 0; i < npoints - 1; ++i) {
-            glVertex3fv(points[i].data());
-            glVertex3fv(c.data());
-            glVertex3fv(points[i+1].data());
-        }
-    }
-    glEnd();
+//    glColor4dv(color);
+//    glBegin(GL_TRIANGLES);
+//    if (drawInnerEllipse) {
+//        for (int i = 0; i < npoints - 1; ++i) {
+//            glVertex3fv(points[i].data());
+//            glVertex3fv(innerPoints[i].data());
+//            glVertex3fv(points[i+1].data());
+//            glVertex3fv(innerPoints[i].data());
+//            glVertex3fv(points[i+1].data());
+//            glVertex3fv(innerPoints[i+1].data());
+//        }
+//    }
+//    else {
+//        Point3 c;
+//        screenToWorld(center, c);
+//        for (int i = 0; i < npoints - 1; ++i) {
+//            glVertex3fv(points[i].data());
+//            glVertex3fv(c.data());
+//            glVertex3fv(points[i+1].data());
+//        }
+//    }
+//    glEnd();
     
-    _d->pen.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
-    glColor4dv(color);
-    // draw main ellipse
-    glBegin(GL_LINE_STRIP);
-    for (int i = 0; i < npoints; ++i) {
-        glVertex3fv(points[i].data());
-    }
-    glEnd();
-    
-    // draw inner ellipse
-    if (drawInnerEllipse) {
-        glBegin(GL_LINE_STRIP);
-        for (int i = 0; i < npoints; ++i) {
-            glVertex3fv(innerPoints[i].data());
-        }
-        glEnd();
-    }
+//    _d->pen.color().getRgbF(&color[0], &color[1], &color[2], &color[3]);
+//    glColor4dv(color);
+//    // draw main ellipse
+//    glBegin(GL_LINE_STRIP);
+//    for (int i = 0; i < npoints; ++i) {
+//        glVertex3fv(points[i].data());
+//    }
+//    glEnd();
+//    
+//    // draw inner ellipse
+//    if (drawInnerEllipse) {
+//        glBegin(GL_LINE_STRIP);
+//        for (int i = 0; i < npoints; ++i) {
+//            glVertex3fv(innerPoints[i].data());
+//        }
+//        glEnd();
+//    }
 }

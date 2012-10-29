@@ -20,17 +20,18 @@
 #ifndef GLDISPLAY_H
 #define GLDISPLAY_H
 
+#include <PlastilinaCore/opengl/OpenGL.h>
 #include <QtOpenGL/QGLWidget>
 #include <QtCore/QPoint>
 #include <QtCore/QVector>
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
-#include "PlastilinaCore/SpEnums.h"
-#include "PlastilinaCore/Point3D.h"
-#include "PlastilinaCore/BufferObject.h"
-#include "PlastilinaCore/ISurface.h"
-#include "PlastilinaCore/Color.h"
-#include "PlastilinaCore/Scene.h"
+#include <PlastilinaCore/SpEnums.h>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/BufferObject.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/Scene.h>
 
 class DocumentView;
 class QMouseEvent;
@@ -59,8 +60,6 @@ class GlCanvas : public QGLWidget
 {
     Q_OBJECT
 public:
-    typedef QMap<int, Camera*> CameraContainer;
-
     enum PerspectiveType {
         Front = 0,
         Back,
@@ -130,12 +129,12 @@ public:
     /**
      * Return the current active camera in the canvas.
      */
-    Camera* getViewCamera();
+    std::shared_ptr<Camera> getViewCamera();
 
     /**
      * Return the current active camera in the canvas.
      */
-    const Camera* getViewCamera() const;
+    const std::shared_ptr<Camera> getViewCamera() const;
     
     /**
      * Map a point in screen coordinate system to world coordinate system
@@ -413,7 +412,8 @@ private:
                              float innerAxis1,
                              float innerAxis2);
     
-    void drawSceneNode(SceneNode::shared_ptr node);
+    void drawSceneNode(Scene::shared_ptr & scene,
+                       SceneNode::shared_ptr & node);
 	
     struct Impl;
     QScopedPointer<Impl> _d;

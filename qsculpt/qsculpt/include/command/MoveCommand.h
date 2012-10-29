@@ -21,7 +21,7 @@
 #define MOVECOMMAND_H
 
 #include "command/CommandBase.h"
-#include "Point3D.h"
+#include <PlastilinaCore/Point3D.h>
 #include <QtCore/QList>
 #include <QtCore/QPoint>
 

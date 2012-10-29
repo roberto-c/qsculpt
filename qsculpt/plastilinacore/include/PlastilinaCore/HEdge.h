@@ -33,12 +33,12 @@ public:
     typedef Edge*   weak_ptr;
     typedef Edge*   Ptr;
 
-    typedef uint    size_t;
+    typedef unsigned long    size_t;
     
 private:
     static std::atomic_int NEXT_ID;
 
-    size_t              _id;    // 4
+    size_t              _id;    // 8
     EdgeFlags           _flags; // 4
     Edge::weak_ptr      _next; // 8
     Edge::weak_ptr      _prev; // 8

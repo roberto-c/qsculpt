@@ -23,18 +23,19 @@
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "DocumentView.h"
-#include "Document.h"
-#include "Scene.h"
-#include "SceneNode.h"
-#include "subdivision/Box.h"
-#include "subdivision/Sphere.h"
-#include "FlatRenderer.h"
+#include <PlastilinaCore/Document.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/subdivision/Sphere.h>
+#include <PlastilinaCore/FlatRenderer.h>
+#include <PlastilinaCore/BufferObject.h>
+#include <PlastilinaCore/geometry/Ray.h>
+#include <PlastilinaCore/geometry/Sphere.h>
+#include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/math/Utils.h>
 #include "Eigen/Geometry"
-#include "BufferObject.h"
-#include "geometry/Ray.h"
-#include "geometry/Sphere.h"
-#include "math/Utils.h"
-#include "Color.h"
+
 
 struct OrbitCommand::Impl
 {
@@ -45,7 +46,7 @@ struct OrbitCommand::Impl
     float   startAngle;
     float   endAngle;
     bool    draw;
-    QList<SceneNode::weak_ptr> selectedObj;
+    std::vector<SceneNode::weak_ptr> selectedObj;
     Document doc;
     IRenderer *renderer;
     Eigen::Quaternionf rot;
@@ -248,7 +249,7 @@ void OrbitCommand::mouseMoveEvent(QMouseEvent *e)
         std::swap(_d->startVector, _d->endVector);
         
         Eigen::AngleAxisf rot = Eigen::AngleAxisf(angle, axis);
-        qDebug() << "Vector: " << toString(axis) << " @ " << angle;
+        qDebug() << "Vector: " << toString(axis).c_str() << " @ " << angle;
         auto ptr = _d->doc.scene().lock();
         if (ptr) {
             Iterator<SceneNode> it = ptr->iterator();

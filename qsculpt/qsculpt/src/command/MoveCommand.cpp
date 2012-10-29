@@ -21,15 +21,17 @@
 #include <QtGui/QMouseEvent>
 #include <QtOpenGL/QtOpenGL>
 
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/SceneNode.h>
+
 #include "command/MoveCommand.h"
-#include "IDocument.h"
 #include "IConfigContainer.h"
-#include "ISurface.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "Console.h"
 #include "DocumentView.h"
-#include "SceneNode.h"
+
 
 struct TransformCommand::Impl
 {
@@ -40,7 +42,7 @@ struct TransformCommand::Impl
                                             * movements */
     Point3                      _final;            /**< Final postion of the object. */
     QPoint                      _mousePosition;    /**< Initial mouse position */
-    QList<SceneNode::weak_ptr>   _objects;          /**< Object list to move */
+    std::vector<SceneNode::weak_ptr>   _objects;          /**< Object list to move */
     
     Impl(){}
     
@@ -146,7 +148,7 @@ void TransformCommand::execute()
 
     auto doc = g_pApp->getMainWindow()->getCurrentDocument();
 
-    QList<SceneNode::weak_ptr> objects = doc->getSelectedObjects();
+    auto objects = doc->getSelectedObjects();
     switch(action)
     {
         default:
@@ -195,7 +197,7 @@ void TransformCommand::activate(bool active)
     Action action = (Action)_configContainer->getInt(CONF_MOVE_AXIS);
     if (d_->_actionFinished)
     {
-        int count = d_->_objects.count();
+        int count = d_->_objects.size();
         for (int i = 0; i < count; i++)
         {
             if (action == Move) {
@@ -213,56 +215,47 @@ void TransformCommand::mouseMoveEvent(QMouseEvent* e)
 {
     //CommandBase::mouseMoveEvent(e);
 
-    double dx = 0.0, dy = 0.0, dz = 0.0;
-    double x = 0.0, y = 0.0, z = 0.0;
-
     d_->_mousePosition = e->pos();
-    double modelMatrix[16], projMatrix[16];
-    GLint viewPort[4];
+    int height = g_pApp->getMainWindow()->getCurrentView()->height();
+    Camera * cam = g_pApp->getMainWindow()->getCurrentView()->getViewCamera().get();
+    Point3 camPos = cam->eyeToWorld(d_->_mousePosition.x(),
+                                    height - d_->_mousePosition.y(),
+                                    0);
 
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
-    glGetIntegerv(GL_VIEWPORT, viewPort);
-    gluUnProject(d_->_mousePosition.x(), viewPort[3] - d_->_mousePosition.y(), 0, modelMatrix, projMatrix, viewPort, &x, &y, &z);
-
-    //_final = Point3D(x, y, z);
-    Point3 delta = Point3(x, y, z) - d_->_initial;
-    //qDebug("Delta: %s", qPrintable(delta.toString()));
-    dx = delta.x();
-    dy = delta.y();
+    Point3 delta = camPos - d_->_initial;
 
     Point3 d;
     switch(_configContainer->getInt(CONF_MOVE_AXIS))
     {
         case XAxis:
-            d.x() = dx;
+            d.x() = delta.x();
             break;
 
         case YAxis:
-            d.y() = dy;
+            d.y() = delta.y();
             break;
 
         case ZAxis:
-            d.z() = dz;
+            d.z() = delta.z();
             break;
 
         default:
         case XYAxis:
-            d.x() = dx;
-            d.y() = dy;
+            d.x() = delta.x();
+            d.y() = delta.y();
             break;
 
         case XZAxis:
-            d.x() = dx;
-            d.z() = dy;
+            d.x() = delta.x();
+            d.z() = delta.y();
             break;
 
         case YZAxis:
-            d.z() = dz;
-            d.y() = dy;
+            d.z() = delta.z();
+            d.y() = delta.y();
             break;
     }
-    int count = d_->_objects.count();
+    int count = d_->_objects.size();
     for (int i = 0; i < count; i++)
     {
         auto obj = d_->_objects[i].lock();
@@ -278,23 +271,23 @@ void TransformCommand::mousePressEvent(QMouseEvent* e)
     d_->_mousePosition = e->pos();
     d_->_actionFinished = true;
 
-    double x, y, z;
     float wz = 0.0f;
 
-    glGetDoublev(GL_MODELVIEW_MATRIX, _modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, _projMatrix);
-    glGetIntegerv(GL_VIEWPORT, _viewPort);
-    glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-    gluUnProject(d_->_mousePosition.x(), _viewPort[3] - d_->_mousePosition.y(), 0, _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
-
-    d_->_initial = Point3(x, y, z);
+    int height = g_pApp->getMainWindow()->getCurrentView()->height();
+    
+    glReadPixels(e->x(), height - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
+    Camera * cam = g_pApp->getMainWindow()->getCurrentView()->getViewCamera().get();
+    d_->_initial = cam->eyeToWorld(d_->_mousePosition.x(),
+                                    height - d_->_mousePosition.y(),
+                                    0);
     d_->_final = d_->_initial;
     //qDebug("Initial position: %s", qPrintable(_initial.toString()));
 
     auto doc = g_pApp->getMainWindow()->getCurrentDocument();
     if (doc->getSelectedObjects().size() > 0 )
     {
-        d_->_objects += doc->getSelectedObjects();
+        auto list = doc->getSelectedObjects();
+        d_->_objects.insert(d_->_objects.end(), list.begin(), list.end());
     }
 }
 

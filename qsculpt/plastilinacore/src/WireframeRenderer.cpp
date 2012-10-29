@@ -39,12 +39,12 @@ public:
 
 WireframeRenderer::WireframeRenderer()
 {
-    std::cerr << "WireframeRenderer constructor";
+    std::cerr << "WireframeRenderer constructor" << std::endl;
 }
 
 WireframeRenderer::~WireframeRenderer()
 {
-    std::cerr << "WireframeRenderer destructor";
+    std::cerr << "WireframeRenderer destructor" << std::endl;
 }
 
 void WireframeRenderer::renderObject(const ISurface* mesh, const Material * mat)
@@ -63,7 +63,7 @@ void RendererPrivate::renderVbo(const ISurface* mesh, const Material * mat)
     VertexBuffer* vbo = getVBO(obj);
     if (vbo == NULL || vbo->objectID() == 0)
     {
-        std::cerr << "Failed to create VBO. Fallback to immediate mode" ;
+        std::cerr << "Failed to create VBO. Fallback to immediate mode" << std::endl ;
         return;
     }
     // Set the depth function to the correct value
