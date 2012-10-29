@@ -59,17 +59,27 @@ bool QSculptApp::notify ( QObject * receiver, QEvent * e )
  * applicatoin object to process them. Creates and show the main
  * application window.
  */
-int main( int argc, char ** argv ) {    
-    QSculptApp a( argc, argv );
+int main( int argc, char ** argv ) {
+    int result = 0;
     
-	g_pApp = (QSculptApp*)QSculptApp::instance();
-	
-	g_pApp->setOrganizationName("QSculpt");
-	g_pApp->setOrganizationDomain("qsculpt.com");
-	g_pApp->setApplicationName("QSculpt");
-    g_pApp->getMainWindow()->show();
-    
-	int result = a.exec();
+    try {
+        QSculptApp a( argc, argv );
+        
+        g_pApp = (QSculptApp*)QSculptApp::instance();
+        
+        g_pApp->setOrganizationName("QSculpt");
+        g_pApp->setOrganizationDomain("qsculpt.com");
+        g_pApp->setApplicationName("QSculpt");
+        g_pApp->getMainWindow()->show();
+        
+        result = a.exec();
+    } catch (std::exception & e) {
+        std::cerr << "What: " << e.what() << std::endl;
+        result = -1;
+    }
+    catch (...) {
+        result = -1;
+    }
 
     return result;
 }

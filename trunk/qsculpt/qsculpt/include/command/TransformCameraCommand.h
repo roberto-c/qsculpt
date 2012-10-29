@@ -20,8 +20,8 @@
 #ifndef TRANSFORMCAMERACOMMAND_H
 #define TRANSFORMCAMERACOMMAND_H
 
+#include <PlastilinaCore/Point3D.h>
 #include "command/CommandBase.h"
-#include "Point3D.h"
 
 /**
  * Moves and chage aim of camera.

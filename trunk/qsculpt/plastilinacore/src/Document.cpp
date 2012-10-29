@@ -433,6 +433,34 @@ void Document::addItem(const SceneNode::shared_ptr & node,
     }
 }
 
+static void
+getCameraRecursive(const SceneNode::shared_ptr & scene,
+                   CameraNode::shared_ptr & container)
+{
+    if (container) return;
+    
+    auto it = scene->iterator();
+    while(it.hasNext()) {
+        SceneNode::shared_ptr child = it.next();
+        CameraNode::shared_ptr cam = std::dynamic_pointer_cast<CameraNode>(child);
+        if (cam) {
+            container = cam;
+        } else {
+            getCameraRecursive(child, container);
+        }
+    }
+}
+
+CameraNode::shared_ptr
+Document::getCamera() const
+{
+    CameraNode::shared_ptr res;
+    
+    getCameraRecursive(_d->scene, res);
+    
+    return res;
+}
+
 Iterator<SceneNode> Document::sceneIterator()
 {
     auto ptr = std::dynamic_pointer_cast<Document>(shared_from_this());

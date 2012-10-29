@@ -110,7 +110,7 @@ public:
     /**
      *
      */
-    Camera* getViewCamera() {
+    std::shared_ptr<Camera> getViewCamera() {
         return _display->getViewCamera();
     };
 

@@ -18,22 +18,22 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
+#include <PlastilinaCore/Document.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/subdivision/Sphere.h>
+#include <PlastilinaCore/FlatRenderer.h>
+#include <PlastilinaCore/BufferObject.h>
+#include <PlastilinaCore/geometry/Ray.h>
+#include <PlastilinaCore/geometry/Sphere.h>
+#include <PlastilinaCore/math/Utils.h>
+#include "Eigen/Geometry"
 #include "command/TransformCameraCommand.h"
 #include "GlView.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "DocumentView.h"
-#include "Document.h"
-#include "Scene.h"
-#include "SceneNode.h"
-#include "subdivision/Box.h"
-#include "subdivision/Sphere.h"
-#include "FlatRenderer.h"
-#include "Eigen/Geometry"
-#include "BufferObject.h"
-#include "geometry/Ray.h"
-#include "geometry/Sphere.h"
-#include "math/Utils.h"
 
 
 struct TransformCameraCommand::Impl
@@ -45,7 +45,7 @@ struct TransformCameraCommand::Impl
     float                       startAngle;
     float                       endAngle;
     bool                        draw;
-    QList<SceneNode::weak_ptr>   selectedObj;
+    std::vector<SceneNode::weak_ptr>   selectedObj;
     Document                    doc;
     QScopedPointer<IRenderer>   renderer;
     Eigen::Quaternionf          rot;
@@ -154,14 +154,14 @@ void TransformCameraCommand::mouseMoveEvent(QMouseEvent* e)
         _d->ray.origin() = v1;
         _d->ray.direction() = v2 - v1;
         _d->ray.direction().normalize();
-        qDebug() << "o = " << toString(_d->ray.origin()) << " d = " << toString(_d->ray.direction());
+        qDebug() << "o = " << toString(_d->ray.origin()).c_str() << " d = " << toString(_d->ray.direction()).c_str();
         if (_d->ray.intersect(_d->sphere, &_d->endVector) < 0 ) {
             qDebug() << "Intersection failed";
             return;
         }
         
         _d->endVector.normalize();
-        qDebug() << "End " << toString(_d->endVector);
+        qDebug() << "End " << toString(_d->endVector).c_str();
         
         Vector3 axis = _d->startVector.cross(_d->endVector);
         axis.normalize();
@@ -227,11 +227,11 @@ void TransformCameraCommand::mousePressEvent(QMouseEvent* e)
         _d->ray.origin() = v1;
         _d->ray.direction() = v2 - v1;
         _d->ray.direction().normalize();
-        qDebug() << "o = " << toString(_d->ray.origin()) << " d = " << toString(_d->ray.direction());
+        qDebug() << "o = " << toString(_d->ray.origin()).c_str() << " d = " << toString(_d->ray.direction()).c_str();
         if (_d->ray.intersect(_d->sphere, &_d->startVector) >= 0) {
             _d->startVector.normalize();
             _d->initialVector = _d->startVector;
-            qDebug() << "Initial " << toString(_d->initialVector);
+            qDebug() << "Initial " << toString(_d->initialVector).c_str();
         }
     }
 }

@@ -229,9 +229,9 @@ inline bool BufferObject::setBufferData(GLvoid* buffer, GLuint size)
 {
 	bool result = false;
 	
-//	glBindBuffer(m_boTarget, m_vboID);
-//    THROW_IF_GLERROR(__func__);
-//    RET_ON_GLERROR(result);
+	glBindBuffer(m_boTarget, m_vboID);
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
 	
 	m_bufferSize = size;
 	

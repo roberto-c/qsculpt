@@ -23,12 +23,15 @@
 
 #include <QtGui/QDockWidget>
 #include <QtCore/QModelIndex>
+#include <QtGui/QItemSelectionModel>
 #include <PlastilinaCore/IDocument.h>
+
+class DocumentModel;
 
 class DocumentTreeWidget : public QDockWidget
 {
     Q_OBJECT
-    Q_PROPERTY(IDocument::shared_ptr document READ document WRITE setDocument)
+    //Q_PROPERTY(IDocument::shared_ptr document READ document WRITE setDocument)
     
 public:
     DocumentTreeWidget(QWidget* parent);
@@ -37,12 +40,12 @@ public:
     /**
      * Gets the document to which this DocumentTree is associated to.
      */
-    IDocument::shared_ptr document() const;
+    std::shared_ptr<DocumentModel> document() const;
     
     /**
      * Sets the document to which this DocumentTree instance is associated to.
      */
-    void setDocument(IDocument::shared_ptr doc);
+    void setDocument(const std::shared_ptr<DocumentModel> & doc);
     
     /**
      *

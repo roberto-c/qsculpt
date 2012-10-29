@@ -98,3 +98,31 @@ bool Scene::intersects(const geometry::AABB &box,
     //return _d->octree.findIntersect(box, col);
 }
 
+static void
+getCameraRecursive(const SceneNode::shared_ptr & scene,
+                   CameraNode::shared_ptr & container)
+{
+    if (container) return;
+    
+    auto it = scene->iterator();
+    while(it.hasNext()) {
+        SceneNode::shared_ptr child = it.next();
+        CameraNode::shared_ptr cam = std::dynamic_pointer_cast<CameraNode>(child);
+        if (cam) {
+            container = cam;
+        } else {
+            getCameraRecursive(child, container);
+        }
+    }
+}
+
+CameraNode::shared_ptr
+Scene::getCamera()
+{
+    CameraNode::shared_ptr res;
+    
+    SceneNode::shared_ptr node = std::dynamic_pointer_cast<SceneNode>(this->shared_from_this());
+    getCameraRecursive(node, res);
+    
+    return res;
+}

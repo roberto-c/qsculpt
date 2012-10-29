@@ -12,6 +12,40 @@
 #include <PlastilinaCore/Document.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/Logging.h>
+
+struct DocumentModel::Impl
+{
+    IDocument::shared_ptr doc;
+    Scene::shared_ptr scene;
+    
+    Impl(const std::shared_ptr<IDocument> & doc)
+    : doc(doc)
+    {
+        scene = doc->scene().lock();
+    }
+};
+
+DocumentModel::DocumentModel(const std::shared_ptr<IDocument> & doc)
+: d(new Impl(doc))
+{
+    
+}
+
+DocumentModel::~DocumentModel()
+{
+    
+}
+
+SceneNode::shared_ptr DocumentModel::findItem(uint iid) const
+{
+    return NULL;
+}
+
+QModelIndex DocumentModel::findItemIndex(uint iid) const
+{
+    return QModelIndex();
+}
 
 int DocumentModel::columnCount(const QModelIndex & parent) const
 {
@@ -40,7 +74,7 @@ QVariant DocumentModel::data (const QModelIndex & index,
     if (role == Qt::DisplayRole) {
         SceneNode::shared_ptr p = NULL;
         if (index.isValid()) {
-            p = _d->scene->findByIID(index.internalId());
+            p = d->scene->findByIID(index.internalId());
         }
         if (p) {
             QString str = QString("%1 (%2)")
@@ -67,7 +101,7 @@ bool DocumentModel::setData (const QModelIndex & index,
     if (role == Qt::DisplayRole) {
         SceneNode::shared_ptr p = NULL;
         if (index.isValid()) {
-            p = _d->scene->findByIID(index.internalId());
+            p = d->scene->findByIID(index.internalId());
         }
         if (p) {
             p->setName(value.toString().toStdString());
@@ -78,7 +112,7 @@ bool DocumentModel::setData (const QModelIndex & index,
     } else if (role == Qt::EditRole) {
         SceneNode::shared_ptr p = NULL;
         if (index.isValid()) {
-            p = _d->scene->findByIID(index.internalId());
+            p = d->scene->findByIID(index.internalId());
         }
         if (p) {
             p->setName(value.toString().toStdString());
@@ -96,18 +130,18 @@ QModelIndex DocumentModel::index (int row,
 {
     TRACEFUNCTION();
     //    qDebug() << "Arg1: " << row << " Arg2:" << column << " Arg3:" << parent;
-    assert(_d && _d->scene);
+    assert(d && d->scene);
     
     QModelIndex index;
     
     SceneNode::shared_ptr p = NULL;
     if (parent.isValid()) {
-        p = _d->scene->findByIID(parent.internalId());
+        p = d->scene->findByIID(parent.internalId());
     }
     if (p) {
         p = p->item(row).lock();
     } else {
-        p = _d->scene->item(row).lock();
+        p = d->scene->item(row).lock();
     }
     if (p) {
         index = createIndex(row, 0, p->iid());
@@ -120,7 +154,7 @@ QModelIndex DocumentModel::parent ( const QModelIndex & index ) const
 {
     TRACEFUNCTION();
     //    qDebug() << "Arg1: " << index;
-    assert(_d && _d->scene);
+    assert(d && d->scene);
     
     QModelIndex ret;
     if (!index.isValid()) {
@@ -128,7 +162,7 @@ QModelIndex DocumentModel::parent ( const QModelIndex & index ) const
         return ret;
     }
     
-    SceneNode::shared_ptr ptr = _d->scene->findByIID(index.internalId());
+    SceneNode::shared_ptr ptr = d->scene->findByIID(index.internalId());
     SceneNode::shared_ptr parent, grandparent;
     int row = -1;
     
@@ -158,17 +192,35 @@ int DocumentModel::rowCount ( const QModelIndex & parent ) const
     TRACEFUNCTION();
     //    qDebug() << "Arg1: " << parent;
     
-    assert(_d && _d->scene);
+    assert(d && d->scene);
     int ret = 0;
     SceneNode::shared_ptr p;
     if (parent.isValid()) {
-        p = _d->scene->findByIID(parent.internalId());
+        p = d->scene->findByIID(parent.internalId());
     } else {
-        p = _d->scene;
+        p = d->scene;
     }
     if (p) {
         ret = p->count();
     }
     //    qDebug() << ret;
     return ret;
+}
+
+void DocumentModel::addItem(const SceneNode::shared_ptr &node,
+                            const QModelIndex & parent)
+{
+    SceneNode::shared_ptr p;
+    if (parent.isValid()) {
+        p = d->scene->findByIID(parent.internalId());
+    } else {
+        p = d->scene;
+    }
+    
+    p->add(node);
+}
+
+bool DocumentModel::insertRow(int row, const QModelIndex & parent)
+{
+    return false;
 }

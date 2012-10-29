@@ -23,16 +23,16 @@
 #include <QtCore/QThread>
 #include <QtGui/QProgressDialog>
 //#include <omp.h>
-#include "IDocument.h"
-#include "ISurface.h"
-#include "Subdivision.h"
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/HEdge.h>
+#include <PlastilinaCore/Face.h>
+#include <PlastilinaCore/subdivision/Subdivision.h>
+#include <PlastilinaCore/PointRenderer.h>
+
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "DocumentView.h"
-#include "HEdge.h"
-#include "Face.h"
-#include "subdivision/Subdivision.h"
-#include "PointRenderer.h"
 
 typedef QHash< std::pair<int, int>, Vertex*> MidEdgeMap;
 
@@ -121,7 +121,7 @@ void SubdivideCommand::execute()
     _d->edgeMidPoint.clear();
     qDebug() << "Start time: " <<QDateTime::currentDateTime();
 
-    QList<SceneNode::weak_ptr> list = doc->getSelectedObjects();
+    std::vector<SceneNode::weak_ptr> list = doc->getSelectedObjects();
     foreach(SceneNode::weak_ptr n, list)
     {
         auto node = n.lock();
@@ -238,7 +238,7 @@ void SubdivideCommand::Impl::splitEdges(ISurface& s)
 void SubdivideCommand::Impl::createFaces(ISurface& s)
 {
     int faceCounter = 0;
-    QVector<size_t> vtxIndex, faceVtxIID;
+    std::vector<size_t> vtxIndex, faceVtxIID;
     vtxIndex.reserve(10);
     faceVtxIID.reserve(4);
     Iterator<Face> faceIt = s.faceIterator();
@@ -457,7 +457,7 @@ void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
     
     if (!doc)
         return;
-    QList<SceneNode::weak_ptr> list = doc->getSelectedObjects();
+    std::vector<SceneNode::weak_ptr> list = doc->getSelectedObjects();
     foreach(SceneNode::weak_ptr n, list)
     {
         auto node = n.lock();
@@ -521,7 +521,7 @@ void EditSubdivideCommand::paintGL(GlCanvas *c)
         glPushMatrix();
         glMultMatrixf(d_->surf->parentTransform().data());
         glMultMatrixf(d_->surf->transform().data());
-        d_->renderer.renderObject(d_->surf->surface());
+        d_->renderer.renderObject(d_->surf->surface(), d_->surf->material().get());
         glPopMatrix();
         c->enable(GL_DEPTH_TEST);
     }

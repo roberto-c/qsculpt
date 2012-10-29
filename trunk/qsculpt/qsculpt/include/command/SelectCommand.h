@@ -21,10 +21,11 @@
 #define SELECTCOMMAND_H
 
 #include <QtCore/QVector>
+#include <QtCore/QPointer>
+#include <PlastilinaCore/Point3D.h>
+
 #include "command/CommandBase.h"
 #include "DocumentView.h"
-#include "Point3D.h"
-#include <QtCore/QPointer>
 
 class TransformWidget;
 

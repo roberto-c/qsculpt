@@ -5,23 +5,26 @@
  * Created on October 17, 2010, 4:38 PM
  */
 #include "Stable.h"
+
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/Document.h>
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/HEdge.h>
+#include <PlastilinaCore/Octree.h>
+#include <PlastilinaCore/Color.h>
+
 #include "command/MeshEditCommands.h"
-#include "ISurface.h"
-#include "IDocument.h"
-#include "Document.h"
 #include "QSculptWindow.h"
 #include "QSculptApp.h"
 #include "IConfigContainer.h"
-#include "subdivision/Box.h"
-#include "Scene.h"
-#include "SceneNode.h"
 #include "GlView.h"
-#include "BOManager.h"
 #include "DocumentView.h"
-#include "HEdge.h"
-#include "Octree.h"
-#include "Color.h"
 #include "DocumentTreeWidget.h"
+#include "DocumentModel.h"
 
 AddSurfaceCommand::AddSurfaceCommand()
 : CommandBase("AddSurface")
@@ -57,9 +60,9 @@ void AddSurfaceCommand::execute()
         QModelIndexList list = treewdt->selectedIndexes();
         if (list.length() == 1) {
             QModelIndex index = list.first();
-            doc->addItem(_surface, index);
+            treewdt->document()->addItem(_surface, index);
         } else {
-            doc->addItem(_surface);
+            treewdt->document()->addItem(_surface);
         }
         qDebug() << "IID=" << _surface->iid();
     }
@@ -498,7 +501,7 @@ void TestCommand::mousePressEvent(QMouseEvent *e)
     
     if (_d->vtxIt.hasNext()) {
         auto v = _d->vtxIt.next();
-        v->color() = Vector3(1,0.3f,0);
+        v->color() = Vector4(1,0.3f,0, 1);
         qDebug() << v->iid();
         
         _d->surf->setChanged(true);

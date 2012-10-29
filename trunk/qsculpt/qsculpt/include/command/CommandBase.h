@@ -21,9 +21,9 @@
 #define COMMANDBASE_H
 
 #include <QtOpenGL/QtOpenGL>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/Camera.h>
 #include "ICommand.h"
-#include "Point3D.h"
-#include "Camera.h"
 
 /**
  * Base class for commands. Contains basic and common command implementation.

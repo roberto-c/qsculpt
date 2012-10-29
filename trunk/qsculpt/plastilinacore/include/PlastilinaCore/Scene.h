@@ -63,8 +63,11 @@ public:
      */
     SceneNode::shared_ptr findByIID(uint iid);
     
-    
-    
+    /**
+     * Get first camera node.
+     */
+    CameraNode::shared_ptr getCamera();
+
     
     /**
      * Returns a list of nodes that intersects a given ray.

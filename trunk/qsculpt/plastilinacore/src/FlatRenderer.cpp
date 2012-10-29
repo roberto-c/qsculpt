@@ -44,8 +44,8 @@ GLfloat g_normalColor[] =   {0.8f, 0.8f, 0.8f, 1.0f};
 
 typedef struct tagFlatVtxStruct
 {
-    GLfloat v[3];
-    GLfloat n[3];
+    GLfloat v[4];
+    GLfloat n[4];
     GLfloat color[4];
 } FlatVtxStruct;
 
@@ -63,15 +63,14 @@ struct FlatRenderer::Impl {
 	void renderVbo(const ISurface* mesh, const Material * mat);
 	
 	/**
-	 * Draw the mesh using the glBeing()/glEnd() and friends functions.
-	 * This method is a fallback method if the  VBOs are not supported.
-	 */
-	void renderImmediate(const ISurface* mesh);
-	
-	/**
 	 *
 	 */
 	VertexBuffer* getVBO(ISurface* mesh);
+    
+    /**
+	 *
+	 */
+	VAO* getVAO(ISurface* mesh);
 	
 	/**
 	 * Fill vertex buffer with the mesh data.
@@ -108,63 +107,51 @@ void FlatRenderer::setShaderProgram(GlslProgram * shader)
 void FlatRenderer::renderObject(const ISurface* mesh, const Material * mat)
 {
     _d->renderVbo(mesh, mat);
-    //_d->renderImmediate(mesh);
-}
-
-void FlatRenderer::Impl::renderImmediate(const ISurface* mesh)
-{
-
 }
 
 void FlatRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
-{
+{    
     //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
     if (mesh == NULL)
         return;
 
-    ISurface* obj = const_cast<ISurface*>(mesh);
-
-    VertexBuffer* vbo = getVBO(obj);
-    if (vbo == NULL || vbo->objectID() == 0)
-    {
-        std::cerr << "Failed to create VBO. Fallback to immediate mode" ;
-        renderImmediate(mesh);
-        return;
-    }
+    
+	ISurface* obj = const_cast<ISurface*>(mesh);
+	VertexBuffer* vbo= getVBO(obj);
+	if (vbo == NULL || vbo->objectID() == 0)
+	{
+		std::cerr << "Failed to create VBO."  << std::endl;
+		return;
+	}
+    VAO* vao = getVAO(obj);
+    if (vao == NULL || vao->objectID() == 0)
+	{
+		std::cerr << "Failed to create VAO."  << std::endl;
+		return;
+	}
+    
     // Set the depth function to the correct value
     glDepthFunc(GL_LESS);
-
-    if ( vbo->needUpdate())
-    {
-        fillVertexBuffer(obj, vbo);
-        vbo->setNeedUpdate(false);
+    
+    vao->bind();
+    vbo->bind();
+    if (vbo->needUpdate())
+	{
+		fillVertexBuffer(obj, vbo);
+		vbo->setNeedUpdate(false);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+        
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, v));
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, n));
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, color));
     }
-
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    glEnableClientState(GL_NORMAL_ARRAY);
-//    glEnableClientState(GL_COLOR_ARRAY);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo->objectID());
-//    glColorPointer(4, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, color));
-//    glNormalPointer(GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, n));
-//    glVertexPointer(3, GL_FLOAT, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, v));
-
-    Color color(1,1,1,1);
-//    if (mesh->isSelected())
-//        glColor3d(color.r(), color.g() + 0.3, color.b());
-//    else
-//        glColor3d(color.r(), color.g(), color.b());
-
-    //std::cerr << "Draw mesh";
+    
+    mat->shaderProgram()->useProgram();
     GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-//    glDisableClientState(GL_VERTEX_ARRAY);
-//    glDisableClientState(GL_NORMAL_ARRAY);
-//    glDisableClientState(GL_COLOR_ARRAY);
-
-    //std::cerr << "Mesh rendered";
+    vao->release();
 }
 
 VertexBuffer* FlatRenderer::Impl::getVBO(ISurface* mesh)
@@ -176,6 +163,17 @@ VertexBuffer* FlatRenderer::Impl::getVBO(ISurface* mesh)
         vbo = BOManager::getInstance()->createVBO(BO_POOL_NAME, mesh);
     }
     return vbo;
+}
+
+VAO* FlatRenderer::Impl::getVAO(ISurface* mesh)
+{
+	VAO* vao = NULL;
+	vao = BOManager::getInstance()->getVAO(BO_POOL_NAME, mesh);
+	if (vao == NULL)
+	{
+		vao = BOManager::getInstance()->createVAO(BO_POOL_NAME, mesh);
+	}
+	return vao;
 }
 
 void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
@@ -220,7 +218,7 @@ bool FlatRenderer::Impl::processPolygon(const Face & f,
 {
     size_t nVtx = f.numVertices();
     if (nVtx < 3) {
-        std::cerr << "Incomplete polygon. A polygon should have at least 3 vertices";
+        std::cerr << "Incomplete polygon. A polygon should have at least 3 vertices"  << std::endl;
         return false;
     }
     
@@ -247,27 +245,33 @@ bool FlatRenderer::Impl::processTriangle(const Vertex & v1,
     vtxData[offset].v[0] = v1.position().x();
     vtxData[offset].v[1] = v1.position().y();
     vtxData[offset].v[2] = v1.position().z();
+    vtxData[offset].v[3] = 1;
     vtxData[offset].n[0] = normal.x();
     vtxData[offset].n[1] = normal.y();
     vtxData[offset].n[2] = normal.z();
+    vtxData[offset].n[3] = 0;
     memcpy(vtxData[offset].color, v1.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
     vtxData[offset].v[0] = v2.position().x();
     vtxData[offset].v[1] = v2.position().y();
     vtxData[offset].v[2] = v2.position().z();
+    vtxData[offset].v[3] = 1;
     vtxData[offset].n[0] = normal.x();
     vtxData[offset].n[1] = normal.y();
     vtxData[offset].n[2] = normal.z();
+    vtxData[offset].n[3] = 0;
     memcpy(vtxData[offset].color, v2.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
     vtxData[offset].v[0] = v3.position().x();
     vtxData[offset].v[1] = v3.position().y();
     vtxData[offset].v[2] = v3.position().z();
+    vtxData[offset].v[3] = 1;
     vtxData[offset].n[0] = normal.x();
     vtxData[offset].n[1] = normal.y();
     vtxData[offset].n[2] = normal.z();
+    vtxData[offset].n[3] = 0;
     memcpy(vtxData[offset].color, v3.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     

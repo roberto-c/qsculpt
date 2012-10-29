@@ -22,19 +22,20 @@
 #include <QtOpenGL/QtOpenGL>
 #include <QtGui/QMouseEvent>
 #include <QtCore/QPointer>
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Camera.h>
+#include <PlastilinaCore/geometry/Aabb.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/SceneNode.h>
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "IDocument.h"
-#include "IConfigContainer.h"
-#include "ISurface.h"
 #include "DocumentView.h"
-#include "Camera.h"
 #include "TransformWidget.h"
-#include "geometry/Aabb.h"
+#include "IConfigContainer.h"
 #include "Console.h"
-#include "Scene.h"
-#include "SceneNode.h"
 #include "DocumentTreeWidget.h"
+#include "DocumentModel.h"
 
 QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
@@ -109,7 +110,7 @@ void SelectCommand::execute()
                 auto doc = view->getDocument();
                 DocumentTreeWidget * treewdt = qobject_cast<DocumentTreeWidget*>( g_pApp->getMainWindow()->toolWidget("DocTree"));
                 if (doc && treewdt) {
-                    QModelIndex index = doc->findItemIndex(iid);
+                    QModelIndex index = treewdt->document()->findItemIndex(iid);
                     treewdt->selectIndex(index);
                     doc->selectObject(iid);
                     view->updateView();
@@ -133,7 +134,7 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
     } 
     else 
     {
-        if (_objectsSelected.isEmpty())
+        if (_objectsSelected.empty())
         {
             //    CommandBase::mouseMoveEvent(e);
         }
@@ -158,9 +159,9 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
     {
         _objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
 
-        if (_objectsSelected.count() > 0)
+        if (_objectsSelected.size() > 0)
         {
-            for (int i = 0; i < _objectsSelected.count(); ++i)
+            for (int i = 0; i < _objectsSelected.size(); ++i)
             {
                 _objectsSelected[i]->setSelected(!_objectsSelected[i]->isSelected());
             }
@@ -185,7 +186,7 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
     } 
     else 
     {
-        if (_objectsSelected.count() > 0)
+        if (_objectsSelected.size() > 0)
             emit executed();
         else
         {
@@ -232,6 +233,9 @@ void SelectCommand::selectVertices()
 
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
+    if (!view->getDocument()) {
+        return;
+    }
 
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
@@ -275,6 +279,9 @@ void SelectCommand::selectSurface()
 
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
+    if (!view->getDocument()) {
+        return;
+    }
 
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
@@ -309,6 +316,7 @@ void SelectCommand::selectSurface()
             if (box.contains(p)) {
                 surface->setSelected(true);
                 n->setSelected(true);
+                qDebug() << "SelectSurface: selected " << n->iid();
             }
         }
         surface->setChanged(true);
@@ -322,6 +330,9 @@ void SelectCommand::selectFaces()
 
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
+    if (!view->getDocument()) {
+        return;
+    }
 
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
@@ -378,6 +389,9 @@ void SelectCommand::unselectAll()
 
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
+    if (!view->getDocument()) {
+        return;
+    }
     ISurface *surface = NULL;
     auto ptr = view->getDocument()->scene().lock();
     if (!ptr) {

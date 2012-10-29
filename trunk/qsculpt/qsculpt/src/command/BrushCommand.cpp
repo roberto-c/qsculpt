@@ -22,13 +22,14 @@
 
 #include <QtOpenGL/QtOpenGL>
 #include <QtGui/QMouseEvent>
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Camera.h>
+
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "IDocument.h"
 #include "IConfigContainer.h"
-#include "ISurface.h"
 #include "DocumentView.h"
-#include "Camera.h"
 #include "command/BrushProperties.h"
 
 QImage BrushCommand::_cursorImage;
@@ -178,15 +179,15 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
         return;
     }
 
-    if (_selectedObjects.count() > 0)
+    if (_selectedObjects.size() > 0)
     {
         GLdouble x = 0.0, y = 0.0,  z = 0.0;
         GLfloat wz = 0.0f;
 
         // Use the same z depth to move in the plane parallel to the screen.
         wz = _currentWinPoint.z();
-        gluUnProject(e->x(), _viewPort[3] - e->y(), wz,
-                     _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
+//        gluUnProject(e->x(), _viewPort[3] - e->y(), wz,
+//                     _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
 
         Point3 currPoint = Point3(x, y, z);
         Point3 currWinPoint = Point3(e->x(), e->y(), wz);
@@ -202,7 +203,7 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
         DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
         _selectedObjects.clear();
         _selectedObjects = view->getSelectedObjects( e->pos().x(), e->pos().y());
-        if (_selectedObjects.count() > 0)
+        if (_selectedObjects.size() > 0)
         {
             _vertexSelected.clear();
             selectObject();
@@ -229,25 +230,9 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
 
     _selectedObjects = view->getSelectedObjects( e->pos().x(), e->pos().y());
 
-    if (_selectedObjects.count() > 0)
+    if (_selectedObjects.size() > 0)
     {
-        GLdouble x, y, z;
-        GLfloat wz = 0.0f;
-
-        glGetDoublev(GL_MODELVIEW_MATRIX, _modelMatrix);
-        glGetDoublev(GL_PROJECTION_MATRIX, _projMatrix);
-        glGetIntegerv(GL_VIEWPORT, _viewPort);
-
-        glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz);
-        gluUnProject(e->x(), _viewPort[3] - e->y(), wz,
-                     _modelMatrix, _projMatrix, _viewPort, &x, &y, &z);
-
-        _initialWinPoint = Point3(e->x(), e->y(), wz);
-        _currentWinPoint = _initialWinPoint;
-        _intialPoint = Point3(x, y, z);
-        _currentPoint = _intialPoint;
-
-        selectObject();
+        NOT_IMPLEMENTED
     }
     else
     {
@@ -261,7 +246,7 @@ void BrushCommand::mousePressEvent(QMouseEvent* e)
 void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 {
     _vertexSelected.clear();
-    if (_selectedObjects.count() > 0)
+    if (_selectedObjects.size() > 0)
     {
         _selectedObjects.clear();
         _object->setChanged(true);
@@ -288,9 +273,9 @@ void BrushCommand::applyOperation()
         {
 
             Point3& v = _object->vertex(_vertexSelected[i])->position();
-            gluProject(v.x(), v.y(), v.z(),
-                       _modelMatrix, _projMatrix, _viewPort,
-                       &winX, &winY, &winZ);
+//            gluProject(v.x(), v.y(), v.z(),
+//                       _modelMatrix, _projMatrix, _viewPort,
+//                       &winX, &winY, &winZ);
             //wv.setPoint(winX, winY, winZ);
             wv.x() = winX;
             wv.y() = winY;
@@ -316,7 +301,7 @@ void BrushCommand::selectObject()
 
     if (!view)
         return;
-    int recordCount = _selectedObjects.count();
+    int recordCount = _selectedObjects.size();
     qDebug() << "recordCount =" << recordCount;
     for (int i = 0; i < recordCount; i++)
     {

@@ -22,9 +22,9 @@
 #include "GlView.h"
 
 #include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/IRenderer.h>
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include <PlastilinaCore/IRenderer.h>
 #include "DocumentView.h"
 
 namespace Plastilina {

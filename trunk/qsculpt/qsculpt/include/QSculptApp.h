@@ -21,7 +21,7 @@
 #define QSCULPTAPP_H
 
 #include <QtGui/QApplication>
-#include "PlastilinaCore/IDocument.h"
+#include <PlastilinaCore/IDocument.h>
 
 #define g_pApp g_pApp
 

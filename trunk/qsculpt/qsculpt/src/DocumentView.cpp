@@ -63,20 +63,21 @@ void DocumentView::createWidgets()
     QGridLayout* gridLayout = new QGridLayout(this);
     QHBoxLayout* hboxLayout = new QHBoxLayout();
     
+    // Set up gl display format
+    QGLFormat format = _d->ctx.format();
+    format.setProfile(QGLFormat::CoreProfile);
+    format.setVersion(3, 2);
+    format.setSwapInterval(1);
+    format.setDepthBufferSize(32);
+    _d->ctx.setFormat(format);
     _d->ctx.setUseSoftwareRenderer(false);
     _d->ctx.create();
-    //_display = new GlCanvas(&_d->ctx, this);
-    _display = new GlCanvas(this);
+    _display = new GlCanvas(&_d->ctx, this);
+    //_display = new GlCanvas(this);
 
     Q_CHECK_PTR(gridLayout);
     Q_CHECK_PTR(_display);
     Q_CHECK_PTR(hboxLayout);
-
-    // Set up gl display format
-    QGLFormat format = _display->format();
-    format.setSwapInterval(1);
-    format.setDepthBufferSize(32);
-    _display->setFormat(format);
 
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->addWidget(_display, 0, 0, 1, 5);

@@ -105,6 +105,20 @@ public:
                       GLint * size);
     
     /**
+     * Get the color number location to which an output variable is bound.
+     */
+    GLint fragDataLocation(const std::string & name);
+    
+    /**
+     * Bind output variable with name for fragment shaders to the colorNumber 
+     * specified.
+     *
+     * @param colorNumber color number to bind the variable
+     * @param name name of the variable to bind.
+     */
+    void bindFragDataLocation(GLuint colorNumber, const std::string & name);
+    
+    /**
      * Get the location of a uniform variable.
      *
      * Used after the program has been linked successfully, to retrieve the 
@@ -207,7 +221,8 @@ public:
     void setUniform(GLint index, const Eigen::Matrix4f & val);
     
 private:
-    GLuint progId_;
+	struct Impl;
+	std::unique_ptr<Impl> d;
 };
 
 #endif

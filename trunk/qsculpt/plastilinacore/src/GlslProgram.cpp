@@ -8,35 +8,45 @@
 #include <PlastilinaCore/GlslProgram.h>
 #include <iostream>
 
-GlslProgram::GlslProgram() : progId_(0)
+
+struct GlslProgram::Impl
 {
-    progId_ = glCreateProgram();
+    GLuint 	progId_;
+	GLint	maxNameSize;
+	
+	Impl(GLuint progId):progId_(progId){}
+};
+
+GlslProgram::GlslProgram() : d(new Impl(0))
+{
+    d->progId_ = glCreateProgram();
 }
 
 GlslProgram::~GlslProgram()
 {
-    glDeleteProgram(progId_);
+    glDeleteProgram(d->progId_);
 }
 
 GLint GlslProgram::programID() const
 {
-    return progId_;
+    return d->progId_;
 }
 
 bool GlslProgram::GlslProgram::link()
 {
-    glLinkProgram(progId_);
+    glLinkProgram(d->progId_);
     
     GLint status;
-    glGetProgramiv(progId_, GL_LINK_STATUS, &status);
+    glGetProgramiv(d->progId_, GL_LINK_STATUS, &status);
     
+	glGetProgramiv(d->progId_, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &d->maxNameSize);
     return status == GL_TRUE;
 }
     
 std::string GlslProgram::buildLog()
 {
     GLint val;
-    glGetProgramiv(progId_, GL_INFO_LOG_LENGTH, &val);
+    glGetProgramiv(d->progId_, GL_INFO_LOG_LENGTH, &val);
     
     std::string log;
     
@@ -46,7 +56,7 @@ std::string GlslProgram::buildLog()
     std::vector<GLchar> buffer(val);
     try {
         GLsizei length = 0;
-        glGetProgramInfoLog(progId_, val, &length, buffer.data());
+        glGetProgramInfoLog(d->progId_, val, &length, buffer.data());
         
         // Mark the end of buffer with null, just as precaution
         buffer[length] = NULL; 
@@ -61,19 +71,19 @@ std::string GlslProgram::buildLog()
     
 void GlslProgram::attachShader(VertexShader * shader)
 {
-    glAttachShader(progId_, shader->shaderId());
+    glAttachShader(d->progId_, shader->shaderId());
     THROW_IF_GLERROR(__func__);
 }
    
 void GlslProgram::attachShader(FragmentShader * shader)
 {
-    glAttachShader(progId_, shader->shaderId());
+    glAttachShader(d->progId_, shader->shaderId());
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::useProgram()
 {
-    glUseProgram(progId_);
+    glUseProgram(d->progId_);
     THROW_IF_GLERROR(__func__);
 }
 
@@ -86,20 +96,20 @@ void GlslProgram::releaseProgram()
 GLint GlslProgram::activeAttributes()
 {
     GLint res = 0;
-    glGetProgramiv(progId_, GL_ACTIVE_ATTRIBUTES, &res);
+    glGetProgramiv(d->progId_, GL_ACTIVE_ATTRIBUTES, &res);
     THROW_IF_GLERROR(__func__);
     return res;
 }
 
 void GlslProgram::bindAttributeLocation(GLuint index, const std::string &name)
 {
-    glBindAttribLocation(progId_, index, name.c_str());
+    glBindAttribLocation(d->progId_, index, name.c_str());
     THROW_IF_GLERROR(__func__);
 }
 
 GLint GlslProgram::attributeLocation(const std::string & name)
 {
-    GLint loc = glGetAttribLocation(progId_, name.c_str());
+    GLint loc = glGetAttribLocation(d->progId_, name.c_str());
     THROW_IF_GLERROR(__func__);
     return loc;
 }
@@ -113,27 +123,32 @@ void GlslProgram::activeAttrib(GLint index,
         return;
     }
 
-    GLsizei length = 0;
     std::vector<GLchar> buffer;
-
-    if (name) {
-        glGetActiveAttrib(progId_, index, 0, &length, size, type, NULL);
-        THROW_IF_GLERROR(__func__);
-        if (length > 0){
-            length++;
-            buffer.resize(length);
-        }
-    }
-    glGetActiveAttrib(progId_, index, length, NULL, size, type, buffer.data());
+	buffer.resize(d->maxNameSize);
+	GLsizei bufSize = static_cast<GLsizei>(buffer.size());
+    glGetActiveAttrib(d->progId_, index, bufSize, NULL, size, type, buffer.data());
     THROW_IF_GLERROR(__func__);
     if (name) {
         name->assign(buffer.begin(),buffer.end());
     }
 }
 
+GLint GlslProgram::fragDataLocation(const std::string & name)
+{
+    GLint loc = glGetFragDataLocation(d->progId_, name.c_str());
+    THROW_IF_GLERROR(__func__);
+    return loc;
+}
+
+void GlslProgram::bindFragDataLocation(GLuint colorNumber, const std::string & name)
+{
+    glBindFragDataLocation(d->progId_, colorNumber, name.c_str());
+    THROW_IF_GLERROR(__func__);
+}
+
 GLint GlslProgram::uniformLocation(const std::string &name)
 {
-    GLint loc = glGetUniformLocation(progId_, name.c_str());
+    GLint loc = glGetUniformLocation(d->progId_, name.c_str());
     THROW_IF_GLERROR(__func__);
     return loc;
 }

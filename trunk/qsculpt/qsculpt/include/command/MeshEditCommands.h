@@ -10,7 +10,7 @@
 
 #include "command/CommandBase.h"
 
-#include "SceneNode.h"
+#include <PlastilinaCore/SceneNode.h>
 
 class AddSurfaceCommand : public CommandBase {
 public:
