@@ -8,8 +8,8 @@ class WireframeRenderer : public IRenderer
 public:
 	WireframeRenderer();
 	virtual ~WireframeRenderer();
-
-	virtual void renderObject(const ISurface* mesh, const Material * mat);
+	
+	virtual void renderObject(std::shared_ptr<SceneNode> & node);
 };
 
 #endif /*WIREFRAMERENDERER_H_*/

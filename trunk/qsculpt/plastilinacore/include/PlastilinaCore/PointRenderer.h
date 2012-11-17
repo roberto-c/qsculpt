@@ -19,8 +19,8 @@ public:
     PointRenderer(const std::string & poolname);
     
 	virtual ~PointRenderer();
-
-	virtual void renderObject(const ISurface* mesh, const Material * mat);
+	
+	virtual void renderObject(std::shared_ptr<SceneNode> & node);
     
     /**
      * Set the point size to use when rendering points

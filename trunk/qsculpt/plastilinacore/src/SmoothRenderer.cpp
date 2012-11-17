@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/SmoothRenderer.h>
+#include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Color.h>
@@ -43,7 +44,7 @@ struct SmoothRenderer::Impl {
 	 * Draw the mesh using OpenGL VBOs.
 	 * The VBOs are re-build when the mesh has been changed since the last draw.
 	 */
-	void renderVbo(const ISurface* mesh, const Material * mat);
+	void renderObject(std::shared_ptr<SceneNode> & node);
 	
 	/**
 	 *
@@ -82,18 +83,30 @@ SmoothRenderer::~SmoothRenderer()
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
-void SmoothRenderer::renderObject(const ISurface* mesh, const Material * mat)
+void SmoothRenderer::renderObject(std::shared_ptr<SceneNode> & node)
 {
-	_d->renderVbo(mesh, mat);
+	_d->renderObject(node);
 }
 
-void SmoothRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
+void SmoothRenderer::Impl::renderObject(std::shared_ptr<SceneNode> & node)
 {
+	ISurface * obj = NULL;
+	std::shared_ptr<Material> mat;
+	
+	if (!node) {
+		return;
+	}
+	SurfaceNode::shared_ptr snode = std::dynamic_pointer_cast<SurfaceNode>(node);
+	if (!snode) {
+		std::cerr << __func__ << ": Node is not a SurfaceNode.\n";
+		return;
+	}
+	obj = snode->surface();
+	mat = snode->material();
 	//std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
-	if (mesh == NULL || mat == NULL)
+	if (obj == NULL || mat == NULL)
 		return;
 	
-	ISurface* obj = const_cast<ISurface*>(mesh);
 	VertexBuffer* vbo= getVBO(obj);
 	if (vbo == NULL || vbo->objectID() == 0)
 	{
@@ -106,17 +119,17 @@ void SmoothRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 		std::cerr << "Failed to create VAO."  << std::endl;
 		return;
 	}
-
+	
 	// Set the depth function to the correct value
 	glDepthFunc(GL_LESS);
-
+	
     vao->bind();
     vbo->bind();
 	if (vbo->needUpdate())
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-	
+		
 		GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
 		if (attColor >= 0) {
 			glEnableVertexAttribArray(attColor);
@@ -145,6 +158,7 @@ void SmoothRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
     
     vao->release();
+
 }
 
 VertexBuffer* SmoothRenderer::Impl::getVBO(ISurface* mesh)

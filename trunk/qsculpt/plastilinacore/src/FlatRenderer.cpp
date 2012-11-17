@@ -20,6 +20,7 @@
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/FlatRenderer.h>
 #include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/BOManager.h>
 #include <cstddef>
 #include <iostream>
@@ -61,6 +62,8 @@ struct FlatRenderer::Impl {
 	 * The VBOs are re-build when the mesh has been changed since the last draw.
 	 */
 	void renderVbo(const ISurface* mesh, const Material * mat);
+	
+	void renderObject(std::shared_ptr<SceneNode> & node);
 	
 	/**
 	 *
@@ -104,19 +107,31 @@ void FlatRenderer::setShaderProgram(GlslProgram * shader)
     _d->shaderProgram = shader;
 }
 
-void FlatRenderer::renderObject(const ISurface* mesh, const Material * mat)
+void FlatRenderer::renderObject(std::shared_ptr<SceneNode> & node)
 {
-    _d->renderVbo(mesh, mat);
+	_d->renderObject(node);
 }
 
-void FlatRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
-{    
+void FlatRenderer::Impl::renderObject(std::shared_ptr<SceneNode> & node)
+{
+	ISurface * obj = NULL;
+	std::shared_ptr<Material> mat;
+	
+	if (!node) {
+		return;
+	}
+	SurfaceNode::shared_ptr snode = std::dynamic_pointer_cast<SurfaceNode>(node);
+	if (!snode) {
+		std::cerr << __func__ << ": Node is not a SurfaceNode.\n";
+		return;
+	}
+	obj = snode->surface();
+	mat = snode->material();
+	
     //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
-    if (mesh == NULL)
+    if (obj == NULL)
         return;
-
-    
-	ISurface* obj = const_cast<ISurface*>(mesh);
+	
 	VertexBuffer* vbo= getVBO(obj);
 	if (vbo == NULL || vbo->objectID() == 0)
 	{
@@ -139,13 +154,29 @@ void FlatRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-        
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, v));
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, n));
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(FlatVtxStruct), (GLvoid*)offsetof(FlatVtxStruct, color));
+		
+		GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
+		if (attColor >= 0) {
+			glEnableVertexAttribArray(attColor);
+			glVertexAttribPointer(attColor, 4, GL_FLOAT, GL_FALSE,
+								  sizeof(FlatVtxStruct),
+								  (GLvoid*)offsetof(FlatVtxStruct, color));
+		}
+		GLint attVtx = mat->shaderProgram()->attributeLocation("glVertex");
+		if (attVtx >= 0) {
+			glEnableVertexAttribArray(attVtx);
+			glVertexAttribPointer(attVtx, 4, GL_FLOAT, GL_FALSE,
+								  sizeof(FlatVtxStruct),
+								  (GLvoid*)offsetof(FlatVtxStruct, v));
+		}
+		GLint attNormal = mat->shaderProgram()->attributeLocation("glNormal");
+		if (attNormal >= 0) {
+			glEnableVertexAttribArray(attNormal);
+			glVertexAttribPointer(attNormal, 4, GL_FLOAT, GL_FALSE,
+								  sizeof(FlatVtxStruct),
+								  (GLvoid*)offsetof(FlatVtxStruct, n));
+		}
+		THROW_IF_GLERROR("Failed to get attribute");
     }
     
     mat->shaderProgram()->useProgram();

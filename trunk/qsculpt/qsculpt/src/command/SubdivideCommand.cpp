@@ -127,7 +127,7 @@ void SubdivideCommand::execute()
         auto node = n.lock();
         if (node->nodeType() != NT_Surface)
             continue;
-        ISurface * obj = std::dynamic_pointer_cast<SurfaceNode>(node)->surface();
+        ISurface * obj = std::static_pointer_cast<SurfaceNode>(node)->surface();
         Subdivision * subSurface = dynamic_cast<Subdivision*>(obj);
         if (subSurface) {
             qDebug() << "Subdivision::addResolutionLevel";
@@ -464,9 +464,9 @@ void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
         if (node->nodeType() != NT_Surface){
             continue;
         }
-        ISurface * s = std::dynamic_pointer_cast<SurfaceNode>(node)->surface();
-        if (dynamic_cast<Subdivision*>(s)) {
-            d_->surf = std::dynamic_pointer_cast<SurfaceNode>(node);
+		SurfaceNode::shared_ptr s = std::dynamic_pointer_cast<SurfaceNode>(node);
+        if (s) {
+            d_->surf = s;
             break;
         }
     }
@@ -521,7 +521,8 @@ void EditSubdivideCommand::paintGL(GlCanvas *c)
         glPushMatrix();
         glMultMatrixf(d_->surf->parentTransform().data());
         glMultMatrixf(d_->surf->transform().data());
-        d_->renderer.renderObject(d_->surf->surface(), d_->surf->material().get());
+		auto node = std::static_pointer_cast<SceneNode>(d_->surf);
+        d_->renderer.renderObject(node);
         glPopMatrix();
         c->enable(GL_DEPTH_TEST);
     }

@@ -254,7 +254,7 @@ void SelectCommand::selectVertices()
         if (n->nodeType() != NT_Surface)
             continue;
         
-        surface = std::dynamic_pointer_cast<SurfaceNode> (n)->surface();
+        surface = std::static_pointer_cast<SurfaceNode> (n)->surface();
         if(!surface) 
             continue;
         
@@ -301,7 +301,7 @@ void SelectCommand::selectSurface()
         if (n->nodeType() != NT_Surface)
             continue;
         
-        surface = std::dynamic_pointer_cast<SurfaceNode> (n)->surface();
+        surface = std::static_pointer_cast<SurfaceNode> (n)->surface();
         if(!surface) 
             continue;
         
@@ -351,7 +351,7 @@ void SelectCommand::selectFaces()
         if (n->nodeType() != NT_Surface)
             continue;
         
-        surface = std::dynamic_pointer_cast<SurfaceNode>(n)->surface();
+        surface = std::static_pointer_cast<SurfaceNode>(n)->surface();
         if(!surface) 
             continue;
         
@@ -405,7 +405,7 @@ void SelectCommand::unselectAll()
         if (n->nodeType() != NT_Surface)
             continue;
         
-        surface = std::dynamic_pointer_cast<SurfaceNode>(n)->surface();
+        surface = std::static_pointer_cast<SurfaceNode>(n)->surface();
         if(!surface) 
             continue;
         
