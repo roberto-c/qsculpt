@@ -20,6 +20,7 @@
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/PointRenderer.h>
 #include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/GlslProgram.h>
@@ -37,7 +38,7 @@ struct PointRenderer::Impl {
      * Draw the mesh using OpenGL VBOs.
      * The VBOs are re-build when the mesh has been changed since the last draw.
      */
-    void renderVbo(const ISurface* mesh, const Material * mat);
+	void renderObject(std::shared_ptr<SceneNode> & node);
 
     /**
      *
@@ -74,9 +75,9 @@ PointRenderer::~PointRenderer()
     BOManager::getInstance()->destroyPool(d_->name.c_str());
 }
 
-void PointRenderer::renderObject(const ISurface* mesh, const Material * mat)
+void PointRenderer::renderObject(std::shared_ptr<SceneNode> & node)
 {
-    d_->renderVbo(mesh, mat);
+	d_->renderObject(node);
 }
 
 void PointRenderer::setPointSize(float size)
@@ -89,18 +90,26 @@ float PointRenderer::pointSize()
     return d_->pointSize;
 }
 
-void PointRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
+void PointRenderer::Impl::renderObject(std::shared_ptr<SceneNode> & node)
 {
-    //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
-    if (mesh == NULL)
+	ISurface * obj = NULL;
+	std::shared_ptr<Material> mat;
+	
+	if (!node) {
+		return;
+	}
+	SurfaceNode::shared_ptr snode = std::dynamic_pointer_cast<SurfaceNode>(node);
+	if (!snode) {
+		std::cerr << __func__ << ": Node is not a SurfaceNode.\n";
+		return;
+	}
+	obj = snode->surface();
+	mat = snode->material();
+	
+	//std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
+    if (obj == NULL)
         return;
-
-//    if (!PointRenderer::Impl::mat) {
-//        PointRenderer::Impl::mat = std::make_shared<PointMaterial>();
-//        PointRenderer::Impl::mat->load();
-//    }
     
-    ISurface* obj = const_cast<ISurface*>(mesh);
 	VertexBuffer* vbo= getVBO(obj);
 	if (vbo == NULL || vbo->objectID() == 0)
 	{
@@ -123,7 +132,7 @@ void PointRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 	{
 		fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
-
+		
 		if (mat) {
 			GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
 			GLint attVtx = mat->shaderProgram()->attributeLocation("glVertex");
@@ -137,13 +146,13 @@ void PointRenderer::Impl::renderVbo(const ISurface* mesh, const Material * mat)
 			std::cerr << " Material is NULL. Unable to bind attributes.\n";
 		}
     }
-
+	
     glPointSize(pointSize);
-    //PointRenderer::Impl::mat->shaderProgram()->useProgram();
     if (mat) mat->shaderProgram()->useProgram();
     GLsizei nVertices = static_cast<GLsizei>(obj->numVertices());
     glDrawArrays(GL_POINTS, 0, nVertices);
     vao->release();
+
 }
 
 VertexBuffer* PointRenderer::Impl::getVBO(const ISurface* mesh)

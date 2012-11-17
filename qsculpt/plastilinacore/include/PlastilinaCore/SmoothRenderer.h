@@ -5,7 +5,6 @@
 #include <PlastilinaCore/BufferObject.h>
 
 
-
 class SmoothRenderer : public IRenderer
 {
     struct Impl;
@@ -14,8 +13,8 @@ class SmoothRenderer : public IRenderer
 public:
 	SmoothRenderer();
 	virtual ~SmoothRenderer();
-
-	virtual void renderObject(const ISurface* mesh, const Material * mat);	
+	
+	virtual void renderObject(std::shared_ptr<SceneNode> & node);
 };
 
 #endif /*SMOOTHRENDERER_H_*/

@@ -463,19 +463,19 @@ Document::getCamera() const
 
 Iterator<SceneNode> Document::sceneIterator()
 {
-    auto ptr = std::dynamic_pointer_cast<Document>(shared_from_this());
+    auto ptr = std::static_pointer_cast<Document>(shared_from_this());
     return Iterator<SceneNode>(new SceneIterator(ptr));
 }
 
 Iterator<SceneNode> Document::constSceneIterator() const
 {
-    auto ptr = std::dynamic_pointer_cast<const Document>(shared_from_this());
+    auto ptr = std::static_pointer_cast<const Document>(shared_from_this());
     return Iterator<SceneNode>(new SceneIterator(ptr));
 }
 
 Iterator<ISurface> Document::surfaceIterator()
 {
-    auto ptr = std::dynamic_pointer_cast<Document>(shared_from_this());
+    auto ptr = std::static_pointer_cast<Document>(shared_from_this());
     return Iterator<ISurface>(new SurfaceIterator(ptr));
 }
 

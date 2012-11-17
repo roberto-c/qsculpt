@@ -58,6 +58,11 @@ void PickingFacesRenderer::renderObject(const ISurface* mesh, GLuint objId)
     renderVbo(mesh, objId);
 }
 
+void PickingFacesRenderer::renderObject(std::shared_ptr<SceneNode> & node)
+{
+	
+}
+
 void PickingFacesRenderer::renderVbo(const ISurface* mesh, unsigned int objId)
 {
     //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();

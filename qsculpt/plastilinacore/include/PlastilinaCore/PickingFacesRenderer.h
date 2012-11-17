@@ -33,6 +33,8 @@ public:
 	
 	virtual void renderObject(const ISurface* mesh, GLuint objId);
 	
+	virtual void renderObject(std::shared_ptr<SceneNode> & node);
+	
 private:
 	void renderVbo(const ISurface* mesh, unsigned int objID);
 	void renderImmediate(const ISurface* mesh, unsigned int objID);

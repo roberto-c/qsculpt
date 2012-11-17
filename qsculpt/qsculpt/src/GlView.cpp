@@ -366,7 +366,7 @@ void GlCanvas::drawSceneNode(Scene::shared_ptr & scene,
                 s->material()->shaderProgram()->useProgram();
                 s->material()->setup(scene);
             }
-            _d->renderer->renderObject(s->surface(),s->material().get());
+			_d->renderer->renderObject(node);
         }
     }
     
@@ -536,7 +536,7 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
         auto n = it.next();
         SurfaceNode::shared_ptr s;
         if (n->nodeType() == NT_Surface) {
-            s = std::dynamic_pointer_cast<SurfaceNode> (n);
+            s = std::static_pointer_cast<SurfaceNode> (n);
             mesh = s->surface();
             //Point3 p = s->localToWorld(Point3(0,0,0));
 
@@ -581,7 +581,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
         auto n = it.next();
         SurfaceNode::shared_ptr s;
         if (n->nodeType() == NT_Surface) {
-            s = std::dynamic_pointer_cast<SurfaceNode>(n);
+            s = std::static_pointer_cast<SurfaceNode>(n);
             mesh = s->surface();
             //Point3 p = s->localToWorld(Point3(0,0,0));
 
