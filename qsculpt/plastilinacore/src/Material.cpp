@@ -19,7 +19,7 @@
  ***************************************************************************/
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Material.h>
-#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/ResourcesManager.h>
 #include <atomic>
 

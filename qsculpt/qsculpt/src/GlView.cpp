@@ -35,8 +35,8 @@
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SceneNode.h>
-#include <PlastilinaCore/GlslProgram.h>
-#include <PlastilinaCore/GlslShader.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
+#include <PlastilinaCore/opengl/GlslShader.h>
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/RendererFactory.h>
 #include <PlastilinaCore/PickingFacesRenderer.h>

@@ -24,7 +24,7 @@
 #include <PlastilinaCore/BOManager.h>
 #include <cstddef>
 #include <iostream>
-#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/Material.h>
 

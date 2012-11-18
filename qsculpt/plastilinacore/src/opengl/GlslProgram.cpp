@@ -5,7 +5,7 @@
 //  Created by Juan Cabral on 1/15/12.
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
-#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
 #include <iostream>
 
 

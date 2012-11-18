@@ -55,7 +55,7 @@ namespace Eigen {
 
 #include "PEngineTypes.h"
 
-#include "GlException.h"
+#include "opengl/GlException.h"
 
 
 #define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
