@@ -23,7 +23,7 @@
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Material.h>
-#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/material/PointMaterial.h>
 
 #define BO_POOL_NAME "PointRendererPool"

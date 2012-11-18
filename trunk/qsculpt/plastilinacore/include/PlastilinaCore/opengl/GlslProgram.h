@@ -9,7 +9,7 @@
 #ifndef qsculpt_GlslProgram_h
 #define qsculpt_GlslProgram_h
 
-#include <PlastilinaCore/GlslShader.h>
+#include <PlastilinaCore/opengl/GlslShader.h>
 
 class GlslProgram
 {

@@ -7,7 +7,7 @@
 //
 
 #include <iostream>
-#include <PlastilinaCore/GlException.h>
+#include <PlastilinaCore/opengl/GlException.h>
 
 namespace core {
     

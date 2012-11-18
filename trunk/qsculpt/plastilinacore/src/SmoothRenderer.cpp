@@ -24,8 +24,8 @@
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/Material.h>
-#include <PlastilinaCore/GlslShader.h>
-#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/opengl/GlslShader.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 #define BO_POOL_NAME "SmoothRendererPool"

@@ -2,8 +2,8 @@
 #include <cstddef>
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Color.h>
-#include <PlastilinaCore/GlslShader.h>
-#include <PlastilinaCore/GlslProgram.h>
+#include <PlastilinaCore/opengl/GlslShader.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Scene.h>
@@ -11,14 +11,32 @@
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 #define BO_POOL_NAME "WireframeRendererPool"
 
-static GLfloat g_selectedColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
-static GLfloat g_normalColor[] =   {0.8f, 0.8f, 0.8f, 1.0f};
+static Eigen::Vector4f g_selectedColor(1.0f, 0.0f, 0.0f, 1.0f);
+static Eigen::Vector4f g_normalColor(0.8f, 0.8f, 0.8f, 1.0f);
 
 typedef struct tagFlatVtxStruct
 {
     GLfloat v[4];
     GLfloat n[4];
-    GLfloat color[4];
+    GLfloat c[4];
+	
+	
+	static tagFlatVtxStruct create(Eigen::Vector3f & vtx,
+					 Eigen::Vector3f & nor,
+					 Eigen::Vector4f & col) {
+		tagFlatVtxStruct ret;
+		ret.setData(vtx, nor, col);
+		return ret;
+	}
+	
+	void setData(Eigen::Vector3f & vtx,
+				 Eigen::Vector3f & nor,
+				 Eigen::Vector4f & col) {
+		
+		v[0] = vtx[0]; v[1] = vtx[1]; v[2] = vtx[2]; v[3] = 1.0;
+		n[0] = nor[0]; n[1] = nor[1]; n[2] = nor[2]; n[3] = 0.0;
+		c[0] = col[0]; c[1] = col[1]; c[2] = col[2]; c[3] = col[3];
+	}
 } FlatVtxStruct;
 
 class RendererPrivate
@@ -106,7 +124,7 @@ void RendererPrivate::renderObject(std::shared_ptr<SceneNode> & node)
 			glEnableVertexAttribArray(attColor);
 			glVertexAttribPointer(attColor, 4, GL_FLOAT, GL_FALSE,
 								  sizeof(FlatVtxStruct),
-								  (GLvoid*)offsetof(FlatVtxStruct, color));
+								  (GLvoid*)offsetof(FlatVtxStruct, c));
 		}
 		GLint attVtx = mat->shaderProgram()->attributeLocation("glVertex");
 		if (attVtx >= 0) {
@@ -127,9 +145,7 @@ void RendererPrivate::renderObject(std::shared_ptr<SceneNode> & node)
 	
 	mat->shaderProgram()->useProgram();
     GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawArrays(GL_TRIANGLES, 0, numVertices);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawArrays(GL_LINES, 0, numVertices);
     
     vao->release();
         
@@ -168,44 +184,31 @@ void RendererPrivate::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (numFaces == 0)
         return;
     
-    size_t numVertices = numFaces*4;
-    FlatVtxStruct* vtxData = new FlatVtxStruct[numVertices];
+	std::vector<FlatVtxStruct> vtxData;
+	vtxData.reserve(numFaces*4);
     
-    //    int fcounter = 0;
-    int offset = 0;
     Iterator<Face> it = mesh->constFaceIterator();
     while(it.hasNext()) {
         auto f = it.next();
-        //        std::cerr << "face " << fcounter++;
-        Iterator<Vertex> vtxIt = f->constVertexIterator();
+		Eigen::Vector4f color = f->flags() & FF_Selected ? g_selectedColor : g_normalColor;
+
+		Vertex::shared_ptr first = NULL, prev = NULL, v = NULL;
+		Iterator<Vertex> vtxIt = f->constVertexIterator();
+		if (vtxIt.hasNext()) {
+			first = prev = vtxIt.next();
+		}
         while(vtxIt.hasNext()) {
-            auto v = vtxIt.next();
-            vtxData[offset].v[0] = v->position().x();
-            vtxData[offset].v[1] = v->position().y();
-            vtxData[offset].v[2] = v->position().z();
-			vtxData[offset].v[3] = 1;
-            
-            vtxData[offset].n[0] = v->normal().x();
-            vtxData[offset].n[1] = v->normal().y();
-            vtxData[offset].n[2] = v->normal().z();
-			vtxData[offset].n[3] = 0;
-            
-            if (f->flags() & FF_Selected) {
-                memcpy(vtxData[offset].color, g_selectedColor,
-                       sizeof(g_selectedColor)) ;
-            }
-            else
-            {
-                memcpy(vtxData[offset].color, g_normalColor,
-                       sizeof(g_normalColor)) ;
-            }
-            offset++;
+            v = vtxIt.next();
+			vtxData.push_back(FlatVtxStruct::create(prev->position(), prev->normal(), color));
+			vtxData.push_back(FlatVtxStruct::create(v->position(), v->normal(), color));
+			std::swap(prev, v);
         }
+		if (first && prev) {
+			vtxData.push_back(FlatVtxStruct::create(prev->position(), prev->normal(), color));
+			vtxData.push_back(FlatVtxStruct::create(first->position(), first->normal(), color));
+		}
     }
-    GLuint bufferSize = static_cast<GLuint>(numVertices*sizeof(FlatVtxStruct));
-    vbo->setBufferData((GLvoid*)vtxData, bufferSize);
-    
-    delete [] vtxData;
-    
-    //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
+    GLuint bufferSize = static_cast<GLuint>(vtxData.size() * sizeof(FlatVtxStruct));
+    vbo->setBufferData((GLvoid*)vtxData.data(), bufferSize);
+
 }
