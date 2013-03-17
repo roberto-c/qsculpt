@@ -43,7 +43,7 @@ public:
     typedef Face* weak_ptr;
     typedef Face* Ptr;
     
-    typedef unsigned long size_t;
+    typedef unsigned int size_t;
     
 private:
     ISurface*           _surface; // 4

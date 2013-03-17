@@ -19,6 +19,15 @@
 class Edge;
 class Face;
 
+struct VertexHandle {
+	typedef uint32_t size_t;
+	
+	size_t iid() const { return _id; }
+	
+protected:
+	size_t	_id;
+};
+
 enum VertexFlags {
     VF_None     = 0,
     VF_Selected = 0x00000001, /*< Vertex is selected*/
@@ -29,14 +38,14 @@ enum VertexFlags {
     VF_ALL      = 0xFFFFFFFF
 };
 
-class Vertex
+class Vertex : public VertexHandle
 {
 public:
     typedef Vertex*   shared_ptr;
     typedef Vertex*   weak_ptr;
     typedef Vertex*   Ptr;
     
-    typedef uint        size_t;
+    typedef VertexHandle::size_t        size_t;
     
 private:
     static std::atomic_int NEXT_ID;
@@ -44,7 +53,6 @@ private:
     Point3        _position; // 12
     Vector3       _normal;  // 12
     Color         _color;   // 12
-    size_t        _id;      // 4
     VertexFlags   _flags;   // 4
     Edge        * _he;      // 8
     void        * _userData; // 8
@@ -72,11 +80,6 @@ public:
      * vertex.
      */
     Vertex(const Vertex&);
-
-    /**
-     * Gets the instance id of the vertex.
-     */
-    size_t iid() const { return _id; }
 
     /**
      * Gets / sets the position of the vertex

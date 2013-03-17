@@ -68,7 +68,7 @@ int SubdivisionClosestPointTest::test() {
     std::cerr << "Search for : " << toString(p);
     Point3 p2 = node1->worldToLocal(p);
     std::cerr << "P2 : " << toString(p2);
-    int vtxiid = node1->surface()->getClosestPointAtPoint(p2);
+    size_t vtxiid = node1->surface()->getClosestPointAtPoint(p2);
     std::cerr << "Node1 Vertex IID: " << vtxiid;
     Point3 p3 = node2->worldToLocal(p);
     std::cerr << "P3 : " << toString(p3);
@@ -98,7 +98,7 @@ void SubdivisionClosestPointTest::printSceneNode(SceneNode::shared_ptr node, con
     std::cout << indent << node->name() << std::endl;
     
     if (node->nodeType() == NT_Surface) {
-        SurfaceNode::shared_ptr surf = std::dynamic_pointer_cast<SurfaceNode>(node);
+        SurfaceNode::shared_ptr surf = std::static_pointer_cast<SurfaceNode>(node);
         Iterator<Vertex> vtxIt = surf->surface()->constVertexIterator();
         while (vtxIt.hasNext()) {
             auto v = vtxIt.next();

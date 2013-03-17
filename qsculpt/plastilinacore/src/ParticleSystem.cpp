@@ -20,6 +20,7 @@
 #include <PlastilinaCore/ParticleSystem.h>
 #include <PlastilinaCore/Particle.h>
 #include <PlastilinaCore/IIntegrator.h>
+#include <PlastilinaCore/Vertex.h>
 
 
 #define MAX_NUM_PARTICLES (100)
@@ -82,6 +83,16 @@ namespace physics {
     void ParticleSystem::addParticle(Particle *p) {
         if (p) _d->particles.push_back(*p);
     }
+	
+	void ParticleSystem::addParticle(Vertex * vtx, double mass, Eigen::Vector4f v) {
+		if (vtx) {
+			Particle * p = new Particle();
+			p->v = v;
+			p->invm = 1 / mass;
+			p->iid = vtx->iid();
+			p->x = Vector4(vtx->position().x(),vtx->position().y(),vtx->position().z(),1.0f);
+		}
+	}
     
     void ParticleSystem::step(double time) {
         _d->step(time);

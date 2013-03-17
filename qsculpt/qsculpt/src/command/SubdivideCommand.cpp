@@ -238,7 +238,7 @@ void SubdivideCommand::Impl::splitEdges(ISurface& s)
 void SubdivideCommand::Impl::createFaces(ISurface& s)
 {
     int faceCounter = 0;
-    std::vector<size_t> vtxIndex, faceVtxIID;
+    std::vector<Vertex::size_t> vtxIndex, faceVtxIID;
     vtxIndex.reserve(10);
     faceVtxIID.reserve(4);
     Iterator<Face> faceIt = s.faceIterator();

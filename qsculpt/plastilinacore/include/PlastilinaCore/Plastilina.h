@@ -101,4 +101,17 @@ namespace std
     };
 }
 
+enum PlastilinaSubsystem {
+	PS_OPENGL  		= 0x0001,
+	PS_OPENCL 		= 0x0002
+};
+
+class PlastilinaEngine
+{
+public:
+	static bool initialize(uint subsystem);
+	
+	static bool shutdown();
+};
+
 #endif /* qsculpt_Plastilina_h */

@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <PlastilinaCore/ISurface.h>
 
 static std::atomic_int NEXTID;
 
@@ -428,7 +429,10 @@ void SurfaceNode::setMaterial(const std::shared_ptr<Material> & mat)
     material_ = mat;
 }
 
-
+void SurfaceNode::render(const RenderState * state) const
+{
+	this->surface_->renderable()->render(state);
+}
 
 LightNode::LightNode(const std::string & name)
 : SceneNode(name)

@@ -26,6 +26,8 @@ public:
     virtual void unload();
     
     virtual void setup(const std::shared_ptr<SceneNode> & doc);
+	
+	virtual void setup(const std::shared_ptr<const SceneNode> & doc);
     
 private:
     struct Impl;
