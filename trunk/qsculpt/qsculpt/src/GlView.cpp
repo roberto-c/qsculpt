@@ -175,7 +175,14 @@ struct GlCanvas::Impl {
         delete selectionRenderer;
         selectionRenderer = NULL;
     }
+	
+	void setupShaderCommonParams();
 };
+
+void GlCanvas::Impl::setupShaderCommonParams()
+{
+
+}
 
 GlCanvas::GlCanvas(DocumentView* _parent)
 : QGLWidget(_parent), _d(new Impl)
@@ -342,11 +349,7 @@ void GlCanvas::drawScene(Scene::shared_ptr scene)
         return;
     
     try {
-        Iterator<SceneNode> it = scene->constIterator();
-        while (it.hasNext()) {
-            auto n = it.next();
-            drawSceneNode(scene, n);
-        }
+        scene->render();
     } catch(core::GlException & e) {
         std::cerr   << "GLException: " << e.what() << std::endl
         << e.error() << ": " << e.errorString() << std::endl;
@@ -356,26 +359,7 @@ void GlCanvas::drawScene(Scene::shared_ptr scene)
 void GlCanvas::drawSceneNode(Scene::shared_ptr & scene,
                              SceneNode::shared_ptr & node)
 {
-    SurfaceNode::shared_ptr s;
     
-    if (node->nodeType() == NT_Surface)
-    {
-        auto s = std::dynamic_pointer_cast<SurfaceNode>(node);
-        if (s) {
-            if (s->material() && s->material()->shaderProgram()) {
-                s->material()->shaderProgram()->useProgram();
-                s->material()->setup(scene);
-            }
-			_d->renderer->renderObject(node);
-        }
-    }
-    
-    Iterator<SceneNode> it = node->iterator();
-    while(it.hasNext())
-    {
-        auto n = it.next();
-        drawSceneNode(scene, n);
-    }
 }
 
 void GlCanvas::drawBoundingBox(const ISurface* mesh)
@@ -542,7 +526,7 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
 
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            g_picking.renderObject(mesh, objId);
+            g_picking.renderObject(n);
             glReadPixels(x, _d->viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)&d);
             
             if (d == objId)
@@ -553,6 +537,7 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
 
     }
 
+	
     return l;
 }
 
@@ -587,7 +572,7 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
 
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            g_pickingVertices.renderObject(mesh, objId);
+            g_pickingVertices.renderObject(n);
             glReadPixels(x - halfWidth, _d->viewport[3]- (y + halfHeight),
                          width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)d);
             

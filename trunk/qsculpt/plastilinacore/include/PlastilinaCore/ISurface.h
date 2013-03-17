@@ -26,6 +26,7 @@
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/Face.h>
 #include <PlastilinaCore/geometry/Aabb.h>
+#include <PlastilinaCore/HEdge.h>
 
 
 /*
@@ -33,6 +34,8 @@
  */
 class Color;
 class Scene;
+class IRenderer;
+class IRenderable;
 
 /**
 Interface that every 3D object should implement.
@@ -42,6 +45,7 @@ Interface that every 3D object should implement.
 class ISurface {
     
 public:
+	typedef uint32_t size_t;
     typedef std::shared_ptr<ISurface>   shared_ptr;
     typedef std::weak_ptr<ISurface>     weak_ptr;
     typedef std::unique_ptr<ISurface>   Ptr;
@@ -64,12 +68,22 @@ public:
     virtual void setScene(Scene* scene) = 0;
 
     virtual Scene* scene() const = 0;
-        
+	
+	/**
+	 * Returns the renderer to use to display this surface.
+	 */
+	virtual const IRenderable* renderable() const = 0;
+	
     /**
      * Returns the bounding box of the object.
      *
      */
     virtual const geometry::AABB& boundingBox() const = 0;
+	
+	/**
+	 *
+	 */
+	// virtual const geometry::Sphere& boundingSphere() const = 0;
 
     /**
     * Sets the object base color. Used as vertex color, line color, shading
@@ -114,7 +128,7 @@ public:
      *
      * @return ID of the new point.
      */
-    virtual size_t addVertex(const Point3& point) = 0;
+    virtual Vertex::size_t addVertex(const Point3& point) = 0;
 
     /**
      * Add vertex v to this object. The object will mantain the reference
@@ -125,7 +139,7 @@ public:
      *
      * @return the id of the vertex inside the object.
      */
-    virtual size_t addVertex(Vertex* v) = 0;
+    virtual Vertex::size_t addVertex(Vertex* v) = 0;
 
     /**
      * Remove a point from the object. If the point form part of a
@@ -133,32 +147,37 @@ public:
      *
      * @param id ID of the point to delete.
      */
-    virtual void removeVertex( size_t id) = 0;
+    virtual void removeVertex( Vertex::size_t id) = 0;
 
     /**
      * Returns the vertex with the instance ID iid.
      */
-    virtual Vertex* vertex(size_t iid) = 0;
+    virtual Vertex* vertex(Vertex::size_t iid) = 0;
     
     /**
      * Returns the vertex with the instance ID iid.
      */
-    virtual const Vertex* vertex(size_t iid) const = 0;
+    virtual const Vertex* vertex(Vertex::size_t iid) const = 0;
 
     /**
      * Gets the number of vertices
      */
-    virtual size_t numVertices() const = 0;
+    virtual Vertex::size_t numVertices() const = 0;
 
     /**
      *
      */
-    virtual size_t addEdge(const Edge& edge) = 0;
+    virtual Edge::size_t addEdge(const Edge& edge) = 0;
 
     /**
      *
      */
-    virtual size_t addEdge(size_t v1, size_t v2) = 0;
+    virtual Edge::size_t addEdge(Vertex::size_t v1, Vertex::size_t v2) = 0;
+	
+	/**
+	 *
+	 */
+	virtual Edge::size_t numEdges() const = 0;
 
     /**
      * Add a triangle to the object. The triangle is formed by the vertices
@@ -170,12 +189,13 @@ public:
      *
      * @return triangle ID
      */
-    virtual size_t addFace( const std::vector<size_t>& vertexIndexes )=0;
+    virtual Face::size_t addFace( const std::vector<Vertex::size_t>& vertexIndexes )=0;
 
     /**
      * Replace a triangle with new indices to existing points.
      */
-    virtual void replaceFace(size_t index, const std::vector<size_t>& vertexIndexList)=0;
+    virtual void replaceFace(Face::size_t index,
+							 const std::vector<Vertex::size_t>& vertexIndexList)=0;
 
     /**
      * Remove the triangle from the object. The points or vertices that
@@ -184,34 +204,34 @@ public:
      *
      * @param id triangle ID to remove.
      */
-    virtual void removeFace( size_t id) =0;
+    virtual void removeFace( Face::size_t id) =0;
 
     /**
      * Returns the number of faces that the object has.
      *
      * TODO: This may not belong here as is specific to mesh surfaces.
      */
-    virtual size_t numFaces() const = 0;
+    virtual Face::size_t numFaces() const = 0;
 
     /**
      * Returns the face at the position index.
      */
-    virtual Face* face(size_t index) = 0;
+    virtual Face* face(Face::size_t index) = 0;
 
     /**
      *
      */
-    virtual size_t getFaceIndexAtPoint(const Point3& p) const = 0;
+    virtual Face::size_t getFaceIndexAtPoint(const Point3& p) const = 0;
 
     /**
      *
      */
-    virtual size_t getClosestPointAtPoint(const Point3 &p) const = 0;
+    virtual Vertex::size_t getClosestPointAtPoint(const Point3 &p) const = 0;
 
     /**
      *
      */
-    virtual std::vector<size_t> getPointsInRadius(const Point3 &p, float radius) const = 0;
+    virtual std::vector<Vertex::size_t> getPointsInRadius(const Point3 &p, float radius) const = 0;
 
     /**
      *
@@ -241,12 +261,12 @@ public:
     /**
      *
      */
-    virtual std::vector<size_t> selectedPoints() const = 0;
+    virtual std::vector<Vertex::size_t> selectedPoints() const = 0;
     
     /*
      *
      */
-    virtual void setSelectedPoints(const std::vector<size_t>& indicesArray) = 0;
+    virtual void setSelectedPoints(const std::vector<Vertex::size_t>& indicesArray) = 0;
 
     /**
      * Returns a vertex iterator to traverse over all the vertices in this

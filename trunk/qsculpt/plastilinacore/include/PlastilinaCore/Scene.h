@@ -56,17 +56,22 @@ public:
     /**
      *
      */
-    SceneNode::shared_ptr findByName(const std::string& name);
+    SceneNode::shared_ptr findByName(const std::string& name) const;
 
     /**
      * Returns the node with the specified instance ID. NULL if not found.
      */
-    SceneNode::shared_ptr findByIID(uint iid);
+    SceneNode::shared_ptr findByIID(uint iid) const;
     
+	/**
+	 *
+	 */
+	CameraNode::shared_ptr createCamera();
+	
     /**
      * Get first camera node.
      */
-    CameraNode::shared_ptr getCamera();
+    CameraNode::shared_ptr getCamera() const;
 
     
     /**
@@ -81,6 +86,11 @@ public:
      */
     bool intersects(const geometry::AABB &box,
                     data::ICollection<SceneNode::weak_ptr> *col);
+	
+	/**
+	 * Render all scene
+	 */
+	void render() const;
     
 private:
     class SceneNodeIterator;

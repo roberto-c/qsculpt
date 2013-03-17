@@ -22,6 +22,7 @@
 
 #include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/IRenderer.h>
+#include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 class ISurface;
 
@@ -30,20 +31,17 @@ class PickingFacesRenderer
 public:	
 	PickingFacesRenderer();
 	virtual ~PickingFacesRenderer();
-	
-	virtual void renderObject(const ISurface* mesh, GLuint objId);
+
 	
 	virtual void renderObject(std::shared_ptr<SceneNode> & node);
 	
 private:
-	void renderVbo(const ISurface* mesh, unsigned int objID);
-	void renderImmediate(const ISurface* mesh, unsigned int objID);
-	
+	VAO* getVAO(ISurface* mesh);
 	VertexBuffer* getVBO(ISurface* mesh);
 	VertexBuffer* getFlatVBO(ISurface* mesh);
 	
-	void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo, GLuint objId);
-	void fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vbo,GLuint objId);
+	void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
+	void fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
 };
 
 #endif

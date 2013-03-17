@@ -23,6 +23,7 @@
 #include <vector>
 #include <memory>
 #include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/IRenderer.h>
 #include <PlastilinaCore/Vector.h>
 
 class ISurface;
@@ -212,15 +213,15 @@ private:
     friend class SceneNodeIterator;
 };
 
-class SurfaceNode : public SceneNode
+class SurfaceNode : public SceneNode, public IRenderable
 {
     ISurface *surface_;
     std::shared_ptr<Material> material_;
 
 public:
     typedef std::shared_ptr<SurfaceNode>        shared_ptr;
-    typedef std::weak_ptr<const SurfaceNode>    weak_ptr;
-    typedef std::shared_ptr<SurfaceNode>        const_shared_ptr;
+    typedef std::weak_ptr<SurfaceNode>    		weak_ptr;
+    typedef std::shared_ptr<const SurfaceNode>  const_shared_ptr;
     typedef std::weak_ptr<const SurfaceNode>    const_weak_ptr;
     typedef std::unique_ptr<SurfaceNode>        Ptr;
     
@@ -266,6 +267,8 @@ public:
      * Set the material used for this surface.
      */
     void setMaterial(const std::shared_ptr<Material> & material);
+	
+	virtual void render(const RenderState * state) const;
     
 private:
     // disabled copy semantics for now
@@ -292,10 +295,10 @@ public:
 class CameraNode : public SceneNode
 {
 public:
-    typedef std::shared_ptr<CameraNode>        shared_ptr;
-    typedef std::weak_ptr<const CameraNode>    weak_ptr;
-    typedef std::shared_ptr<CameraNode>        const_shared_ptr;
-    typedef std::weak_ptr<const CameraNode>    const_weak_ptr;
+    typedef std::shared_ptr<CameraNode>       	shared_ptr;
+    typedef std::weak_ptr<CameraNode>    		weak_ptr;
+    typedef std::shared_ptr<const CameraNode> 	const_shared_ptr;
+    typedef std::weak_ptr<const CameraNode>		const_weak_ptr;
     
     CameraNode(const std::shared_ptr<Camera> & cam = NULL,
                const std::string & name = "Camera");

@@ -33,7 +33,7 @@ public:
     typedef Edge*   weak_ptr;
     typedef Edge*   Ptr;
 
-    typedef unsigned long    size_t;
+    typedef uint    size_t;
     
 private:
     static std::atomic_int NEXT_ID;

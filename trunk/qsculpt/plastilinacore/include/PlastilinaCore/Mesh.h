@@ -23,6 +23,7 @@
 #include <vector>
 #include <utility>
 #include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/IRenderer.h>
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/geometry/Aabb.h>
 
@@ -33,7 +34,7 @@ class SubdivisionScheme;
 /**
  * Class that implement subdivision surfaces.
  */
-class Mesh : public ISurface
+class Mesh : public ISurface, public IRenderable
 {
     struct Impl;
     std::unique_ptr<Impl> _d;
@@ -49,33 +50,35 @@ public:
     virtual void setChanged(bool val);
     virtual void setScene(Scene* scene) ;
     virtual Scene* scene() const;
+	virtual const IRenderable* renderable() const;
     virtual const geometry::AABB& boundingBox() const;
     virtual void setColor(const Color& color);
     virtual Color color() const;
     virtual void setSelected(bool val);
     virtual bool isSelected() const;
-    virtual size_t addVertex(const Point3& point);
-    virtual size_t addVertex(Vertex* v);
-    virtual void removeVertex(size_t id);
-    virtual Vertex* vertex(size_t index);
-    virtual const Vertex* vertex(size_t index) const;
-    virtual size_t numVertices() const;
-    virtual size_t addEdge(const Edge& edge);
-    virtual size_t addEdge(size_t v1, size_t v2);
-    virtual size_t addFace(const std::vector<size_t>& vertexIndexList);
-    virtual void replaceFace(size_t index, const std::vector<size_t>& vertexIndexList);
-    virtual void removeFace( size_t id);
-    virtual size_t numFaces() const;
-    virtual Face* face(size_t index);
-    virtual size_t getFaceIndexAtPoint(const Point3& p) const;
-    virtual size_t getClosestPointAtPoint(const Point3 &p) const;
-    virtual std::vector<size_t> getPointsInRadius(const Point3 &p, float radius) const;
-    virtual void adjustPointNormal(size_t index);
+    virtual Vertex::size_t addVertex(const Point3& point);
+    virtual Vertex::size_t addVertex(Vertex* v);
+    virtual void removeVertex(Vertex::size_t id);
+    virtual Vertex* vertex(Vertex::size_t index);
+    virtual const Vertex* vertex(Vertex::size_t index) const;
+    virtual Vertex::size_t numVertices() const;
+    virtual Edge::size_t addEdge(const Edge& edge);
+    virtual Edge::size_t addEdge(Vertex::size_t v1, Vertex::size_t v2);
+	virtual Edge::size_t numEdges() const;
+    virtual Face::size_t addFace(const std::vector<Vertex::size_t>& vertexIndexList);
+    virtual void replaceFace(Face::size_t index, const std::vector<Vertex::size_t>& vertexIndexList);
+    virtual void removeFace( Face::size_t id);
+    virtual Face::size_t numFaces() const;
+    virtual Face* face(Face::size_t index);
+    virtual Face::size_t getFaceIndexAtPoint(const Point3& p) const;
+    virtual Vertex::size_t getClosestPointAtPoint(const Point3 &p) const;
+    virtual std::vector<Vertex::size_t> getPointsInRadius(const Point3 &p, float radius) const;
+    virtual void adjustPointNormal(Vertex::size_t index);
     virtual void lock() const;
     virtual void unlock() const;
     
-    virtual std::vector<size_t> selectedPoints() const;
-    virtual void setSelectedPoints(const std::vector<size_t>& indicesArray);
+    virtual std::vector<Vertex::size_t> selectedPoints() const;
+    virtual void setSelectedPoints(const std::vector<Vertex::size_t>& indicesArray);
     
     virtual Iterator<Vertex> vertexIterator();
     virtual Iterator<Vertex> constVertexIterator() const;
@@ -86,6 +89,10 @@ public:
     
     
     // End IObject3D interface
+	
+	// IRenderable
+	virtual void 						render(const RenderState * state) const;
+    // End IRendeable
     
     //const Object3D& operator=(const Object3D& obj);
     
@@ -104,7 +111,7 @@ protected:
     /**
      *
      */
-    size_t addEdge(Vertex* v1, Vertex* v2);
+	Edge::size_t addEdge(Vertex* v1, Vertex* v2);
     
     
     // inner classes
@@ -117,5 +124,8 @@ protected:
     friend class FaceIterator;
     friend class EdgeIterator;
 };
+
+
+
 #endif
 

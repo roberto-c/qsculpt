@@ -71,6 +71,8 @@ public:
      * resources, like shaders, textures, lighting parameters, etc.
      */
     virtual void setup(const std::shared_ptr<SceneNode> & doc) = 0;
+	
+	virtual void setup(const std::shared_ptr<const SceneNode> & doc) = 0;
     
     /**
      * Gets the shader program used for implementing the material.
@@ -148,6 +150,7 @@ public:
     virtual void load();
     virtual void unload();
     virtual void setup(const std::shared_ptr<SceneNode> & doc);
+	virtual void setup(const std::shared_ptr<const SceneNode> & doc);
     
     void setColor(const Eigen::Vector4f & c);
     Eigen::Vector4f color();

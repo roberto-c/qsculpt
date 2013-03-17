@@ -72,7 +72,7 @@ private:
     double              _radius;
     double              _depth;
     BrushAction         _action;
-    std::vector<size_t> _vertexSelected;
+    std::vector<Vertex::size_t> _vertexSelected;
     BrushProperties*    _propertiesWindow;
     DirtyFaceMap        _previousState;
     bool                _undoCalled;

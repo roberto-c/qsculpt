@@ -23,6 +23,8 @@
 
 #include <PlastilinaCore/Utilities.h>
 
+class Vertex;
+
 namespace physics {
     class Particle;
     
@@ -42,6 +44,11 @@ namespace physics {
          */
         void addParticle(Particle *p);
         
+		/**
+		 *
+		 */
+		void addParticle(Vertex * vtx, double mass, Eigen::Vector4f v);
+		
         /**
          *
          */

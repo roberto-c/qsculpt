@@ -16,6 +16,7 @@
 #include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/Octree.h>
 #include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/material/PhongMaterial.h>
 
 #include "command/MeshEditCommands.h"
 #include "QSculptWindow.h"
@@ -57,6 +58,8 @@ void AddSurfaceCommand::execute()
         if (cmdArg1.isEmpty()) cmdArg1 = "Unamed";
         _surface = std::make_shared<SurfaceNode>(cmdArg1.toStdString(), new Box);
         _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
+		auto material = std::make_shared<PhongMaterial>();
+		_surface->setMaterial(material);
         QModelIndexList list = treewdt->selectedIndexes();
         if (list.length() == 1) {
             QModelIndex index = list.first();
@@ -389,7 +392,7 @@ void TestCommand::Impl::setup() {
     vertexID.push_back(surf->addVertex(Point3(0.0f, 0.5f, 0))); // 7
     vertexID.push_back(surf->addVertex(Point3(0.5f, 0.5f, 0))); // 8
     
-    std::vector<size_t> face;
+    std::vector<Face::size_t> face;
     face.clear();
     face.push_back(vertexID[0]);
     face.push_back(vertexID[1]);

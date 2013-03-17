@@ -21,13 +21,37 @@
 
 #include <PlastilinaCore/Picking.h>
 
-#include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Material.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/opengl/GlslShader.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
+#include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 #define BO_POOL_NAME			"ObjectPickingPool"
 #define BO_VERTEX_POOL_NAME		"VertexPickingPool"
 
 char* intToHexStr(unsigned int d);
+
+typedef struct tagVertexStruct {
+	GLfloat	v[4];
+	GLfloat	c[4];
+} VertexStruct;
+
+VertexStruct vertexStructFromVector(Vector3 & v, Color & c) {
+	VertexStruct ret;
+	ret.v[0] = v[0];
+	ret.v[1] = v[1];
+	ret.v[2] = v[2];
+	ret.v[3] = 1.0;
+	ret.c[0] = c.data()[0];
+	ret.c[1] = c.data()[1];
+	ret.c[2] = c.data()[2];
+	ret.c[3] = c.data()[3];
+	return ret;
+}
 
 PickingObjectRenderer::PickingObjectRenderer()
 {
@@ -71,55 +95,82 @@ char* intToHexStr(unsigned int d)
     return output;
 }
 
-void PickingObjectRenderer::renderObject(const ISurface* mesh, GLuint objId)
+void PickingObjectRenderer::renderObject(std::shared_ptr<SceneNode> & node)
 {
-    renderVbo(mesh, objId);
+    renderVbo(node);
 }
 
-void PickingObjectRenderer::renderImmediate(const ISurface* mesh, unsigned int /*objID*/)
-{    
-
-}
-
-void PickingObjectRenderer::renderVbo(const ISurface* mesh, unsigned int objID)
+void PickingObjectRenderer::renderVbo(std::shared_ptr<SceneNode> & node)
 {
-    //std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
-    if (mesh == NULL)
-        return;
+	ISurface * obj = NULL;
+	std::shared_ptr<Material> mat;
+	
+	if (!node) {
+		return;
+	}
+	SurfaceNode::shared_ptr snode = std::dynamic_pointer_cast<SurfaceNode>(node);
+	if (!snode) {
+		std::cerr << __func__ << ": Node is not a SurfaceNode.\n";
+		return;
+	}
+	obj = snode->surface();
+	mat = snode->material();
+	//std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
+	if (obj == NULL || mat == NULL)
+		return;
+	
+	VertexBuffer* vbo= getVBO(obj);
+	if (vbo == NULL || vbo->objectID() == 0)
+	{
+		std::cerr << "Failed to create VBO."  << std::endl;
+		return;
+	}
+    VAO* vao = getVAO(obj);
+    if (vao == NULL || vao->objectID() == 0)
+	{
+		std::cerr << "Failed to create VAO."  << std::endl;
+		return;
+	}
 
-    ISurface* obj = const_cast<ISurface*>(mesh);
-    VertexBuffer *vbo = getVBO(obj);
-    if (vbo == NULL || vbo->objectID() == 0)
-    {
-        std::cerr << "Failed to create VBO. Fallback to immediate mode" ;
-        renderImmediate(mesh, objID);
-        return;
+	vao->bind();
+    vbo->bind();
+	if (vbo->needUpdate())
+	{
+		fillVertexBuffer(obj, vbo);
+		vbo->setNeedUpdate(false);
+		
+		GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
+		if (attColor >= 0) {
+			glEnableVertexAttribArray(attColor);
+			glVertexAttribPointer(attColor, 4, GL_FLOAT, GL_FALSE,
+								  sizeof(VertexStruct),
+								  (GLvoid*)offsetof(VertexStruct, c));
+		}
+		GLint attVtx = mat->shaderProgram()->attributeLocation("glVertex");
+		if (attVtx >= 0) {
+			glEnableVertexAttribArray(attVtx);
+			glVertexAttribPointer(attVtx, 4, GL_FLOAT, GL_FALSE,
+								  sizeof(VertexStruct),
+								  (GLvoid*)offsetof(VertexStruct, v));
+		}
+		THROW_IF_GLERROR("Failed to get attribute");
     }
-
-    if (vbo->needUpdate())
-    {
-        fillVertexBuffer(obj, vbo);
-        vbo->setNeedUpdate(false);
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo->objectID());
-//    glVertexPointer(3, GL_FLOAT, 6*sizeof(GLfloat), NULL);
-//
-//    glPushAttrib(GL_DEPTH_BUFFER_BIT|GL_POINT_BIT|GL_ENABLE_BIT);
-//    glShadeModel(GL_FLAT);
-//
-//    glEnableClientState(GL_VERTEX_ARRAY);
-
-    glPointSize(1.0f);
-//    glColor4ub( objID & 0xff,(objID>>8) & 0xff, (objID>>16) & 0xff, (objID>>24) & 0xff);
+    mat->shaderProgram()->useProgram();
+    GLsizei numVertices = vbo->getBufferSize() / sizeof(VertexStruct);
+    glDrawArrays(GL_TRIANGLES, 0, numVertices);
     
-    GLuint nElements = static_cast<GLuint>( mesh->numFaces()*4 );
-//    glDrawArrays(GL_QUADS, 0, nElements);
+    vao->release();
+}
 
-//    glPopAttrib();
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-//    glDisableClientState(GL_VERTEX_ARRAY);
+VAO* PickingObjectRenderer::getVAO(ISurface* mesh)
+{
+	VAO* vao = NULL;
+	vao = BOManager::getInstance()->getVAO(BO_POOL_NAME, mesh);
+	if (vao == NULL)
+	{
+		vao = BOManager::getInstance()->createVAO(BO_POOL_NAME, mesh);
+	}
+	return vao;
 }
 
 VertexBuffer* PickingObjectRenderer::getVBO(ISurface* mesh)
@@ -141,13 +192,11 @@ void PickingObjectRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     size_t numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
+	
+	Color c = Color::fromUintRGBA(mesh->iid());
 
-    size_t numVertices = numFaces*4;
-    size_t numFloats = numVertices*6;	// num floats = Faces * Num of point by face
-    //				* Num elements of point
-    GLfloat* vtxData = new GLfloat[numFloats]; // Make room for vertices and normals data
+	std::vector<VertexStruct> vtxData(numFaces*4);
 
-    int offset = 0;
     Iterator<Face> it = mesh->constFaceIterator();
     while(it.hasNext()) {
         auto f = it.next();
@@ -156,18 +205,10 @@ void PickingObjectRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
         while(vtxIt.hasNext()) {
             auto v = vtxIt.next();
             std::cerr << "Vertex:" << toString(v->position());
-            vtxData[offset++] = v->position().x();
-            vtxData[offset++] = v->position().y();
-            vtxData[offset++] = v->position().z();
-            
-            vtxData[offset++] = v->normal().x();
-            vtxData[offset++] = v->normal().y();
-            vtxData[offset++] = v->normal().z();
+			vtxData.push_back(vertexStructFromVector(v->position(), c));
         }        
     }
 
-    GLuint sizeBuffer = static_cast<GLuint>(numFloats*sizeof(GLfloat));
-    vbo->setBufferData((GLvoid*)vtxData, sizeBuffer);
-
-    delete [] vtxData;
+    GLuint sizeBuffer = static_cast<GLuint>(vtxData.size()*sizeof(VertexStruct));
+    vbo->setBufferData((GLvoid*)vtxData.data(), sizeBuffer);
 }

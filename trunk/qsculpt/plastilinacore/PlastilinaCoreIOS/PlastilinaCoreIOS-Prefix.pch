@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'PlastilinaCoreIOS' target in the 'PlastilinaCoreIOS' project
+//
+
+#ifdef __OBJC__
+	#import <Foundation/Foundation.h>
+#endif

@@ -1,0 +1,49 @@
+Class hierarchy
+
+SceneNode:
+    - Base class for each type node for the scene graph.
+
+Attributes:
+    - name
+    - type : type of node. Ex. Surface, group, material.
+    - transform : transformation matrix. Encodes position, orientation and scaling
+    - children: list of children nodes
+
+Operations:
+    - (SceneNode)searchByName
+    
+===============================================================================
+Scene:
+    - Inherits SceneNode. Used as root node to the scene graph.
+
+Attributes
+    - 
+
+Operation
+    - (SceneNode)searchByName:(string)name 
+        Recursive funtion to find a SceneNode by its name.
+        
+    - (vector<SceneNode>)nodesInBox:(Rectangle)box
+        Gets a list of nodes contained inside the box;
+        
+===============================================================================        
+SurfaceNode:
+    - Inherits SceneNode. Node that holds a surface object.
+    
+Attributes:
+    - surface: surface contained in the node.
+    
+Operations:
+    -
+    
+===============================================================================
+RenderingSystem:
+    - Prepares data to transfer to GPU.
+    - Offers different kind of rendering. Points, wireframe, flat, smooth, 
+      textured.
+      
+Attributes:
+    - 
+    
+Operations:
+    - (bool)registerRender:

@@ -14,6 +14,11 @@
 class GlslProgram
 {
 public:
+	/**
+	 * Static method to return the active shader program.
+	 */
+	static GlslProgram * currentProgram();
+	
     GlslProgram();
     
     ~GlslProgram();
@@ -21,7 +26,7 @@ public:
     /**
      * Name or id of the shader program as known to OpenGL.
      */
-    GLint programID() const;
+    GLuint programID() const;
     
     /**
      *
@@ -221,6 +226,9 @@ public:
     void setUniform(GLint index, const Eigen::Matrix4f & val);
     
 private:
+	GlslProgram(GLuint pid);
+	void setProgramID(GLuint pid);
+	
 	struct Impl;
 	std::unique_ptr<Impl> d;
 };

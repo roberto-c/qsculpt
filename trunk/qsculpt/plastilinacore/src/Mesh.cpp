@@ -29,6 +29,7 @@
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/HEdge.h>
+#include <PlastilinaCore/IRenderer.h>
 #include <PlastilinaCore/geometry/Aabb.h>
 #include <PlastilinaCore/Color.h>
 
@@ -40,11 +41,11 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
-typedef std::pair<size_t, size_t>               VtxPair;
-typedef std::unordered_map<size_t, Vertex*>     VertexCollection;
-typedef std::unordered_map<size_t, Edge*>       EdgesCollection;
-typedef std::unordered_map<VtxPair, size_t>     VtxPairEdgeMap;
-typedef std::map<size_t, Face*>                 FacesCollection;
+typedef std::pair<Vertex::size_t, Vertex::size_t>               VtxPair;
+typedef std::unordered_map<Vertex::size_t, Vertex*>     VertexCollection;
+typedef std::unordered_map<Edge::size_t, Edge*>       EdgesCollection;
+typedef std::unordered_map<VtxPair, Edge::size_t>     VtxPairEdgeMap;
+typedef std::map<Face::size_t, Face*>                 FacesCollection;
 
 
 struct VertexPool {
@@ -56,7 +57,7 @@ static std::atomic_int NEXT_ID;
 
 struct Mesh::Impl {
     /** Instance ID of the surface */
-    size_t _iid;
+	ISurface::size_t _iid;
     
     VertexCollection    *_vertices;
     EdgesCollection     *_edges;
@@ -91,6 +92,30 @@ struct Mesh::Impl {
         
     }
 };
+
+class MeshRenderer : public IRenderer
+{
+	static MeshRenderer * instamce_;
+	
+public:
+	static MeshRenderer * instance() {
+		if (MeshRenderer::instamce_ == NULL) {
+			MeshRenderer::instamce_ = new MeshRenderer;
+		}
+		return MeshRenderer::instamce_;
+	}
+	
+	void renderObject(std::shared_ptr<SceneNode> & node) {
+		NOT_IMPLEMENTED;
+	}
+	
+	void render(const Mesh* mesh, const RenderState * state) const {
+		NOT_IMPLEMENTED;
+	}
+};
+
+MeshRenderer * MeshRenderer::instamce_ = NULL;
+
 
 // Iterator classes declarations
 class Mesh::VertexIterator : public IIterator<Vertex>
@@ -384,7 +409,7 @@ Mesh::~Mesh()
     delete _d->_faces;
 }
 
-size_t Mesh::iid() const
+ISurface::size_t Mesh::iid() const
 {
     return _d->_iid;
 }
@@ -412,11 +437,11 @@ void Mesh::setChanged(bool val) {
     }
 }
 
-std::vector<size_t> Mesh::selectedPoints() const {
+std::vector<Vertex::size_t> Mesh::selectedPoints() const {
     return _d->_selectedPoints;
 }
 
-void Mesh::setSelectedPoints(const std::vector<size_t>& indicesArray) {
+void Mesh::setSelectedPoints(const std::vector<Vertex::size_t>& indicesArray) {
     _d->_selectedPoints = indicesArray;
 }
 
@@ -429,6 +454,18 @@ Scene* Mesh::scene() const
 {
     return _d->_scene;
 }
+
+const IRenderable* Mesh::renderable() const
+{
+	return this;
+}
+
+// IRenderable
+void Mesh::render(const RenderState * state) const
+{
+	MeshRenderer::instance()->render(this, state);
+}
+// End IRendeable
 
 const geometry::AABB& Mesh::boundingBox() const
 {
@@ -455,7 +492,7 @@ bool Mesh::isSelected() const
     return _d->_selected;
 }
 
-size_t Mesh::addVertex(const Point3& point)
+Vertex::size_t Mesh::addVertex(const Point3& point)
 {
     assert(_d->_vertices != NULL );
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
@@ -472,7 +509,7 @@ size_t Mesh::addVertex(const Point3& point)
     
 }
 
-size_t Mesh::addVertex(Vertex* v)
+Vertex::size_t Mesh::addVertex(Vertex* v)
 {
     _d->_boundingBox.extend(v->position());
     VertexCollection::value_type value(v->iid(), v);
@@ -480,43 +517,43 @@ size_t Mesh::addVertex(Vertex* v)
     return v->iid();
 }
 
-void Mesh::removeVertex(size_t iid)
+void Mesh::removeVertex(Vertex::size_t iid)
 {
     _d->_vertices->erase(iid);
 }
 
-Vertex* Mesh::vertex(size_t iid)
+Vertex* Mesh::vertex(Vertex::size_t iid)
 {
     return _d->_vertices->find(iid) != _d->_vertices->end() ?
             _d->_vertices->at(iid) : NULL;
 }
 
-const Vertex* Mesh::vertex(size_t iid) const
+const Vertex* Mesh::vertex(Vertex::size_t iid) const
 {
     return _d->_vertices->find(iid) != _d->_vertices->end() ?
         _d->_vertices->at(iid) : NULL;
 }
 
-size_t Mesh::numVertices() const
+Vertex::size_t Mesh::numVertices() const
 {
-    return _d->_vertices->size();
+    return static_cast<Vertex::size_t>(_d->_vertices->size());
 }
 
-size_t Mesh::addEdge(const Edge& edge)
+Edge::size_t Mesh::addEdge(const Edge& edge)
 {
     return addEdge(edge.tail(), edge.head());
 }
 
-size_t Mesh::addEdge(size_t v1, size_t v2)
+Edge::size_t Mesh::addEdge(Vertex::size_t v1, Vertex::size_t v2)
 {    
     return addEdge(_d->_vertices->at(v1), _d->_vertices->at(v2));
 }
 
-size_t Mesh::addEdge(Vertex* tail, Vertex* head)
+Edge::size_t Mesh::addEdge(Vertex* tail, Vertex* head)
 {
     assert(tail && head);
     
-    size_t iid = -1;
+	Edge::size_t iid = -1;
     
     VtxPair pair(tail->iid(), head->iid());
     if (_d->_vtxPairEdge->find(pair) != _d->_vtxPairEdge->end()) {
@@ -546,7 +583,11 @@ size_t Mesh::addEdge(Vertex* tail, Vertex* head)
     return iid;
 }
 
-size_t Mesh::addFace(const std::vector<size_t>& vertexIndexList)
+Edge::size_t Mesh::numEdges() const {
+	return static_cast<Edge::size_t>(_d->_edges->size());
+}
+
+Face::size_t Mesh::addFace(const std::vector<Vertex::size_t>& vertexIndexList)
 {
     //NOT_IMPLEMENTED
     std::vector<Edge*> edges;
@@ -575,14 +616,14 @@ size_t Mesh::addFace(const std::vector<size_t>& vertexIndexList)
     return f->iid();
 }
 
-void Mesh::replaceFace(size_t /*faceIndex*/, const std::vector<size_t>& /*vertexIndexList*/)
+void Mesh::replaceFace(Face::size_t /*faceIndex*/, const std::vector<Vertex::size_t>& /*vertexIndexList*/)
 {
     NOT_IMPLEMENTED
 }
 
 
 // clear reference to face from edges and remove the face from this surface.
-void Mesh::removeFace( size_t iid)
+void Mesh::removeFace( Face::size_t iid)
 {
     Face * f = face(iid);
     if (f == NULL)
@@ -596,34 +637,34 @@ void Mesh::removeFace( size_t iid)
     _d->_faces->erase(iid);
 }
 
-Face* Mesh::face(size_t iid)
+Face* Mesh::face(Face::size_t iid)
 {
     assert(iid > 0);
     FacesCollection::iterator it = _d->_faces->find(iid);
     return  it != _d->_faces->end() ? it->second : NULL;
 }
 
-size_t Mesh::numFaces() const
+Face::size_t Mesh::numFaces() const
 {
     assert( _d->_faces!= NULL );
-    return _d->_faces->size();
+    return static_cast<Face::size_t>(_d->_faces->size());
 }
 
 
-size_t Mesh::getFaceIndexAtPoint(const Point3& /*p*/) const
+Face::size_t Mesh::getFaceIndexAtPoint(const Point3& /*p*/) const
 {
     NOT_IMPLEMENTED
     return -1;
 }
 
-size_t Mesh::getClosestPointAtPoint(const Point3 &/*p*/) const
+Vertex::size_t Mesh::getClosestPointAtPoint(const Point3 &/*p*/) const
 {
     NOT_IMPLEMENTED
     
     return -1;
 }
 
-std::vector<size_t> Mesh::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
+std::vector<Vertex::size_t> Mesh::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
 {
     //std::cerr << "Mesh::getPointsInRadius()";
     std::vector<size_t> results;
@@ -890,15 +931,16 @@ bool Mesh::FaceIterator::seek(int pos, IteratorOrigin origin) const
 
 void Mesh::printMemoryInfo() const
 {
-    size_t sizeVertex, sizeEdge, sizeFace;
-    size_t nVertex, nFace, nEdge;
+	Vertex::size_t sizeVertex, nVertex;
+	Edge::size_t sizeEdge, nEdge;
+	Face::size_t sizeFace, nFace;
     
     sizeVertex = sizeof(Vertex);
     sizeFace = sizeof(Face);
     sizeEdge = sizeof(Edge);
-    nVertex = this->numVertices();
-    nFace = this->numFaces();
-    nEdge = this->_d->_edges->size();
+    nVertex = numVertices();
+    nFace = numFaces();
+    nEdge = numEdges();
     
     std::cerr << "Size of vertex: " << sizeVertex;
     std::cerr << "Size of Face: " << sizeFace;

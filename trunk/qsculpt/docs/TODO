@@ -1,0 +1,5 @@
+PlastilinaCore Framework
+- Implement ISurface::renderer
+- Implement Catmull-Clark subdivision OpenCL
+- Implement Physics Engine
+- Implement Mesh edit mode

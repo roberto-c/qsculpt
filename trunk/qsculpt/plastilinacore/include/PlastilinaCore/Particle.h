@@ -32,6 +32,7 @@ namespace physics {
         Vector4 v;
         Vector4 f;
         Vector4 c;
+		uint 	iid;
     };
 }
 

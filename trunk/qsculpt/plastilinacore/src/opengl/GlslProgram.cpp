@@ -17,9 +17,25 @@ struct GlslProgram::Impl
 	Impl(GLuint progId):progId_(progId){}
 };
 
+GlslProgram * GlslProgram::currentProgram()
+{
+	static GlslProgram prog;
+	GLint pid;
+	glGetIntegerv(GL_CURRENT_PROGRAM,&pid);
+	prog.setProgramID(pid);
+	return &prog;
+}
+
 GlslProgram::GlslProgram() : d(new Impl(0))
 {
     d->progId_ = glCreateProgram();
+}
+
+GlslProgram::GlslProgram(GLuint pid) : d(new Impl(0))
+{
+	if (glIsProgram(pid)) {
+		d->progId_ = pid;
+	}
 }
 
 GlslProgram::~GlslProgram()
@@ -27,9 +43,14 @@ GlslProgram::~GlslProgram()
     glDeleteProgram(d->progId_);
 }
 
-GLint GlslProgram::programID() const
+GLuint GlslProgram::programID() const
 {
     return d->progId_;
+}
+
+void GlslProgram::setProgramID(GLuint pid)
+{
+    d->progId_ = pid;
 }
 
 bool GlslProgram::GlslProgram::link()

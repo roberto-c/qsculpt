@@ -80,3 +80,8 @@ void CookTorrance::setup(const std::shared_ptr<SceneNode> & doc)
 {
     
 }
+
+void CookTorrance::setup(const std::shared_ptr<const SceneNode> & doc)
+{
+    
+}
