@@ -41,10 +41,10 @@ private:
     size_t              _id;    // 8
     EdgeFlags           _flags; // 4
     Edge::weak_ptr      _next; // 8
-    Edge::weak_ptr      _prev; // 8
+//    Edge::weak_ptr      _prev; // 8
     Edge::weak_ptr      _pair; // 8
     Vertex::weak_ptr    _head; // 8
-    Vertex::weak_ptr    _tail; // 8
+//    Vertex::weak_ptr    _tail; // 8
     Face::weak_ptr      _face; // 8
     void*               _userData; // 4
 
@@ -75,8 +75,8 @@ public:
     Edge* next() const { return _next; }
     void setNext(Edge* he) { _next = he; }
     
-    Edge* prev() const { return _prev; }
-    void setPrev(Edge* he) { _prev = he; }
+//    Edge* prev() const { return _prev; }
+//    void setPrev(Edge* he) { _prev = he; }
 
     /**
      * Gets / sets a pointer to the pair of this HEdge structure.
@@ -93,8 +93,8 @@ public:
     /**
      * Gets / sets a pointer to the vertex this structure points to.
      */
-    Vertex* tail() const { return _tail; }
-    void setTail(Vertex* v) { _tail = v; }
+//    Vertex* tail() const { return _tail; }
+//    void setTail(Vertex* v) { _tail = v; }
 
     /**
      * Gets / sets a pointer to a face this half edge belongs to.
@@ -156,7 +156,9 @@ struct EdgePtrComparator2
 
     bool operator()(const Edge* e) {
         return (e->head()->iid() == _head->iid() &&
-                e->tail()->iid() == _tail->iid());
+                e->pair()->head()->iid() == _tail->iid());
+//		return (e->head()->iid() == _head->iid() &&
+//                e->tail()->iid() == _tail->iid());
         //return (*_e) == (*e);
     }
 };

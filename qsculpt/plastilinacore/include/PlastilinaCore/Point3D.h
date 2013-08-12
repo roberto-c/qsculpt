@@ -35,10 +35,8 @@ typedef std::vector<int> PointIndexList;
 inline std::string toString(const Vector3& v)
 {
 	std::ostringstream str;
-    str << v;
-//	str += "(" + std::string::number(v[0]) + "," + 
-//	std::string::number(v[1]) + "," +
-//	std::string::number(v[2]) + ")";
+//    str << v;
+	str << "(" << v[0] << "," << v[1] << "," << v[2] << ")";
     
 	return str.str();
 }
@@ -46,8 +44,8 @@ inline std::string toString(const Vector3& v)
 inline std::string toString(const Vector4& v)
 {
     std::ostringstream str;
-    str << v;
-
+	str << "(" << v[0] << "," << v[1] << "," << v[2] << "," << v[3] << ")";
+    // str << v;
 //	std::string str;
 //	str += "(" + std::string::number(v[0]) + "," + 
 //	std::string::number(v[1]) + "," +

@@ -48,6 +48,11 @@ private:
 	VAO* getVAO(ISurface* mesh) const;
     
 	/**
+	 *
+	 */
+	void fillVertexBufferPoints(ISurface* mesh, VertexBuffer* vbo) const;
+	
+	/**
 	 * Fill vertex buffer with the mesh data.
 	 */
 	void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) const;

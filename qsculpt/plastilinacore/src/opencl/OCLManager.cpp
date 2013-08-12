@@ -9,10 +9,18 @@
 #include <PlastilinaCore/opencl/OCLManager.h>
 
 
+#include <iostream>
+
 struct CLManager::Impl {
 	cl::Context				context;
 	cl::CommandQueue 		queue;
 	std::vector<cl::Device> devices;
+	
+	bool					useGpu;
+	bool                    initialized;
+	
+	Impl() : useGpu(false), initialized(false)
+	{}
 };
 
 CLManager * g_clManager = NULL;
@@ -30,15 +38,23 @@ CLManager::CLManager() : d(new Impl)
 	
 }
 
+void CLManager::setUseGPU(bool useGPU)
+{
+	d->useGpu = useGPU;
+}
+
 /**
  * Method used to initialize OpenCL. This creates a default context and
  * a command queue.
  */
 bool CLManager::initialize()
 {
-	bool ret = true;
 	cl_int err = CL_SUCCESS;
 	
+	if (d->initialized) {
+		std::cerr << "Already initialized.\n";
+		return true;
+	}
 	try {
 		std::cout << "Initializing OpenCL..." << std::endl;
 		std::string value;
@@ -46,17 +62,45 @@ bool CLManager::initialize()
 		cl::Platform::get(&platforms);
 		if (platforms.size() == 0) {
 			std::cout << "Platform size 0\n";
-			return -1;
+			return false;
 		}
 		
 		platforms[0].getInfo(CL_PLATFORM_NAME, &value);
 		std::cout << "Platform name: " << value << std::endl;
 		
-		cl_context_properties properties[] =
-		{ CL_CONTEXT_PLATFORM, (cl_context_properties)(platforms[0])(), 0};
-		d->context = cl::Context(CL_DEVICE_TYPE_CPU, properties);
+		cl_device_type deviceTypeToUse = CL_DEVICE_TYPE_CPU;
+		if (d->useGpu) {
+			deviceTypeToUse = CL_DEVICE_TYPE_GPU;
+			std::cout << "Trying to use GPU device." << std::endl;
+		} else {
+			std::cout << "Trying to use CPU device." << std::endl;
+		}
 		
-		d->devices = d->context.getInfo<CL_CONTEXT_DEVICES>();
+		std::vector<cl::Device> devices;
+		platforms[0].getDevices(CL_DEVICE_TYPE_ALL, &devices);
+		for (auto dev = devices.begin(); dev != devices.end(); ++dev) {
+			std::cout << "Name: " << (*dev).getInfo<CL_DEVICE_NAME>() << std::endl;
+			cl_device_type devtype = (*dev).getInfo<CL_DEVICE_TYPE>();
+			std::cout << "Type: " <<  devtype << std::endl;
+			if (devtype == deviceTypeToUse) {
+				d->devices.push_back(*dev);
+			}
+			{
+				std::cout << "CL_DEVICE_MAX_WORK_ITEM_SIZES: (";
+				auto max_sizes = (*dev).getInfo<CL_DEVICE_MAX_WORK_ITEM_SIZES>();
+				for (auto i = max_sizes.begin(); i != max_sizes.end(); ++i) {
+					std::cout << *(i) << " ";
+				}
+				std::cout << ")" << std::endl;
+			}
+			{
+				std::cout << "CL_DEVICE_MAX_WORK_GROUP_SIZE: (";
+				std::cout << (*dev).getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+				std::cout << ")" << std::endl;
+			}
+		}
+		
+		d->context = cl::Context(d->devices);
 		d->queue = cl::CommandQueue(d->context, d->devices[0], 0, &err);
 	}
 	catch (cl::Error err) {
@@ -68,7 +112,9 @@ bool CLManager::initialize()
 		<< ")"
 		<< std::endl;
 	}
-	return ret;
+	
+	d->initialized = true;
+	return d->initialized;
 }
 
 /**

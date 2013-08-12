@@ -154,7 +154,7 @@ Edge::Edge()
     _next(NULL),
     _pair(NULL),
     _head(NULL),
-    _tail(NULL),
+//    _tail(NULL),
     _face(NULL),
     _userData(NULL)
 {
@@ -166,7 +166,7 @@ Edge::Edge(Vertex* tail, Vertex* head)
     _next(NULL),
     _pair(NULL),
     _head(head),
-    _tail(tail),
+//    _tail(tail),
     _face(NULL),
     _userData(NULL)
 {
@@ -186,11 +186,17 @@ bool Edge::isEqual(const Edge& he) const
     //	if (_next == he._next && _pair == he._pair)
     //		return true;
 
-    if (_head == he._head && _tail == he._tail)
+//    if (_head == he._head && _tail == he._tail)
+//        return true;
+//
+//    if (_head->iid() == he._head->iid() &&
+//        _tail->iid() == he._tail->iid())
+//        return true;
+	if (_head == he._head && _pair->_head == he.pair()->head())
         return true;
-
+	
     if (_head->iid() == he._head->iid() &&
-        _tail->iid() == he._tail->iid())
+        _pair->head()->iid() == he.pair()->head()->iid())
         return true;
 
     return false;

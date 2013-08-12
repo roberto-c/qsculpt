@@ -74,7 +74,6 @@ Scene::Impl::renderRecursive(RenderState & state, const SceneNode * root) const
 		auto s = n ? std::dynamic_pointer_cast<SurfaceNode>(n) : nullptr;
 		if (s) {
 			state.currentNode = n.get();
-			state.renderMode = RM_Smooth;
 			s->render(&state);
 		}
 		renderRecursive(state, n.get());
@@ -83,15 +82,18 @@ Scene::Impl::renderRecursive(RenderState & state, const SceneNode * root) const
 
 Scene::Scene() : SceneNode(), _d(new Impl())
 {
+	std::cerr << __PRETTY_FUNCTION__ << std::endl;
 }
 
 Scene::Scene(const std::string& name): SceneNode(name.c_str()), _d(new Impl())
 {
+	std::cerr << __PRETTY_FUNCTION__ << " Name: " << name << std::endl;
 }
 
 
 Scene::~Scene()
 {
+	std::cerr << __PRETTY_FUNCTION__ << " Name: " << name() << std::endl;
 }
 
 SceneNode::shared_ptr Scene::findByName(const std::string& name) const
@@ -126,7 +128,8 @@ void Scene::render() const
 		state.camera = getCamera()->camera().get();
 		state.root = this;
 		state.currentNode = this;
-		state.renderMode = RM_Smooth;
+//		state.renderMode = RM_Smooth;
+		state.renderMode = RM_Points;
 		_d->renderRecursive(state,this);
     } catch(core::GlException & e) {
         std::cerr   << "GLException: " << e.what() << std::endl

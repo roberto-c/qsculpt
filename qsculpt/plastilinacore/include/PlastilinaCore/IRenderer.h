@@ -22,7 +22,8 @@ enum RenderMode {
 	RM_WireFrame,
 	RM_Flat,
 	RM_Smooth,
-	RM_Textured
+	RM_Textured,
+	RM_Points
 };
 
 struct RenderState {
