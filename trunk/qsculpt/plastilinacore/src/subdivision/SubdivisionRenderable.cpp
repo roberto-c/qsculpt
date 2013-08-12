@@ -120,7 +120,12 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
     vbo->bind();
 	if (vbo->needUpdate())
 	{
-		fillVertexBuffer(obj, vbo);
+		if (state->renderMode == RM_Points) {
+			fillVertexBufferPoints(obj, vbo);
+		} else {
+			fillVertexBuffer(obj, vbo);
+		}
+		
 		vbo->setNeedUpdate(false);
 		
 		GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
@@ -146,9 +151,37 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 		}
 		THROW_IF_GLERROR("Failed to get attribute");
     }
-    mat->shaderProgram()->useProgram();
-    GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
-    glDrawArrays(GL_TRIANGLES, 0, numVertices);
+	
+	switch (state->renderMode) {
+		case RM_Smooth:
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			mat->shaderProgram()->useProgram();
+			GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+			glDrawArrays(GL_TRIANGLES, 0, numVertices);
+		}
+			break;
+			
+		case RM_WireFrame:
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			mat->shaderProgram()->useProgram();
+			GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+			glDrawArrays(GL_TRIANGLES, 0, numVertices);
+		}
+			break;
+		case RM_Points:
+		{
+			mat->shaderProgram()->useProgram();
+			glPointSize(3.0f);
+			GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+			glDrawArrays(GL_POINTS, 0, numVertices);
+		}
+			
+		default:
+			break;
+	}
+    
     
     vao->release();
 	
@@ -175,6 +208,43 @@ VAO* SubdivisionRenderable::getVAO(ISurface* mesh) const
 	}
 	return vao;
 }
+
+void SubdivisionRenderable::fillVertexBufferPoints(ISurface* mesh, VertexBuffer* vbo) const
+{
+    //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
+    if (mesh == NULL || vbo->objectID() == 0)
+        return;
+    
+    size_t numVertices = mesh->numVertices();
+    if (numVertices == 0)
+        return;
+    
+    std::vector<SmoothVtxStruct> vtxData(numVertices); // Triangles
+    
+    size_t offset = 0;
+    auto it = mesh->constVertexIterator();
+    while(it.hasNext()) {
+        auto v = it.next();
+		vtxData[offset].v[0] = v->position().x();
+		vtxData[offset].v[1] = v->position().y();
+		vtxData[offset].v[2] = v->position().z();
+		vtxData[offset].v[3] = 1.0f;
+		vtxData[offset].n[0] = v->normal().x();
+		vtxData[offset].n[1] = v->normal().y();
+		vtxData[offset].n[2] = v->normal().z();
+		vtxData[offset].n[3] = 0.0f;
+		memcpy(vtxData[offset].color, v->color().data().data(), sizeof(vtxData[offset].color)) ;
+        offset++;
+    }
+    // offset contains the number of vertices in the vtxData after being
+    // processed.
+    GLuint dataSize = static_cast<GLuint>(offset*sizeof(SmoothVtxStruct));
+    vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
+    THROW_IF_GLERROR(__func__);
+    
+    //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
+}
+
 
 void SubdivisionRenderable::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) const
 {

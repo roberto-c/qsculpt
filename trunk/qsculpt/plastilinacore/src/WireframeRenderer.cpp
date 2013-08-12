@@ -194,9 +194,10 @@ void RendererPrivate::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 
 		Vertex::shared_ptr first = NULL, prev = NULL, v = NULL;
 		Iterator<Vertex> vtxIt = f->constVertexIterator();
-		if (vtxIt.hasNext()) {
-			first = prev = vtxIt.next();
+		if (!vtxIt.hasNext()) {
+			break;
 		}
+		first = prev = vtxIt.next();
         while(vtxIt.hasNext()) {
             v = vtxIt.next();
 			vtxData.push_back(FlatVtxStruct::create(prev->position(), prev->normal(), color));

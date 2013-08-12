@@ -498,10 +498,6 @@ Vertex::size_t Mesh::addVertex(const Point3& point)
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
     
     Vertex* vertex = new Vertex(point);
-    //    size_t index = _d->_vtxPool.free[0];
-    //    _d->_vtxPool.free.pop_back();
-    //    Vertex* vertex = &_d->_vtxPool.element.at(index);
-    //    vertex->position() = point;
     _d->_boundingBox.extend(point);
     VertexCollection::value_type value(vertex->iid(), vertex);
     this->_d->_vertices->insert(value);
@@ -541,7 +537,7 @@ Vertex::size_t Mesh::numVertices() const
 
 Edge::size_t Mesh::addEdge(const Edge& edge)
 {
-    return addEdge(edge.tail(), edge.head());
+    return addEdge(edge.pair()->head(), edge.head());
 }
 
 Edge::size_t Mesh::addEdge(Vertex::size_t v1, Vertex::size_t v2)

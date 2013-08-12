@@ -9,9 +9,11 @@
 #ifndef __PlastilinaCore__opencl__OCLManager__
 #define __PlastilinaCore__opencl__OCLManager__
 
-#include <iostream>
-#define __CL_ENABLE_EXCEPTIONS
 #include <OpenCL/opencl.h>
+
+#ifdef __cplusplus
+
+#define __CL_ENABLE_EXCEPTIONS
 #include "cl.hpp"
 
 class CLManager {
@@ -19,6 +21,7 @@ class CLManager {
 public:
 	static CLManager*	instance();
 	
+	void setUseGPU(bool useGPU);
 	/**
 	 * Method used to initialize OpenCL. This creates a default context and
 	 * a command queue.
@@ -54,6 +57,6 @@ private:
 	std::unique_ptr<Impl> d;
 	
 };
-
+#endif
 
 #endif /* defined(__PlastilinaCore__OCLManager__) */

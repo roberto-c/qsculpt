@@ -143,15 +143,12 @@ struct Subdivision::Impl {
 	
 	SubdivisionRenderable renderable;
 	
-	std::unordered_map<Vertex::size_t, Vertex::size_t> hndVtxIndex;
-	std::unordered_map<Edge::size_t, Edge::size_t> hndEdgeIndex;
-	std::unordered_map<Face::size_t, Face::size_t> hndFaceIndex;
 	bool 				oclInitialized;
 	cl::Program 		program;
 	cl::Kernel			krnInit;
 	cl::Kernel 			krnSubdivideEdges;
-	cl::Kernel 			krnSubdivideFaces;
 	cl::Kernel			krnSubdivideAddFaces;
+	cl::Kernel			krnSubdivideAdjustPos;
     
     Impl(Subdivision * surface) :     _vertices(NULL),
     _edges(NULL),
@@ -447,7 +444,7 @@ void Subdivision::Impl::subdivide(Subdivision * surf) {
     while(edgeIt.hasNext()) {
         auto edge = edgeIt.next();
         if (edge->userData()) continue;
-        p = (edge->head()->position() + edge->tail()->position() ) / 2.0f;
+        p = (edge->head()->position() + edge->pair()->head()->position() ) / 2.0f;
         size_t midPointIid = surf->addVertex(p);
         edge->setUserData( (void*)(midPointIid) );
         edge = edge->pair();
@@ -642,7 +639,8 @@ Vertex::size_t Subdivision::addVertex(const Point3& point)
     assert(_d->_vertices != NULL );
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
     
-    Vertex* vertex = _d->_vtxPool.allocate(point);// new Vertex(point);
+//    Vertex* vertex = _d->_vtxPool.allocate(point);// new Vertex(point);
+	Vertex* vertex = new Vertex(point);
     vertex->color() = _d->_color;
 //    size_t index = _d->_vtxPool.free[0];
 //    _d->_vtxPool.free.pop_back();
@@ -688,7 +686,7 @@ Vertex::size_t Subdivision::numVertices() const
 
 Edge::size_t Subdivision::addEdge(const Edge& edge)
 {
-    return addEdge(edge.tail(), edge.head());
+    return addEdge(edge.pair()->head(), edge.head());
 }
 
 Edge::size_t Subdivision::addEdge(Vertex::size_t v1, Vertex::size_t v2)
@@ -1230,8 +1228,10 @@ Subdivision::Impl::initialize_ocl(void)
 		
 		krnInit = cl::Kernel(program,"surface_init",&err);
 		krnSubdivideEdges = cl::Kernel(program, "subdivide_edges_midpoint", &err);
-		krnSubdivideFaces = cl::Kernel(program, "subdivide_faces_midpoint", &err);
+		std::cout << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnSubdivideEdges.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL) << std::endl;
 		krnSubdivideAddFaces = cl::Kernel(program, "subdivide_add_faces", &err);
+		krnSubdivideAdjustPos = cl::Kernel(program,"subdivide_vertices_adjust_pos", &err);
+		std::cout << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnSubdivideAdjustPos.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL) << std::endl;
 	}
 	catch (cl::Error err) {
 		std::cerr
@@ -1243,7 +1243,7 @@ Subdivision::Impl::initialize_ocl(void)
 		<< std::endl;
 	}
 	
-	return EXIT_SUCCESS;
+	return err;
 }
 
 
@@ -1293,6 +1293,10 @@ Subdivision::Impl::create_from_surface(Subdivision * surface) {
 		return ret;
 	}
 	
+	std::unordered_map<Vertex::size_t, Vertex::size_t> hndVtxIndex;
+	std::unordered_map<Edge::size_t, Edge::size_t> hndEdgeIndex;
+	std::unordered_map<Face::size_t, Face::size_t> hndFaceIndex;
+	
 	ret.vertex.reserve(1000);
 	auto vtxIt = surface->constVertexIterator();
 	while (vtxIt.hasNext()) {
@@ -1311,7 +1315,9 @@ Subdivision::Impl::create_from_surface(Subdivision * surface) {
 		vtx.n.s[2] = v->normal()[2];
 		vtx.n.s[3] = 0;
 		ret.vertex.push_back(vtx);
-		hndVtxIndex[v->iid()] = uint(ret.vertex.size()) - 1;
+		uint vtxindex = uint(ret.vertex.size()) - 1;
+		hndVtxIndex[v->iid()] = vtxindex;
+		std::cout << "Point[" << vtxindex << "]=" << toString(v->position()) << std::endl;
 	}
 	
 	ret.edge.reserve(1000);
@@ -1325,6 +1331,8 @@ Subdivision::Impl::create_from_surface(Subdivision * surface) {
 			continue;
 		}
 		struct clEdge edge1, edge2;
+		edge1.face = CL_UINT_MAX;
+		edge2.face = CL_UINT_MAX;
 		ret.edge.push_back(edge1);
 		ret.edge.push_back(edge2);
 		hndEdgeIndex[e->iid()] = uint(ret.edge.size()) - 2;
@@ -1338,8 +1346,8 @@ Subdivision::Impl::create_from_surface(Subdivision * surface) {
 		}
 		uint index = hndEdgeIndex[e->iid()];
 		ret.edge[index].head = hndVtxIndex[e->head()->iid()];
-		ret.edge[index].next = hndEdgeIndex[e->next()->iid()];
-		ret.edge[index].pair = hndEdgeIndex[e->pair()->iid()];
+		ret.edge[index].next = e->next() ? hndEdgeIndex[e->next()->iid()] : CL_UINT_MAX;
+		ret.edge[index].pair = e->pair() ? hndEdgeIndex[e->pair()->iid()] : CL_UINT_MAX;
 	}
 	
 	ret.face.reserve(1000);
@@ -1352,13 +1360,39 @@ Subdivision::Impl::create_from_surface(Subdivision * surface) {
 		struct clFace face;
 		face.num_edges = f->numVertices();
 		face.edge = hndEdgeIndex[f->hedge()->iid()];
-		face.vertex = 0;
+		face.vertex = hndVtxIndex[f->hedge()->head()->iid()];
 		ret.face.push_back(face);
 		uint faceIndex = uint(ret.face.size()-1);
 		hndFaceIndex[f->iid()] = faceIndex;
 		uint edgeIndex = hndEdgeIndex[f->hedge()->iid()];
 		ret.edge[edgeIndex].face = faceIndex;
+		
+		edgeIt = f->constEdgeIterator();
+		while (edgeIt.hasNext()) {
+			auto e = edgeIt.next();
+			if (!e) {
+				throw std::runtime_error("Invalid edge in surface");
+			}
+			uint index = hndEdgeIndex[e->iid()];
+			ret.edge[index].face = faceIndex;
+		}
 	}
+	
+	std::vector<size_t> indexList;
+	indexList.reserve(10);
+	for (uint i = 0; i < ret.face.size(); ++i) {
+		indexList.clear();
+		uint edgeIdx = ret.face[i].edge;
+		clEdge *e0 = &ret.edge[edgeIdx];
+		clEdge *e = e0;
+		do {
+			std::cout << "EdgeIdx: " << edgeIdx << " VtxIdx: " << e->head << std::endl;
+			edgeIdx = e->next;
+			assert(edgeIdx != CL_UINT_MAX);
+			e = &ret.edge[edgeIdx];
+		} while (e != e0);
+	}
+
 	
 	return ret;
 }
@@ -1370,6 +1404,10 @@ Subdivision::Impl::update_surface_from_polygon(Subdivision * surface,
 	if (!surface) {
 		return;
 	}
+	
+	std::unordered_map<Vertex::size_t, Vertex::size_t> hndVtxIndex;
+	std::unordered_map<Edge::size_t, Edge::size_t> hndEdgeIndex;
+	std::unordered_map<Face::size_t, Face::size_t> hndFaceIndex;
 	
 	_vertices = new VertexCollection;
     _edges = new EdgesCollection;
@@ -1385,13 +1423,16 @@ Subdivision::Impl::update_surface_from_polygon(Subdivision * surface,
     _vertexEdgeCollection.push_back(_vtxPairEdge);
     _facesLevelCollections.push_back(_faces);
 	
-	std::vector<uint> vtxIdxIid(hndVtxIndex.size());
+	hndVtxIndex.clear();
+	hndVtxIndex.reserve(list.vertex.size());
+	std::vector<uint> vtxIdxIid(list.vertex.size());
 		
 	for (uint i = 0; i < list.vertex.size(); ++i) {
 		Point3 p(list.vertex[i].p.s[0],list.vertex[i].p.s[1],list.vertex[i].p.s[2]);
 		Vertex::size_t iid = surface->addVertex(p);
 		hndVtxIndex[iid] = i;
 		vtxIdxIid[i] = iid;
+		surface->vertex(iid)->color()= Color(1.0, 0.0f, 0.0f);
 		std::cout << "Point[" << i << "]=" << toString(p) << std::endl;
 	}
 	//surface->vertex()
@@ -1400,15 +1441,19 @@ Subdivision::Impl::update_surface_from_polygon(Subdivision * surface,
 	indexList.reserve(10);
 	for (uint i = 0; i < list.face.size(); ++i) {
 		indexList.clear();
-		clEdge *e0 = &list.edge[list.face[i].edge];
+		uint edgeIdx = list.face[i].edge;
+		clEdge *e0 = &list.edge[edgeIdx];
 		clEdge *e = e0;
 		do {
-			indexList.push_back(vtxIdxIid[e->head]);
-			e = &list.edge[e->next];
+			std::cout << "EdgeIdx: " << edgeIdx << " VtxIdx: " << e->head << std::endl;
+			indexList.push_back(vtxIdxIid.at(e->head));
+			edgeIdx = e->next;
+			assert(edgeIdx != CL_UINT_MAX);
+			e = &list.edge[edgeIdx];
 		} while (e != e0);
 		surface->addFace( indexList );
 	}
-
+//	std::cout << "Num vtx: "<< _vertices->size() << std::endl;
 	surface->setChanged(true);
 }
 
@@ -1416,7 +1461,7 @@ void Subdivision::Impl::subdivide_ocl(Subdivision * s)
 {
 	if (!oclInitialized) {
 		initialize_ocl();
-		oclInitialized = true;
+		//oclInitialized = true;
 	}
 	
 	
@@ -1431,6 +1476,7 @@ void Subdivision::Impl::subdivide_ocl(Subdivision * s)
 		std::cout << "sizeof(clSurface): " << sizeof(clSurface) << std::endl;
 		
 		clSurfaceList surface1 = create_from_surface(s);
+		clSurfaceList surface2 = create_from_surface(s);
 		std::cout << "Vertex size: " << surface1.vertex.size() << std::endl;
 		std::cout << "Edge size: " << surface1.edge.size() << std::endl;
 		std::cout << "Face size: " << surface1.face.size() << std::endl;
@@ -1446,7 +1492,6 @@ void Subdivision::Impl::subdivide_ocl(Subdivision * s)
 		unsigned long faceBufferSize1 = surface1.face.capacity()*sizeof(clFace);
 		cl::Buffer faceBuffer1(context,CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, faceBufferSize1,surface1.face.data());
 		
-		clSurfaceList surface2 = create_from_surface(s);
 		
 		cl::Buffer surfaceBuffer2(context,CL_MEM_READ_WRITE, sizeof(clSurface), 0);
 		
@@ -1491,25 +1536,15 @@ void Subdivision::Impl::subdivide_ocl(Subdivision * s)
 								   cl::NullRange,
 								   &evtLst,
 								   &event);
-		clSurface surface;
-		queue.enqueueReadBuffer(surfaceBuffer2, CL_TRUE, 0, sizeof(clSurface), &surface);
-		std::cout << "Num Vertices: " << surface.num_vertices << std::endl;
-		std::cout << "Num Faces: " << surface.num_faces << std::endl;
-		
-		krnSubdivideFaces.setArg(0, surfaceBuffer1);
-		krnSubdivideFaces.setArg(1, surfaceBuffer2);
-		queue.enqueueNDRangeKernel(
-								   krnSubdivideFaces,
-								   cl::NullRange,
-								   cl::NDRange(s->numFaces()),
-								   cl::NullRange,
-								   &evtLst,
-								   &event);
-		
-		queue.enqueueReadBuffer(surfaceBuffer2, CL_TRUE, 0, sizeof(clSurface), &surface);
-		std::cout << "Num Vertices: " << surface.num_vertices << std::endl;
-		std::cout << "Num Faces: " << surface.num_faces << std::endl;
-		
+		event.wait();
+		clSurface surfaceInfo;
+
+//		queue.enqueueReadBuffer(surfaceBuffer2, CL_TRUE, 0, sizeof(clSurface), &surfaceInfo);
+//		std::cout << "Num Vertices: " << surfaceInfo.num_vertices << std::endl;
+//		std::cout << "Num Edges: " << surfaceInfo.num_edges << std::endl;
+//		std::cout << "Num Faces: " << surfaceInfo.num_faces << std::endl;
+//
+		cl::Event endSubdivisionEvt;
 		krnSubdivideAddFaces.setArg(0, surfaceBuffer1);
 		krnSubdivideAddFaces.setArg(1, surfaceBuffer2);
 		queue.enqueueNDRangeKernel(
@@ -1517,16 +1552,25 @@ void Subdivision::Impl::subdivide_ocl(Subdivision * s)
 								   cl::NullRange,
 								   cl::NDRange(s->numFaces()),
 								   cl::NullRange,
-								   &evtLst,
-								   &event);
+								   NULL,
+								   &endSubdivisionEvt);
 		
-		event.wait();
-		queue.enqueueReadBuffer(surfaceBuffer2, CL_TRUE, 0, sizeof(clSurface), &surface);
-		std::cout << "Num Vertices: " << surface.num_vertices << std::endl;
-		std::cout << "Num Faces: " << surface.num_faces << std::endl;
-		surface2.vertex.resize(surface.num_vertices);
+		endSubdivisionEvt.wait();
+		queue.enqueueReadBuffer(surfaceBuffer2, CL_TRUE, 0, sizeof(clSurface), &surfaceInfo);
+		std::cout << "Num Vertices: " << surfaceInfo.num_vertices << std::endl;
+		std::cout << "Num Edges: " << surfaceInfo.num_edges << std::endl;
+		std::cout << "Num Faces: " << surfaceInfo.num_faces << std::endl;
+		surface2.vertex.resize(surfaceInfo.num_vertices);
 		vertexBufferSize2 = surface2.vertex.size()*sizeof(clVertex);
 		queue.enqueueReadBuffer(vertexBuffer2, CL_TRUE, 0, vertexBufferSize2, surface2.vertex.data());
+		
+		surface2.edge.resize(surfaceInfo.num_edges);
+		edgeBufferSize2 = surface2.edge.size()*sizeof(clEdge);
+		queue.enqueueReadBuffer(edgeBuffer2, CL_TRUE, 0, edgeBufferSize2, surface2.edge.data());
+		
+		surface2.face.resize(surfaceInfo.num_faces);
+		faceBufferSize2 = surface2.face.size()*sizeof(clFace);
+		queue.enqueueReadBuffer(faceBuffer2, CL_TRUE, 0, faceBufferSize2, surface2.face.data());
 		
 		
 		update_surface_from_polygon(s, surface2);

@@ -159,6 +159,7 @@ bool SceneNode::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
 SceneNode::SceneNode(const std::string& name)
 : _d(new Impl(name))
 {
+	std::cerr << __PRETTY_FUNCTION__ << " Name : " << name.c_str() << std::endl;
     _d->iid = NEXTID.fetch_add(1);
     
     _d->transform = Eigen::Affine3f::Identity();
@@ -166,7 +167,7 @@ SceneNode::SceneNode(const std::string& name)
 
 SceneNode::~SceneNode()
 {
-    std::cerr << __PRETTY_FUNCTION__ << ": " << name().c_str() << std::endl;
+    std::cerr << __PRETTY_FUNCTION__ << " Name : " << name().c_str() << std::endl;
 }
 
 uint SceneNode::iid() const { 

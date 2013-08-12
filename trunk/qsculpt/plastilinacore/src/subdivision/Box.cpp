@@ -39,16 +39,6 @@ void Box::initPoints()
     double hd = 1.0;
     
     std::vector<size_t> vertexID(8);
-
-//    vertexID[0] = addVertex(new Vertex(Point3(-hw, hh,-hd), Vector3(-hw, hh,-hd)));
-//    vertexID[1] = addVertex(new Vertex(Point3( hw, hh,-hd), Vector3( hw, hh,-hd)));
-//    vertexID[2] = addVertex(new Vertex(Point3( hw,-hh,-hd), Vector3( hw,-hh,-hd)));
-//    vertexID[3] = addVertex(new Vertex(Point3(-hw,-hh,-hd), Vector3(-hw,-hh,-hd)));
-//
-//    vertexID[4] = addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
-//    vertexID[5] = addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
-//    vertexID[6] = addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
-//    vertexID[7] = addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
     
     vertexID[0] = addVertex(Point3(-hw, hh,-hd));
     vertexID[1] = addVertex(Point3( hw, hh,-hd));
@@ -121,20 +111,32 @@ void Plane::initPoints(int m, int n)
     if ( m <= 0 || n <= 0) return;
     
     //qDebug("Box::initPoints()");
-    double hw = 1.0;
-    double hh = 1.0;
+    double hw = 2.0;
+    double hh = 2.0;
     double wstep = hw / m;
     double hstep = hh / n;
     double x=0, y=0;
     int j=0,i=0, numVtx=0;
     
+//	std::vector<size_t> vertexID(8);
+//    
+//    vertexID[0] = addVertex(Point3(-hw, hh, 0));
+//    vertexID[1] = addVertex(Point3(-hw,-hh, 0));
+//    vertexID[2] = addVertex(Point3( hw,-hh, 0));
+//    vertexID[3] = addVertex(Point3( hw, hh, 0));
+//	
+//	std::vector<size_t> indexList(4);
+//    indexList[0] = vertexID[0];
+//    indexList[1] = vertexID[1];
+//    indexList[2] = vertexID[2];
+//    indexList[3] = vertexID[3];
+//    addFace( indexList );
+
     std::vector<size_t> vertexID((m+1) * (n+1));
     y = -hh / 2;
     for (i = 0; i <= m; ++i) {
         x = -hw/2;
         for (j = 0; j <= n; ++j) {
-//            vertexID[numVtx] = addVertex(new Vertex(Point3(x, y, 0),
-//                                                    Vector3(0, 0, 1)));
             vertexID[numVtx] = addVertex(Point3(x, y, 0));
             numVtx++;
             x += wstep;
