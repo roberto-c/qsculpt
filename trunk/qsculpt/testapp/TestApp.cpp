@@ -5,10 +5,7 @@
 //  Created by Juan Cabral on 7/1/12.
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
-#include <SDL/SDL.h>
-//#include <GLUT/GLUT.h>
-#include <OpenCL/opencl.h>
-#include "cl.hpp"
+#include <SDL2/SDL.h>
 
 #include <PlastilinaCore/Plastilina.h>
 #include <mach-o/dyld.h> // for application directory
@@ -39,12 +36,25 @@
 #include "PlastilinaCore/geometry/Sphere.h"
 #include "PlastilinaCore/geometry/Ray.h"
 #include "PlastilinaCore/FlatRenderer.h"
+#include "PlastilinaCore/SmoothRenderer.h"
+#include <PlastilinaCore/PointRenderer.h>
 #include "PlastilinaCore/Camera.h"
+#include <PlastilinaCore/BOManager.h>
 
-#include "PlastilinaCore/GlslShader.h"
-#include "PlastilinaCore/GlslProgram.h"
+#include <PlastilinaCore/opencl/OCLManager.h>
+#include "PlastilinaCore/opengl/GlslShader.h"
+#include "PlastilinaCore/opengl/GlslProgram.h"
 #include "PlastilinaCore/Color.h"
+#include <PlastilinaCore/Material.h>
+#include <PlastilinaCore/material/PhongMaterial.h>
+#include <PlastilinaCore/material/PointMaterial.h>
 
+#include "Subdivision.h"
+#include "ParticleSystem.h"
+
+#include "ParticleSystem.cl.h"
+
+#include "CLRender.h"
 
 std::string get_app_path() {
     std::vector<char> exepath;
@@ -71,16 +81,26 @@ std::string get_app_path() {
 
 struct TestApp::Impl {
     bool                running;
+    bool                initialized;
     SDL_Surface*        surfDisplay;
+    SDL_Window*         mainwindow; /* Our window handle */
+    SDL_GLContext       maincontext; /* Our opengl context handle */
+    
     std::string         appName;
-    Scene::shared_ptr       scene;
-    IRenderer           *renderer;
-    Camera              camera;
+    Scene::shared_ptr           scene;
 
     GlslProgram     *glslProgram;
     VertexShader    *vtxShader;
     FragmentShader  *fragShader;
+    
+    std::shared_ptr<PointMaterial>       material;
+    std::shared_ptr<PhongMaterial>       material2;
+	
+	CLRender            render;
+	
+	void restart();
 };
+
 
 TestApp::TestApp(int argc, char** argv) 
 : d(new TestApp::Impl())
@@ -93,7 +113,11 @@ TestApp::~TestApp() {
 }
 
 int TestApp::run() {
-    
+    if (!d->initialized) {
+        std::cerr << "Applicatoin failed to initialized." << std::endl;
+        return 1;
+    }
+	
     SDL_Event Event;
     d->running = true;
     while(d->running) {
@@ -113,9 +137,27 @@ int TestApp::run() {
 
 void TestApp::dispatchEvent(SDL_Event * event)
 {
-    if(event->type == SDL_QUIT) {
-        if (quitRequested()) {
-            d->running = false;
+    switch(event->type) {
+        case SDL_QUIT: {
+            if (quitRequested()) {
+                d->running = false;
+            }
+            break;
+        }
+        case SDL_WINDOWEVENT: {
+            if (event->window.event == SDL_WINDOWEVENT_RESIZED) {
+                int w = event->window.data1;
+                int h =event->window.data2;
+                reshape( w ,h);
+            }
+            break;
+        }
+//        case SDL_VIDEOEXPOSE: {
+//            display();
+//            break;
+//        }
+        case SDL_KEYDOWN: {
+            keyboard(event->key.keysym.sym, 0, 0);
         }
     }
 }
@@ -127,162 +169,169 @@ bool TestApp::quitRequested()
 
 void TestApp::onQuit()
 {
+    /* Delete our opengl context, destroy our window, and shutdown SDL */
+    SDL_GL_DeleteContext(d->maincontext);
+    SDL_DestroyWindow(d->mainwindow);
     SDL_Quit();
 }
 
 void TestApp::loop()
 {
-    
+	//d->scene->transform().translate(Vector3(0.01f,0.01f,0.01f));
+	SDL_Delay(15);
 }
 
-void TestApp::keyboard(unsigned char key, int x, int y)
+void TestApp::keyboard(int key, int x, int y)
 {
-//    std::cout << "Key: " << (int)key << std::endl;
-//    switch (key) {
-//        case 27:
-//            glutDestroyWindow(d->winId);
-//            exit(0);
-//            break;
-//            
-//        default:
-//            break;
-//    }
+    std::cout << "Key: " << (int)key << std::endl;
+    switch (key) {
+        case SDLK_ESCAPE:
+            SDL_Event event;
+            event.type = SDL_QUIT;
+            SDL_PushEvent(&event);
+            break;
+			
+		case SDLK_UP: {
+				auto n = d->scene->item(0).lock();
+				SurfaceNode::shared_ptr s = std::static_pointer_cast<SurfaceNode>(n);
+				if (s) {
+					subdivide(s);
+//					ParticleSystem_step(s, 0.1);
+				}
+			}
+			break;
+		case SDLK_SPACE: {
+			d->restart();
+			reshape(640,480);
+			break;
+		}
+			
+        default:
+            break;
+    }
 }
 
 void TestApp::init(int argc, char** argv) {
-    
-    if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        return;// false;
-    }
-    
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,            8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,          8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,           8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,          8);
-    
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,          16);
-    SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE,            32);
-    
-    SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE,        8);
-    SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE,    8);
-    SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE,        8);
-    SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE,    8);
-    
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,  1);
-    
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,  2);
-    
-    if((d->surfDisplay = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_GL_DOUBLEBUFFER | SDL_OPENGL)) == NULL) {
-        return;// false;
-    }
-    
-    
-    d->scene = std::make_shared<Scene>();
-    
-    SurfaceNode::shared_ptr n = std::make_shared<SurfaceNode>(new ::Box());
-    n->surface()->setColor(Color(1.0, 0, 0, 1));
-    d->scene->add(n);
-    d->renderer = new FlatRenderer;
-    d->camera.setTargetPoint( Point3( 0, 0, 0) );
-    d->camera.setOrientationVector( Point3( 0, 0, 1) );
-    d->camera.setPosition( Point3( 5.75, 3.75, -2.75) );
-    
-    try {
-        d->glslProgram = new GlslProgram();
-        d->vtxShader = new VertexShader();
-        d->fragShader = new FragmentShader();
-        
-        d->glslProgram->attachShader(d->vtxShader);
-        d->glslProgram->attachShader(d->fragShader);
-        
-        std::string filename = get_app_path();
-        
-        d->vtxShader->loadFromFile(filename + "/../Resources/Sample.vs");
-        bool vtxcompile = d->vtxShader->compile();
-        std::cout << "vtxcompile is: " << vtxcompile << std::endl;
-        std::cout << "Vertex shader compilation log:" << std::endl;
-        std::cout << d->vtxShader->infoLog() << std::endl;
-        
-        
-        d->fragShader->loadFromFile(filename + "/../Resources/Sample.fs");
-        bool fragcompile = d->fragShader->compile();
-        std::cout << "fragcompile is: " << fragcompile << std::endl;
-        std::cout   << "Fragment shader compilation log:" << std::endl
-            << d->fragShader->infoLog() << std::endl;
-        
-        
-        bool link = d->glslProgram->link();
-        std::cout << "Link is: " << link << std::endl;
-        std::cout   << "Link info log:" << std::endl 
-            << d->glslProgram->buildLog() << std::endl;
-        
-        
-    } catch(core::GlException & e) {
-        std::cerr   << "GLException: " << e.what() << std::endl
-        << e.error() << ": " << e.errorString() << std::endl;
-    } catch (std::exception & e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
-    }
-}
+    d->initialized = false;
 
-void TestApp::reshape(int w, int h)
-{
-#define DEFAULT_HEIGHT (2.5f)
+    /* Initialize SDL's Video subsystem */
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        return;// false;
+    }
     
-    // Set up the rendering context, define display lists etc.:
+	CLManager::instance()->setUseGPU(false);
+	if (!PlastilinaEngine::initialize(PS_OPENGL|PS_OPENCL)) {
+		return;
+	}
+	
+	d->render.initialize();
+    
+    /* Turn on double buffering with a 24bit Z buffer.
+     * You may need to change this to 16 or 32 for your system */
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    
+    /* Request opengl 3.2 context.
+     * SDL doesn't have the ability to choose which profile at this time of writing,
+     * but it should default to the core profile */
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    
+    /* Create our window centered at 512x512 resolution */
+    d->mainwindow = SDL_CreateWindow("TEST", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                  640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    if (!d->mainwindow) {
+        /* Die if creation failed */
+        std::cerr << "Unable to create window" << std::endl;
+        return;
+    }
+    /* Create our opengl context and attach it to our window */
+    d->maincontext = SDL_GL_CreateContext(d->mainwindow);
+
+	// Set up the rendering context, define display lists etc.:
     //glClearColor( 0.4, 0.4, 0.4, 1.0 );
     glClearColor( 0.0, 0.0, 0.0, 1.0 );
     glClearDepth(1.0f);
     glEnable( GL_DEPTH_TEST);
     glEnable( GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_LIGHT0);
+	
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, NULL);
+	
     
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    
+
+	d->restart();
+	
+	reshape(640,480);
+	
+    d->initialized = true;
+}
+
+void TestApp::reshape(int w, int h)
+{
+#define DEFAULT_HEIGHT (2.5f)
+
     float aspectRatio = float(w) / float(h);
     // setup viewport, projection etc. for OpenGL:
     glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
-    d->camera.setViewport(0, 0, w, h);
-    d->camera.setPerspectiveMatrix(45.0, aspectRatio, 1.0, 50.0);
-    glMatrixMode( GL_PROJECTION );
-    glLoadMatrixf(d->camera.projection().data());
-    
-    glMatrixMode( GL_MODELVIEW );
+	auto camera = d->scene->getCamera()->camera();
+    camera->setViewport(0, 0, w, h);
+    camera->setPerspectiveMatrix(45.0, aspectRatio, 1.0, 50.0);
+    camera->setTargetPoint( Point3( 0, 0, 0) );
+    camera->setOrientationVector( Point3( 0, 1, 0) );
+    camera->setPosition( Point3( 0.0f, 2.0f, -10.0f) );
+	
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	SDL_GL_SwapWindow(d->mainwindow);
 }
 
 void TestApp::display()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+//	glClear( GL_DEPTH_BUFFER_BIT );
     
-    glEnable(GL_LIGHT0);
+//	d->scene->render();
+	d->render.render(0);
+	
+	SDL_GL_SwapWindow(d->mainwindow);
+}
+
+void TestApp::Impl::restart() {
+	static int counter = 0;
+	counter++;
+	std::string name =  std::string("Scene ") + std::to_string(counter);
+	scene = std::make_shared<Scene>(name);
     
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glLoadMatrixf(d->camera.modelView().data());
-    
+    SurfaceNode::shared_ptr n = std::make_shared<SurfaceNode>(new ::Plane());
+    n->surface()->setColor(Color(0.0, 1.0, 0, 0.2f));
+	SurfaceNode::shared_ptr n2 = std::make_shared<SurfaceNode>(new ::Plane());
+    n2->surface()->setColor(Color(1.0, 0.6f, 0.5f, 0.2f));
+    scene->add(n);
+	//	d->scene->add(n2);
+	n2->transform() *= Eigen::Translation3f(Eigen::Vector3f(3,0,0));
+    CameraNode::shared_ptr cam = scene->createCamera();
+    scene->add(cam);
+    material = std::make_shared<PointMaterial>();
+    material2 = std::make_shared<PhongMaterial>();
     try {
-        d->glslProgram->useProgram();
-        Iterator<SceneNode> it = d->scene->constIterator();
-        while (it.hasNext()) {
-            auto n = it.next();
-            auto s = n ? std::dynamic_pointer_cast<SurfaceNode>(n) : nullptr;
-            if (s) {
-                d->renderer->renderObject(s->surface());
-            }
-        }
-    } catch(core::GlException & e) {
+        material->load();
+		
+        
+        material2->load();
+        material2->setDiffuse (Color(1.0f, 0.4f, 0.8f, 1.0f));
+        material2->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
+        material2->setAmbient (Color(1.0f, 0.1f, 0.1f, 1.0f));
+        material2->setExponent(200);
+		
+        n2->setMaterial(material);
+		n->setMaterial(material2);
+	} catch(core::GlException & e) {
         std::cerr   << "GLException: " << e.what() << std::endl
         << e.error() << ": " << e.errorString() << std::endl;
+    } catch (std::exception & e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
     }
-    
-    SDL_GL_SwapBuffers();
+
 }

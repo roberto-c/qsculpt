@@ -30,7 +30,7 @@ public:
     
     void reshape(int w, int h);
     
-    void keyboard(unsigned char key, int x, int y);
+    void keyboard(int key, int x, int y);
     
     bool quitRequested();
     

@@ -8,7 +8,6 @@
  */
 #define __CL_ENABLE_EXCEPTIONS
 
-#include <GLUT/GLUT.h>
 #include <OpenCL/opencl.h>
 #include "cl.hpp"
 
@@ -44,8 +43,8 @@
 #include "DocumentModelTest.h"
 #include "SubdivisionTest.h"
 
-#include "PlastilinaCore/GlslShader.h"
-#include "PlastilinaCore/GlslProgram.h"
+#include "PlastilinaCore/opengl/GlslShader.h"
+#include "PlastilinaCore/opengl/GlslProgram.h"
 #include "PlastilinaCore/Color.h"
 
 #define NOINLINE __attribute__ ((noinline))
@@ -55,42 +54,6 @@
 #define NUM_THREADS (1)
 
 using namespace data;
-
-#define DATA_SIZE (1024)
-const char* g_KernelSource = "\n" \
-"__kernel square( __global float * input, \n" \
-"                __global float * output, \n" \
-"                const unsigned int count) \n" \
-"{ \n" \
-"    int i = get_local_id(0); \n" \
-"    if (i < count) { \n" \
-"        output[i] = input[i]*input[i]; \n" \
-"    } \n" \
-"} \n";
-
-
-
-
-
-void openclTest()
-{
-    std::vector<cl::Platform> platforms;
-    std::vector<cl::Device> devices;
-    std::string value;
-    
-    std::string val = std::string("test");
-    
-    try {
-        cl::Platform::get(&platforms);
-        if (platforms.size() > 0) {
-            platforms[0].getInfo(CL_PLATFORM_NAME, &value);
-            std::cout << "Platform name: " << value << std::endl;
-        }
-    } catch (cl::Error & e) {
-        std::cerr << "Error: " << e.what() << std::endl; 
-    }
-
-}
 
 void printSceneNode(SceneNode::weak_ptr node, const std::string & indent = "") {
     if (node.expired())
@@ -192,8 +155,8 @@ bool faceIteratorVertexTest()
         std::unique_ptr<ISurface> surf(new Subdivision);
         
         Point3 vtx, tmp;
-        std::vector<size_t> vertexID;
-        Vertex::shared_ptr v;
+        std::vector<Vertex::size_t> vertexID;
+        Vertex::shared_ptr v = NULL;
         
         vertexID.push_back(surf->addVertex(Point3(0,0,0)));
         vertexID.push_back(surf->addVertex(Point3(1,0,0)));
@@ -213,14 +176,14 @@ bool faceIteratorVertexTest()
             std::cerr << "Face IID: " << faceIt.peekNext()->iid();
             faceIt.next();
         }
-
-        std::cerr << "v.edge() " << v->edge()->iid();
-        std::cerr << "v.edge().face() " << (v->edge()->face() ? v->edge()->face()->iid() : -1);
-        std::cerr << "v.edge().pair() " << (v->edge()->pair() && v->edge()->pair() ? v->edge()->pair()->iid() : -1);
-        if (v->edge()->pair()) {
-            std::cerr << "v.edge().pair().face() " << (v->edge()->pair()->face() ? v->edge()->pair()->face()->iid() : -1);
-        }
-            
+		if (v) {
+			std::cerr << "v.edge() " << v->edge()->iid();
+			std::cerr << "v.edge().face() " << (v->edge()->face() ? v->edge()->face()->iid() : -1);
+			std::cerr << "v.edge().pair() " << (v->edge()->pair() && v->edge()->pair() ? v->edge()->pair()->iid() : -1);
+			if (v->edge()->pair()) {
+				std::cerr << "v.edge().pair().face() " << (v->edge()->pair()->face() ? v->edge()->pair()->face()->iid() : -1);
+			}
+		}
         
 //        faceIt = v->faceIterator();
 //        while(faceIt.hasNext()) {
@@ -254,6 +217,10 @@ void iteratorTest();
 extern "C" int SDL_main(int argc, char** argv) {
     //qInstallMsgHandler(myMessageOutput);
     
+	std::cout << "int size: " << sizeof(int) << "\n";
+	std::cout << "uint size: " << sizeof(uint) << "\n";
+	std::cout << "long size: " << sizeof(long) << "\n";
+	std::cout << "ulong size: " << sizeof(u_long) << "\n";
     try {
         
         TestApp app(argc, argv);

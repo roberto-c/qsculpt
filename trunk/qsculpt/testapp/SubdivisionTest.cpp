@@ -19,23 +19,23 @@
 #include "PlastilinaCore/Logging.h"
 
 struct NIID {
-    typedef uint size_t;
+    typedef unsigned long size_t;
     
     //size_t iid;
     size_t iid() {
         ::size_t val = (::size_t)this;
-        return (uint)(val >> 4) & 0xFFFFFFFF;
+        return (unsigned long)(val >> 4) & 0xFFFFFFFF;
     }
 };
 
 struct NVertex : public NIID {
-    typedef uint size_t;
+    typedef NIID::size_t size_t;
     
     Eigen::Vector4f p;
 };
 
 struct NEdge : public NIID {
-    typedef uint size_t;
+    typedef NIID::size_t size_t;
     size_t head;
     size_t tail;
     size_t next;
@@ -44,7 +44,7 @@ struct NEdge : public NIID {
 };
 
 struct NFace : public NIID {
-    typedef uint size_t;
+    typedef NIID::size_t size_t;
     
     size_t vtx;
     size_t edge;
@@ -187,7 +187,7 @@ static void printModelRecursive(const Document::shared_ptr & doc,
     TRACEFUNCTION();
     
     Logging_increaseIndentation();
-    int numrows = doc->childrenCount(parent);
+    size_t numrows = doc->childrenCount(parent);
     for(int i = 0; i < numrows; ++i) {
         auto index = doc->index(i, parent);
         std::cerr << "iid: " << index->iid();
