@@ -4959,7 +4959,7 @@ inline Program linkProgram(
     void* data = NULL,
     cl_int* err = NULL) 
 {
-    cl_int err_local = CL_SUCCESS;
+    cl_int error = CL_SUCCESS;
 
     cl_program programs[2] = { input1(), input2() };
 
@@ -4974,11 +4974,11 @@ inline Program linkProgram(
         programs,
         notifyFptr,
         data,
-        &err_local);
+        &error);
 
-    detail::errHandler(err_local,__COMPILE_PROGRAM_ERR);
+    detail::errHandler(error,__COMPILE_PROGRAM_ERR);
     if (err != NULL) {
-        *err = err_local;
+        *err = error;
     }
 
     return Program(prog);
@@ -4991,7 +4991,7 @@ inline Program linkProgram(
     void* data = NULL,
     cl_int* err = NULL) 
 {
-    cl_int err_local = CL_SUCCESS;
+    cl_int error = CL_SUCCESS;
 
     cl_program * programs = (cl_program*) alloca(inputPrograms.size() * sizeof(cl_program));
 
@@ -5010,11 +5010,11 @@ inline Program linkProgram(
         programs,
         notifyFptr,
         data,
-        &err_local);
+        &error);
 
-    detail::errHandler(err_local,__COMPILE_PROGRAM_ERR);
+    detail::errHandler(error,__COMPILE_PROGRAM_ERR);
     if (err != NULL) {
-        *err = err_local;
+        *err = error;
     }
 
     return Program(prog);
