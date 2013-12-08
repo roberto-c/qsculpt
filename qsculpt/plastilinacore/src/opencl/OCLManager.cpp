@@ -18,8 +18,9 @@ struct CLManager::Impl {
 	
 	bool					useGpu;
 	bool                    initialized;
+    intptr_t				glCtxHnd;
 	
-	Impl() : useGpu(false), initialized(false)
+	Impl() : useGpu(false), initialized(false), glCtxHnd(0)
 	{}
 };
 
@@ -41,6 +42,11 @@ CLManager::CLManager() : d(new Impl)
 void CLManager::setUseGPU(bool useGPU)
 {
 	d->useGpu = useGPU;
+}
+
+void CLManager::setOpenGLContext(intptr_t hnd)
+{
+    d->glCtxHnd = hnd;
 }
 
 /**
@@ -67,6 +73,9 @@ bool CLManager::initialize()
 		
 		platforms[0].getInfo(CL_PLATFORM_NAME, &value);
 		std::cout << "Platform name: " << value << std::endl;
+        std::string extensions;
+        platforms[0].getInfo(CL_PLATFORM_EXTENSIONS, &extensions);
+        std::cout << "Extensions: " << extensions << std::endl;
 		
 		cl_device_type deviceTypeToUse = CL_DEVICE_TYPE_CPU;
 		if (d->useGpu) {
@@ -99,8 +108,13 @@ bool CLManager::initialize()
 				std::cout << ")" << std::endl;
 			}
 		}
-		
-		d->context = cl::Context(d->devices);
+        std::vector<cl_context_properties> prop;
+        if (d->glCtxHnd) {
+            prop.push_back(CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE);
+            prop.push_back(d->glCtxHnd);
+        }
+        prop.push_back(0);
+		d->context = cl::Context(d->devices, prop.data());
 		d->queue = cl::CommandQueue(d->context, d->devices[0], 0, &err);
 	}
 	catch (cl::Error err) {
