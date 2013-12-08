@@ -10,9 +10,9 @@
 
 namespace gl {
 
-template <int TextureUnit>
+template <int TextureTarget>
 template <int TextureUnit2>
-struct Texture<TextureUnit>::Impl {
+struct Texture<TextureTarget>::Impl {
 	GLuint  name;
 	GLsizei width, height, depth;
 	GLenum  format;
@@ -34,21 +34,21 @@ struct Texture<TextureUnit>::Impl {
 	
 };
 
-template <int TextureUnit>
-Texture<TextureUnit>::Texture() : d(new Impl<TextureUnit>)
+template <int TextureTarget>
+Texture<TextureTarget>::Texture() : d(new Impl<TextureTarget>)
 {
 	glGenTextures(1, &d->name);
 }
 
-template <int TextureUnit>
-Texture<TextureUnit>::Texture(GLuint width, GLuint height, GLuint depth, GLenum flags)
-: d(new Impl<TextureUnit>(width,height,depth,flags))
+template <int TextureTarget>
+Texture<TextureTarget>::Texture(GLuint width, GLuint height, GLuint depth, GLenum flags)
+: d(new Impl<TextureTarget>(width,height,depth,flags))
 {
 	glGenTextures(1, &d->name);
 }
 
-template <int TextureUnit>
-Texture<TextureUnit>::~Texture()
+template <int TextureTarget>
+Texture<TextureTarget>::~Texture()
 {
 	glDeleteTextures(1, &d->name);
 }
@@ -56,18 +56,18 @@ Texture<TextureUnit>::~Texture()
 /**
  * get the target to which this framebuffer is going to be bound.
  */
-template <int TextureUnit>
-GLenum Texture<TextureUnit>::target() const
+template <int TextureTarget>
+GLenum Texture<TextureTarget>::target() const
 {
-	return TextureUnit;
+	return TextureTarget;
 }
 
 
 /**
  * Return the name id of the OpenGL object.
  */
-template <int TextureUnit>
-GLuint Texture<TextureUnit>::oid() const
+template <int TextureTarget>
+GLuint Texture<TextureTarget>::oid() const
 {
 	return d->name;
 }
@@ -75,21 +75,32 @@ GLuint Texture<TextureUnit>::oid() const
 /**
  * Bind the framebuffer object using the target
  */
-template <int TextureUnit>
-void Texture<TextureUnit>::bind()
+template <int TextureTarget>
+void Texture<TextureTarget>::bind()
 {
-	glBindTexture(TextureUnit, d->name);
+	glBindTexture(TextureTarget, d->name);
 }
 
 /**
  * Unbind the framebuffer
  */
-template <int TextureUnit>
-void Texture<TextureUnit>::unbind()
+template <int TextureTarget>
+void Texture<TextureTarget>::unbind()
 {
-	glBindTexture(TextureUnit, 0);
+	glBindTexture(TextureTarget, 0);
+}
+    
+template <int TextureTarget>
+void Texture<TextureTarget>::setParameter(GLenum pname, GLint value)
+{
+	glTexParameteri(TextureTarget, pname, value);
 }
 
+// instantiate Texture<GL_TEXTURE_2D>
+template class Texture<GL_TEXTURE_2D>;
+
+//
+// Texture2D definition
 	
 Texture2D::Texture2D()
 : Texture<GL_TEXTURE_2D>(1,1,1,0)
@@ -119,6 +130,13 @@ void Texture2D::texImage2D(GLenum target,
 						  const void *data)
 {
 	glTexImage2D(Texture2D::Target, level, internalformat, width, height, border, format, type, data);
+    THROW_IF_GLERROR("Failed to upload texture data");
+    d->width =width;
+    d->height = height;
+    d->depth = 1;
+    d->border = border;
+    d->format = format;
+    d->level = level;
 }
 	
 } /* End gl namespace */
