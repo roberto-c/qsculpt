@@ -22,10 +22,12 @@
 
 #include <PlastilinaCore/opencl/OCLManager.h>
 
+#include <CoreFoundation/CoreFoundation.h>
 
 struct PlastilinaEngineState {
 	bool openclInitialized;
 	bool openglInitialized;
+	std::string resourcesPath;
 	
 	PlastilinaEngineState()
 	: openclInitialized(false),
@@ -37,9 +39,29 @@ struct PlastilinaEngineState {
 
 PlastilinaEngineState g_engineState;
 
-bool PlastilinaEngine::initialize(uint subsystem)
+#ifdef __APPLE__
+intptr_t get_window_handle() {
+    // Get current CGL Context and CGL Share group
+    CGLContextObj kCGLContext = CGLGetCurrentContext();
+    CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
+	return (intptr_t)kCGLShareGroup;
+}
+#else
+intptr_t get_window_handle() {
+    std::cout << "Unknow system. Don't know how to get the window handle" << std::endl;
+	return NULL;
+}
+#endif
+
+
+bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
 {
-	if ((subsystem & PS_OPENCL)) {
+	if ( (subsystem & PlastilinaSubsystem::OPENCL) != PlastilinaSubsystem::NONE) {
+        if ((subsystem & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) != PlastilinaSubsystem::NONE) {
+            intptr_t sharegrp = get_window_handle();
+            CLManager::instance()->setOpenGLContext(sharegrp);
+        }
+        
 		g_engineState.openclInitialized = CLManager::instance()->initialize();
 		if (!g_engineState.openclInitialized) {
 			std::cerr << "Failed to initialize OpenCL" << std::endl;
@@ -52,4 +74,14 @@ bool PlastilinaEngine::initialize(uint subsystem)
 bool PlastilinaEngine::shutdown()
 {
 	return true;
+}
+
+void PlastilinaEngine::setResourcesFolder(const std::string & path)
+{
+	g_engineState.resourcesPath = path;
+}
+
+std::string PlastilinaEngine::resourcesFolder()
+{
+	return g_engineState.resourcesPath;
 }

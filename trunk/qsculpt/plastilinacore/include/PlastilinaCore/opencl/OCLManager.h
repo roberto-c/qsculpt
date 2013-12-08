@@ -22,6 +22,9 @@ public:
 	static CLManager*	instance();
 	
 	void setUseGPU(bool useGPU);
+    
+    void setOpenGLContext(intptr_t hnd);
+    
 	/**
 	 * Method used to initialize OpenCL. This creates a default context and
 	 * a command queue.

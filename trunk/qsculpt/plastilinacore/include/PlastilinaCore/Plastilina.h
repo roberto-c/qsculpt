@@ -27,6 +27,7 @@
 #include <typeinfo>
 #include <memory>
 #include <functional>
+#include <string>
 
 #define EIGEN_INITIALIZE_MATRICES_BY_ZERO
 
@@ -101,17 +102,32 @@ namespace std
     };
 }
 
-enum PlastilinaSubsystem {
-	PS_OPENGL  		= 0x0001,
-	PS_OPENCL 		= 0x0002
+enum class PlastilinaSubsystem {
+    NONE					= 0,
+	OPENGL  				= 0x0001,
+	OPENCL 					= 0x0002,
+    ENABLE_CL_GL_SHARING 	= 0x0004
 };
+
+template<class T>
+inline T operator|(T lhs, T rhs) {
+    return T(int(lhs) | int(rhs));
+}
+template<class T>
+inline T operator&(T lhs, T rhs) {
+    return T(int(lhs) & int(rhs));
+}
 
 class PlastilinaEngine
 {
 public:
-	static bool initialize(uint subsystem);
+	static bool initialize(PlastilinaSubsystem subsystem);
 	
 	static bool shutdown();
+	
+	static void setResourcesFolder(const std::string & path);
+	
+	static std::string resourcesFolder();
 };
 
 #endif /* qsculpt_Plastilina_h */
