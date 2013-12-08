@@ -13,6 +13,10 @@
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/Camera.h>
+#include <PlastilinaCore/ResourcesManager.h>
+
+#define VERTEX_SHADER_PATH "/shaders/Point.vs"
+#define FRAGMENT_SHADER_PATH "/shaders/Point.fs"
 
 struct PointMaterial::Impl
 {
@@ -43,16 +47,19 @@ void PointMaterial::load()
     if (d->initialized) {
         return;
     }
-        
+	
+	ResourcesManager mgr;
     if (!d->vtxShader.compileStatus()) {
-        d->vtxShader.loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/plastilinacore/shaders/Point.vs");
+		std::string path = mgr.findResourcePath("Point", "vs");
+        d->vtxShader.loadFromFile(path);
         if (!d->vtxShader.compile()){
             std::cerr << "vtxShader: Compilation failed" << std::endl;
             std::cerr << d->vtxShader.infoLog() << std::endl;
         }
     }
     if (!d->fragShader.compileStatus()){
-        d->fragShader.loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/plastilinacore/shaders/Point.fs");
+		std::string path = mgr.findResourcePath("Point", "fs");
+        d->fragShader.loadFromFile(path);
         if (!d->fragShader.compile()){
             std::cerr << "fragShader: Compilation failed" << std::endl;
             std::cerr << d->fragShader.infoLog() << std::endl;

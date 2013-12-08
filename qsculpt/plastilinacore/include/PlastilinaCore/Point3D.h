@@ -23,6 +23,8 @@
 #include <Eigen/Geometry>
 #include <vector>
 
+typedef Eigen::Vector2f Point2;
+typedef Eigen::Vector2f Vector2;
 typedef Eigen::Vector3f Point3;
 typedef Eigen::Vector3f Vector3;
 typedef Eigen::Vector4f Point4;

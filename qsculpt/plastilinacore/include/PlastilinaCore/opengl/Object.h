@@ -13,7 +13,7 @@ namespace gl {
 template<typename T>
 class Object {
 protected:
-	uint oglname_;
+	GLuint oglname_;
 	
 public:
 	Object() : oglname_(0) {
@@ -21,7 +21,7 @@ public:
 	}
 	
 	~Object() {
-		T::destroy(oglname_);
+		T::destroy(1, &oglname_);
 	}
 };
 };

@@ -39,6 +39,7 @@ struct SmoothVtxStruct
     GLfloat v[4];
     GLfloat n[4];
     GLfloat color[4];
+    GLfloat t[2];
 }; //SmoothVtxStruct;
 
 
@@ -149,6 +150,13 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 								  sizeof(SmoothVtxStruct),
 								  (GLvoid*)offsetof(SmoothVtxStruct, n));
 		}
+        GLint attTexCoord = mat->shaderProgram()->attributeLocation("glTexCoord");
+		if (attTexCoord >= 0) {
+			glEnableVertexAttribArray(attTexCoord);
+			glVertexAttribPointer(attTexCoord, 2, GL_FLOAT, GL_FALSE,
+								  sizeof(SmoothVtxStruct),
+								  (GLvoid*)offsetof(SmoothVtxStruct, t));
+		}
 		THROW_IF_GLERROR("Failed to get attribute");
     }
 	
@@ -233,6 +241,8 @@ void SubdivisionRenderable::fillVertexBufferPoints(ISurface* mesh, VertexBuffer*
 		vtxData[offset].n[1] = v->normal().y();
 		vtxData[offset].n[2] = v->normal().z();
 		vtxData[offset].n[3] = 0.0f;
+        vtxData[offset].t[0] = v->texcoords().x();
+        vtxData[offset].t[1] = v->texcoords().y();
 		memcpy(vtxData[offset].color, v->color().data().data(), sizeof(vtxData[offset].color)) ;
         offset++;
     }
@@ -317,6 +327,8 @@ bool SubdivisionRenderable::processTriangle(const Vertex & v1,
     vtxData[offset].n[1] = v1.normal().y();
     vtxData[offset].n[2] = v1.normal().z();
     vtxData[offset].n[3] = 0;
+    vtxData[offset].t[0] = v1.texcoords().x();
+    vtxData[offset].t[1] = v1.texcoords().y();
     memcpy(vtxData[offset].color, v1.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
@@ -328,6 +340,8 @@ bool SubdivisionRenderable::processTriangle(const Vertex & v1,
     vtxData[offset].n[1] = v2.normal().y();
     vtxData[offset].n[2] = v2.normal().z();
     vtxData[offset].n[3] = 0;
+    vtxData[offset].t[0] = v2.texcoords().x();
+    vtxData[offset].t[1] = v2.texcoords().y();
     memcpy(vtxData[offset].color, v2.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     
@@ -339,6 +353,8 @@ bool SubdivisionRenderable::processTriangle(const Vertex & v1,
     vtxData[offset].n[1] = v3.normal().y();
     vtxData[offset].n[2] = v3.normal().z();
     vtxData[offset].n[3] = 0;
+    vtxData[offset].t[0] = v3.texcoords().x();
+    vtxData[offset].t[1] = v3.texcoords().y();
     memcpy(vtxData[offset].color, v3.color().data().data(), sizeof(vtxData[offset].color)) ;
     offset++;
     

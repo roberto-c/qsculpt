@@ -41,6 +41,11 @@ template <int TextureTarget>
 class Texture
 {
 public:
+	typedef std::shared_ptr<Texture<TextureTarget> > shared_ptr;
+	typedef std::weak_ptr<Texture<TextureTarget> > weak_ptr;
+	typedef std::shared_ptr<const Texture<TextureTarget> > const_shared_ptr;
+	typedef std::weak_ptr<const Texture<TextureTarget> > const_weak_ptr;
+	
     Texture();
 
     virtual ~Texture();
@@ -69,6 +74,8 @@ public:
 	
 	GLint internalFormat() const;
 	
+    void setParameter(GLenum pname, GLint value);
+    
 protected:
 	enum {
 		Target = TextureTarget
@@ -88,6 +95,11 @@ protected:
 class Texture2D : public Texture<GL_TEXTURE_2D>
 {
 public:
+    typedef std::shared_ptr<Texture2D> shared_ptr;
+	typedef std::weak_ptr<Texture2D> weak_ptr;
+	typedef std::shared_ptr<const Texture2D> const_shared_ptr;
+	typedef std::weak_ptr<const Texture2D> const_weak_ptr;
+	
 	Texture2D();
 	Texture2D(GLuint width, GLuint height, GLenum flags);
 	virtual ~Texture2D();

@@ -271,10 +271,12 @@ Vertex::Vertex()
 
 Vertex::Vertex(const Point3 & position, 
                const Vector3 & normal,
-               const Color & color)
+               const Color & color,
+			   const Point2 & texCoords)
                    : _position(position),
                    _normal(normal.normalized()),
                    _color(color),
+                   _texCoords(texCoords),
                    _flags(VF_None),
                    _he(NULL),
                    _userData(NULL)

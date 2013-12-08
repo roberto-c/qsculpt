@@ -28,6 +28,10 @@ static std::atomic_int NEXT_ID;
 struct Material::Impl {
     int id;
     GlslProgram shaderProgram;
+	
+	Impl() {
+		id = NEXT_ID++;
+	}
 };
 
 Material::Material() : d_(new Impl)

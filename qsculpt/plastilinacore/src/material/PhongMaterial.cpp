@@ -8,11 +8,12 @@
 
 #include <PlastilinaCore/material/PhongMaterial.h>
 
+#include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/opengl/GlslShader.h>
 #include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/SceneNode.h>
-#include <PlastilinaCore/Camera.h>
+#include <PlastilinaCore/ResourcesManager.h>
 
 struct PhongMaterial::Impl
 {
@@ -49,16 +50,19 @@ void PhongMaterial::load()
     if (d->initialized) {
         return;
     }
-        
+	
+	ResourcesManager mgr;
     if (!d->vtxShader.compileStatus()) {
-        d->vtxShader.loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/plastilinacore/shaders/Phong.vs");
+		std::string path = mgr.findResourcePath("Phong", "vs");
+        d->vtxShader.loadFromFile(path);
         if (!d->vtxShader.compile()){
             std::cerr << "vtxShader: Compilation failed" << std::endl;
             std::cerr << d->vtxShader.infoLog() << std::endl;
         }
     }
     if (!d->fragShader.compileStatus()){
-        d->fragShader.loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/plastilinacore/shaders/Phong.fs");
+		std::string path = mgr.findResourcePath("Phong", "fs");
+        d->fragShader.loadFromFile(path);
         if (!d->fragShader.compile()){
             std::cerr << "fragShader: Compilation failed" << std::endl;
             std::cerr << d->fragShader.infoLog() << std::endl;

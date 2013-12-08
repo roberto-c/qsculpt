@@ -53,6 +53,7 @@ private:
     Point3        _position; // 12
     Vector3       _normal;  // 12
     Color         _color;   // 12
+	Vector2		  _texCoords; //12
     VertexFlags   _flags;   // 4
     Edge        * _he;      // 8
     void        * _userData; // 8
@@ -69,8 +70,9 @@ public:
      */
     Vertex(const Point3 & position,
            const Vector3 & normal = Vector3(0, 1, 0),
-           const Color & color = Color(1, 1, 1, 1)
-                                   );
+           const Color & color = Color(1, 1, 1, 1),
+		   const Point2 & texCoords = Point2(0,0)
+		   );
 
     /**
      * Copy constructor. Creates a new instance of a vertex
@@ -98,6 +100,12 @@ public:
      */
     Vector3 normal() const { return _normal; }
     Vector3& normal() { return _normal; }
+	
+	/**
+     * Gets / sets the texture coordinates attribute for this vertex instance
+     */
+    Vector2 texcoords() const { return _texCoords; }
+    Vector2& texcoords() { return _texCoords; }
 
     /**
      * Assign or returns one of the half edges associated to the vertex.

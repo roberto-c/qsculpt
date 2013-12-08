@@ -128,8 +128,8 @@ void Scene::render() const
 		state.camera = getCamera()->camera().get();
 		state.root = this;
 		state.currentNode = this;
-//		state.renderMode = RM_Smooth;
-		state.renderMode = RM_Points;
+		state.renderMode = RM_Smooth;
+//		state.renderMode = RM_Points;
 		_d->renderRecursive(state,this);
     } catch(core::GlException & e) {
         std::cerr   << "GLException: " << e.what() << std::endl
