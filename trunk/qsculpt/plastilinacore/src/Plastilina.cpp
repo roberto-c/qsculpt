@@ -19,12 +19,14 @@
  ***************************************************************************/
 
 #include <PlastilinaCore/Plastilina.h>
-
+#include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 
 #include <CoreFoundation/CoreFoundation.h>
 
 struct PlastilinaEngineState {
+    std::shared_ptr<core::Context>	defaultctx;
+    std::shared_ptr<core::Context>	currentctx;
 	bool openclInitialized;
 	bool openglInitialized;
 	std::string resourcesPath;
@@ -84,4 +86,17 @@ void PlastilinaEngine::setResourcesFolder(const std::string & path)
 std::string PlastilinaEngine::resourcesFolder()
 {
 	return g_engineState.resourcesPath;
+}
+
+void PlastilinaEngine::setCurrentContext(std::shared_ptr<core::Context> & ctx)
+{
+    g_engineState.currentctx = ctx;
+}
+
+core::Context & PlastilinaEngine::currentContext()
+{
+    if (!g_engineState.currentctx) {
+        throw std::runtime_error("No current context set");
+    }
+    return *g_engineState.currentctx;
 }

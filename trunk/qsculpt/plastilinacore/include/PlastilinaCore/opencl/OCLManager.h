@@ -41,6 +41,11 @@ public:
 	 * Returns the context created by the manager at initialization.
 	 */
 	cl::Context context();
+    
+    /**
+     * Sets the current OpenCL context.
+     */
+    void setCurrentContext(cl::Context & clctx);
 	
 	/**
 	 * Returns the command queue created at intialization.

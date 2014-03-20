@@ -114,7 +114,7 @@ bool CLManager::initialize()
             prop.push_back(d->glCtxHnd);
         }
         prop.push_back(0);
-		d->context = cl::Context(d->devices, prop.data());
+		d->context = cl::Context(d->devices, prop.size() ==1 ? NULL : prop.data());
 		d->queue = cl::CommandQueue(d->context, d->devices[0], 0, &err);
 	}
 	catch (cl::Error err) {

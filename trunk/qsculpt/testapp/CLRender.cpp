@@ -5,7 +5,7 @@
 //  Created by Juan Roberto Cabral Flores on 7/26/13.
 //  Copyright (c) 2013 Juan Roberto Cabral Flores. All rights reserved.
 //
-
+#include "stable.h"
 #include "CLRender.h"
 
 #include <PlastilinaCore/opencl/OCLManager.h>
@@ -16,13 +16,16 @@
 struct CLRender::Impl
 {
 	std::vector<unsigned char> buffer, bufferOut;
+    gl::Texture2D::shared_ptr glTexSrc, glTexDest;
 	cl::Buffer   imageInp, imageOut;
+    cl::ImageGL  imageSrc, imageDest;
 	cl::Program  program;
-	cl::Kernel   kernel;
-	
-//	Impl() {
-//		
-//	}
+    cl::Kernel   krnFilterImg;
+	float 		 time;
+
+	Impl() : time(0) {
+		
+	}
 };
 
 CLRender::CLRender()
@@ -59,7 +62,7 @@ void CLRender::initialize()
 									std::make_pair(kernelSource.c_str(),kernelSource.length()));
 		d->program = cl::Program(mngr->context(), source);
 		d->program.build();
-		d->kernel = cl::Kernel(d->program,"filter");
+        d->krnFilterImg = cl::Kernel(d->program, "filter_img");
 	} catch (cl::Error & e) {
 		std::cerr << "OpenCL exception:" << e.err() << ": " << e.what() << "\n";
 	}
@@ -90,27 +93,64 @@ const std::vector<unsigned char> & CLRender::bufferOutput() const
 	return d->bufferOut;
 }
 
+void CLRender::setGLTexSrc(
+                         gl::Texture2D::shared_ptr tex)
+{
+    d->glTexSrc = tex;
+    CLManager * mgr = CLManager::instance();
+    d->imageSrc = cl::ImageGL(mgr->context(),
+                               0,
+                               tex->target(),
+                               0,
+                               tex->oid());
+}
+gl::Texture2D::shared_ptr CLRender::glTexSrc()
+{
+    return d->glTexSrc;
+}
+
+void CLRender::setGLTexDest(
+                           gl::Texture2D::shared_ptr tex)
+{
+    d->glTexDest = tex;
+    CLManager * mgr = CLManager::instance();
+    d->imageDest = cl::ImageGL(mgr->context(),
+                               0,
+                               tex->target(),
+                               0,
+                               tex->oid());
+}
+gl::Texture2D::shared_ptr CLRender::glTexDest()
+{
+    return d->glTexDest;
+}
+
+
 void CLRender::swapBuffers()
 {
 	std::swap(d->bufferOut, d->buffer);
+    
+    std::swap(d->glTexDest, d->glTexSrc);
+    std::swap(d->imageDest, d->imageSrc);
 }
 
 void CLRender::render(float step)
 {
 	try {
+        d->time += step;
 		CLManager * clmgr = CLManager::instance();
-		clmgr->commandQueue().enqueueWriteBuffer(d->imageInp, CL_TRUE, 0,
-												 d->buffer.size(),
-												 d->buffer.data());
-		d->kernel.setArg(0, d->imageInp);
-		d->kernel.setArg(1, d->imageOut);
-		d->kernel.setArg(2, 1024);
-		d->kernel.setArg(3, 768);
-		clmgr->commandQueue().enqueueNDRangeKernel(d->kernel, cl::NullRange,
-												   cl::NDRange(1024,768));
-		clmgr->commandQueue().enqueueReadBuffer(d->imageOut, CL_TRUE, 0,
-												d->bufferOut.size(),
-												d->bufferOut.data());
+        std::vector<cl::Memory> obj;
+        obj.push_back(d->imageDest);
+        obj.push_back(d->imageSrc);
+        clmgr->commandQueue().enqueueAcquireGLObjects(&obj);
+        d->krnFilterImg.setArg(0, d->imageSrc);
+        d->krnFilterImg.setArg(1, d->imageDest);
+        d->krnFilterImg.setArg(2, d->time);
+        clmgr->commandQueue().enqueueNDRangeKernel(d->krnFilterImg,
+                                                   cl::NullRange,
+                                                   cl::NDRange(256,256));
+        clmgr->commandQueue().enqueueReleaseGLObjects(&obj);
+        clmgr->commandQueue().finish();
 	} catch (cl::Error & e) {
 		std::cerr << "OpenCL exception:" << e.err() << ": " << e.what() << "\n";
 	}

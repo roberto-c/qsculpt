@@ -6,7 +6,7 @@
 //
 //
 
-#include "Texture.h"
+#include <PlastilinaCore/opengl/Texture.h>
 
 namespace gl {
 
