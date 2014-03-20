@@ -6,7 +6,7 @@
 //
 //
 
-#include "Sampler.h"
+#include "PlastilinaCore/opengl/Sampler.h"
 
 
 namespace gl {

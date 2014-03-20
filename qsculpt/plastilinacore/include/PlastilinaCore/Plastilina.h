@@ -50,6 +50,12 @@
 #endif /* __APPLE__ */
 
 
+#ifdef __OBJC__
+#define OBJC_CLASS(name) @class name
+#else
+#define OBJC_CLASS(name) typedef struct objc_object name
+#endif
+
 namespace Eigen {
     typedef Affine3f Transform3f;    
 };
@@ -109,14 +115,17 @@ enum class PlastilinaSubsystem {
     ENABLE_CL_GL_SHARING 	= 0x0004
 };
 
-template<class T>
-inline T operator|(T lhs, T rhs) {
-    return T(int(lhs) | int(rhs));
+inline PlastilinaSubsystem operator|(PlastilinaSubsystem lhs, PlastilinaSubsystem rhs) {
+    return PlastilinaSubsystem(int(lhs) | int(rhs));
 }
-template<class T>
-inline T operator&(T lhs, T rhs) {
-    return T(int(lhs) & int(rhs));
+
+inline PlastilinaSubsystem operator&(PlastilinaSubsystem lhs, PlastilinaSubsystem rhs) {
+    return PlastilinaSubsystem(int(lhs) & int(rhs));
 }
+
+namespace core {
+class Context;
+};
 
 class PlastilinaEngine
 {
@@ -126,7 +135,11 @@ public:
 	static bool shutdown();
 	
 	static void setResourcesFolder(const std::string & path);
-	
+    
+    static void setCurrentContext(std::shared_ptr<core::Context> & ctx);
+    
+    static core::Context & currentContext();
+    
 	static std::string resourcesFolder();
 };
 
