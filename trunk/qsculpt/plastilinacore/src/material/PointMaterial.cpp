@@ -50,7 +50,7 @@ void PointMaterial::load()
 	
 	ResourcesManager mgr;
     if (!d->vtxShader.compileStatus()) {
-		std::string path = mgr.findResourcePath("Point", "vs");
+		std::string path = mgr.findResourcePath("Point", "vs", "shaders");
         d->vtxShader.loadFromFile(path);
         if (!d->vtxShader.compile()){
             std::cerr << "vtxShader: Compilation failed" << std::endl;
@@ -58,7 +58,7 @@ void PointMaterial::load()
         }
     }
     if (!d->fragShader.compileStatus()){
-		std::string path = mgr.findResourcePath("Point", "fs");
+		std::string path = mgr.findResourcePath("Point", "fs","shaders");
         d->fragShader.loadFromFile(path);
         if (!d->fragShader.compile()){
             std::cerr << "fragShader: Compilation failed" << std::endl;

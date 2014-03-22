@@ -90,11 +90,13 @@ public:
 	/**
 	 * Render all scene
 	 */
-	void render() const;
+	virtual void render() const;
+    
+    virtual void render(const RenderState * state) const;
     
 private:
     class SceneNodeIterator;
-    class Impl;
+    struct Impl;
     
     std::unique_ptr<Impl> _d;
     

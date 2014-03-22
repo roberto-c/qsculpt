@@ -318,9 +318,9 @@ void QSculptWindow::newFile()
 void QSculptWindow::open()
 {
     if (maybeSave()) {
-//        QString fileName = QFileDialog::getOpenFileName(this);
-//        if (!fileName.isEmpty())
-//            loadFile(fileName);
+        QString fileName = QFileDialog::getOpenFileName(this);
+        if (!fileName.isEmpty())
+            loadFile(fileName);
     }
 }
 

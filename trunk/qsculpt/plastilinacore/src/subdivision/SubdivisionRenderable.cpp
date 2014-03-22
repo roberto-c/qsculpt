@@ -44,7 +44,6 @@ struct SmoothVtxStruct
 
 
 SubdivisionRenderable::SubdivisionRenderable(const Subdivision * surface)
-: surface(surface)
 {
 	std::cerr << "SmoothRenderer constructor" << std::endl;
 }

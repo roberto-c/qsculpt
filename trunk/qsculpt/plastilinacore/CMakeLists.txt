@@ -1,4 +1,11 @@
+# Copyright 2014 Juan R Cabral
+#
+# Module: PlastilinaCore 
+# Description: 
+#   Build system for PlastilinaCore library. Main purpose of the library is to be
+#   a framework for 3D graphics and physics.
 
+# Sources for the project
 set(PLASTILINACORE_SOURCES 
 	./src/BOManager.cpp
 	./src/BufferObject.cpp
@@ -52,6 +59,7 @@ set(PLASTILINACORE_SOURCES
 	./src/WireframeRenderer.cpp
 )
 
+# Public headers. These headers are meant to be distributed to users of the engine
 set(PLASTILINACORE_HEADERS_ROOT ./include/PlastilinaCore)
 set(PLASTILINACORE_PUBLIC_HEADERS 
 	${PLASTILINACORE_HEADERS_ROOT}/BOManager.h 
@@ -126,6 +134,8 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/WireframeRenderer.h
 )
 
+# Resources embedded in the framework. 
+# Texturex, shader sources, 3D meshes, etc.
 set(RESOURCES
 	./shaders/Phong.vs
 	./shaders/Phong.fs
@@ -133,18 +143,25 @@ set(RESOURCES
 	./shaders/Point.fs
 )
 
+# Library target
 add_library(PlastilinaCore SHARED
 	${PLASTILINACORE_SOURCES}
 	${PLASTILINACORE_PUBLIC_HEADERS}
 	${RESOURCES}
 )
-include_directories(include /usr/local/include/eigen3 ../thirdparty/OpenCL)
 
-set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h)
-set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
-set_property(TARGET PlastilinaCore PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore)
 find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
+
+include_directories(include /usr/local/include/eigen3 ../thirdparty/OpenCL)
+
+set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS 
+	-std=c++11 -stdlib=libc++ 
+	-include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+	)
+	
+set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
+set_property(TARGET PlastilinaCore PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore)
 target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OPENCL_LIBRARIES})
 

@@ -191,7 +191,7 @@ public:
     /**
      * Function used to render the node on screen.
      */
-    virtual void render();
+    virtual void render(const RenderState * state) const;
     
     /**
      * Returns an iterator for the children items in this node

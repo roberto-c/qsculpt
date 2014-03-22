@@ -214,7 +214,7 @@ void SubdivideCommand::Impl::splitEdges(ISurface& s)
             assert(e->face() && e->face()->userData());
             assert(e->pair() && e->pair()->face() && e->pair()->face()->userData());
             
-            Vector3 p = (e->tail()->position() + e->head()->position()) * 0.5f;
+            Vector3 p = (e->pair()->head()->position() + e->head()->position()) * 0.5f;
             
             Vector3 pos;
             if (e->isFlagSet(EF_Crease)) {
@@ -258,7 +258,7 @@ void SubdivideCommand::Impl::createFaces(ISurface& s)
         while (edgeIt.hasNext()) {
             // for each edge add the tail vertex and the the edge midpoint.
             auto e = edgeIt.next();
-            vtxIndex.push_back(e->tail()->iid());
+            vtxIndex.push_back(e->pair()->head()->iid());
             Vertex * v = static_cast<Vertex*>(e->userData());
             assert(v != NULL);
             vtxIndex.push_back(v->iid());
@@ -379,8 +379,8 @@ Vector3 SubdivideCommand::Impl::computeFaceNormal(Face::weak_ptr face)
     Iterator<Edge> it = f->edgeIterator();
     auto e1 = it.next();
     auto e2 = it.next();
-    Vector3 v1 = e2->tail()->position() - e2->head()->position();
-    Vector3 v2 = e1->head()->position() - e1->tail()->position();
+    Vector3 v1 = e2->pair()->head()->position() - e2->head()->position();
+    Vector3 v2 = e1->head()->position() - e1->pair()->head()->position();
     return v1.cross(v2).normalized();
 }
 

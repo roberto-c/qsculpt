@@ -137,6 +137,11 @@ void Scene::render() const
     }
 }
 
+void Scene::render(const RenderState * state) const
+{
+    
+}
+
 CameraNode::shared_ptr Scene::createCamera()
 {
 	std::shared_ptr<Camera> cam = std::make_shared<Camera>();

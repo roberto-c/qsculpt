@@ -56,6 +56,8 @@ public:
     
     virtual ~Plane();
     
+protected:
+    virtual void initPoints();
     void initPoints(int m, int n);
 };
 

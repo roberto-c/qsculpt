@@ -210,8 +210,8 @@ struct SmoothSurfaceCommand::Impl {
         Iterator<Edge> it = f->edgeIterator();
         auto e1 = it.next();
         auto e2 = it.next();
-        Vector3 v1 = e2->tail()->position() - e2->head()->position();
-        Vector3 v2 = e1->head()->position() - e1->tail()->position();
+        Vector3 v1 = e2->pair()->head()->position() - e2->head()->position();
+        Vector3 v2 = e1->head()->position() - e1->pair()->head()->position();
         return v1.cross(v2).normalized();
     }
 };

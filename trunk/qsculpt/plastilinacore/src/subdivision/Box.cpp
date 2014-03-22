@@ -31,63 +31,6 @@ Box::~Box()
 {
 }
 
-//void Box::initPoints()
-//{
-//    //qDebug("Box::initPoints()");
-//    double hw = 1.0;
-//    double hh = 1.0;
-//    double hd = 1.0;
-//    
-//    std::vector<size_t> vertexID(8);
-//    
-//    vertexID[0] = addVertex(Point3(-hw, hh,-hd));
-//    vertexID[1] = addVertex(Point3( hw, hh,-hd));
-//    vertexID[2] = addVertex(Point3( hw,-hh,-hd));
-//    vertexID[3] = addVertex(Point3(-hw,-hh,-hd));
-//    
-//    vertexID[4] = addVertex(Point3(-hw, hh, hd));
-//    vertexID[5] = addVertex(Point3( hw, hh, hd));
-//    vertexID[6] = addVertex(Point3( hw,-hh, hd));
-//    vertexID[7] = addVertex(Point3(-hw,-hh, hd));
-//    
-//    Iterator<Vertex> it = vertexIterator();
-//    while (it.hasNext()) {
-//        it.next()->addFlag(VF_Crease);
-//    }
-//    
-//    std::vector<size_t> indexList(4);
-//    indexList[0] = vertexID[0];
-//    indexList[1] = vertexID[1];
-//    indexList[2] = vertexID[2];
-//    indexList[3] = vertexID[3];
-//    addFace( indexList );
-//    indexList[0] = vertexID[4];
-//    indexList[1] = vertexID[7];
-//    indexList[2] = vertexID[6];
-//    indexList[3] = vertexID[5];
-//    addFace( indexList );
-//    indexList[0] = vertexID[0];
-//    indexList[1] = vertexID[3];
-//    indexList[2] = vertexID[7];
-//    indexList[3] = vertexID[4];
-//    addFace( indexList );
-//    indexList[0] = vertexID[5];
-//    indexList[1] = vertexID[6];
-//    indexList[2] = vertexID[2];
-//    indexList[3] = vertexID[1];
-//    addFace( indexList );
-//    indexList[0] = vertexID[0];
-//    indexList[1] = vertexID[4];
-//    indexList[2] = vertexID[5];
-//    indexList[3] = vertexID[1];
-//    addFace( indexList );
-//    indexList[0] = vertexID[7];
-//    indexList[1] = vertexID[3];
-//    indexList[2] = vertexID[2];
-//    indexList[3] = vertexID[6];
-//    addFace( indexList );
-//}
-
 void Box::initPoints()
 {
     //qDebug("Box::initPoints()");
@@ -168,6 +111,10 @@ Plane::Plane(int m, int n)
 Plane::~Plane()
 {
 }
+void Plane::initPoints()
+{
+    
+}
 
 void Plane::initPoints(int m, int n)
 {
@@ -183,30 +130,22 @@ void Plane::initPoints(int m, int n)
     double x=0, y=0;
     int j=0,i=0, numVtx=0;
     
-//	std::vector<size_t> vertexID(8);
-//    
-//    vertexID[0] = addVertex(Point3(-hw, hh, 0));
-//    vertexID[1] = addVertex(Point3(-hw,-hh, 0));
-//    vertexID[2] = addVertex(Point3( hw,-hh, 0));
-//    vertexID[3] = addVertex(Point3( hw, hh, 0));
-//	
-//	std::vector<size_t> indexList(4);
-//    indexList[0] = vertexID[0];
-//    indexList[1] = vertexID[1];
-//    indexList[2] = vertexID[2];
-//    indexList[3] = vertexID[3];
-//    addFace( indexList );
 
     std::vector<size_t> vertexID((m+1) * (n+1));
     y = -hh / 2;
+    double v = 0, u = 0;
     for (i = 0; i <= m; ++i) {
         x = -hw/2;
+        u = 0;
         for (j = 0; j <= n; ++j) {
-            vertexID[numVtx] = addVertex(Point3(x, y, 0));
+            vertexID[numVtx] = addVertex(Point3(x, 0, y));
+            vertex(vertexID[0])->texcoords() = Point2(u,v);
             numVtx++;
             x += wstep;
+            u += 1/m;
         }
         y += hstep;
+        v += 1/n;
     }
     std::vector<size_t> indexList(4);
     for (i = 0; i < m; ++i) {

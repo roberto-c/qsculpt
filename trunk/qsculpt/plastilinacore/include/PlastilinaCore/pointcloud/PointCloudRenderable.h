@@ -28,8 +28,6 @@ public:
     virtual void render(const RenderState * state) const;
     
 private:
-	size_t numTriangles;
-    
 	/**
 	 * Draw the mesh using OpenGL VBOs.
 	 * The VBOs are re-build when the mesh has been changed since the last draw.
