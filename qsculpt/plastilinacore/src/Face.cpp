@@ -194,10 +194,11 @@ public:
 static std::atomic_int NEXT_ID(1);
 
 Face::Face(ISurface *surface)
-    :   _flags(FF_None),
+    :
     _surface(surface),
     _he(NULL),
     _vertex(NULL),
+    _flags(FF_None),
     _nVertices(0),
     _userData(NULL)
 //hashValue(0)
@@ -206,11 +207,11 @@ Face::Face(ISurface *surface)
 }
 
 Face::Face(ISurface *surface, const std::vector<int>& vertexIndexList)
-    :   _flags(FF_None),
+    : 
     _surface(surface),
     _he(NULL),
     _vertex(NULL),
-    //point(vertexIndexList),
+    _flags(FF_None),
     _nVertices(0),
     _userData(NULL)
 //    hashValue(0)

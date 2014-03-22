@@ -33,7 +33,7 @@ public:
     float pointSize();
 	
 private:
-    class Impl;
+    struct Impl;
     std::unique_ptr<Impl> d_;
     
 };

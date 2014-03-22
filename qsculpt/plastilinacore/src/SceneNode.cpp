@@ -364,7 +364,7 @@ Point3 SceneNode::localToWorld(Point3 p) const
     return parentTransform() * transform() * p;
 }
 
-void SceneNode::render()
+void SceneNode::render(const RenderState * state) const
 {
 }
 

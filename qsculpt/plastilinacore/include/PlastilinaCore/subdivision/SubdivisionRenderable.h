@@ -15,12 +15,10 @@
 #include <PlastilinaCore/subdivision/Subdivision.h>
 
 class VertexBuffer;
-class SmoothVtxStruct;
+struct SmoothVtxStruct;
 
 class SubdivisionRenderable : public IRenderable
-{
-	const Subdivision * surface;
-	
+{	
 public:
 	SubdivisionRenderable(const Subdivision * surface);
 	
@@ -29,7 +27,6 @@ public:
 	virtual void render(const RenderState * state) const;
 
 private:
-	size_t numTriangles;
     
 	/**
 	 * Draw the mesh using OpenGL VBOs.

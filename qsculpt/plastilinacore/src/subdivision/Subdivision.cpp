@@ -445,7 +445,7 @@ void Subdivision::Impl::subdivide(Subdivision * surf) {
         auto edge = edgeIt.next();
         if (edge->userData()) continue;
         p = (edge->head()->position() + edge->pair()->head()->position() ) / 2.0f;
-        size_t midPointIid = surf->addVertex(p);
+        intptr_t midPointIid = surf->addVertex(p);
         edge->setUserData( (void*)(midPointIid) );
         edge = edge->pair();
         if (edge) {
@@ -1461,7 +1461,7 @@ void Subdivision::Impl::subdivide_ocl(Subdivision * s)
 {
 	if (!oclInitialized) {
 		initialize_ocl();
-		//oclInitialized = true;
+		oclInitialized = true;
 	}
 	
 	
