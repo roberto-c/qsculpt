@@ -40,7 +40,7 @@ struct SmoothVtxStruct
     GLfloat n[4];
     GLfloat color[4];
     GLfloat t[2];
-}; //SmoothVtxStruct;
+}; 
 
 
 SubdivisionRenderable::SubdivisionRenderable(const Subdivision * surface)
@@ -76,12 +76,15 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 	
 	GlslProgram * prog = GlslProgram::currentProgram();
 	if (prog->programID() > 0) {
-		Camera * camera = state->camera;
+		CameraNode * cameraNode = state->camera;
+        Camera * camera = cameraNode->camera().get();
 		GLint matId = prog->uniformLocation("glModelViewMatrix");
+//        Eigen::Affine3f t = cameraNode->transform()*cameraNode->parentTransform();
+//        std::cout << t.matrix() << std::endl;
         if (matId != -1) prog->setUniform(matId, camera->modelView());
         matId = prog->uniformLocation("glProjectionMatrix");
         if (matId != -1) prog->setUniform(matId, camera->projection());
-		auto p = camera->getPosition();
+		auto p = camera->getPosition(); //cameraNode->localToWorld(camera->getPosition());
 		Eigen::Vector4f camPos = Eigen::Vector4f(p[0],p[1],p[2],1.0f);
 		matId = prog->uniformLocation("eyePosition");
 		if (matId != -1) prog->setUniform(matId, camPos);
@@ -89,7 +92,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 	
 	GLint matId = prog->uniformLocation("objectTransform");
 	if (matId != -1) {
-		prog->setUniform(matId, node->transform()*node->parentTransform().matrix() );
+		prog->setUniform(matId, node->transform()*node->parentTransform());
 	}
 
 	

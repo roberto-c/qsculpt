@@ -28,18 +28,33 @@ static std::atomic_int NEXTID;
 
 struct SceneNode::Impl {
     uint                                iid;
+    NodeType							nodeType;
     bool                                isSelected;
     SceneNode::weak_ptr                  parent;
     std::vector<SceneNode::shared_ptr>   children;
     Eigen::Affine3f                     transform;
     std::string                         name;
     
-    Impl(const std::string & name) : iid(0), isSelected(false),name(name) {
+    Impl(const std::string & name, NodeType nodeType = NT_Normal) :
+     iid(0), nodeType(nodeType), isSelected(false),name(name) {
         std::cerr << __PRETTY_FUNCTION__ << std::endl;
     }
     
     ~Impl() {
         std::cerr << __PRETTY_FUNCTION__ << std::endl;
+    }
+    
+    void dump(int indent = 0) const {
+        std::string p;
+        p.resize(indent, ' ');
+        std::cout << p << "NodeType:" << nodeType << std::endl;
+        std::cout << p << "Name:" << name << std::endl;
+        std::cout << p << "IID:" << iid << std::endl;
+        std::cout << p << "T:" << transform.matrix() << std::endl;
+        std::cout << p << "Children:" << std::endl;
+        for(auto e : children) {
+            e->_d->dump(indent+1);
+        }
     }
 };
 
@@ -155,11 +170,151 @@ bool SceneNode::SceneNodeIterator::seek(int pos, IteratorOrigin origin) const
     throw std::runtime_error("Not implemented");
 }    
 
+class SceneNode::SceneNodeTreeIterator : public IIterator<SceneNode>
+{
+public:
+    typedef SceneNode::shared_ptr    shared_ptr;
+    typedef SceneNode::weak_ptr      weak_ptr;
+    typedef SceneNode::Ptr           Ptr;
+    
+    mutable SceneNode::const_shared_ptr     _parent;
+    mutable std::vector<uint>		_levelStack;
+    mutable int _nextIndex;
+    
+public:
+    SceneNodeTreeIterator(const SceneNode::const_weak_ptr & parent) ;
+    
+    /**
+     * Function to copy iterators of the same type.
+     */
+    virtual IIterator<SceneNode>* clone() const;
+    
+    /**
+     * Return true if the iterator has more elements (i.e. it is not at the
+     * end)
+     */
+    virtual bool hasNext() const;
+    
+    /**
+     * Returns true if the iterator is not at the beginning of the iteration
+     */
+    virtual bool hasPrevious() const;
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    virtual shared_ptr next();
+    
+    /**
+     * Returns the next element and advance the iterator by one.
+     */
+    virtual const shared_ptr next() const;
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    virtual shared_ptr previous();
+    
+    /**
+     * Returns the previous elements and move the iterator one position
+     * backwards.
+     */
+    virtual const shared_ptr previous() const;
+    
+    /**
+     * Set the current position to pos relative to origin.
+     *
+     * @param pos number of elements to jump relative to origin
+     * @param origin states the reference to jump.
+     */
+    virtual bool seek(int pos, IteratorOrigin origin) const;
+};
+
+SceneNode::SceneNodeTreeIterator::SceneNodeTreeIterator(const SceneNode::const_weak_ptr & parent)
+: _parent(parent),_nextIndex(0)
+{
+}
+
+IIterator<SceneNode>* SceneNode::SceneNodeTreeIterator::clone() const
+{
+    SceneNodeTreeIterator * it = new SceneNodeTreeIterator(_parent);
+    if (it) {
+        it->_levelStack = _levelStack;
+        it->_parent = _parent;
+    }
+    return it;
+}
+
+bool SceneNode::SceneNodeTreeIterator::hasNext() const
+{
+    if (!_parent) {
+        throw std::runtime_error("Parent is null");
+    }
+    return _nextIndex >= 0 && _parent && _parent->count() > _nextIndex;
+}
+
+bool SceneNode::SceneNodeTreeIterator::hasPrevious() const
+{
+    return false;
+}
+
+const SceneNode::SceneNodeTreeIterator::shared_ptr SceneNode::SceneNodeTreeIterator::next() const
+{
+    //throw std::runtime_error("Not implemented");
+    auto ret = _parent->item(_nextIndex).lock();
+    _nextIndex++;
+    if (ret->count() > 0) {
+        _levelStack.push_back(_nextIndex);
+        _nextIndex = 0;
+        _parent = ret;
+    }
+    if (_nextIndex >= _parent->count()) {
+        auto p = _parent->parent().lock();
+        if (p) {
+            _nextIndex = _levelStack.back();
+            _levelStack.pop_back();
+            _parent = _parent->parent().lock();
+        }
+    }
+    return  ret;
+}
+
+SceneNode::SceneNodeTreeIterator::shared_ptr SceneNode::SceneNodeTreeIterator::next()
+{
+    const SceneNode::SceneNodeTreeIterator& p = static_cast<const SceneNode::SceneNodeTreeIterator&>(*this);
+    return  std::const_pointer_cast<SceneNode>(p.next());
+}
+
+SceneNode::SceneNodeTreeIterator::shared_ptr SceneNode::SceneNodeTreeIterator::previous()
+{
+    throw std::runtime_error("Not implemented");
+}
+
+const SceneNode::SceneNodeTreeIterator::shared_ptr SceneNode::SceneNodeTreeIterator::previous() const
+{
+    throw std::runtime_error("Not implemented");
+}
+
+bool SceneNode::SceneNodeTreeIterator::seek(int pos, IteratorOrigin origin) const
+{
+    throw std::runtime_error("Not implemented");
+}
+
 
 SceneNode::SceneNode(const std::string& name)
 : _d(new Impl(name))
 {
 	std::cerr << __PRETTY_FUNCTION__ << " Name : " << name.c_str() << std::endl;
+    _d->iid = NEXTID.fetch_add(1);
+    
+    _d->transform = Eigen::Affine3f::Identity();
+}
+
+SceneNode::SceneNode(const std::string & name, NodeType nodeType)
+: _d(new Impl(name, nodeType))
+{
+    std::cerr << __PRETTY_FUNCTION__ << " Name : " << name.c_str() << std::endl;
     _d->iid = NEXTID.fetch_add(1);
     
     _d->transform = Eigen::Affine3f::Identity();
@@ -385,9 +540,29 @@ Iterator<SceneNode> SceneNode::constIterator() const
     return it;
 }
 
+Iterator<SceneNode> SceneNode::treeIterator() const
+{
+    auto ptr = shared_from_this();
+    Iterator<SceneNode> it(new SceneNodeTreeIterator(ptr));
+    return it;
+}
+
+Iterator<SceneNode> SceneNode::treeIterator()
+{
+    auto ptr = shared_from_this();
+    Iterator<SceneNode> it(new SceneNodeTreeIterator(ptr));
+    return it;
+}
+
+
+void SceneNode::dump()
+{
+    _d->dump();
+}
+
 SurfaceNode::SurfaceNode(const std::string & name, 
                          ISurface *surface)
-: SceneNode(name),
+: SceneNode(name, NT_Surface),
   surface_(surface)
 {
     
@@ -436,7 +611,7 @@ void SurfaceNode::render(const RenderState * state) const
 }
 
 LightNode::LightNode(const std::string & name)
-: SceneNode(name)
+: SceneNode(name, NT_Light)
 {
     
 }
@@ -464,7 +639,7 @@ struct CameraNode::Impl
 
 CameraNode::CameraNode(const std::shared_ptr<Camera> & cam,
                        const std::string & name)
-: SceneNode(name),
+: SceneNode(name, NT_Camera),
     d(new Impl)
 {
     if (d) {

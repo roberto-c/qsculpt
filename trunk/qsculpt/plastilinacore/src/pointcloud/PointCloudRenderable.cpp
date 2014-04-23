@@ -76,12 +76,13 @@ void PointCloudRenderable::renderObject(const RenderState * state) const
 	
 	GlslProgram * prog = GlslProgram::currentProgram();
 	if (prog->programID() > 0) {
-		Camera * camera = state->camera;
+		CameraNode * cameraNode = state->camera;
+        Camera * camera = cameraNode->camera().get();
 		GLint matId = prog->uniformLocation("glModelViewMatrix");
         if (matId != -1) prog->setUniform(matId, camera->modelView());
         matId = prog->uniformLocation("glProjectionMatrix");
         if (matId != -1) prog->setUniform(matId, camera->projection());
-		auto p = camera->getPosition();
+		auto p = cameraNode->localToWorld(camera->getPosition());
 		Eigen::Vector4f camPos = Eigen::Vector4f(p[0],p[1],p[2],1.0f);
 		matId = prog->uniformLocation("eyePosition");
 		if (matId != -1) prog->setUniform(matId, camPos);

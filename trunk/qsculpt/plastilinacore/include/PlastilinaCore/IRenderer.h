@@ -4,7 +4,7 @@
 class ISurface;
 class Material;
 class SceneNode;
-class Camera;
+class CameraNode;
 
 class IRenderer
 {
@@ -30,7 +30,7 @@ struct RenderState {
 	const SceneNode 	*root;
 	const SceneNode 	*currentNode;
 	RenderMode  		renderMode;
-	Camera 				*camera;
+	CameraNode			*camera;
 };
 
 class IRenderable
