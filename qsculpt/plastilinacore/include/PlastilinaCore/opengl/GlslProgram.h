@@ -225,6 +225,16 @@ public:
      */
     void setUniform(GLint index, const Eigen::Matrix4f & val);
     
+    /**
+     * Set the value of uniform variable at location index.
+     *
+     * The location is obtained by calling the function uniformLocation()
+     *
+     * @param index location index of uniform to set the value.
+     * @param val value to set.
+     */
+    void setUniform(GLint index, const Eigen::Affine3f & val);
+    
 private:
 	GlslProgram(GLuint pid);
 	void setProgramID(GLuint pid);

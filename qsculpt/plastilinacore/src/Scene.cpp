@@ -18,6 +18,13 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>          // Output data structure
+#include <assimp/mesh.h>
+#include <assimp/postprocess.h>    // Post processing flags
+#include <assimp/camera.h>
+
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/IRenderer.h>
 #include <PlastilinaCore/Scene.h>
@@ -25,6 +32,7 @@
 #include <PlastilinaCore/geometry/Ray.h>
 #include <PlastilinaCore/geometry/Aabb.h>
 #include <PlastilinaCore/Octree.h>
+#include <PlastilinaCore/subdivision/Subdivision.h>
 
 //namespace  {
     struct CenterMassFn {
@@ -36,6 +44,7 @@
 
 struct Scene::Impl {
     //data::Octree<SceneNode::weak_ptr,CenterMassFn> octree;
+    std::vector<aiNode*> cameraNodes;
     
     Impl()
     {
@@ -45,6 +54,20 @@ struct Scene::Impl {
                                              uint IID) const;
 	
 	void renderRecursive(RenderState & state, const SceneNode * root) const;
+    
+    void importScene(const aiScene * scene, SceneNode::shared_ptr & outScene);
+    
+    void processNode(const aiScene * scene,
+                     const aiNode * node,
+                     SceneNode::shared_ptr & outNode);
+    
+    void processMeshes(const aiScene * scene,
+                       const aiNode * node,
+                       SceneNode::shared_ptr & outNode);
+    void processCamera(const aiScene * scene,
+                       const aiNode * node,
+                       const aiCamera *camera,
+                       SceneNode::shared_ptr & outNode);
 };
 
 SceneNode::shared_ptr
@@ -125,7 +148,7 @@ void Scene::render() const
 {
 	try {
 		RenderState state;
-		state.camera = getCamera()->camera().get();
+		state.camera = getCamera().get();
 		state.root = this;
 		state.currentNode = this;
 		state.renderMode = RM_Smooth;
@@ -146,6 +169,150 @@ CameraNode::shared_ptr Scene::createCamera()
 {
 	std::shared_ptr<Camera> cam = std::make_shared<Camera>();
 	return std::make_shared<CameraNode>(cam);
+}
+
+void Scene::loadFromFile(const std::string & filename)
+{
+    // Import 3D library assets
+    // Start the import on the given file with some example postprocessing
+    // Usually - if speed is not the most important aspect for you - you'll t
+    // probably to request more postprocessing than we do in this example.
+    Assimp::Importer importer;
+    const aiScene * scene = importer.ReadFile( filename,
+                                        aiProcess_CalcTangentSpace       |
+                                        aiProcess_Triangulate            |
+                                        aiProcess_JoinIdenticalVertices  |
+                                        aiProcess_SortByPType);
+    // If the import failed, report it
+    if( !scene)
+    {
+        throw std::runtime_error(importer.GetErrorString());
+    }
+    auto rootNode = this->shared_from_this();
+    _d->importScene(scene, rootNode);
+    rootNode->transform().setIdentity();
+}
+
+void Scene::Impl::importScene(const aiScene * scene, SceneNode::shared_ptr & outScene)
+{
+    assert(scene && "Scene is NULL");
+    assert(scene->mRootNode && "Scene->mRootNode is NULL");
+    
+    if (scene->HasCameras()) {
+        for (int i = 0; i < scene->mNumCameras; ++i) {
+            aiNode* cnd = scene->mRootNode->FindNode(scene->mCameras[i]->mName);
+            if (cnd) {
+            	cameraNodes.push_back(cnd);
+            } else {
+                throw std::runtime_error("Failed to find cameta node");
+            }
+        }
+    }
+    if (scene->HasMeshes()) {
+        aiNode * node = scene->mRootNode;
+        SceneNode::shared_ptr rootNode = std::static_pointer_cast<SceneNode>(outScene);
+        processNode(scene, node, rootNode);
+    }
+
+}
+
+void Scene::Impl::processNode(const aiScene * scene,
+                              const aiNode *node,
+                              SceneNode::shared_ptr & outNode)
+{
+    Eigen::Affine3f t = Eigen::Affine3f(Eigen::Matrix4f(&node->mTransformation.a1));
+    outNode->transform() = outNode->transform() * t;
+    outNode->setName(node->mName.C_Str());
+    
+    if (node->mNumMeshes > 0) {
+        processMeshes(scene, node, outNode);
+    }
+    auto camIt = std::find(cameraNodes.begin(), cameraNodes.end(), node);
+    if (camIt != cameraNodes.end()) {
+        outNode->transform().setIdentity();
+        std::vector<aiNode*>::size_type ds = cameraNodes.end() - camIt - 1;
+        processCamera(scene,
+                      node,
+                      scene->mCameras[ds],
+                      outNode);
+    }
+    for (unsigned int i = 0; i < node->mNumChildren; ++i) {
+        SceneNode::shared_ptr child = std::make_shared<SceneNode>();
+        processNode(scene, node->mChildren[i], child);
+        outNode->add(child);
+    }
+}
+
+void Scene::Impl::processMeshes(const aiScene * scene,
+                              	const aiNode *node,
+                              	SceneNode::shared_ptr & outNode)
+{
+
+    for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
+        SurfaceNode::shared_ptr surfaceNode = std::make_shared<SurfaceNode>(new Subdivision());
+        const aiMesh * mesh = scene->mMeshes[node->mMeshes[i]];
+        surfaceNode->setName(mesh->mName.C_Str());
+        if (mesh->HasFaces()) {
+            std::vector<Vertex::size_t> map;
+            Eigen::Vector3f p, n;
+            if (mesh->HasPositions()) {
+                for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
+                    p = Vector3(mesh->mVertices[i].x,
+                                mesh->mVertices[i].y,
+                                mesh->mVertices[i].z);
+                    auto viid = surfaceNode->surface()->addVertex(p);
+                    map.push_back(viid);
+                    
+                    if (mesh->HasNormals()) {
+                        n = Vector3(mesh->mNormals[i].x,
+                                    mesh->mNormals[i].y,
+                                    mesh->mNormals[i].z
+                                    );
+                        surfaceNode->surface()->vertex(viid)->normal() = n;
+                    }
+                    surfaceNode->surface()->vertex(viid)->color() = Color(1.0f, 1.0f, 1.0f);
+                }
+            }
+            
+            std::vector<Face::size_t> indices(3);
+            for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
+                indices[0] = map[mesh->mFaces[i].mIndices[0]];
+                indices[1] = map[mesh->mFaces[i].mIndices[1]];
+                indices[2] = map[mesh->mFaces[i].mIndices[2]];
+                surfaceNode->surface()->addFace(indices);
+            }
+        }
+        outNode->add(surfaceNode);
+    }
+}
+
+void Scene::Impl::processCamera(const aiScene * scene,
+                              	const aiNode *node,
+                                const aiCamera *camera,
+                              	SceneNode::shared_ptr & outNode)
+{
+    assert(scene != nullptr && node != nullptr && camera != nullptr);
+    
+    std::shared_ptr<Camera> camPtr = std::make_shared<Camera>();
+    
+    camPtr->setPosition(Point3(0, 0, -5));
+    camPtr->setOrientationVector(Vector3(0,1,0));
+    camPtr->setTargetPoint(Point3(0, 0, 0));
+    camPtr->setPerspectiveMatrix(45,
+                                 1.3,
+                                 1.0,
+                                 50);
+    
+//    camPtr->setPosition(Point3(&camera->mPosition.x));
+//    camPtr->setOrientationVector(Point3(&camera->mUp.x));
+//    camPtr->setTargetPoint(Point3(&camera->mLookAt.x));
+//    camPtr->setPerspectiveMatrix(camera->mHorizontalFOV,
+//                                 camera->mAspect,
+//                                 camera->mClipPlaneNear,
+//                                 camera->mClipPlaneFar);
+    CameraNode::shared_ptr camNode = std::make_shared<CameraNode>(camPtr,
+                                                                  camera->mName.C_Str());
+    outNode->add(camNode);
 }
 
 static void

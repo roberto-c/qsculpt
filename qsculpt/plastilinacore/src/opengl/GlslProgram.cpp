@@ -226,3 +226,9 @@ void GlslProgram::setUniform(GLint index, const Eigen::Matrix4f & val)
 {
     glUniformMatrix4fv(index, 1, GL_FALSE, val.data());
 }
+
+void GlslProgram::setUniform(GLint index, const Eigen::Affine3f & val)
+{
+    glUniformMatrix4fv(index, 1, GL_FALSE, val.data());
+}
+

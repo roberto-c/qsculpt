@@ -34,7 +34,8 @@ enum NodeType {
     NT_Normal,
     NT_Surface,
     NT_Group,
-    NT_Light
+    NT_Light,
+    NT_Camera
 };
 
 /**
@@ -203,14 +204,34 @@ public:
      */
     Iterator<SceneNode> constIterator() const ;
     
+    /**
+     * Returns an iterators to traverse all tree of the scene.
+     */
+    Iterator<SceneNode> treeIterator();
+    
+    /**
+     * Returns an iterators to traverse all tree of the scene.
+     */
+    Iterator<SceneNode> treeIterator() const;
+    
+    /**
+     *
+     */
+    virtual void dump();
+    
+protected:
+    SceneNode(const std::string & name, NodeType nodetype);
+    
 private:
     // disabled copy semantics for now
     SceneNode(const SceneNode &);
     SceneNode & operator=(const SceneNode &);
     
     class SceneNodeIterator;
+    class SceneNodeTreeIterator;
     
     friend class SceneNodeIterator;
+    friend class SceneNodeTreeIterator;
 };
 
 class SurfaceNode : public SceneNode, public IRenderable

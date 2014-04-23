@@ -94,6 +94,8 @@ public:
     
     virtual void render(const RenderState * state) const;
     
+    void loadFromFile(const std::string & filename);
+    
 private:
     class SceneNodeIterator;
     struct Impl;

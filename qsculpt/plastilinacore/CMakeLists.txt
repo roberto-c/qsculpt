@@ -152,8 +152,16 @@ add_library(PlastilinaCore SHARED
 
 find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
+target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
+target_link_libraries(PlastilinaCore ${OPENCL_LIBRARIES})
+
+find_package(Assimp)
 
 include_directories(include /usr/local/include/eigen3 ../thirdparty/OpenCL)
+if (ASSIMP_FOUND)
+include_directories(${ASSIMP_INCLUDE_DIRS})
+target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
+endif()
 
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS 
 	-std=c++11 -stdlib=libc++ 
@@ -162,8 +170,6 @@ set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
 set_property(TARGET PlastilinaCore PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore)
-target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
-target_link_libraries(PlastilinaCore ${OPENCL_LIBRARIES})
 
 if (APPLE)
 	set_property(TARGET PlastilinaCore PROPERTY FRAMEWORK true)

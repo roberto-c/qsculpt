@@ -107,6 +107,7 @@ struct TestApp::Impl {
     
     std::shared_ptr<PointMaterial>      material;
     std::shared_ptr<TestMaterial>       material2;
+    std::shared_ptr<PhongMaterial>      material3;
 	
 	CLRender            render;
 	gl::Texture2D::shared_ptr		 glTexture1;
@@ -375,23 +376,18 @@ void TestApp::init(int argc, char** argv) {
 	d->restart();
 	
 	reshape(640,480);
-	
+    
     d->initialized = true;
 }
 
 void TestApp::reshape(int w, int h)
 {
-#define DEFAULT_HEIGHT (2.5f)
+#define DEFAULT_HEIGHT (4.0f)
 
-    float aspectRatio = float(w) / float(h);
     // setup viewport, projection etc. for OpenGL:
     glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
 	auto camera = d->scene->getCamera()->camera();
     camera->setViewport(0, 0, w, h);
-    camera->setPerspectiveMatrix(45.0, aspectRatio, 1.0, 50.0);
-    camera->setTargetPoint( Point3( 0, 0, 0) );
-    camera->setOrientationVector( Point3( 0, 1, 0) );
-    camera->setPosition( Point3( 0.0f, 0.0f, -3.0f) );
 	
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	SDL_GL_SwapWindow(d->mainwindow);
@@ -427,12 +423,13 @@ void TestApp::Impl::restart() {
     physics.addWall(Vector3(sin(-0.1*M_PI),cos(-0.1*M_PI),0), Vector3(0,0,0));
     physics.addWall(Vector3(sin(0.1*M_PI),cos(-0.1*M_PI),0), Vector3(0,0,0));
     
-    scene->add(n);
-	scene->add(n2);
-    scene->add(pointCloud);
+//    scene->add(n);
+//	scene->add(n2);
+//    scene->add(pointCloud);
+    scene->loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/assets/meshes/cube.dae");
 	
-    CameraNode::shared_ptr cam = scene->createCamera();
-    scene->add(cam);
+//    CameraNode::shared_ptr cam = scene->createCamera();
+//    scene->add(cam);
     
     n->transform() *= Eigen::AngleAxisf(0.1*M_PI, Eigen::Vector3f(0,0,1));
     n->transform() *= Eigen::Translation3f(Eigen::Vector3f(0,-0.5,0));
@@ -440,6 +437,7 @@ void TestApp::Impl::restart() {
     n2->transform() *= Eigen::Translation3f(Eigen::Vector3f(0,-0.5f,0));
     material = std::make_shared<PointMaterial>();
     material2 = std::make_shared<TestMaterial>();
+//    material3 = std::make_shared<PhongMaterial>();
     try {
         material->load();
 		
@@ -453,9 +451,25 @@ void TestApp::Impl::restart() {
         render.setGLTexSrc(glTexture1);
         render.setGLTexDest(glTexture2);
 		
+//        material3->load();
+//        material3->setDiffuse (Color(1.0f, 0.4f, 0.8f, 1.0f));
+//        material3->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
+//        material3->setAmbient (Color(0.1f, 0.1f, 0.1f, 1.0f));
+//        material3->setExponent(200);
+        
+        auto it = scene->treeIterator();
+        while (it.hasNext()) {
+            auto node = it.next();
+            if (node->nodeType() == NT_Surface) {
+                SurfaceNode::shared_ptr surface = std::static_pointer_cast<SurfaceNode>(node);
+                surface->setMaterial(material);
+            }
+        }
+        
         n->setMaterial(material2);
         n2->setMaterial(material2);
         pointCloud->setMaterial(material);
+        scene->dump();
 	} catch(core::GlException & e) {
         std::cerr   << "GLException: " << e.what() << std::endl
         << e.error() << ": " << e.errorString() << std::endl;
