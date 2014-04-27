@@ -53,19 +53,21 @@ void PhongMaterial::load()
 	
 	ResourcesManager mgr;
     if (!d->vtxShader.compileStatus()) {
-		std::string path = mgr.findResourcePath("Phong", "vs");
+		std::string path = mgr.findResourcePath("Phong", "vs", "shaders");
         d->vtxShader.loadFromFile(path);
         if (!d->vtxShader.compile()){
             std::cerr << "vtxShader: Compilation failed" << std::endl;
             std::cerr << d->vtxShader.infoLog() << std::endl;
+            throw core::GlException("Failed to compile vertex shader", glGetError());
         }
     }
     if (!d->fragShader.compileStatus()){
-		std::string path = mgr.findResourcePath("Phong", "fs");
+		std::string path = mgr.findResourcePath("Phong", "fs", "shaders");
         d->fragShader.loadFromFile(path);
         if (!d->fragShader.compile()){
             std::cerr << "fragShader: Compilation failed" << std::endl;
             std::cerr << d->fragShader.infoLog() << std::endl;
+            throw core::GlException("Failed to compile fragment shader", glGetError());
         }
     }
     
