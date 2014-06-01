@@ -44,8 +44,8 @@
 //#include <OpenGL/OpenGL.h>
 //#include <OpenGL/glu.h>
 #else
-#include <gl/gl3.h>
-//#include <gl/gl.h>
+//#include <GL/gl3.h>
+#include <GL/glew.h>
 //#include <gl/glu.h>
 #endif /* __APPLE__ */
 

@@ -18,8 +18,9 @@
 #define __gl_h_
 
 #else
-#include <GL/gl3.h>
-#include <GL/gl3ext.h>
+#include <GL/glew.h>
+//#include <GL/gl3.h>
+//#include <GL/gl3ext.h>
 #endif
 
 #endif
