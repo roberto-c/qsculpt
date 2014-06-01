@@ -40,7 +40,13 @@ add_executable(PTestApp MACOSX_BUNDLE
 	${RESOURCES}
 )
 
-set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ./Stable.h )
+if (UNIX)
+	set_property(TARGET PlastilinaCore 
+		PROPERTY COMPILE_FLAGS "-std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h"
+	)
+elseif (APPLE)
+set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ./stable.h )
+endif()
 
 set_property(TARGET PTestApp PROPERTY RESOURCE ${RESOURCES})
 set_property(TARGET PTestApp PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
@@ -48,14 +54,20 @@ set_property(TARGET PTestApp PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON
 find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(SDL2 REQUIRED)
-find_package(SDL2IMAGE REQUIRED)
+find_package(SDL2Image REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 
+find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
+	PATH /usr/local/include/eigen3 /usr/include/eigen3
+	DOC "Include directory Eigen"
+)
+
 include_directories(include 
-	/usr/local/include/eigen3 
+	${EIGEN_INCLUDE_DIRS} 
 	../thirdparty/OpenCL
 	${CMAKE_SOURCE_DIR}/plastilinacore/include
 	${Boost_INCLUDE_DIRS}
+	${OPENCL_INCLUDE_DIRS}
 	)
 
 target_link_libraries(PTestApp ${OPENGL_LIBRARIES})

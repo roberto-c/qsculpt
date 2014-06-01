@@ -11,7 +11,6 @@ set(PLASTILINACORE_SOURCES
 	./src/BufferObject.cpp
 	./src/Camera.cpp
 	./src/Context.cpp
-	./src/Context_mac.mm
 	./src/Document.cpp
 	./src/Face.cpp
 	./src/FlatRenderer.cpp
@@ -59,13 +58,18 @@ set(PLASTILINACORE_SOURCES
 	./src/WireframeRenderer.cpp
 )
 
+if (APPLE)
+	set(PLASTILINACORE_SOURCES ./src/Context_mac.mm)
+elseif(UNIX)
+	set(PLASTILINACORE_SOURCES ./src/Context_unix.cpp)
+endif()
+
 # Public headers. These headers are meant to be distributed to users of the engine
 set(PLASTILINACORE_HEADERS_ROOT ./include/PlastilinaCore)
 set(PLASTILINACORE_PUBLIC_HEADERS 
 	${PLASTILINACORE_HEADERS_ROOT}/BOManager.h 
 	${PLASTILINACORE_HEADERS_ROOT}/BufferObject.h
 	${PLASTILINACORE_HEADERS_ROOT}/Camera.h
-	${PLASTILINACORE_HEADERS_ROOT}/Canvas3D.h
 	${PLASTILINACORE_HEADERS_ROOT}/Color.h
 	${PLASTILINACORE_HEADERS_ROOT}/Context.h
 	${PLASTILINACORE_HEADERS_ROOT}/Context_private.h
@@ -152,26 +156,42 @@ add_library(PlastilinaCore SHARED
 
 find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
+find_package(GLEW REQUIRED)
 target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OPENCL_LIBRARIES})
+target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 
 find_package(Assimp)
 
-include_directories(include /usr/local/include/eigen3 ../thirdparty/OpenCL)
-if (ASSIMP_FOUND)
-include_directories(${ASSIMP_INCLUDE_DIRS})
-target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
-endif()
+find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
+	PATH /usr/local/include/eigen3 /usr/include/eigen3
+	DOC "Include directory Eigen"
+)
 
-set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS 
-	-std=c++11 -stdlib=libc++ 
-	-include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+include_directories(include 
+	${EIGEN_INCLUDE_DIRS} 
+	../thirdparty/OpenCL
+	${OPENCL_INCLUDE_DIRS}
 	)
+if (ASSIMP_FOUND)
+	include_directories(${ASSIMP_INCLUDE_DIRS})
+	target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
+endif()
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
-set_property(TARGET PlastilinaCore PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore)
 
-if (APPLE)
+if (UNIX)
+	set_property(TARGET PlastilinaCore 
+		PROPERTY COMPILE_FLAGS "-std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h"
+	)
+elseif (APPLE)
+	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS 
+		-std=c++11 -stdlib=libc++ 
+		-include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+	)
+	set_property(TARGET PlastilinaCore 
+		PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore
+	)
 	set_property(TARGET PlastilinaCore PROPERTY FRAMEWORK true)
 	# set_property(TARGET PlastilinaCore PROPERTY RESOURCE ./shaders)
 	# Copy headers preserving the file hierarchy
@@ -191,7 +211,8 @@ if (APPLE)
 	find_library(COCOA_LIBRARIES Cocoa )
 	target_link_libraries(PlastilinaCore ${FOUNDATION_LIBRARIES})
 	target_link_libraries(PlastilinaCore ${COCOA_LIBRARIES})
-	
-endif(APPLE)
+else()
+	Message("Unsupported platform")		
+endif(UNIX)
 
 
