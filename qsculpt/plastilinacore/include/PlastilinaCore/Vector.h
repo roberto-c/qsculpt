@@ -12,7 +12,7 @@
 
 #include <limits>
 #include <PlastilinaCore/ICollection.h>
-#include <PlastilinaCore/geometry/ray.h>
+#include <PlastilinaCore/geometry/Ray.h>
 #include <PlastilinaCore/Utilities.h>
 
 namespace data {
