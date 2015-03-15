@@ -21,6 +21,8 @@
 #define CAMERA_H
 
 #include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/SceneNode.h>
+
 
 /**
  * @class Camera
@@ -30,9 +32,14 @@
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class Camera
+class Camera : public CameraNode
 {
 public:
+    typedef std::shared_ptr<Camera>       	shared_ptr;
+    typedef std::weak_ptr<Camera>    		weak_ptr;
+    typedef std::shared_ptr<const Camera> 	const_shared_ptr;
+    typedef std::weak_ptr<const Camera>		const_weak_ptr;
+    
     Camera();
 
     Camera(const Camera & orig);

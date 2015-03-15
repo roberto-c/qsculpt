@@ -24,7 +24,7 @@ public:
 private:
     friend class Vertex;
 
-    Vertex::shared_ptr         _v;
+    //Vertex::shared_ptr         _v;
     mutable Edge::shared_ptr   _iniHe;
     mutable Edge::shared_ptr   _nextHe;
     mutable bool        _firstIt;
@@ -105,7 +105,7 @@ private:
 
     friend class Vertex;
     
-    Vertex::shared_ptr       _v;
+    //Vertex::shared_ptr       _v;
     mutable Edge::shared_ptr _iniHe;
     mutable Edge::shared_ptr _nextHe;
     mutable bool            _firstIt;
@@ -185,7 +185,7 @@ public:
 private:
     friend class Vertex;
     
-    Vertex::shared_ptr           _v;
+    //Vertex::shared_ptr           _v;
     mutable Edge::shared_ptr     _iniHe;
     mutable Edge::shared_ptr     _nextHe;
     mutable bool                _firstIt;

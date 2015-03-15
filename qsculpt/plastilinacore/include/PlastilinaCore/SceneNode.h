@@ -255,6 +255,8 @@ public:
      */
     SurfaceNode(ISurface *surface = NULL);
     
+    //SurfaceNode(const ISurface *surface = NULL);
+    
     /**
      * Free resources used by this node.
      *
@@ -321,7 +323,7 @@ public:
     typedef std::shared_ptr<const CameraNode> 	const_shared_ptr;
     typedef std::weak_ptr<const CameraNode>		const_weak_ptr;
     
-    CameraNode(const std::shared_ptr<Camera> & cam = NULL,
+    CameraNode(const std::shared_ptr<Camera> & cam = std::shared_ptr<Camera>(),
                const std::string & name = "Camera");
     
     virtual ~CameraNode();

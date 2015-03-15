@@ -25,7 +25,7 @@
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Camera.h>
 
-#include "ConfigContainer.h"
+#include "command/ConfigContainer.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "DocumentView.h"

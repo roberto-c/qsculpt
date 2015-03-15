@@ -20,8 +20,12 @@
 #ifndef TRANSFORMWIDGET_H
 #define TRANSFORMWIDGET_H
 
-#include "ui_TransformWidget.h"
+
 #include <QtGui/QWidget>
+
+namespace Ui {
+    class TransformWidget;
+}
 
 class ICommand;
 /**
@@ -30,7 +34,7 @@ class ICommand;
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class TransformWidget : public QWidget, private Ui::TransformWidget
+class TransformWidget : public QWidget
 {
     Q_OBJECT
 
@@ -43,6 +47,9 @@ public:
 
 private slots:
     void applyTransform();
+    
+private:
+    Ui::TransformWidget *ui_;
 };
 
 #endif

@@ -26,7 +26,7 @@
 #include <QtCore/QStack>
 
 #include <PlastilinaCore/IDocument.h>
-#include "CommandManager.h"
+#include "command/CommandManager.h"
 
 class QTextEdit;
 class QDockWidget;

@@ -96,10 +96,7 @@ struct TestApp::Impl {
     
     std::string         appName;
     Scene::shared_ptr   scene;
-    
-    
-    physics::SimSystem	physics;
-    SurfaceNode::shared_ptr	pointCloud;
+    SceneNode::shared_ptr object;
     
     GlslProgram     *glslProgram;
     VertexShader    *vtxShader;
@@ -130,6 +127,12 @@ struct TestApp::Impl {
     void changeColor();
     
     void fireParticle();
+    
+    void setupScene();
+    
+    void setupMaterial();
+    
+    void move(const Vector3 & delta);
 };
 
 
@@ -222,19 +225,6 @@ void TestApp::onQuit()
 
 void TestApp::loop()
 {
-	//d->scene->transform().translate(Vector3(0.01f,0.01f,0.01f));
-    d->physics.step(0.01f);
-    auto simIt = d->physics.actors().begin();
-    auto simItEnd = d->physics.actors().end();
-    ISurface * s = d->pointCloud->surface();
-    auto it = s->vertexIterator();
-    while (it.hasNext() && simIt != simItEnd) {
-        auto p = (*simIt);
-        auto n = it.next();
-        n->position() = p->x;
-        ++simIt;
-    }
-    s->setChanged(true);
 	SDL_Delay(15);
 }
 
@@ -247,17 +237,28 @@ void TestApp::keyboard(int key, int x, int y)
             event.type = SDL_QUIT;
             SDL_PushEvent(&event);
             break;
-			
+		
+        case SDLK_w:
 		case SDLK_UP:
+            d->move(Vector3(    0,    0, 0.5f));
 			break;
+        case SDLK_s:
         case SDLK_DOWN:
-            break;
-        case SDLK_LEFT:
-            break;
-        case SDLK_RIGHT:
+            d->move(Vector3(    0,    0,-0.5f));
             break;
         case SDLK_a:
-            d->fireParticle();
+        case SDLK_LEFT:
+            d->move(Vector3(-0.5f,    0,    0));
+            break;
+        case SDLK_d:
+        case SDLK_RIGHT:
+            d->move(Vector3( 0.5f,    0,    0));
+            break;
+        case SDLK_q:
+            d->move(Vector3(    0,-0.5f,    0));
+            break;
+        case SDLK_e:
+            d->move(Vector3(    0, 0.5f,    0));
             break;
 		case SDLK_SPACE: {
 			d->restart();
@@ -296,7 +297,7 @@ void TestApp::init(int argc, char** argv) {
     
     /* Create our window centered at 512x512 resolution */
     d->mainwindow = SDL_CreateWindow("TEST", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                  640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+                                  1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!d->mainwindow) {
         /* Die if creation failed */
         std::cerr << "Unable to create window" << std::endl;
@@ -375,7 +376,7 @@ void TestApp::init(int argc, char** argv) {
 	
 	d->restart();
 	
-	reshape(640,480);
+	reshape(1280,720);
     
     d->initialized = true;
 }
@@ -403,41 +404,34 @@ void TestApp::display()
 }
 
 void TestApp::Impl::restart() {
-	static int counter = 0;
+    static int counter = 0;
 	counter++;
-	std::string name =  std::string("Scene ") + std::to_string(counter);
+    Eigen::IOFormat octaveFmt(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]");
+    
+    std::string name =  std::string("Scene ") + std::to_string(counter);
 	scene = std::make_shared<Scene>(name);
     
-    physics.clearActors();
-    physics.clearForceFunctors();
-    physics.clearWalls();
+    scene->loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/assets/meshes/test2.dae");
+    setupMaterial();
     
-    SurfaceNode::shared_ptr n = std::make_shared<SurfaceNode>(new ::Plane());
-    n->surface()->setColor(Color(0.0, 1.0, 0, 0.2f));
-	SurfaceNode::shared_ptr n2 = std::make_shared<SurfaceNode>(new ::Plane());
-    n2->surface()->setColor(Color(1.0, 0.6f, 0.5f, 0.2f));
-    
-    pointCloud = std::make_shared<SurfaceNode>(new ::PointCloud());
-    physics.addForceFunctor("gravity", physics::Gravity());
-    physics.addForceFunctor("repulsion", physics::Rejection());
-    physics.addWall(Vector3(sin(-0.1*M_PI),cos(-0.1*M_PI),0), Vector3(0,0,0));
-    physics.addWall(Vector3(sin(0.1*M_PI),cos(-0.1*M_PI),0), Vector3(0,0,0));
-    
-//    scene->add(n);
-//	scene->add(n2);
-//    scene->add(pointCloud);
-    scene->loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/assets/meshes/cube.dae");
-	
-//    CameraNode::shared_ptr cam = scene->createCamera();
-//    scene->add(cam);
-    
-    n->transform() *= Eigen::AngleAxisf(0.1*M_PI, Eigen::Vector3f(0,0,1));
-    n->transform() *= Eigen::Translation3f(Eigen::Vector3f(0,-0.5,0));
-    n2->transform() *= Eigen::AngleAxisf(-0.1*M_PI, Eigen::Vector3f(0,0,1));
-    n2->transform() *= Eigen::Translation3f(Eigen::Vector3f(0,-0.5f,0));
+    std::cout << "Dump scene: \n";
+    scene->dump();
+    auto camera = scene->getCamera();
+    if (camera && camera->camera()) {
+        std::cout << "Camera modelview: \n";
+        std::cout << camera->camera()->modelView().format(octaveFmt) << "\n";
+        std::cout << "Camera projection: \n";
+        std::cout << camera->camera()->projection().format(octaveFmt);
+        std::cout << "\n";
+    }
+    object = camera;
+}
+
+void TestApp::Impl::setupMaterial()
+{
     material = std::make_shared<PointMaterial>();
     material2 = std::make_shared<TestMaterial>();
-//    material3 = std::make_shared<PhongMaterial>();
+    material3 = std::make_shared<PhongMaterial>();
     try {
         material->load();
 		
@@ -451,33 +445,30 @@ void TestApp::Impl::restart() {
         render.setGLTexSrc(glTexture1);
         render.setGLTexDest(glTexture2);
 		
-//        material3->load();
-//        material3->setDiffuse (Color(1.0f, 0.4f, 0.8f, 1.0f));
-//        material3->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
-//        material3->setAmbient (Color(0.1f, 0.1f, 0.1f, 1.0f));
-//        material3->setExponent(200);
+        material3->load();
+        material3->setDiffuse (Color(1.0f, 0.4f, 0.8f, 1.0f));
+        material3->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
+        material3->setAmbient (Color(0.1f, 0.1f, 0.1f, 1.0f));
+        material3->setExponent(200);
         
         auto it = scene->treeIterator();
         while (it.hasNext()) {
             auto node = it.next();
+            std::cout << "Node: " << node->name() << " Type: " << node->nodeType() << "\n";
             if (node->nodeType() == NT_Surface) {
                 SurfaceNode::shared_ptr surface = std::static_pointer_cast<SurfaceNode>(node);
-                surface->setMaterial(material);
+                surface->setMaterial(material3);
             }
         }
-        
-        n->setMaterial(material2);
-        n2->setMaterial(material2);
-        pointCloud->setMaterial(material);
-        scene->dump();
 	} catch(core::GlException & e) {
         std::cerr   << "GLException: " << e.what() << std::endl
         << e.error() << ": " << e.errorString() << std::endl;
     } catch (std::exception & e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
-
+    
 }
+
 
 void TestApp::Impl::changeColor()
 {
@@ -487,15 +478,37 @@ void TestApp::Impl::changeColor()
     material2->setDiffuseTexture(ptr);
 }
 
-void TestApp::Impl::fireParticle()
+void TestApp::Impl::move(const Vector3 & delta)
 {
-    physics::Actor::shared_ptr a = std::make_shared<physics::Sphere>();
-    std::static_pointer_cast<physics::Sphere>(a)->x = Vector3(0,-0.5f,0);
-    std::static_pointer_cast<physics::Sphere>(a)->v = Vector3((rand() % 10) - 5.0f,(rand() % 5),0);
-    std::static_pointer_cast<physics::Sphere>(a)->invMass = 1/0.1f;
-    std::static_pointer_cast<physics::Sphere>(a)->radius = 0.1f;
-    physics.addActor(a);
+    static Vector4 p = Vector4(0,0,0,1);
+    static Eigen::IOFormat octaveFmt =
+    		Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ";", "", "", "[", "]");
     
-    ISurface * s = pointCloud->surface();
-    s->addVertex(Point3(1,1,0));
+    p.x() += delta.x();
+    p.y() += delta.y();
+    p.z() += delta.z();
+    
+ 	object->transform() *= Eigen::Translation3f(delta);
+    
+    auto camera = scene->getCamera();
+    if (camera && camera->camera()) {
+        auto v = p;
+        std::cout << "Point: " << v.format(octaveFmt) << "\n";
+        std::cout << "ModelView Matrix: " << camera->camera()->modelView().format(octaveFmt) << "\n";
+        v = camera->camera()->modelView() * v;
+        if  ((v[3] < -0.00001f) || (v[3] > .00001f)) {
+            v / v.w();
+        }
+        std::cout << "v*M: " << v.format(octaveFmt) << "\n";
+        std::cout << "Projection Matrix: " << camera->camera()->projection().format(octaveFmt) << "\n";
+        v = camera->camera()->projection() * v;
+        if  ((v[3] < -0.00001f) || (v[3] > .00001f)) {
+            v / v.w();
+        }
+        std::cout << "v*P: " << v.format(octaveFmt) << "\n";
+        v = camera->camera()->viewport() * v;
+        std::cout << "Viewport P: " << v.format(octaveFmt) << "\n";
+        
+    }
 }
+

@@ -6,4 +6,4 @@ project (QSculpt)
 
 add_subdirectory(plastilinacore)
 add_subdirectory(testapp)
-# add_subdirectory(qsculpt)
+add_subdirectory(qsculpt)

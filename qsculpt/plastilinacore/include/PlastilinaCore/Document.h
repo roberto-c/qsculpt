@@ -57,15 +57,15 @@ public:
     virtual SceneNode::shared_ptr   findItem(uint iid);
         
     virtual SceneNode::shared_ptr   index (int row,
-                                           const SceneNode::shared_ptr & parent = NULL ) const;
+                                           const SceneNode::shared_ptr & parent = SceneNode::shared_ptr() ) const;
     
     virtual SceneNode::shared_ptr   parent ( const SceneNode::shared_ptr & index ) const;
     
     virtual size_t	
-    childrenCount ( const SceneNode::shared_ptr & parent = NULL ) const;
+    childrenCount ( const SceneNode::shared_ptr & parent = SceneNode::shared_ptr() ) const;
     
     virtual void addItem(const SceneNode::shared_ptr & node, 
-                         const SceneNode::shared_ptr & parent = NULL);
+                         const SceneNode::shared_ptr & parent = SceneNode::shared_ptr());
 
     CameraNode::shared_ptr          getCamera() const;
 

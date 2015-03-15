@@ -160,7 +160,7 @@ public:
      * Returns the next element and advance the iterator by one.
      */
     inline shared_ptr next() { 
-        assert(_it != 0);
+        assert(_it != nullptr);
         return _it->next();
     }
 

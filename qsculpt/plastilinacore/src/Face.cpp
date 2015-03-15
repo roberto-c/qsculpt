@@ -268,13 +268,15 @@ void Face::setHEdge(Edge* hedge)
 }
 
 Face::size_t Face::numVertices() const {
+    if (_nVertices > 0) return _nVertices;
     size_t n = 0;
     Iterator<Vertex> it = constVertexIterator();
     while (it.hasNext()) {
         n += 1;
         it.next();
     }
-    return n;
+    _nVertices = n;
+    return _nVertices;
 }
 
 
