@@ -1,0 +1,8 @@
+# Introduction #
+
+This is a small document with details about different designs decisions in the application. It is not a comprehensive list but hopefully it would serve to have a broad idea of the different idioms used in the application code.
+
+
+# Details #
+
+TODO
