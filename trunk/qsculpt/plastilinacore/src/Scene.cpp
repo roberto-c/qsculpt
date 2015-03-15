@@ -42,11 +42,26 @@
     };
 //};
 
+namespace  {
+    float xfov_to_yfov_deg(float xfov, float aspect) {
+        xfov = xfov * 2 * M_PI / 360;
+        float yfov = 2.0f * atanf(tan(xfov * 0.5f) / aspect);
+        return yfov * 360 / 2 / M_PI;
+    }
+    float yfov_to_xfov_deg(float yfov, float aspect) {
+        yfov = yfov * 2 * M_PI / 360;
+        float xfov = 2.0f * atanf(tan(yfov * 0.5f) * aspect);
+        return xfov  * 360 / 2 / M_PI;
+    }
+}
+
 struct Scene::Impl {
     //data::Octree<SceneNode::weak_ptr,CenterMassFn> octree;
     std::vector<aiNode*> cameraNodes;
     
-    Impl()
+    UpAxis	upAxis;
+    
+    Impl() : upAxis(UpAxis::Y_POS_UP)
     {
     }
     
@@ -117,6 +132,16 @@ Scene::Scene(const std::string& name): SceneNode(name.c_str()), _d(new Impl())
 Scene::~Scene()
 {
 	std::cerr << __PRETTY_FUNCTION__ << " Name: " << name() << std::endl;
+}
+
+UpAxis Scene::upAxis() const
+{
+    return _d->upAxis;
+}
+
+void Scene::setUpAxis(UpAxis axis)
+{
+    _d->upAxis = axis;
 }
 
 SceneNode::shared_ptr Scene::findByName(const std::string& name) const
@@ -190,7 +215,6 @@ void Scene::loadFromFile(const std::string & filename)
     }
     auto rootNode = this->shared_from_this();
     _d->importScene(scene, rootNode);
-    rootNode->transform().setIdentity();
 }
 
 void Scene::Impl::importScene(const aiScene * scene, SceneNode::shared_ptr & outScene)
@@ -207,20 +231,36 @@ void Scene::Impl::importScene(const aiScene * scene, SceneNode::shared_ptr & out
                 throw std::runtime_error("Failed to find cameta node");
             }
         }
+    } else {
+        std::shared_ptr<Camera> camPtr = std::make_shared<Camera>();
+        CameraNode::shared_ptr camNode = std::make_shared<CameraNode>(Camera::shared_ptr(NULL),
+                                                                      "camera");
+        SceneNode::shared_ptr outNode = std::static_pointer_cast<SceneNode>(outScene);
+        outNode->add(camNode);
+        camNode->setCamera(camPtr);
+        camPtr->setPosition(Point3(0,0,-6));
+        camPtr->setOrientationVector(Point3(0,1,0));
+        camPtr->setTargetPoint(-Point3(0,0,0));
+        float yfov = 45;
+        yfov = (45) / 1.77;
+        camPtr->setPerspectiveMatrix(yfov,
+                                     1.33,
+                                     0.01,
+                                     1000);
     }
     if (scene->HasMeshes()) {
         aiNode * node = scene->mRootNode;
         SceneNode::shared_ptr rootNode = std::static_pointer_cast<SceneNode>(outScene);
         processNode(scene, node, rootNode);
     }
-
 }
 
 void Scene::Impl::processNode(const aiScene * scene,
                               const aiNode *node,
                               SceneNode::shared_ptr & outNode)
 {
-    Eigen::Affine3f t = Eigen::Affine3f(Eigen::Matrix4f(&node->mTransformation.a1));
+    auto aT = node->mTransformation; aT.Transpose();
+    Eigen::Affine3f t = Eigen::Affine3f(Eigen::Matrix4f(&aT.a1));
     outNode->transform() = outNode->transform() * t;
     outNode->setName(node->mName.C_Str());
     
@@ -229,7 +269,6 @@ void Scene::Impl::processNode(const aiScene * scene,
     }
     auto camIt = std::find(cameraNodes.begin(), cameraNodes.end(), node);
     if (camIt != cameraNodes.end()) {
-        outNode->transform().setIdentity();
         std::vector<aiNode*>::size_type ds = cameraNodes.end() - camIt - 1;
         processCamera(scene,
                       node,
@@ -238,8 +277,8 @@ void Scene::Impl::processNode(const aiScene * scene,
     }
     for (unsigned int i = 0; i < node->mNumChildren; ++i) {
         SceneNode::shared_ptr child = std::make_shared<SceneNode>();
-        processNode(scene, node->mChildren[i], child);
         outNode->add(child);
+        processNode(scene, node->mChildren[i], child);
     }
 }
 
@@ -250,39 +289,42 @@ void Scene::Impl::processMeshes(const aiScene * scene,
 
     for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
         SurfaceNode::shared_ptr surfaceNode = std::make_shared<SurfaceNode>(new Subdivision());
+        outNode->add(surfaceNode);
         const aiMesh * mesh = scene->mMeshes[node->mMeshes[i]];
         surfaceNode->setName(mesh->mName.C_Str());
-        if (mesh->HasFaces()) {
-            std::vector<Vertex::size_t> map;
-            Eigen::Vector3f p, n;
-            if (mesh->HasPositions()) {
-                for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
-                    p = Vector3(mesh->mVertices[i].x,
-                                mesh->mVertices[i].y,
-                                mesh->mVertices[i].z);
-                    auto viid = surfaceNode->surface()->addVertex(p);
-                    map.push_back(viid);
-                    
-                    if (mesh->HasNormals()) {
-                        n = Vector3(mesh->mNormals[i].x,
-                                    mesh->mNormals[i].y,
-                                    mesh->mNormals[i].z
-                                    );
-                        surfaceNode->surface()->vertex(viid)->normal() = n;
-                    }
-                    surfaceNode->surface()->vertex(viid)->color() = Color(1.0f, 1.0f, 1.0f);
+        // No faces, nothong to do...
+        if (!mesh->HasFaces()) {
+            continue;
+        }
+        std::vector<Vertex::size_t> map;
+        Eigen::Vector3f p, n;
+        if (mesh->HasPositions()) {
+            for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
+                p = Vector3(mesh->mVertices[i].x,
+                            mesh->mVertices[i].y,
+                            mesh->mVertices[i].z);
+                auto viid = surfaceNode->surface()->addVertex(p);
+                map.push_back(viid);
+                
+                if (mesh->HasNormals()) {
+                    n = Vector3(mesh->mNormals[i].x,
+                                mesh->mNormals[i].y,
+                                mesh->mNormals[i].z
+                                );
+                    surfaceNode->surface()->vertex(viid)->normal() = n;
                 }
-            }
-            
-            std::vector<Face::size_t> indices(3);
-            for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
-                indices[0] = map[mesh->mFaces[i].mIndices[0]];
-                indices[1] = map[mesh->mFaces[i].mIndices[1]];
-                indices[2] = map[mesh->mFaces[i].mIndices[2]];
-                surfaceNode->surface()->addFace(indices);
+                surfaceNode->surface()->vertex(viid)->color() = Color(1.0f, 1.0f, 1.0f);
             }
         }
-        outNode->add(surfaceNode);
+        
+        std::vector<Face::size_t> indices(3);
+        for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
+            indices[0] = map[mesh->mFaces[i].mIndices[0]];
+            indices[1] = map[mesh->mFaces[i].mIndices[1]];
+            indices[2] = map[mesh->mFaces[i].mIndices[2]];
+            surfaceNode->surface()->addFace(indices);
+        }
+
     }
 }
 
@@ -294,25 +336,19 @@ void Scene::Impl::processCamera(const aiScene * scene,
     assert(scene != nullptr && node != nullptr && camera != nullptr);
     
     std::shared_ptr<Camera> camPtr = std::make_shared<Camera>();
-    
-    camPtr->setPosition(Point3(0, 0, -5));
-    camPtr->setOrientationVector(Vector3(0,1,0));
-    camPtr->setTargetPoint(Point3(0, 0, 0));
-    camPtr->setPerspectiveMatrix(45,
-                                 1.3,
-                                 1.0,
-                                 50);
-    
-//    camPtr->setPosition(Point3(&camera->mPosition.x));
-//    camPtr->setOrientationVector(Point3(&camera->mUp.x));
-//    camPtr->setTargetPoint(Point3(&camera->mLookAt.x));
-//    camPtr->setPerspectiveMatrix(camera->mHorizontalFOV,
-//                                 camera->mAspect,
-//                                 camera->mClipPlaneNear,
-//                                 camera->mClipPlaneFar);
-    CameraNode::shared_ptr camNode = std::make_shared<CameraNode>(camPtr,
+    CameraNode::shared_ptr camNode = std::make_shared<CameraNode>(Camera::shared_ptr(NULL),
                                                                   camera->mName.C_Str());
     outNode->add(camNode);
+    camNode->setCamera(camPtr);
+    camPtr->setPosition(Point3(&camera->mPosition.x));
+    camPtr->setOrientationVector(Point3(&camera->mUp.x));
+    camPtr->setTargetPoint(Point3(&camera->mLookAt.x));
+    float yfov = camera->mHorizontalFOV * 180 / M_PI;
+    yfov = (camera->mHorizontalFOV * 2 * 180 / M_PI) / camera->mAspect;
+    camPtr->setPerspectiveMatrix(yfov,
+                                 camera->mAspect,
+                                 camera->mClipPlaneNear,
+                                 camera->mClipPlaneFar);
 }
 
 static void

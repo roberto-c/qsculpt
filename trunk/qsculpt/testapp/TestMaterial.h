@@ -9,6 +9,7 @@
 #ifndef __TestApp__TestMaterial__
 #define __TestApp__TestMaterial__
 
+#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/opengl/Texture.h>

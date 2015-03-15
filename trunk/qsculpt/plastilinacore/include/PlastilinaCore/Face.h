@@ -52,7 +52,7 @@ private:
 
     size_t              _id; // 4
     FaceFlags           _flags; // 4
-    size_t              _nVertices;
+    mutable size_t      _nVertices;
     
     void*               _userData;
     
@@ -116,6 +116,13 @@ public:
      */
     Face& addEdge(Edge* he);
 
+    /**
+     * Returns one vertex that belongs to this face.
+     *
+     * It can be used as staring poont for vertex iteration.
+     */
+    const Vertex* vertex() const { return _vertex ;}
+    
     /**
      * Adds all the vertices contained in the array.
      */
@@ -190,7 +197,9 @@ public:
      */
     Iterator<Edge> constEdgeIterator() const;
 
+    
 protected:
+    ISurface * surface() { return _surface; }
     void subdivide(int level);
 
     /* Inner classes */

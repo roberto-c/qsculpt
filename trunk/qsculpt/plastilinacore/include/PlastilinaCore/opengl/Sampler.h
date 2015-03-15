@@ -10,6 +10,7 @@
 #define __PlastilinaCore__Sampler__
 
 #include <iostream>
+#include <array>
 #include <PlastilinaCore/opengl/Object.h>
 
 class Color;

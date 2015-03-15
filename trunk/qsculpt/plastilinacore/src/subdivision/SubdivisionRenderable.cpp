@@ -79,22 +79,25 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 		CameraNode * cameraNode = state->camera;
         Camera * camera = cameraNode->camera().get();
 		GLint matId = prog->uniformLocation("glModelViewMatrix");
-//        Eigen::Affine3f t = cameraNode->transform()*cameraNode->parentTransform();
-//        std::cout << t.matrix() << std::endl;
-        if (matId != -1) prog->setUniform(matId, camera->modelView());
+        Eigen::Affine3f t(camera->modelView());
+//        std::cout << "ModelView: " << std::endl << t.matrix() << std::endl;
+        if (matId != -1) prog->setUniform(matId, t);
+        
+        matId = prog->uniformLocation("objectTransform");
+        auto ntrans = node->transform()*node->parentTransform();
+//        std::cout << "Object Trans: " << std::endl << ntrans.matrix() << std::endl;
+        if (matId != -1) prog->setUniform(matId, ntrans);
+        
         matId = prog->uniformLocation("glProjectionMatrix");
+//        std::cout << "Projection: " << std::endl << camera->projection() << std::endl;
         if (matId != -1) prog->setUniform(matId, camera->projection());
-		auto p = camera->getPosition(); //cameraNode->localToWorld(camera->getPosition());
+        
+        Eigen::Vector3f p = t.translation();
 		Eigen::Vector4f camPos = Eigen::Vector4f(p[0],p[1],p[2],1.0f);
 		matId = prog->uniformLocation("eyePosition");
+//        std::cout << "Eye position: " << std::endl << camPos << std::endl;
 		if (matId != -1) prog->setUniform(matId, camPos);
 	}
-	
-	GLint matId = prog->uniformLocation("objectTransform");
-	if (matId != -1) {
-		prog->setUniform(matId, node->transform()*node->parentTransform());
-	}
-
 	
 	
 	obj = snode->surface();

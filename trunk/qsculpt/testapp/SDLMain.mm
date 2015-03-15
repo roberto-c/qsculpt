@@ -199,7 +199,7 @@ static void CustomApplicationMain (int argc, char **argv)
 {
     NSAutoreleasePool	*pool = [[NSAutoreleasePool alloc] init];
     SDLMain				*sdlMain;
-
+    NSMenu 				*mainMenu;
     /* Ensure the application object is initialised */
     [NSApplication sharedApplication];
     
@@ -215,7 +215,8 @@ static void CustomApplicationMain (int argc, char **argv)
 #endif /* SDL_USE_CPS */
 
     /* Set up the menubar */
-    [NSApp setMainMenu:[[NSMenu alloc] init]];
+    mainMenu = [[NSMenu alloc] init];
+    [NSApp setMainMenu:mainMenu];
     setApplicationMenu();
     setupWindowMenu();
 
@@ -227,6 +228,7 @@ static void CustomApplicationMain (int argc, char **argv)
     [NSApp run];
     
     [sdlMain release];
+    [mainMenu release];
     [pool release];
 }
 

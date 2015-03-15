@@ -182,7 +182,7 @@ struct NSubdivision {
 };
 
 static void printModelRecursive(const Document::shared_ptr & doc, 
-                                const SceneNode::shared_ptr & parent = NULL)
+                                const SceneNode::shared_ptr & parent = nullptr)
 {
     TRACEFUNCTION();
     

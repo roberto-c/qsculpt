@@ -96,7 +96,7 @@ inline void hash_combine(std::size_t & seed, const T & v)
 
 namespace std
 {
-    template<typename S, typename T> struct hash<pair<S, T>>
+    template<typename S, typename T> struct hash<pair<S, T> >
     {
         inline size_t operator()(const pair<S, T> & v) const
         {

@@ -59,7 +59,9 @@ set(PLASTILINACORE_SOURCES
 )
 
 if (APPLE)
-	set(PLASTILINACORE_SOURCES ./src/Context_mac.mm)
+	set(PLASTILINACORE_SOURCES_OBJCXX ./src/Context_mac.mm)
+	set_source_files_properties(${PLASTILINACORE_SOURCES_OBJCXX} PROPERTIES 
+	                            COMPILE_FLAGS "-x objective-c++")
 elseif(UNIX)
 	set(PLASTILINACORE_SOURCES ./src/Context_unix.cpp)
 endif()
@@ -150,6 +152,7 @@ set(RESOURCES
 # Library target
 add_library(PlastilinaCore SHARED
 	${PLASTILINACORE_SOURCES}
+	${PLASTILINACORE_SOURCES_OBJCXX}
 	${PLASTILINACORE_PUBLIC_HEADERS}
 	${RESOURCES}
 )
@@ -161,7 +164,15 @@ target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OPENCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 
-find_package(Assimp)
+include_directories(include /usr/local/include/eigen3 ../thirdparty/OpenCL)
+
+find_package(Subversion)
+if(SUBVERSION_FOUND)
+    Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)
+    message("Current revision is ${Project_WC_REVISION}")
+    Subversion_WC_LOG(${PROJECT_SOURCE_DIR} Project)
+    message("Last changed log is ${Project_LAST_CHANGED_LOG}")
+endif()
 
 find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 	PATH /usr/local/include/eigen3 /usr/include/eigen3
@@ -173,6 +184,8 @@ include_directories(include
 	../thirdparty/OpenCL
 	${OPENCL_INCLUDE_DIRS}
 	)
+
+find_package(Assimp)
 if (ASSIMP_FOUND)
 	include_directories(${ASSIMP_INCLUDE_DIRS})
 	target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
@@ -180,14 +193,8 @@ endif()
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
 
-if (UNIX)
-	set_property(TARGET PlastilinaCore 
-		PROPERTY COMPILE_FLAGS "-std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h"
-	)
-elseif (APPLE)
-	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS 
-		-std=c++11 -stdlib=libc++ 
-		-include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+if (APPLE)
+	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)
 	set_property(TARGET PlastilinaCore 
 		PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore
@@ -211,8 +218,12 @@ elseif (APPLE)
 	find_library(COCOA_LIBRARIES Cocoa )
 	target_link_libraries(PlastilinaCore ${FOUNDATION_LIBRARIES})
 	target_link_libraries(PlastilinaCore ${COCOA_LIBRARIES})
+elseif (UNIX)
+	set_property(TARGET PlastilinaCore 
+		PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+	)
 else()
 	Message("Unsupported platform")		
-endif(UNIX)
+endif()
 
 

@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <atomic>
 #include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Camera.h>
 
 static std::atomic_int NEXTID;
 
@@ -34,9 +35,12 @@ struct SceneNode::Impl {
     std::vector<SceneNode::shared_ptr>   children;
     Eigen::Affine3f                     transform;
     std::string                         name;
+    Eigen::IOFormat 					octaveFmt;
     
     Impl(const std::string & name, NodeType nodeType = NT_Normal) :
-     iid(0), nodeType(nodeType), isSelected(false),name(name) {
+     iid(0), nodeType(nodeType), isSelected(false),name(name),
+    	octaveFmt(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]")
+    {
         std::cerr << __PRETTY_FUNCTION__ << std::endl;
     }
     
@@ -45,13 +49,14 @@ struct SceneNode::Impl {
     }
     
     void dump(int indent = 0) const {
-        std::string p;
-        p.resize(indent, ' ');
-        std::cout << p << "NodeType:" << nodeType << std::endl;
-        std::cout << p << "Name:" << name << std::endl;
-        std::cout << p << "IID:" << iid << std::endl;
-        std::cout << p << "T:" << transform.matrix() << std::endl;
-        std::cout << p << "Children:" << std::endl;
+        std::string p, d;
+        for (int i = 0; i < indent; ++i) {
+            p += "    ";
+        }
+        std::cout << p << "+--- Name:" << name << " (" << iid << ")" << std::endl;
+        std::cout << p << "   | NodeType:" << nodeType << std::endl;
+        std::cout << p << "   | T: \n" << transform.matrix().format(octaveFmt) << std::endl;
+        std::cout << p << "   | Children (" << children.size() << "): " << std::endl;
         for(auto e : children) {
             e->_d->dump(indent+1);
         }
@@ -251,7 +256,10 @@ bool SceneNode::SceneNodeTreeIterator::hasNext() const
     if (!_parent) {
         throw std::runtime_error("Parent is null");
     }
-    return _nextIndex >= 0 && _parent && _parent->count() > _nextIndex;
+//    bool res = _nextIndex >= 0 && ((_parent && _parent->count() > _nextIndex) || _levelStack.size() > 0);
+    bool res = _nextIndex >= 0 && ((_parent && _parent->count() > _nextIndex));
+    std::cerr << "NextIndex: " << _nextIndex << " ParentCount: " << ((_parent) ? _parent->count() : -1 ) << "\n";
+    return res;
 }
 
 bool SceneNode::SceneNodeTreeIterator::hasPrevious() const
@@ -269,14 +277,18 @@ const SceneNode::SceneNodeTreeIterator::shared_ptr SceneNode::SceneNodeTreeItera
         _nextIndex = 0;
         _parent = ret;
     }
-    if (_nextIndex >= _parent->count()) {
+    
+    while(_nextIndex >= _parent->count()) {
         auto p = _parent->parent().lock();
         if (p) {
             _nextIndex = _levelStack.back();
             _levelStack.pop_back();
             _parent = _parent->parent().lock();
+        } else {
+            break;
         }
     }
+    std::cerr << "RetType:" << ret->nodeType() << " NextIndex: " << _nextIndex << " ParentCount: " << ((_parent) ? _parent->count() : -1 ) << "\n";
     return  ret;
 }
 
@@ -412,7 +424,7 @@ void SceneNode::add(SceneNode::weak_ptr child)
         return;
     }
     
-    // If child node has a parent, remove child from old parent's children list
+    // Only add the node if it doe not exist in the children list
     if (!contains(child)) {
         _d->children.push_back(ptr);
     } 
@@ -503,7 +515,7 @@ Eigen::Affine3f SceneNode::parentTransform() const
     
     SceneNode::shared_ptr node = _d->parent.lock();
     while (node) {
-        trans = trans * node->transform();
+        trans = node->transform() * trans;
         node = node->_d->parent.lock();
     }
     return trans;
@@ -568,7 +580,7 @@ SurfaceNode::SurfaceNode(const std::string & name,
     
 }
 SurfaceNode::SurfaceNode(ISurface *surface)
-: SceneNode(""),
+: SceneNode("", NT_Surface),
  surface_(surface)
 {
 }
@@ -643,7 +655,7 @@ CameraNode::CameraNode(const std::shared_ptr<Camera> & cam,
     d(new Impl)
 {
     if (d) {
-        d->camera = cam;
+        setCamera(cam);
     }
 }
 
@@ -655,6 +667,9 @@ CameraNode::~CameraNode()
 void CameraNode::setCamera(const std::shared_ptr<Camera> & cam)
 {
     d->camera = cam;
+    if (cam) {
+    	this->add(d->camera);
+    }
 }
 
 std::shared_ptr<Camera> CameraNode::camera() const

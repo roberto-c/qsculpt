@@ -28,9 +28,10 @@
 
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "IConfigContainer.h"
 #include "DocumentView.h"
+#include "command/IConfigContainer.h"
 #include "command/BrushProperties.h"
+
 
 QImage BrushCommand::_cursorImage;
 

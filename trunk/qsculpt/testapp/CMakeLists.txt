@@ -40,12 +40,12 @@ add_executable(PTestApp MACOSX_BUNDLE
 	${RESOURCES}
 )
 
-if (UNIX)
-	set_property(TARGET PlastilinaCore 
-		PROPERTY COMPILE_FLAGS "-std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h"
-	)
-elseif (APPLE)
-set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ./stable.h )
+if (APPLE)
+	set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ./stable.h )
+elseif (UNIX)
+    set_property(TARGET PlastilinaCore
+    	PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h
+    )
 endif()
 
 set_property(TARGET PTestApp PROPERTY RESOURCE ${RESOURCES})

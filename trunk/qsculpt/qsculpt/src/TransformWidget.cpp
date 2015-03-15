@@ -25,11 +25,12 @@
 #include "DocumentView.h"
 #include "MoveCommand.h"
 #include "IConfigContainer.h"
+#include "ui_TransformWidget.h"
 
 TransformWidget::TransformWidget(QWidget* parent)
-    : QWidget(parent), Ui::TransformWidget()
+    : QWidget(parent), ui_(new Ui::TransformWidget())
 {
-    setupUi(this);
+    ui_->setupUi(this);
 
     //connect(m_apply, SIGNAL(clicked()), this, SLOT(applyTransform()));
     qDebug() << "TransformWidget constructor";
@@ -38,6 +39,7 @@ TransformWidget::TransformWidget(QWidget* parent)
 TransformWidget::~TransformWidget()
 {
 	qDebug() << "TransformWidget destructor";
+    delete ui_;
 }
 
 void TransformWidget::enable(bool enable)
@@ -48,17 +50,18 @@ void TransformWidget::enable(bool enable)
 
 void TransformWidget::applyTransform()
 {
+    assert(ui_ != nullptr);
     TransformCommand cmd;
 
     IConfigContainer& conf = cmd.getConfig();
 
     conf.setInt( CONF_ACTION, TransformCommand::AllActions);
-    conf.setDouble( CONF_MOVE_X, m_posX->value());
-    conf.setDouble( CONF_MOVE_Y, m_posY->value());
-    conf.setDouble( CONF_MOVE_Z, m_posZ->value());
-    conf.setDouble( CONF_ROTATE_X, m_rotX->value());
-    conf.setDouble( CONF_ROTATE_Y, m_rotY->value());
-    conf.setDouble( CONF_ROTATE_Z, m_rotZ->value());
+    conf.setDouble( CONF_MOVE_X, ui_->m_posX->value());
+    conf.setDouble( CONF_MOVE_Y, ui_->m_posY->value());
+    conf.setDouble( CONF_MOVE_Z, ui_->m_posZ->value());
+    conf.setDouble( CONF_ROTATE_X, ui_->m_rotX->value());
+    conf.setDouble( CONF_ROTATE_Y, ui_->m_rotY->value());
+    conf.setDouble( CONF_ROTATE_Z, ui_->m_rotZ->value());
     conf.setDouble( CONF_SCALE_X, 1);
     conf.setDouble( CONF_SCALE_Y, 1);
     conf.setDouble( CONF_SCALE_Z, 1);

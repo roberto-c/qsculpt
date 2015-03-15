@@ -34,6 +34,15 @@ namespace geometry {
     class AABB;
 };
 
+enum class UpAxis {
+    Z_POS_UP,
+    Y_POS_UP,
+    X_POS_Up,
+    Z_NEG_UP,
+    Y_NEG_UP,
+    X_NEG_Up
+};
+
 /**
  * Contains all the scene data. All 3D objects reference data from the scene.
  *
@@ -95,6 +104,20 @@ public:
     virtual void render(const RenderState * state) const;
     
     void loadFromFile(const std::string & filename);
+    
+    /**
+     * Definition of where is "up" is the world.
+     *
+     * @returns @enum UpAxis
+     */
+    UpAxis upAxis() const;
+    
+    /**
+     * Set where is "up" is the world.
+     *
+     * @param axis axis that points up.
+     */
+    void setUpAxis(UpAxis axis);
     
 private:
     class SceneNodeIterator;

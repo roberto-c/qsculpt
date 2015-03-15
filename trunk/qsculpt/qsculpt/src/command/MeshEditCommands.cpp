@@ -21,7 +21,7 @@
 #include "command/MeshEditCommands.h"
 #include "QSculptWindow.h"
 #include "QSculptApp.h"
-#include "IConfigContainer.h"
+#include "command/IConfigContainer.h"
 #include "GlView.h"
 #include "DocumentView.h"
 #include "DocumentTreeWidget.h"

@@ -28,7 +28,10 @@
 #define WINDOW_FAR  (1.0f)
 
 Camera::Camera()
- :  m_colatitude(0.0),
+:  	m_position(0.f,0.f,0.f),
+    m_target(0.f,0.f,-1.f),
+    m_orientation(0.f,1.f,0.f),
+    m_colatitude(0.0),
     m_longitude(0.0)
 {
 }
@@ -190,32 +193,41 @@ void Camera::setModelView(const Eigen::Matrix4f &m)
 
 const Eigen::Matrix4f& Camera::modelView()
 {
+    updateViewMatrix();
     return _viewMat;
 }
 
 void Camera::updateViewMatrix()
 {
-    Vector3 w = - (m_target - m_position).normalized();
-    Vector3 u = m_orientation.cross(w).normalized();
-    Vector3 v = w.cross(u);
+    auto tp = parentTransform() * transform();
+    Vector3 target =   tp * m_target;
+    Vector3 position = tp * m_position;
+    Vector3 orientation = (tp.rotation() * m_orientation).normalized();
+    Vector3 w =  - (target - position).normalized();
+    Vector3 u = orientation.cross(w).normalized();
+    Vector3 v =  w.cross(u);
 
     _viewMat.setIdentity();
     _viewMat(0, 0) = u.x();
     _viewMat(0, 1) = u.y();
     _viewMat(0, 2) = u.z();
+    _viewMat(0, 3) = 0; //position.x();
 
     _viewMat(1, 0) = v.x();
     _viewMat(1, 1) = v.y();
     _viewMat(1, 2) = v.z();
-
+    _viewMat(1, 3) = 0; //position.y();
+    
     _viewMat(2, 0) = w.x();
     _viewMat(2, 1) = w.y();
     _viewMat(2, 2) = w.z();
+    _viewMat(2, 3) = 0; //position.z();
 
-    Eigen::Transform3f t;
-    t.matrix() = _viewMat;
-    t.translate(-m_position);
-    _viewMat = t.matrix();
+    _viewMat = _viewMat.inverse().eval();
+    _viewMat(0, 3) = -position.x();
+    _viewMat(1, 3) = -position.y();
+    _viewMat(2, 3) = -position.z();
+    //_viewMat = (parentTransform() * transform() * t).inverse().matrix();
 }
 
 void Camera::setProjectionMatrix(const Eigen::Matrix4f &m)
@@ -244,9 +256,9 @@ void Camera::setPerspectiveMatrix(float left, float right,
     float D = - (2 * far * near) / dNF;
 
     _projMat.setZero();
-    _projMat(0, 0) =  ( 2 * near) / dLR;
+    _projMat(0, 0) =  ( 2.0 * near) / dLR;
     _projMat(0, 2) = A;
-    _projMat(1, 1) =  ( 2 * near) / dBT;
+    _projMat(1, 1) =  ( 2.0 * near) / dBT;
     _projMat(1, 2) = B;
     _projMat(2, 2) = C;
     _projMat(2, 3) = D;
@@ -269,9 +281,9 @@ void Camera::setOrthoMatrix(float left, float right,
     float tz = - (far + near) / dNF;
 
     _projMat.setIdentity();
-    _projMat(0, 0) =  2 / dLR;
-    _projMat(1, 1) =  2 / dBT;
-    _projMat(2, 2) =  - 2 / dNF;
+    _projMat(0, 0) =  2.0f / dLR;
+    _projMat(1, 1) =  2.0f / dBT;
+    _projMat(2, 2) =  - 2.0f / dNF;
     _projMat(0, 3) = tx;
     _projMat(1, 3) = ty;
     _projMat(2, 3) = tz;
@@ -281,7 +293,8 @@ void Camera::setPerspectiveMatrix(float fovy, float aspect, float zNear, float z
 {
     assert(zNear > 0 && zFar > 0 && fovy > 0 && fovy < 180.0);
     
-    float t = tanf(fovy * M_PI / 180.0 / 2.0) * zNear;
+    fovy = fovy/2.0;
+    float t = tanf(fovy * M_PI / 180.0) * zNear;
     float b = -t;
     float r = t * aspect;
     float l = -r;
@@ -297,7 +310,7 @@ void Camera::setViewport(const Eigen::Matrix4f &m)
 void Camera::setViewport(int x, int y, int w, int h)
 {
     float n = WINDOW_NEAR, f = WINDOW_FAR;
-    _viewportMat.setIdentity();
+    _viewportMat.setZero();
     _viewportMat(0, 0) = w/2;
     _viewportMat(1, 1) = h/2;
     _viewportMat(0, 3) = w / 2 + x;

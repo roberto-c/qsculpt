@@ -12,6 +12,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <string>
 #include <PlastilinaCore/opengl/OpenGL.h>
 
 template <GLenum SHADERTYPE>
