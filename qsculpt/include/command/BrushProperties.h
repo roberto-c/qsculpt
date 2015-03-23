@@ -21,10 +21,13 @@
 #define BRUSHPROPERTIES_H
 
 #include <QtGui/QWidget>
-#include "../ui/ui_BrushProperties.h"
 #include "command/BrushCommand.h"
 
-class BrushProperties : public QWidget, private Ui::BrushProperties
+namespace Ui {
+    class BrushProperties;
+}
+
+class BrushProperties : public QWidget
 {
     Q_OBJECT
     
@@ -41,6 +44,9 @@ public:
     
     BrushCommand::BrushAction getBrushAction();
     void setBrushAction(BrushCommand::BrushAction action);
+    
+private:
+    Ui::BrushProperties* ui_;
 };
 
 

@@ -19,43 +19,45 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "command/BrushProperties.h"
+#include "ui_BrushProperties.h"
 
 BrushProperties::BrushProperties(QWidget* _parent)
-: QWidget(_parent)
+: QWidget(_parent), ui_(new Ui::BrushProperties())
 {
-    setupUi(this);
+    ui_->setupUi(this);
 }
 
 BrushProperties::~BrushProperties()
 {
+    delete ui_;
 }
 
 double BrushProperties::getBrushRadius()
 {
-    return spinRadius->value();
+    return ui_->spinRadius->value();
 }
 
 void BrushProperties::setBrushRadius(double radius)
 {
     if (radius > 0.00001)
-        spinRadius->setValue(radius);
+        ui_->spinRadius->setValue(radius);
 }
 
 double BrushProperties::getBrushStrength()
 {
-    return spinStrength->value();
+    return ui_->spinStrength->value();
 }
 
 void BrushProperties::setBrushStrength(double strength)
 {
-    spinStrength->setValue(strength);
+    ui_->spinStrength->setValue(strength);
 }
 
 BrushCommand::BrushAction BrushProperties::getBrushAction()
 {
-    if (radPush->isChecked())
+    if (ui_->radPush->isChecked())
         return BrushCommand::Push;
-    else if (radPull->isChecked())
+    else if (ui_->radPull->isChecked())
         return BrushCommand::Pull;
     
     return BrushCommand::Push;
@@ -66,10 +68,10 @@ void BrushProperties::setBrushAction(BrushCommand::BrushAction action)
     switch(action)
     {
         case BrushCommand::Pull:
-            radPull->setChecked(true);
+            ui_->radPull->setChecked(true);
             break;
         case BrushCommand::Push:
-            radPush->setChecked(true);
+            ui_->radPush->setChecked(true);
             break;
     }
 }
