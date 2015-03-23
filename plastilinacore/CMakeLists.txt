@@ -160,19 +160,19 @@ add_library(PlastilinaCore SHARED
 find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(GLEW REQUIRED)
+find_package(ASSIMP REQUIRED)
 target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OPENCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
+target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
 
-include_directories(include /usr/local/include/eigen3 ../thirdparty/OpenCL)
-
-find_package(Subversion)
-if(SUBVERSION_FOUND)
-    Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)
-    message("Current revision is ${Project_WC_REVISION}")
-    Subversion_WC_LOG(${PROJECT_SOURCE_DIR} Project)
-    message("Last changed log is ${Project_LAST_CHANGED_LOG}")
-endif()
+#find_package(Subversion)
+#if(SUBVERSION_FOUND)
+#    Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)
+#    message("Current revision is ${Project_WC_REVISION}")
+#    Subversion_WC_LOG(${PROJECT_SOURCE_DIR} Project)
+#    message("Last changed log is ${Project_LAST_CHANGED_LOG}")
+#endif()
 
 find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 	PATH /usr/local/include/eigen3 /usr/include/eigen3
@@ -183,13 +183,8 @@ include_directories(include
 	${EIGEN_INCLUDE_DIRS} 
 	../thirdparty/OpenCL
 	${OPENCL_INCLUDE_DIRS}
+	${ASSIMP_INCLUDE_DIRS}
 	)
-
-find_package(Assimp)
-if (ASSIMP_FOUND)
-	include_directories(${ASSIMP_INCLUDE_DIRS})
-	target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
-endif()
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
 
