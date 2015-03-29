@@ -61,7 +61,7 @@ struct QSculptWindow::Impl : public Ui::MainWindow {
 };
 
 QSculptWindow::QSculptWindow()
-    : d_(new Impl)
+    : QMainWindow(), d_(new Impl)
 {
     createWidgets();
 
@@ -242,10 +242,10 @@ void QSculptWindow::createWidgets()
     // Activate default tool
     d_->commandManager.setActiveCommand("Select");
 
-    connect(d_->m_new,SIGNAL(activated()),this,SLOT(newFile()));
-    connect(d_->m_save, SIGNAL(activated()), this, SLOT(save()));
-    connect(d_->m_saveAs, SIGNAL(activated()), this, SLOT(saveAs()));
-    connect(d_->m_open, SIGNAL(activated()), this, SLOT(open()));
+    connect(d_->m_new,SIGNAL(triggered()),this,SLOT(newFile()));
+    connect(d_->m_save, SIGNAL(triggered()), this, SLOT(save()));
+    connect(d_->m_saveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
+    connect(d_->m_open, SIGNAL(triggered()), this, SLOT(open()));
 
     if (layout())
     {

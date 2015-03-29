@@ -1,203 +1,187 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>562</width>
-    <height>598</height>
+    <width>751</width>
+    <height>577</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <property name="toolButtonStyle" >
+  <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextUnderIcon</enum>
   </property>
-  <property name="unifiedTitleAndToolBarOnMac" >
+  <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
   </property>
-  <widget class="QWidget" name="centralwidget" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>22</y>
-     <width>562</width>
-     <height>554</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
   </widget>
-  <widget class="QMenuBar" name="menubar" >
-   <property name="geometry" >
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>562</width>
+     <width>751</width>
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File" >
-    <property name="title" >
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="m_new" />
-    <addaction name="separator" />
-    <addaction name="m_open" />
-    <addaction name="m_save" />
-    <addaction name="m_saveAs" />
-    <addaction name="separator" />
-    <addaction name="m_quit" />
+    <addaction name="m_new"/>
+    <addaction name="separator"/>
+    <addaction name="m_open"/>
+    <addaction name="m_save"/>
+    <addaction name="m_saveAs"/>
+    <addaction name="separator"/>
+    <addaction name="m_quit"/>
    </widget>
-   <widget class="QMenu" name="menuTools" >
-    <property name="title" >
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
      <string>&amp;Tools</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menu_View" >
-    <property name="title" >
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="m_showGrid" />
-    <addaction name="m_showNormals" />
-    <addaction name="separator" />
-    <addaction name="m_viewFullscreen" />
+    <addaction name="m_showGrid"/>
+    <addaction name="m_showNormals"/>
+    <addaction name="separator"/>
+    <addaction name="m_viewFullscreen"/>
    </widget>
-   <widget class="QMenu" name="menuObjects" >
-    <property name="title" >
+   <widget class="QMenu" name="menuObjects">
+    <property name="title">
      <string>&amp;Objects</string>
     </property>
-    <widget class="QMenu" name="menu_Add" >
-     <property name="title" >
+    <widget class="QMenu" name="menu_Add">
+     <property name="title">
       <string>&amp;Add</string>
      </property>
-     <addaction name="m_addBox" />
-     <addaction name="m_addSphere" />
+     <addaction name="m_addBox"/>
+     <addaction name="m_addSphere"/>
     </widget>
-    <addaction name="menu_Add" />
+    <addaction name="menu_Add"/>
    </widget>
-   <widget class="QMenu" name="menuEdit" >
-    <property name="title" >
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
      <string>Edit</string>
     </property>
    </widget>
-   <addaction name="menu_File" />
-   <addaction name="menuEdit" />
-   <addaction name="menu_View" />
-   <addaction name="menuObjects" />
-   <addaction name="menuTools" />
+   <addaction name="menu_File"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menu_View"/>
+   <addaction name="menuObjects"/>
+   <addaction name="menuTools"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>576</y>
-     <width>562</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <action name="m_new" >
-   <property name="text" >
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="m_new">
+   <property name="text">
     <string>&amp;New</string>
    </property>
   </action>
-  <action name="m_open" >
-   <property name="text" >
+  <action name="m_open">
+   <property name="text">
     <string>&amp;Open...</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="m_save" >
-   <property name="text" >
+  <action name="m_save">
+   <property name="text">
     <string>&amp;Save</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="m_saveAs" >
-   <property name="text" >
+  <action name="m_saveAs">
+   <property name="text">
     <string>Save &amp;as ...</string>
    </property>
   </action>
-  <action name="m_quit" >
-   <property name="text" >
+  <action name="m_quit">
+   <property name="text">
     <string>&amp;Quit</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="m_showGrid" >
-   <property name="checkable" >
+  <action name="m_showGrid">
+   <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Show &amp;grid</string>
    </property>
   </action>
-  <action name="m_addBox" >
-   <property name="text" >
+  <action name="m_addBox">
+   <property name="text">
     <string>&amp;Box</string>
    </property>
   </action>
-  <action name="m_addSphere" >
-   <property name="text" >
+  <action name="m_addSphere">
+   <property name="text">
     <string>&amp;Sphere</string>
    </property>
   </action>
-  <action name="m_select" >
-   <property name="text" >
+  <action name="m_select">
+   <property name="text">
     <string>&amp;Select</string>
    </property>
   </action>
-  <action name="m_transform" >
-   <property name="text" >
+  <action name="m_transform">
+   <property name="text">
     <string>&amp;Transform</string>
    </property>
   </action>
-  <action name="m_brush" >
-   <property name="text" >
+  <action name="m_brush">
+   <property name="text">
     <string>&amp;Brush</string>
    </property>
   </action>
-  <action name="m_subdivide" >
-   <property name="text" >
+  <action name="m_subdivide">
+   <property name="text">
     <string>Sub&amp;divide</string>
    </property>
   </action>
-  <action name="m_showNormals" >
-   <property name="checkable" >
+  <action name="m_showNormals">
+   <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Show normals</string>
    </property>
   </action>
-  <action name="m_undo" >
-   <property name="text" >
+  <action name="m_undo">
+   <property name="text">
     <string>&amp;Undo</string>
    </property>
   </action>
-  <action name="m_redo" >
-   <property name="text" >
+  <action name="m_redo">
+   <property name="text">
     <string>&amp;Redo</string>
    </property>
   </action>
-  <action name="m_viewFullscreen" >
-   <property name="checkable" >
+  <action name="m_viewFullscreen">
+   <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Fullscreen</string>
    </property>
   </action>
@@ -206,15 +190,15 @@
  <connections>
   <connection>
    <sender>m_quit</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>399</x>
      <y>299</y>
     </hint>

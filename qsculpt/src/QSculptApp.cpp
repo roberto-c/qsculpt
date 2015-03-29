@@ -35,6 +35,7 @@ QSculptApp::QSculptApp(int& argc, char** argv)
 
 QSculptApp::~QSculptApp()
 {
+    //delete m_mainWindow;
 }
 
 QSculptWindow* QSculptApp::getMainWindow()

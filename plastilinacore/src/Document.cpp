@@ -193,57 +193,7 @@ Document::~Document()
 
 void Document::loadFile(const std::string& fileName)
 {
-//	ISurface* obj = new ::Mesh();
-//    if (obj)
-//    {
-//        QFile file(fileName);
-//        if (!file.open(QIODevice::ReadOnly))
-//        {
-//            qWarning("File cannot be open.");
-//            return;
-//        }
-//        QTextStream inputFile(&file);
-//
-//        std::string str;
-//        while(!inputFile.atEnd())
-//        {
-//            str = inputFile.readLine();
-//            QTextStream lineStream(&str);
-//
-//            std::string token;
-//            lineStream >> token;
-//            if (token == "v")
-//            {
-//                double x, y, z;
-//                lineStream >> x >> y >> z;
-//                obj->addVertex( Point3(x, y, z) );
-//            }
-//            else if (token == "f")
-//            {
-//                bool error = false;
-//                std::vector<size_t> vertexIndices;
-//                while(!lineStream.atEnd())
-//                {
-//                    lineStream >> token;
-//                    std::stringList values;
-//                    values = token.split("/");
-//                    int index = values[0].toInt()  - 1;
-//                    if (index >= 0 && index < obj->numVertices())
-//                        vertexIndices.push_back(index);
-//                    else
-//                    {
-//                        error = true;
-//                        qDebug("Index out of rage");
-//                        break;
-//                    }
-//                }
-//                if (!error)
-//                    obj->addFace( vertexIndices );
-//            }
-//        }
-//		obj->setChanged(true);
-//        //        addObject(IDocument::Mesh, obj);
-//    }
+    _d->scene->loadFromFile(fileName);
 }
 
 void Document::saveFile(const std::string& fileName)
