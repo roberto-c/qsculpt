@@ -345,9 +345,6 @@ void GlCanvas::paintGL()
 
 void GlCanvas::drawScene(Scene::shared_ptr scene)
 {
-    if (_d->renderer == NULL)
-        return;
-    
     try {
         scene->render();
     } catch(core::GlException & e) {
