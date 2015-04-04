@@ -40,15 +40,16 @@
 #include "CustomGLContext.h"
 
 struct DocumentView::Impl {
-    CustomGLContext ctx;
+    IDocument::shared_ptr    _document;
+    GlCanvas        		*_display;
+    QComboBox       		*_viewPerspective;
+    QComboBox       		*_drawingMode;
+    bool            		 _drawVertices;
+    CustomGLContext 		 ctx;
 };
 
 DocumentView::DocumentView(QWidget *_parent)
 : QWidget(_parent),
-_document(NULL),
-_viewPerspective(NULL),
-_drawingMode(NULL),
-_drawVertices(false),
 _d(new Impl)
 {
     createWidgets();
@@ -72,35 +73,35 @@ void DocumentView::createWidgets()
     _d->ctx.setFormat(format);
     _d->ctx.setUseSoftwareRenderer(false);
     _d->ctx.create();
-    _display = new GlCanvas(&_d->ctx, this);
+    _d->_display = new GlCanvas(&_d->ctx, this);
     //_display = new GlCanvas(this);
 
     Q_CHECK_PTR(gridLayout);
-    Q_CHECK_PTR(_display);
+    Q_CHECK_PTR(_d->_display);
     Q_CHECK_PTR(hboxLayout);
 
     gridLayout->setContentsMargins(0, 0, 0, 0);
-    gridLayout->addWidget(_display, 0, 0, 1, 5);
+    gridLayout->addWidget(_d->_display, 0, 0, 1, 5);
     gridLayout->addLayout(hboxLayout, 1, 0);
     
     QLabel* label = new QLabel("View", this);
-    _viewPerspective = new QComboBox(this);
+    _d->_viewPerspective = new QComboBox(this);
     Q_CHECK_PTR(label);
-    Q_CHECK_PTR(_viewPerspective);
-    label->setBuddy(_viewPerspective);
+    Q_CHECK_PTR(_d->_viewPerspective);
+    label->setBuddy(_d->_viewPerspective);
 
     hboxLayout->addWidget(label);
-    hboxLayout->addWidget(_viewPerspective);
+    hboxLayout->addWidget(_d->_viewPerspective);
 
     label = new QLabel("Drawing Mode", this);
-    _drawingMode = new QComboBox(this);
+    _d->_drawingMode = new QComboBox(this);
     Q_CHECK_PTR(label);
-    Q_CHECK_PTR(_drawingMode);
-    label->setBuddy(_drawingMode);
+    Q_CHECK_PTR(_d->_drawingMode);
+    label->setBuddy(_d->_drawingMode);
 
     hboxLayout->setContentsMargins(11, 0, 0, 0);
     hboxLayout->addWidget(label);
-    hboxLayout->addWidget(_drawingMode);
+    hboxLayout->addWidget(_d->_drawingMode);
     QSpacerItem* spacer = new QSpacerItem(100, 0);
     Q_CHECK_PTR(spacer);
     hboxLayout->addItem(spacer);
@@ -110,97 +111,166 @@ void DocumentView::createWidgets()
     gridLayout->setColumnStretch(3, 0);
     gridLayout->setColumnStretch(4, 4);
 
-    _viewPerspective->addItem("Front", GlCanvas::Front);
-    _viewPerspective->addItem("Back", GlCanvas::Back);
-    _viewPerspective->addItem("Top", GlCanvas::Top);
-    _viewPerspective->addItem("Bottom", GlCanvas::Bottom);
-    _viewPerspective->addItem("Left", GlCanvas::Left);
-    _viewPerspective->addItem("Right", GlCanvas::Right);
-    _viewPerspective->addItem("Perspective", GlCanvas::Perspective);
-    _viewPerspective->setCurrentIndex(6);
-    _display->setPerspectiveView(GlCanvas::Perspective);
+    _d->_viewPerspective->addItem("Front", GlCanvas::Front);
+    _d->_viewPerspective->addItem("Back", GlCanvas::Back);
+    _d->_viewPerspective->addItem("Top", GlCanvas::Top);
+    _d->_viewPerspective->addItem("Bottom", GlCanvas::Bottom);
+    _d->_viewPerspective->addItem("Left", GlCanvas::Left);
+    _d->_viewPerspective->addItem("Right", GlCanvas::Right);
+    _d->_viewPerspective->addItem("Perspective", GlCanvas::Perspective);
+    _d->_viewPerspective->setCurrentIndex(6);
+    _d->_display->setPerspectiveView(GlCanvas::Perspective);
 
-    _drawingMode->addItem("Points", Points);
-    _drawingMode->addItem("Wireframe", Wireframe);
-    _drawingMode->addItem("Flat", Flat);
-    _drawingMode->addItem("Smooth", Smooth);
-    _drawingMode->addItem("Textured", Texture);
-    _drawingMode->setCurrentIndex(2);
-    _display->setDrawingMode(Flat);
+    _d->_drawingMode->addItem("Points", Points);
+    _d->_drawingMode->addItem("Wireframe", Wireframe);
+    _d->_drawingMode->addItem("Flat", Flat);
+    _d->_drawingMode->addItem("Smooth", Smooth);
+    _d->_drawingMode->addItem("Textured", Texture);
+    _d->_drawingMode->setCurrentIndex(2);
+    _d->_display->setDrawingMode(Flat);
 
-    connect(_viewPerspective, SIGNAL(currentIndexChanged(int)), this, SLOT(viewPerspectiveChanged(int)));
-    connect(_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));
+    connect(_d->_viewPerspective, SIGNAL(currentIndexChanged(int)), this, SLOT(viewPerspectiveChanged(int)));
+    connect(_d->_drawingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(drawingModeChanged(int)));
 }
 
 void DocumentView::setDocument(IDocument::shared_ptr doc)
 {
     Q_ASSERT(doc);
 
-//    if (_document)
-//        _document->disconnect(this);
-    _document = doc;
-//    connect(_document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
+//    if (_d->_document)
+//        _d->_document->disconnect(this);
+    _d->_document = doc;
+//    connect(_d->_document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
 };
 
 void DocumentView::setGridVisible(bool value)
 {
-    Q_ASSERT(_display);
-    _display->setGridVisible(value);
+    Q_ASSERT(_d->_display);
+    _d->_display->setGridVisible(value);
 }
 
 bool DocumentView::isGridVisible()
 {
-    Q_ASSERT(_display);
-    return _display->isGridVisible();
+    Q_ASSERT(_d->_display);
+    return _d->_display->isGridVisible();
 }
 
 void DocumentView::updateView()
 {
-    Q_ASSERT(_display);
-    _display->updateGL();
+    Q_ASSERT(_d->_display);
+    _d->_display->updateGL();
 }
 
 void DocumentView::viewPerspectiveChanged(int index)
 {
-    Q_ASSERT(_display);
-    Q_ASSERT(_viewPerspective);
+    Q_ASSERT(_d->_display);
+    Q_ASSERT(_d->_viewPerspective);
 
     GlCanvas::PerspectiveType type;
 
-    type = (GlCanvas::PerspectiveType)_viewPerspective->itemData(index).toInt();
-    _display->setPerspectiveView(type);
+    type = (GlCanvas::PerspectiveType)(_d->_viewPerspective->itemData(index).toInt());
+    _d->_display->setPerspectiveView(type);
     updateView();
 }
 
 void DocumentView::drawingModeChanged(int index)
 {
-    Q_ASSERT(_display);
-    Q_ASSERT(_viewPerspective);
+    Q_ASSERT(_d->_display);
+    Q_ASSERT(_d->_viewPerspective);
 
     DrawingMode type;
 
-    type = (DrawingMode) _viewPerspective->itemData(index).toInt();
-    _display->setDrawingMode(type);
+    type = (DrawingMode) (_d->_viewPerspective->itemData(index).toInt());
+    _d->_display->setDrawingMode(type);
     updateView();
 }
 
 void DocumentView::setNormalsVisible(bool value)
 {
-    Q_ASSERT(_display);
-    _display->setNormalsVisible(value);
+    Q_ASSERT(_d->_display);
+    _d->_display->setNormalsVisible(value);
 }
 
 void DocumentView::setDrawVertices(bool drawVertices)
 {
-    _drawVertices = drawVertices;
+    _d->_drawVertices = drawVertices;
 }
 
 bool DocumentView::getDrawVertices()
 {
-    return _drawVertices;
+    return _d->_drawVertices;
 }
+
+GlCanvas* DocumentView::getCanvas()
+{
+    return _d->_display;
+}
+
 
 IRenderer* DocumentView::renderer() const
 {
-    return _display->renderer();
+    return _d->_display->renderer();
 }
+
+IDocument::shared_ptr DocumentView::getDocument() {
+    return _d->_document;
+};
+
+ObjectContainer DocumentView::getSelectedObjects(int x, int y) {
+    return _d->_display->getSelectedObjects(x, y);
+};
+PointIndexList DocumentView::getSelectedVertices(GLint x, GLint y,
+                                   GLint width, GLint height) {
+    return _d->_display->getSelectedVertices(x, y, width, height);
+}
+
+GlCanvas::PerspectiveType DocumentView::getPerspectiveViewType() {
+    return _d->_display->getPerspectiveView();
+};
+
+std::shared_ptr<Camera> DocumentView::getViewCamera() {
+    return _d->_display->getViewCamera();
+};
+
+void DocumentView::set3DCursorShape(GlCanvas::CursorShapeType shape) {
+    _d->_display->set3DCursorShape(shape);
+};
+
+GlCanvas::CursorShapeType DocumentView::getCursorShape() {
+    return _d->_display->getCursorShape();
+};
+
+void DocumentView::setCursorPosition(Point3 p) {
+    _d->_display->setCursorPosition(p);
+};
+
+Point3 DocumentView::getCursorPosition() {
+    return _d->_display->getCursorPosition();
+};
+
+void DocumentView::setCursorOrientation(Point3 n) {
+    _d->_display->setCursorOrientation(n);
+};
+
+Point3 DocumentView::getCursorOrientation() {
+    return _d->_display->getCursorOrientation();
+};
+
+void DocumentView::setCursorImage(const QImage& image) {
+    _d->_display->setCursorImage(image);
+}
+
+QImage DocumentView::getCursorImage() {
+    return _d->_display->getCursorImage();
+}
+
+void DocumentView::grabMouse(bool val) {
+    if (_d->_display)
+    {
+        if (val)
+            _d->_display->grabMouse();
+        else
+            _d->_display->releaseMouse();
+    }
+}
+

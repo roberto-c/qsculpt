@@ -71,9 +71,7 @@ public:
      *
      * @return source document for this view.
      */
-    IDocument::shared_ptr getDocument() {
-        return _document;
-    };
+    IDocument::shared_ptr getDocument() ;
 
     /**
      * Return the state of the visibility of the grid.
@@ -92,63 +90,40 @@ public:
      *
      * @return an object container with the results of the test.
      */
-	ObjectContainer getSelectedObjects(int x, int y) {
-        return _display->getSelectedObjects(x, y);
-    };
+	ObjectContainer getSelectedObjects(int x, int y);
+    
 	PointIndexList getSelectedVertices(GLint x, GLint y,
-									   GLint width, GLint height) {
-		return _display->getSelectedVertices(x, y, width, height);
-	}
+                                       GLint width, GLint height);
 
     /**
      * getViewType
      */
-    GlCanvas::PerspectiveType getPerspectiveViewType() {
-        return _display->getPerspectiveView();
-    };
+    GlCanvas::PerspectiveType getPerspectiveViewType();
 
     /**
      *
      */
-    std::shared_ptr<Camera> getViewCamera() {
-        return _display->getViewCamera();
-    };
+    std::shared_ptr<Camera> getViewCamera();
 
-    void set3DCursorShape(GlCanvas::CursorShapeType shape) {
-        _display->set3DCursorShape(shape);
-    };
+    void set3DCursorShape(GlCanvas::CursorShapeType shape);
 
-    GlCanvas::CursorShapeType getCursorShape() {
-        return _display->getCursorShape();
-    };
+    GlCanvas::CursorShapeType getCursorShape();
 
-    void setCursorPosition(Point3 p) {
-        _display->setCursorPosition(p);
-    };
+    void setCursorPosition(Point3 p);
 
-    Point3 getCursorPosition() {
-        return _display->getCursorPosition();
-    };
+    Point3 getCursorPosition();
 
-    void setCursorOrientation(Point3 n) {
-        _display->setCursorOrientation(n);
-    };
+    void setCursorOrientation(Point3 n);
 
-    Point3 getCursorOrientation() {
-        return _display->getCursorOrientation();
-    };
+    Point3 getCursorOrientation();
 
-    void setCursorImage(const QImage& image) {
-    	_display->setCursorImage(image);
-    }
+    void setCursorImage(const QImage& image);
 
-    QImage getCursorImage() {
-    	return _display->getCursorImage();
-    }
+    QImage getCursorImage();
 
     bool getDrawVertices();
     
-    GlCanvas* getCanvas() { return _display; } ;
+    GlCanvas* getCanvas();
     
     IRenderer* renderer() const;
     
@@ -181,26 +156,12 @@ public slots:
      */
     void updateView();
 
-    void grabMouse(bool val) {
-    	if (_display)
-    	{
-    		if (val)
-    			_display->grabMouse();
-    		else
-    			_display->releaseMouse();
-    	}
-    }
+    void grabMouse(bool val);
 
     void setDrawVertices(bool drawVertices);
     
-protected:
-    IDocument::shared_ptr       _document;
-    GlCanvas        *_display;
-    QComboBox       *_viewPerspective;
-    QComboBox       *_drawingMode;
-    bool            _drawVertices;
-    
-    class Impl;
+protected:    
+    struct Impl;
     QScopedPointer<Impl> _d;
 };
 
