@@ -257,6 +257,10 @@ void QSculptWindow::createWidgets()
     this->addDockWidget(Qt::BottomDockWidgetArea, d_->console->consoleWindow());
     
     addDockWidget(Qt::RightDockWidgetArea, d_->docTree);
+    
+    d_->document = std::make_shared<Document>();
+    d_->docModel = std::make_shared<DocumentModel>(d_->document);
+    d_->documentView->setDocument(d_->document);
 }
 
 IDocument::const_shared_ptr QSculptWindow::getCurrentDocument() const
@@ -356,7 +360,7 @@ void QSculptWindow::documentWasModified()
 
 void QSculptWindow::readSettings()
 {
-    QSettings settings("Trolltech", "Application Example");
+    QSettings settings("plastlinalabs", "QSculpt");
     QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
     QSize size = settings.value("size", QSize(400, 400)).toSize();
     resize(size);
@@ -365,7 +369,7 @@ void QSculptWindow::readSettings()
 
 void QSculptWindow::writeSettings()
 {
-    QSettings settings("Trolltech", "Application Example");
+    QSettings settings("plastilinalabs", "QSculpt");
     settings.setValue("pos", pos());
     settings.setValue("size", size());
 }
