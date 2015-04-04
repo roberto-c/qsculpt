@@ -31,6 +31,9 @@
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/geometry/Ray.h>
 #include <PlastilinaCore/geometry/Aabb.h>
+#include <PlastilinaCore/Material.h>
+#include <PlastilinaCore/material/PhongMaterial.h>
+#include <PlastilinaCore/material/PointMaterial.h>
 #include <PlastilinaCore/Octree.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 
@@ -82,6 +85,10 @@ struct Scene::Impl {
     void processCamera(const aiScene * scene,
                        const aiNode * node,
                        const aiCamera *camera,
+                       SceneNode::shared_ptr & outNode);
+    
+    void processMaterial(const aiScene * scene,
+                       const aiNode * node,
                        SceneNode::shared_ptr & outNode);
 };
 
@@ -253,6 +260,12 @@ void Scene::Impl::importScene(const aiScene * scene, SceneNode::shared_ptr & out
         SceneNode::shared_ptr rootNode = std::static_pointer_cast<SceneNode>(outScene);
         processNode(scene, node, rootNode);
     }
+    
+    {
+        aiNode * node = scene->mRootNode;
+        SceneNode::shared_ptr rootNode = std::static_pointer_cast<SceneNode>(outScene);
+        processMaterial(scene, node, rootNode);
+    }
 }
 
 void Scene::Impl::processNode(const aiScene * scene,
@@ -350,6 +363,37 @@ void Scene::Impl::processCamera(const aiScene * scene,
                                  camera->mClipPlaneNear,
                                  camera->mClipPlaneFar);
 }
+
+void Scene::Impl::processMaterial(const aiScene * scene,
+                                  const aiNode * node,
+                                  SceneNode::shared_ptr & outNode)
+{
+    std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>();
+    try {
+        material->load();
+        material->setDiffuse (Color(1.0f, 0.4f, 0.8f, 1.0f));
+        material->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
+        material->setAmbient (Color(0.1f, 0.1f, 0.1f, 1.0f));
+        material->setExponent(200);
+        
+        auto it = outNode->treeIterator();
+        while (it.hasNext()) {
+            auto node = it.next();
+            std::cout << "Node: " << node->name() << " Type: " << node->nodeType() << "\n";
+            if (node->nodeType() == NT_Surface) {
+                SurfaceNode::shared_ptr surface = std::static_pointer_cast<SurfaceNode>(node);
+                surface->setMaterial(material);
+            }
+        }
+    } catch(core::GlException & e) {
+        std::cerr   << "GLException: " << e.what() << std::endl
+        << e.error() << ": " << e.errorString() << std::endl;
+    } catch (std::exception & e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+    
+}
+
 
 static void
 getCameraRecursive(const SceneNode::const_shared_ptr & scene,
