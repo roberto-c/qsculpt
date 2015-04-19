@@ -67,7 +67,8 @@ public:
         Bottom,
         Left,
         Right,
-        Perspective
+        Perspective,
+        CameraView
     };
 
     enum CursorShapeType {
@@ -135,6 +136,15 @@ public:
      * Return the current active camera in the canvas.
      */
     const std::shared_ptr<Camera> getViewCamera() const;
+    
+    /**
+     * Function to overtide the camera view ot use for each default view.
+     *
+     * Default view are ok, except fot eh camera view that should be set each 
+     * time the default camera of the document changes.
+     */
+    void setViewCamera(PerspectiveType viewType,
+                       std::shared_ptr<Camera> & camera);
     
     /**
      * Map a point in screen coordinate system to world coordinate system

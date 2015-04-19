@@ -163,6 +163,12 @@ struct GlCanvas::Impl {
         camera->setOrientationVector( Point3( 0, 0, 1) );
         camera->setPosition( Point3( 0.75, 0.75, 0.75) );
         cameraList[Perspective] = camera;
+        
+        camera = std::make_shared<Camera>();
+        camera->setTargetPoint( Point3( 0, 0, 0) );
+        camera->setOrientationVector( Point3( 0, 0, 1) );
+        camera->setPosition( Point3( 0.75, 0.75, 0.75) );
+        cameraList[CameraView] = camera;
     }
     
     ~Impl() {
@@ -617,6 +623,16 @@ const std::shared_ptr<Camera> GlCanvas::getViewCamera() const
         return _d->cameraList[Perspective];
     }
     return _d->cameraList[_d->viewType];
+}
+
+void GlCanvas::setViewCamera(PerspectiveType viewType,
+                   std::shared_ptr<Camera> & camera)
+{
+    if (!_d->cameraList.contains(viewType) )
+    {
+        qDebug("camera %d does not exists. Seeting as a new camera.", _d->viewType);
+    }
+    _d->cameraList[viewType] = camera;
 }
 
 void GlCanvas::set3DCursorShape(CursorShapeType shape)

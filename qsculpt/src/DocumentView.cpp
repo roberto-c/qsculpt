@@ -118,8 +118,9 @@ void DocumentView::createWidgets()
     _d->_viewPerspective->addItem("Left", GlCanvas::Left);
     _d->_viewPerspective->addItem("Right", GlCanvas::Right);
     _d->_viewPerspective->addItem("Perspective", GlCanvas::Perspective);
-    _d->_viewPerspective->setCurrentIndex(6);
-    _d->_display->setPerspectiveView(GlCanvas::Perspective);
+    _d->_viewPerspective->addItem("Camera", GlCanvas::CameraView);
+    _d->_viewPerspective->setCurrentIndex(7);
+    _d->_display->setPerspectiveView(GlCanvas::CameraView);
 
     _d->_drawingMode->addItem("Points", Points);
     _d->_drawingMode->addItem("Wireframe", Wireframe);
@@ -137,10 +138,15 @@ void DocumentView::setDocument(IDocument::shared_ptr doc)
 {
     Q_ASSERT(doc);
 
-//    if (_d->_document)
-//        _d->_document->disconnect(this);
     _d->_document = doc;
-//    connect(_d->_document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)), this, SLOT(updateView()));
+    auto scene = _d->_document->scene().lock();
+    if (scene) {
+        std::shared_ptr<Camera> cam;
+        cam = scene->getCamera() ? scene->getCamera()->camera() : nullptr;
+        if (cam) {
+        	_d->_display->setViewCamera(GlCanvas::CameraView, cam);
+        }
+    }
 };
 
 void DocumentView::setGridVisible(bool value)

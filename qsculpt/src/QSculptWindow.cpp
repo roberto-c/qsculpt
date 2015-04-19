@@ -322,9 +322,15 @@ void QSculptWindow::newFile()
 void QSculptWindow::open()
 {
     if (maybeSave()) {
+        setCurrentFile("");
+        
+        d_->document = std::make_shared<Document>();
+        d_->docModel = std::make_shared<DocumentModel>(d_->document);
         QString fileName = QFileDialog::getOpenFileName(this);
         if (!fileName.isEmpty())
             loadFile(fileName);
+        d_->documentView->setDocument(d_->document);        
+        d_->docTree->setDocument(d_->docModel);
     }
 }
 
