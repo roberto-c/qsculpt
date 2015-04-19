@@ -343,4 +343,35 @@ private:
     std::unique_ptr<Impl> d;
 };
 
+/**
+ * Effect node.
+ *
+ * This node adds an effect to the the children objects.
+ *
+ * Effects are program shaders that are made active before rendering children.
+ */
+class EffectNode: public SceneNode
+{
+public:
+    typedef std::shared_ptr<EffectNode>       	shared_ptr;
+    typedef std::weak_ptr<EffectNode>    		weak_ptr;
+    typedef std::shared_ptr<const EffectNode> 	const_shared_ptr;
+    typedef std::weak_ptr<const EffectNode>		const_weak_ptr;
+    
+    EffectNode(const std::shared_ptr<Material> & material = nullptr,
+               const std::string & name = "effect");
+    
+    virtual ~EffectNode();
+    
+    /**
+     * Function to get the material that implement the effect.
+     */
+    std::shared_ptr<Material> material() const;
+    
+    /**
+     * Function to set the material that implements the effect.
+     */
+    void setMaterial(const std::shared_ptr<Material> & material);
+    
+};
 #endif // SCENENODE_H_

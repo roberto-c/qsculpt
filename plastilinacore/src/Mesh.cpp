@@ -32,6 +32,7 @@
 #include <PlastilinaCore/IRenderer.h>
 #include <PlastilinaCore/geometry/Aabb.h>
 #include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/RenderState.h>
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))

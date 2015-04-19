@@ -4,7 +4,16 @@
 class ISurface;
 class Material;
 class SceneNode;
-class CameraNode;
+struct RenderState;
+
+enum class RenderMode {
+    RM_WireFrame,
+    RM_Flat,
+    RM_Smooth,
+    RM_Textured,
+    RM_Points
+};
+
 
 class IRenderer
 {
@@ -16,21 +25,6 @@ public:
 	 * dispatches the commands need it to render objects on the display.
 	 */
 	virtual void renderObject(std::shared_ptr<SceneNode> & node) = 0;
-};
-
-enum RenderMode {
-	RM_WireFrame,
-	RM_Flat,
-	RM_Smooth,
-	RM_Textured,
-	RM_Points
-};
-
-struct RenderState {
-	const SceneNode 	*root;
-	const SceneNode 	*currentNode;
-	RenderMode  		renderMode;
-	CameraNode			*camera;
 };
 
 class IRenderable

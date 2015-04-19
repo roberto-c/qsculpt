@@ -35,6 +35,7 @@
 #include <PlastilinaCore/material/PhongMaterial.h>
 #include <PlastilinaCore/material/PointMaterial.h>
 #include <PlastilinaCore/Octree.h>
+#include <PlastilinaCore/RenderState.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 
 //namespace  {
@@ -183,8 +184,7 @@ void Scene::render() const
 		state.camera = getCamera().get();
 		state.root = this;
 		state.currentNode = this;
-		state.renderMode = RM_Smooth;
-//		state.renderMode = RM_Points;
+        state.renderMode = RenderMode::RM_Smooth;
 		_d->renderRecursive(state,this);
     } catch(core::GlException & e) {
         std::cerr   << "GLException: " << e.what() << std::endl

@@ -44,6 +44,7 @@ set(PLASTILINACORE_SOURCES
 	./src/Quad.cpp
 	./src/QuadTree.cpp
 	./src/RendererFactory.cpp
+    ./src/RenderState.cpp
 	./src/ResourcesManager.cpp
 	./src/Scene.cpp
 	./src/SceneNode.cpp
@@ -124,6 +125,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/Quad.h
 	${PLASTILINACORE_HEADERS_ROOT}/Quadtree.h
 	${PLASTILINACORE_HEADERS_ROOT}/RendererFactory.h
+    ${PLASTILINACORE_HEADERS_ROOT}/RenderState.h
 	${PLASTILINACORE_HEADERS_ROOT}/ResourcesManager.h
 	${PLASTILINACORE_HEADERS_ROOT}/Scene.h
 	${PLASTILINACORE_HEADERS_ROOT}/SceneNode.h

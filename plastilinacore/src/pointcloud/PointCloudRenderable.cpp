@@ -23,8 +23,10 @@
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/IRenderer.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Material.h>
+#include <PlastilinaCore/RenderState.h>
 #include <PlastilinaCore/SmoothRenderer.h>
 #include <PlastilinaCore/Scene.h>
 
@@ -158,9 +160,9 @@ void PointCloudRenderable::renderObject(const RenderState * state) const
     }
 	
 	switch (state->renderMode) {
-		case RM_Smooth:
-		case RM_WireFrame:
-		case RM_Points:
+        case RenderMode::RM_Smooth:
+		case RenderMode::RM_WireFrame:
+		case RenderMode::RM_Points:
 		{
 			mat->shaderProgram()->useProgram();
 			glPointSize(8.0f);

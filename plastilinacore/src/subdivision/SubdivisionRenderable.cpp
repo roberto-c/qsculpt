@@ -25,6 +25,7 @@
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Material.h>
+#include <PlastilinaCore/RenderState.h>
 #include <PlastilinaCore/SmoothRenderer.h>
 #include <PlastilinaCore/Scene.h>
 
@@ -126,7 +127,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
     vbo->bind();
 	if (vbo->needUpdate())
 	{
-		if (state->renderMode == RM_Points) {
+		if (state->renderMode == RenderMode::RM_Points) {
 			fillVertexBufferPoints(obj, vbo);
 		} else {
 			fillVertexBuffer(obj, vbo);
@@ -166,7 +167,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
     }
 	
 	switch (state->renderMode) {
-		case RM_Smooth:
+		case RenderMode::RM_Smooth:
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			mat->shaderProgram()->useProgram();
@@ -175,7 +176,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 		}
 			break;
 			
-		case RM_WireFrame:
+		case RenderMode::RM_WireFrame:
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			mat->shaderProgram()->useProgram();
@@ -183,7 +184,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 			glDrawArrays(GL_TRIANGLES, 0, numVertices);
 		}
 			break;
-		case RM_Points:
+		case RenderMode::RM_Points:
 		{
 			mat->shaderProgram()->useProgram();
 			glPointSize(3.0f);
