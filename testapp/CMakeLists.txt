@@ -2,9 +2,11 @@
 set(TESTAPP_SOURCES 
 	./CLRender.cpp
 	./DocumentModelTest.cpp
+	./GpuSubdivision.cpp
 	./IteratorTest.cpp
 	./ParticleSystem.cpp
 	./PhongMaterial.cpp
+	./PrimitiveFactory.cpp
 	./Subdivision.cpp
 	./SubdivisionTest.cpp
 	./test.cpp
@@ -16,8 +18,10 @@ set(TESTAPP_SOURCES
 set(TESTAPP_PRIVATE_HEADERS 
 	./CLRender.h
 	./DocumentModelTest.h
+	./GpuSubdivision.h
 	./ParticleSystem.h
 	./PhongMaterial.h
+	./PrimitiveFactory.h
 	./SceneNodeTest.h
 	./SDLMain.h
 	./stable.h
@@ -31,6 +35,8 @@ set(RESOURCES
 	./TestMaterial.fs
 	./TestMaterial.vs
 	./ParticleSystem.cl
+	./Render.cl
+	./Subdivision.cl
 	../images/Texture01.png
 )
 
@@ -41,7 +47,7 @@ add_executable(PTestApp MACOSX_BUNDLE
 )
 
 if (APPLE)
-	set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ./stable.h )
+	set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h )
 elseif (UNIX)
     set_property(TARGET PlastilinaCore
     	PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h

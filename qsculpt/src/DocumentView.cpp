@@ -74,7 +74,6 @@ void DocumentView::createWidgets()
     _d->ctx.setUseSoftwareRenderer(false);
     _d->ctx.create();
     _d->_display = new GlCanvas(&_d->ctx, this);
-    //_display = new GlCanvas(this);
 
     Q_CHECK_PTR(gridLayout);
     Q_CHECK_PTR(_d->_display);

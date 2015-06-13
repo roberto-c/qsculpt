@@ -143,6 +143,7 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 
 void SelectCommand::mousePressEvent(QMouseEvent* e)
 {
+    qDebug() << "Presseing mouse";
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
     unselectAll();

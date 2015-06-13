@@ -10,6 +10,7 @@
 
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
+#include <PlastilinaCore/ResourcesManager.h>
 
 #include <string>
 
@@ -57,7 +58,9 @@ void CLRender::initialize()
 		d->imageInp = cl::Buffer(mngr->context(),CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, d->buffer.size(), d->buffer.data());
 		d->imageOut = cl::Buffer(mngr->context(),CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, d->bufferOut.size(), d->bufferOut.data());
 		
-		std::string kernelSource = opencl::loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/testapp/render.cl");
+        ResourcesManager mgr;
+        std::string path = mgr.findResourcePath("Render", "cl");
+		std::string kernelSource = opencl::loadFromFile(path);
 		cl::Program::Sources source(1,
 									std::make_pair(kernelSource.c_str(),kernelSource.length()));
 		d->program = cl::Program(mngr->context(), source);

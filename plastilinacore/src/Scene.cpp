@@ -194,7 +194,7 @@ void Scene::render() const
 
 void Scene::render(const RenderState * state) const
 {
-    
+    this->render();
 }
 
 CameraNode::shared_ptr Scene::createCamera()

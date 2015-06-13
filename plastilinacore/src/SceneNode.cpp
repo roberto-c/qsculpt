@@ -667,9 +667,6 @@ CameraNode::~CameraNode()
 void CameraNode::setCamera(const std::shared_ptr<Camera> & cam)
 {
     d->camera = cam;
-    if (cam) {
-    	this->add(d->camera);
-    }
 }
 
 std::shared_ptr<Camera> CameraNode::camera() const

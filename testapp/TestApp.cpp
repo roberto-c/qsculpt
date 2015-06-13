@@ -58,10 +58,12 @@
 #include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/opengl/Texture.h>
 
+#include "GpuSubdivision.h"
 #include "Subdivision.h"
 #include "ParticleSystem.h"
 #include "CLRender.h"
 #include "TestMaterial.h"
+#include "PrimitiveFactory.h"
 
 std::string get_app_path() {
     std::vector<char> exepath;
@@ -387,8 +389,10 @@ void TestApp::reshape(int w, int h)
 
     // setup viewport, projection etc. for OpenGL:
     glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
-	auto camera = d->scene->getCamera()->camera();
-    camera->setViewport(0, 0, w, h);
+	auto camera = d->scene->getCamera();
+    if (camera && camera->camera()) {
+    	camera->camera()->setViewport(0, 0, w, h);
+    }
 	
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	SDL_GL_SwapWindow(d->mainwindow);
@@ -400,18 +404,13 @@ void TestApp::display()
     
 	d->scene->render();
 	SDL_GL_SwapWindow(d->mainwindow);
-    d->changeColor();
+    //d->changeColor();
 }
 
 void TestApp::Impl::restart() {
-    static int counter = 0;
-	counter++;
     Eigen::IOFormat octaveFmt(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]");
     
-    std::string name =  std::string("Scene ") + std::to_string(counter);
-	scene = std::make_shared<Scene>(name);
-    
-    scene->loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/assets/meshes/test2.dae");
+    setupScene();
     setupMaterial();
     
     std::cout << "Dump scene: \n";
@@ -426,6 +425,27 @@ void TestApp::Impl::restart() {
     }
     object = camera;
 }
+
+void TestApp::Impl::setupScene() {
+    static int counter = 0;
+    counter++;
+    
+    std::string name =  std::string("Scene ") + std::to_string(counter);
+    scene = std::make_shared<Scene>(name);
+    
+    bool useFile = false;
+    if (useFile) {
+        scene->loadFromFile("/Users/rcabral/Projects/qsculpt/assets/meshes/test2.dae");
+    } else {
+        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
+        SceneNode::shared_ptr node = std::make_shared<SurfaceNode>(surf);
+        scene->add(node);
+        Camera::shared_ptr cam = std::make_shared<Camera>();
+        node = std::make_shared<CameraNode>(cam);
+        scene->add(node);
+    }
+}
+
 
 void TestApp::Impl::setupMaterial()
 {
@@ -488,7 +508,9 @@ void TestApp::Impl::move(const Vector3 & delta)
     p.y() += delta.y();
     p.z() += delta.z();
     
- 	object->transform() *= Eigen::Translation3f(delta);
+    if (object) {
+        object->transform() *= Eigen::Translation3f(delta);
+    }
     
     auto camera = scene->getCamera();
     if (camera && camera->camera()) {
