@@ -10,7 +10,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SDLMain : NSObject
+@interface SDLMain : NSObject<NSApplicationDelegate>
+
+- (void)applicationWillTerminate:(NSNotification *)aNotification;
+
 @end
 
 #endif /* _SDLMain_h_ */
