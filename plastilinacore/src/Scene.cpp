@@ -46,19 +46,6 @@
     };
 //};
 
-namespace  {
-    float xfov_to_yfov_deg(float xfov, float aspect) {
-        xfov = xfov * 2 * M_PI / 360;
-        float yfov = 2.0f * atanf(tan(xfov * 0.5f) / aspect);
-        return yfov * 360 / 2 / M_PI;
-    }
-    float yfov_to_xfov_deg(float yfov, float aspect) {
-        yfov = yfov * 2 * M_PI / 360;
-        float xfov = 2.0f * atanf(tan(yfov * 0.5f) * aspect);
-        return xfov  * 360 / 2 / M_PI;
-    }
-}
-
 struct Scene::Impl {
     //data::Octree<SceneNode::weak_ptr,CenterMassFn> octree;
     std::vector<aiNode*> cameraNodes;

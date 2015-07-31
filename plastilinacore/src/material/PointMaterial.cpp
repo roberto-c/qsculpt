@@ -97,60 +97,6 @@ void PointMaterial::unload()
     
 }
 
-
-static void
-getAllLightsRecursive(const std::shared_ptr<const SceneNode> & scene,
-                      std::vector<LightNode::shared_ptr> & container)
-{
-    auto it = scene->constIterator();
-    while(it.hasNext()) {
-        SceneNode::shared_ptr child = it.next();
-        LightNode::shared_ptr light = std::dynamic_pointer_cast<LightNode>(child);
-        if (light) {
-            container.push_back(light);
-        }
-        getAllLightsRecursive(child, container);
-    }
-}
-
-static std::vector<LightNode::shared_ptr>
-getAllLights(const std::shared_ptr<const SceneNode> & doc)
-{
-    std::vector<LightNode::shared_ptr> res;
-    
-    getAllLightsRecursive(doc, res);
-    
-    return res;
-}
-
-static void
-getCameraRecursive(const std::shared_ptr<const SceneNode> & scene,
-                   CameraNode::shared_ptr & container)
-{
-    if (container) return;
-    
-    auto it = scene->constIterator();
-    while(it.hasNext()) {
-        SceneNode::shared_ptr child = it.next();
-        CameraNode::shared_ptr cam = std::dynamic_pointer_cast<CameraNode>(child);
-        if (cam) {
-            container = cam;
-        } else {
-            getCameraRecursive(child, container);
-        }
-    }
-}
-
-static CameraNode::shared_ptr
-getCamera(const std::shared_ptr<const SceneNode> & doc)
-{
-    CameraNode::shared_ptr res;
-    
-    getCameraRecursive(doc, res);
-    
-    return res;
-}
-
 void PointMaterial::setup(const std::shared_ptr<SceneNode> & node)
 {
     const std::shared_ptr<const SceneNode> d(node);
