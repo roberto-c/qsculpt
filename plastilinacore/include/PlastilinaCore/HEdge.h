@@ -16,7 +16,8 @@ class Vertex;
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/Face.h>
 
-struct EdgeHandle {
+class EdgeHandle {
+public:
     typedef EdgeHandle*     shared_ptr;
     typedef EdgeHandle*     weak_ptr;
     typedef EdgeHandle*     Ptr;

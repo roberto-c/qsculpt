@@ -25,7 +25,8 @@ class Face;
 #define VERTEXTYPE_POS_NOR_COL      (3)
 #define VERTEXTYPE_POS_NOR_COL_TEX	(4)
 
-struct VertexHandle {
+class VertexHandle {
+public:
     typedef VertexHandle*   shared_ptr;
     typedef VertexHandle*   weak_ptr;
     typedef VertexHandle*   Ptr;

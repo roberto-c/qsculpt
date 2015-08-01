@@ -26,7 +26,8 @@ enum FaceFlags {
     FF_All      = 0xFFFFFFFF
 };
 
-struct FaceHandle {
+class FaceHandle {
+public:
     typedef FaceHandle* 		shared_ptr;
     typedef FaceHandle* 		weak_ptr;
     typedef FaceHandle* 		Ptr;
