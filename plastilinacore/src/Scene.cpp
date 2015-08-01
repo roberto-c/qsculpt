@@ -305,15 +305,15 @@ void Scene::Impl::processMeshes(const aiScene * scene,
                             mesh->mVertices[i].z);
                 auto viid = surfaceNode->surface()->addVertex(p);
                 map.push_back(viid);
-                
+                Vertex* vtx = static_cast<Vertex*>(surfaceNode->surface()->vertex(viid));
                 if (mesh->HasNormals()) {
                     n = Vector3(mesh->mNormals[i].x,
                                 mesh->mNormals[i].y,
                                 mesh->mNormals[i].z
                                 );
-                    surfaceNode->surface()->vertex(viid)->normal() = n;
+                    vtx->normal() = n;
                 }
-                surfaceNode->surface()->vertex(viid)->color() = Color(1.0f, 1.0f, 1.0f);
+                vtx->color() = Color(1.0f, 1.0f, 1.0f);
             }
         }
         

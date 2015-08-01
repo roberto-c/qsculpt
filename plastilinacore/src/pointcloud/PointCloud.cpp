@@ -13,7 +13,7 @@
 #include <PlastilinaCore/Face.h>
 
 // Iterator classes declarations
-class PointCloud::VertexIterator : public IIterator<Vertex>
+class PointCloud::VertexIterator : public IIterator<VertexHandle>
 {
     friend class PointCloud;
 public:
@@ -33,7 +33,7 @@ public:
     /**
      *
      */
-    IIterator<Vertex>* clone() const;
+    IIterator<VertexHandle>* clone() const;
     
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
@@ -87,7 +87,7 @@ public:
     bool seek(int pos, IteratorOrigin origin) const ;
 };
 
-class PointCloud::FaceIterator : public IIterator<Face>
+class PointCloud::FaceIterator : public IIterator<FaceHandle>
 {
     
 protected:
@@ -101,7 +101,7 @@ public:
     /**
      *
      */
-    IIterator<Face>* clone() const {
+    IIterator<FaceHandle>* clone() const {
         return nullptr;
     };
     
@@ -175,7 +175,7 @@ public:
     }
 };
 
-class PointCloud::EdgeIterator : public IIterator<Edge>
+class PointCloud::EdgeIterator : public IIterator<EdgeHandle>
 {
     
 protected:
@@ -189,7 +189,7 @@ public:
     /**
      *
      */
-    IIterator<Edge>* clone() const {
+    IIterator<EdgeHandle>* clone() const {
         return nullptr;
     };
     
@@ -274,7 +274,7 @@ struct PointCloud::Impl {
     std::vector<Vertex*>  	vertices;
     Scene*          		scene;
     bool            		hasChanged;
-    std::vector<Vertex::size_t>    selectedPoints;
+    std::vector<VertexHandle::size_t>    selectedPoints;
     
 	PointCloudRenderable renderable;
 };
@@ -339,9 +339,10 @@ ISurface::size_t PointCloud::addVertex(const Point3& point)
     return addVertex(v);
 }
 
-ISurface::size_t PointCloud::addVertex(Vertex* v)
+ISurface::size_t PointCloud::addVertex(VertexHandle* v)
 {
-    d->vertices.push_back(v);
+    Vertex * vtx = static_cast<Vertex*>(v);
+    d->vertices.push_back(vtx);
     return v->iid();
 }
 
@@ -354,7 +355,7 @@ void PointCloud::removeVertex( ISurface::size_t id)
                    );
 }
 
-Vertex* PointCloud::vertex(ISurface::size_t iid)
+VertexHandle* PointCloud::vertex(ISurface::size_t iid)
 {
     auto it = std::find_if(d->vertices.begin(), d->vertices.end(),
                            [iid](const Vertex* v) {
@@ -364,7 +365,7 @@ Vertex* PointCloud::vertex(ISurface::size_t iid)
     return it != d->vertices.end() ? *it : nullptr;
 }
 
-const Vertex* PointCloud::vertex(ISurface::size_t iid) const
+const VertexHandle* PointCloud::vertex(ISurface::size_t iid) const
 {
     auto it = std::find_if(d->vertices.begin(), d->vertices.end(),
                            [iid](const Vertex* v) {
@@ -376,12 +377,12 @@ const Vertex* PointCloud::vertex(ISurface::size_t iid) const
 
 ISurface::size_t PointCloud::numVertices() const
 {
-    std::vector<Vertex*>::size_type s = d->vertices.size();
+    std::vector<VertexHandle*>::size_type s = d->vertices.size();
     assert(s <= std::numeric_limits<ISurface::size_t>::max());
     return static_cast<ISurface::size_t>(s);
 }
 
-ISurface::size_t PointCloud::addEdge(const Edge& edge)
+ISurface::size_t PointCloud::addEdge(const EdgeHandle& edge)
 {
     return 0;
 }
@@ -418,7 +419,7 @@ ISurface::size_t PointCloud::numFaces() const
     return 0;
 }
 
-Face* PointCloud::face(ISurface::size_t index)
+FaceHandle* PointCloud::face(ISurface::size_t index)
 {
     return nullptr;
 }
@@ -474,32 +475,32 @@ void PointCloud::setSelectedPoints(const std::vector<ISurface::size_t>& indicesA
     NOT_IMPLEMENTED
 }
 
-Iterator<Vertex> PointCloud::vertexIterator()
+Iterator<VertexHandle> PointCloud::vertexIterator()
 {
-    return Iterator<Vertex>(new VertexIterator(this));
+    return Iterator<VertexHandle>(new VertexIterator(this));
 }
 
-Iterator<Vertex> PointCloud::constVertexIterator() const
+Iterator<VertexHandle> PointCloud::constVertexIterator() const
 {
-    return Iterator<Vertex>(new VertexIterator(this));
+    return Iterator<VertexHandle>(new VertexIterator(this));
 }
 
-Iterator<Face> PointCloud::faceIterator()
-{
-    NOT_IMPLEMENTED
-}
-
-Iterator<Face> PointCloud::constFaceIterator() const
+Iterator<FaceHandle> PointCloud::faceIterator()
 {
     NOT_IMPLEMENTED
 }
 
-Iterator<Edge> PointCloud::edgeIterator()
+Iterator<FaceHandle> PointCloud::constFaceIterator() const
 {
     NOT_IMPLEMENTED
 }
 
-Iterator<Edge> PointCloud::constEdgeIterator() const
+Iterator<EdgeHandle> PointCloud::edgeIterator()
+{
+    NOT_IMPLEMENTED
+}
+
+Iterator<EdgeHandle> PointCloud::constEdgeIterator() const
 {
     NOT_IMPLEMENTED
 }
@@ -520,7 +521,7 @@ PointCloud::VertexIterator::VertexIterator(const PointCloud* surface)
 }
 
 
-IIterator<Vertex>* PointCloud::VertexIterator::clone() const
+IIterator<VertexHandle>* PointCloud::VertexIterator::clone() const
 {
     VertexIterator *it = new VertexIterator(_surface);
     it->_index = this->_index;

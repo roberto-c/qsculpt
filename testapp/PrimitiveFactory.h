@@ -23,10 +23,11 @@
 
 #include <memory>
 #include "GpuSubdivision.h"
+#include <PlastilinaCore/subdivision/Subdivision.h>
 
 namespace core {
     class GpuSubdivision;
-    class Subdivision;
+    //class Subdivision;
     class Mesh;
     
     template<typename TSurface>
@@ -53,6 +54,12 @@ namespace core {
         static GpuSubdivision * createBox();
     };
     
+    template<>
+    class PrimitiveFactory<Subdivision> {
+    public:
+        static Subdivision * createBox();
+    };
+
 };
 
 #endif

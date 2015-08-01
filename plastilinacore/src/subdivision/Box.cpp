@@ -43,23 +43,23 @@ void Box::initPoints()
     vertexID[1] = addVertex(Point3( hw, hh,-hd));
     vertexID[2] = addVertex(Point3( hw,-hh,-hd));
     vertexID[3] = addVertex(Point3(-hw,-hh,-hd));
-    vertex(vertexID[0])->texcoords() = Point2(0,0);
-    vertex(vertexID[1])->texcoords() = Point2(1,0);
-    vertex(vertexID[2])->texcoords() = Point2(1,1);
-    vertex(vertexID[3])->texcoords() = Point2(0,1);
+    vertex(vertexID[0])->cast<const Vertex*>()->texcoords() = Point2(0,0);
+    vertex(vertexID[1])->cast<const Vertex*>()->texcoords() = Point2(1,0);
+    vertex(vertexID[2])->cast<const Vertex*>()->texcoords() = Point2(1,1);
+    vertex(vertexID[3])->cast<const Vertex*>()->texcoords() = Point2(0,1);
     
     vertexID[4] = addVertex(Point3(-hw, hh, hd));
     vertexID[5] = addVertex(Point3( hw, hh, hd));
     vertexID[6] = addVertex(Point3( hw,-hh, hd));
     vertexID[7] = addVertex(Point3(-hw,-hh, hd));
-    vertex(vertexID[4])->texcoords() = Point2(0,0);
-    vertex(vertexID[5])->texcoords() = Point2(1,0);
-    vertex(vertexID[6])->texcoords() = Point2(1,1);
-    vertex(vertexID[7])->texcoords() = Point2(0,1);
+    vertex(vertexID[4])->cast<const Vertex*>()->texcoords() = Point2(0,0);
+    vertex(vertexID[5])->cast<const Vertex*>()->texcoords() = Point2(1,0);
+    vertex(vertexID[6])->cast<const Vertex*>()->texcoords() = Point2(1,1);
+    vertex(vertexID[7])->cast<const Vertex*>()->texcoords() = Point2(0,1);
     
-    Iterator<Vertex> it = vertexIterator();
+    Iterator<VertexHandle> it = vertexIterator();
     while (it.hasNext()) {
-        it.next()->addFlag(VF_Crease);
+        static_cast<Vertex*>(it.next())->addFlag(VF_Crease);
     }
     
     std::vector<size_t> indexList(4);
@@ -139,7 +139,7 @@ void Plane::initPoints(int m, int n)
         u = 0;
         for (j = 0; j <= n; ++j) {
             vertexID[numVtx] = addVertex(Point3(x, 0, y));
-            vertex(vertexID[0])->texcoords() = Point2(u,v);
+            static_cast<Vertex*>(vertex(vertexID[0]))->texcoords() = Point2(u,v);
             numVtx++;
             x += wstep;
             u += 1/m;

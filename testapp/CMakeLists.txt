@@ -17,6 +17,7 @@ set(TESTAPP_SOURCES
 
 set(TESTAPP_PRIVATE_HEADERS 
 	./CLRender.h
+	./ClStlAllocator.h
 	./DocumentModelTest.h
 	./GpuSubdivision.h
 	./ParticleSystem.h

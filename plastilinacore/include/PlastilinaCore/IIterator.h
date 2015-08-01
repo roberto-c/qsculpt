@@ -33,7 +33,7 @@ class IIterator
 public:
     typedef typename T::shared_ptr  shared_ptr;
     typedef typename T::weak_ptr    weak_ptr;
-    typedef typename T::Ptr        Ptr;
+    typedef typename T::Ptr        	Ptr;
     
 public:
     virtual ~IIterator(){}

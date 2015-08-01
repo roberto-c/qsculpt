@@ -16,6 +16,24 @@ class Vertex;
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/Face.h>
 
+struct EdgeHandle {
+    typedef EdgeHandle*     shared_ptr;
+    typedef EdgeHandle*     weak_ptr;
+    typedef EdgeHandle*     Ptr;
+    typedef uint32_t        size_t;
+    
+    size_t _id;
+    
+    uint8_t type() const { return _id >> 24; }
+    size_t 	iid() const { return _id; }
+    
+    void    setIid(size_t iid) { _id = iid & 0xFFFFFF;}
+    
+    template<typename T>
+    T & cast() const {
+        return static_cast<T>(*this);
+    }
+};
 
 enum EdgeFlags {
     EF_None     = 0,
@@ -27,24 +45,21 @@ enum EdgeFlags {
     EF_All      = 0xFFFFFFFF
 };
 
-class Edge {
+class Edge : public EdgeHandle {
 public:
     typedef Edge*   shared_ptr;
     typedef Edge*   weak_ptr;
     typedef Edge*   Ptr;
 
-    typedef uint    size_t;
+    typedef uint32_t    size_t;
     
 private:
     static std::atomic_int NEXT_ID;
 
-    size_t              _id;    // 8
     EdgeFlags           _flags; // 4
     Edge::weak_ptr      _next; // 8
-//    Edge::weak_ptr      _prev; // 8
     Edge::weak_ptr      _pair; // 8
     Vertex::weak_ptr    _head; // 8
-//    Vertex::weak_ptr    _tail; // 8
     Face::weak_ptr      _face; // 8
     void*               _userData; // 4
 
@@ -162,16 +177,5 @@ struct EdgePtrComparator2
         //return (*_e) == (*e);
     }
 };
-
-
-//inline uint qHash(const Edge& key)
-//{
-//    if (key._head->iid() > key._tail->iid())
-//        return qHash( ((quint64)key._head->iid()) << 32 |
-//                      (quint64)key._tail->iid() );
-//    else
-//        return qHash( ((quint64)key._tail->iid()) << 32 |
-//                      (quint64)key._head->iid() );
-//}
 
 #endif

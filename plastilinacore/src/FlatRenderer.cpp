@@ -217,10 +217,10 @@ void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     if (numFaces == 0)
         return;
 
-    Iterator<Face> it = mesh->constFaceIterator();
+    Iterator<FaceHandle> it = mesh->constFaceIterator();
     numFaces = 0; // number of faces after triangulation
     while(it.hasNext()) {
-        auto face = it.next();
+        auto face = static_cast<Face*>(it.next());
         if (face) {
             numFaces += face->numVertices() - 2;
         }
@@ -232,7 +232,7 @@ void FlatRenderer::Impl::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
     size_t offset = 0;
     it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        auto f = it.next();
+        auto f = static_cast<Face*>(it.next());
         processPolygon(*f, vtxData, offset);
     }
     // offset contains the number of vertices in the vtxData after being 
@@ -253,12 +253,12 @@ bool FlatRenderer::Impl::processPolygon(const Face & f,
         return false;
     }
     
-    Iterator<Vertex> vtxIt = f.constVertexIterator();
-    auto v1 = vtxIt.next();
-    auto v2 = vtxIt.next();
+    Iterator<VertexHandle> vtxIt = f.constVertexIterator();
+    auto v1 = static_cast<Vertex*>(vtxIt.next());
+    auto v2 = static_cast<Vertex*>(vtxIt.next());
     Vector3 n;
     while(vtxIt.hasNext()) {
-        auto v3 = vtxIt.next();
+        auto v3 = static_cast<Vertex*>(vtxIt.next());
         processTriangle(*v1, *v2, *v3, vtxData, offset);
         v2 = v3;
     }

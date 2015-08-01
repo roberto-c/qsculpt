@@ -186,10 +186,10 @@ void PointRenderer::Impl::fillVertexBuffer(const ISurface* mesh, VertexBuffer* v
     size_t numFloats = numVertices*8;
     GLfloat* vtxData = new GLfloat[numFloats];
 
-    Iterator<Vertex> it = mesh->constVertexIterator();
+    Iterator<VertexHandle> it = mesh->constVertexIterator();
     int offset = 0;
     while(it.hasNext()) {
-        auto v = it.next();
+        auto v = static_cast<Vertex*>(it.next());
         vtxData[offset] = v->position().x();
         offset++;
         vtxData[offset] = v->position().y();

@@ -12,7 +12,7 @@
 #include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/ISurface.h>
 
-class Face::VertexIterator : public IIterator<Vertex>
+class Face::VertexIterator : public IIterator<VertexHandle>
 {
 public:
     typedef Vertex::shared_ptr shared_ptr;
@@ -37,7 +37,7 @@ public:
     /**
      *
      */
-    IIterator<Vertex>* clone() const;
+    IIterator<VertexHandle>* clone() const;
 
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
@@ -102,7 +102,7 @@ public:
 };
 
 
-class Face::EdgeIterator : public IIterator<Edge>
+class Face::EdgeIterator : public IIterator<EdgeHandle>
 {
 public:
     typedef Edge::shared_ptr shared_ptr;
@@ -126,7 +126,7 @@ public:
     /**
      *
      */
-    IIterator<Edge>* clone() const;
+    IIterator<EdgeHandle>* clone() const;
 
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
@@ -270,7 +270,7 @@ void Face::setHEdge(Edge* hedge)
 Face::size_t Face::numVertices() const {
     if (_nVertices > 0) return _nVertices;
     size_t n = 0;
-    Iterator<Vertex> it = constVertexIterator();
+    Iterator<VertexHandle> it = constVertexIterator();
     while (it.hasNext()) {
         n += 1;
         it.next();
@@ -311,8 +311,8 @@ Face::operator Point3() const
 bool Face::operator==(const Face& t) const {
     if (hashCode() != t.hashCode())
         return false;
-    Iterator<Vertex> it = constVertexIterator();
-    Iterator<Vertex> it2 = t.constVertexIterator();
+    Iterator<VertexHandle> it = constVertexIterator();
+    Iterator<VertexHandle> it2 = t.constVertexIterator();
     while(it.hasNext()) {
         if (!it2.hasNext())
             return false;
@@ -324,24 +324,24 @@ bool Face::operator==(const Face& t) const {
     return true;
 }
 
-Iterator<Vertex> Face::vertexIterator()
+Iterator<VertexHandle> Face::vertexIterator()
 {
-    return Iterator<Vertex>(new Face::VertexIterator(this));
+    return Iterator<VertexHandle>(new Face::VertexIterator(this));
 }
 
-Iterator<Vertex> Face::constVertexIterator() const
+Iterator<VertexHandle> Face::constVertexIterator() const
 {
-    return Iterator<Vertex>(new Face::VertexIterator(this));
+    return Iterator<VertexHandle>(new Face::VertexIterator(this));
 }
 
-Iterator<Edge> Face::edgeIterator()
+Iterator<EdgeHandle> Face::edgeIterator()
 {
-    return Iterator<Edge>(new Face::EdgeIterator(this));
+    return Iterator<EdgeHandle>(new Face::EdgeIterator(this));
 }
 
-Iterator<Edge> Face::constEdgeIterator() const
+Iterator<EdgeHandle> Face::constEdgeIterator() const
 {
-    return Iterator<Edge>(new Face::EdgeIterator(this));
+    return Iterator<EdgeHandle>(new Face::EdgeIterator(this));
 }
 
 void Face::subdivide(int /*level*/)
@@ -358,7 +358,7 @@ Face::VertexIterator::VertexIterator(const Face* f)
 {
 }
 
-IIterator<Vertex>* Face::VertexIterator::clone() const
+IIterator<VertexHandle>* Face::VertexIterator::clone() const
 {
     VertexIterator *it = new VertexIterator(_f);
     it->_e = _e;
@@ -460,7 +460,7 @@ Face::EdgeIterator::EdgeIterator(const Face* f)
 {
 }
 
-IIterator<Edge>* Face::EdgeIterator::clone() const
+IIterator<EdgeHandle>* Face::EdgeIterator::clone() const
 {
     EdgeIterator* it = new EdgeIterator(_f);
     it->_e = _e;

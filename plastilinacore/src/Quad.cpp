@@ -45,10 +45,10 @@ void Quad::initTriangles()
     double hd = 0.0;
 
     std::vector<size_t> indexList(4);
-    indexList[0] = addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
-    indexList[1] = addVertex(new Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
-    indexList[2] = addVertex(new Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
-    indexList[3] = addVertex(new Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
+    indexList[0] = addVertex(new ::Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
+    indexList[1] = addVertex(new ::Vertex(Point3( hw, hh, hd), Vector3( hw, hh, hd)));
+    indexList[2] = addVertex(new ::Vertex(Point3( hw,-hh, hd), Vector3( hw,-hh, hd)));
+    indexList[3] = addVertex(new ::Vertex(Point3(-hw,-hh, hd), Vector3(-hw,-hh, hd)));
     addFace( indexList );
     //qDebug("Box::initTriangles() end");
 }

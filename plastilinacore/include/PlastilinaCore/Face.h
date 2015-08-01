@@ -14,6 +14,7 @@
 #include <PlastilinaCore/IIterator.h>
 
 class Edge;
+class EdgeHandle;
 class ISurface;
 
 enum FaceFlags {
@@ -23,6 +24,19 @@ enum FaceFlags {
     FF_User1    = 0x00100000,  /*< Flag to be used by the user */
     FF_User2    = 0x00200000,  /*< Flag to be used by the user */
     FF_All      = 0xFFFFFFFF
+};
+
+struct FaceHandle {
+    typedef FaceHandle* 		shared_ptr;
+    typedef FaceHandle* 		weak_ptr;
+    typedef FaceHandle* 		Ptr;
+    typedef uint32_t 			size_t;
+    size_t _id;
+    
+    template<typename T>
+    T & cast() const {
+        return static_cast<T>(*this);
+    }
 };
 
 /**
@@ -37,28 +51,22 @@ enum FaceFlags {
  * default constructor makes a non valid triangle.
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class Face {
+class Face : public FaceHandle {
 public:
-    typedef Face* shared_ptr;
-    typedef Face* weak_ptr;
-    typedef Face* Ptr;
+    typedef Face* 		shared_ptr;
+    typedef Face* 		weak_ptr;
+    typedef Face* 		Ptr;
     
-    typedef unsigned int size_t;
+    typedef uint32_t 	size_t;
     
 private:
-    ISurface*           _surface; // 4
-    Edge*               _he; // 4
-    Vertex::weak_ptr     _vertex; // 4
-
-    size_t              _id; // 4
-    FaceFlags           _flags; // 4
+    ISurface*           _surface;
+    Edge*               _he;
+    Vertex::weak_ptr    _vertex;
+    FaceFlags           _flags;
     mutable size_t      _nVertices;
-    
     void*               _userData;
     
-public:
-    //qint32 hashValue; // 4
-
 public:
     /**
      * Default constructor. Initiliazes all point to index 0.
@@ -177,25 +185,25 @@ public:
      * Gets an iterator object to traverse all the vertices that form part
      * of this face.
      */
-    Iterator<Vertex> vertexIterator();
+    Iterator<VertexHandle> vertexIterator();
 
     /**
      * Gets an iterator object to traverse all the vertices that form part
      * of this face.
      */
-    Iterator<Vertex> constVertexIterator() const;
+    Iterator<VertexHandle> constVertexIterator() const;
 
     /**
      * Gets an iterator object to traverse all the edges that form part
      * of this face.
      */
-    Iterator<Edge> edgeIterator();
+    Iterator<EdgeHandle> edgeIterator();
 
     /**
      * Gets an iterator object to traverse all the edges that form part
      * of this face.
      */
-    Iterator<Edge> constEdgeIterator() const;
+    Iterator<EdgeHandle> constEdgeIterator() const;
 
     
 protected:

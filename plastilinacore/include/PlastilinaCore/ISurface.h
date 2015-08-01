@@ -28,6 +28,7 @@
 #include <PlastilinaCore/geometry/Aabb.h>
 #include <PlastilinaCore/HEdge.h>
 
+#include <iterator>
 
 /*
  * Class forward declaration
@@ -49,7 +50,7 @@ public:
     typedef std::shared_ptr<ISurface>   shared_ptr;
     typedef std::weak_ptr<ISurface>     weak_ptr;
     typedef std::unique_ptr<ISurface>   Ptr;
-    
+
 public:
     /**
      * Default contructor. The classes that implement this interface, should
@@ -128,7 +129,7 @@ public:
      *
      * @return ID of the new point.
      */
-    virtual Vertex::size_t addVertex(const Point3& point) = 0;
+    virtual VertexHandle::size_t addVertex(const Point3& point) = 0;
 
     /**
      * Add vertex v to this object. The object will mantain the reference
@@ -139,7 +140,7 @@ public:
      *
      * @return the id of the vertex inside the object.
      */
-    virtual Vertex::size_t addVertex(Vertex* v) = 0;
+    virtual VertexHandle::size_t addVertex(VertexHandle* v) = 0;
 
     /**
      * Remove a point from the object. If the point form part of a
@@ -147,37 +148,37 @@ public:
      *
      * @param id ID of the point to delete.
      */
-    virtual void removeVertex( Vertex::size_t id) = 0;
+    virtual void removeVertex( VertexHandle::size_t id) = 0;
 
     /**
      * Returns the vertex with the instance ID iid.
      */
-    virtual Vertex* vertex(Vertex::size_t iid) = 0;
+    virtual VertexHandle* vertex(VertexHandle::size_t iid) = 0;
     
     /**
      * Returns the vertex with the instance ID iid.
      */
-    virtual const Vertex* vertex(Vertex::size_t iid) const = 0;
+    virtual const VertexHandle* vertex(VertexHandle::size_t iid) const = 0;
 
     /**
      * Gets the number of vertices
      */
-    virtual Vertex::size_t numVertices() const = 0;
+    virtual VertexHandle::size_t numVertices() const = 0;
 
     /**
      *
      */
-    virtual Edge::size_t addEdge(const Edge& edge) = 0;
+    virtual EdgeHandle::size_t addEdge(const EdgeHandle& edge) = 0;
 
     /**
      *
      */
-    virtual Edge::size_t addEdge(Vertex::size_t v1, Vertex::size_t v2) = 0;
+    virtual EdgeHandle::size_t addEdge(VertexHandle::size_t v1, VertexHandle::size_t v2) = 0;
 	
 	/**
 	 *
 	 */
-	virtual Edge::size_t numEdges() const = 0;
+	virtual EdgeHandle::size_t numEdges() const = 0;
 
     /**
      * Add a triangle to the object. The triangle is formed by the vertices
@@ -189,13 +190,13 @@ public:
      *
      * @return triangle ID
      */
-    virtual Face::size_t addFace( const std::vector<Vertex::size_t>& vertexIndexes )=0;
+    virtual FaceHandle::size_t addFace( const std::vector<VertexHandle::size_t>& vertexIndexes )=0;
 
     /**
      * Replace a triangle with new indices to existing points.
      */
-    virtual void replaceFace(Face::size_t index,
-							 const std::vector<Vertex::size_t>& vertexIndexList)=0;
+    virtual void replaceFace(FaceHandle::size_t index,
+							 const std::vector<VertexHandle::size_t>& vertexIndexList)=0;
 
     /**
      * Remove the triangle from the object. The points or vertices that
@@ -204,34 +205,34 @@ public:
      *
      * @param id triangle ID to remove.
      */
-    virtual void removeFace( Face::size_t id) =0;
+    virtual void removeFace( FaceHandle::size_t id) =0;
 
     /**
      * Returns the number of faces that the object has.
      *
      * TODO: This may not belong here as is specific to mesh surfaces.
      */
-    virtual Face::size_t numFaces() const = 0;
+    virtual FaceHandle::size_t numFaces() const = 0;
 
     /**
      * Returns the face at the position index.
      */
-    virtual Face* face(Face::size_t index) = 0;
+    virtual FaceHandle* face(FaceHandle::size_t index) = 0;
 
     /**
      *
      */
-    virtual Face::size_t getFaceIndexAtPoint(const Point3& p) const = 0;
+    virtual FaceHandle::size_t getFaceIndexAtPoint(const Point3& p) const = 0;
 
     /**
      *
      */
-    virtual Vertex::size_t getClosestPointAtPoint(const Point3 &p) const = 0;
+    virtual VertexHandle::size_t getClosestPointAtPoint(const Point3 &p) const = 0;
 
     /**
      *
      */
-    virtual std::vector<Vertex::size_t> getPointsInRadius(const Point3 &p, float radius) const = 0;
+    virtual std::vector<VertexHandle::size_t> getPointsInRadius(const Point3 &p, float radius) const = 0;
 
     /**
      *
@@ -261,39 +262,39 @@ public:
     /**
      *
      */
-    virtual std::vector<Vertex::size_t> selectedPoints() const = 0;
+    virtual std::vector<VertexHandle::size_t> selectedPoints() const = 0;
     
     /*
      *
      */
-    virtual void setSelectedPoints(const std::vector<Vertex::size_t>& indicesArray) = 0;
+    virtual void setSelectedPoints(const std::vector<VertexHandle::size_t>& indicesArray) = 0;
 
     /**
      * Returns a vertex iterator to traverse over all the vertices in this
      * object.
      */
-    virtual Iterator<Vertex> vertexIterator() = 0;
-    virtual Iterator<Vertex> constVertexIterator() const = 0;
+    virtual Iterator<VertexHandle> vertexIterator() = 0;
+    virtual Iterator<VertexHandle> constVertexIterator() const = 0;
 
     /**
      * Returns a face iterator to traverse over all the faces of this object.
      */
-    virtual Iterator<Face> faceIterator() = 0;
+    virtual Iterator<FaceHandle> faceIterator() = 0;
 
     /**
      * Return a const iterator over the faces that contained in this object.
      */
-    virtual Iterator<Face> constFaceIterator() const = 0;
+    virtual Iterator<FaceHandle> constFaceIterator() const = 0;
 
     /**
      *
      */
-    virtual Iterator<Edge> edgeIterator() = 0;
+    virtual Iterator<EdgeHandle> edgeIterator() = 0;
     
     /**
      *
      */
-    virtual Iterator<Edge> constEdgeIterator() const = 0;
+    virtual Iterator<EdgeHandle> constEdgeIterator() const = 0;
 
     /**
      * Used to notify mesh has changed.

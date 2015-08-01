@@ -104,7 +104,7 @@ Impl::create_from_surface(Subdivision * surface) {
 	ret.p.reserve(1000);
 	auto vtxIt = surface->constVertexIterator();
 	while (vtxIt.hasNext()) {
-		auto v = vtxIt.next();
+		auto v = static_cast<Vertex*>(vtxIt.next());
 		if (!v) {
 			throw std::runtime_error("Invalid vertex in surface");
 		}
@@ -223,7 +223,7 @@ step(ISurface * s, float time)
 {
 	auto vtxIt = s->vertexIterator();
 	while (vtxIt.hasNext()) {
-		auto vtx = vtxIt.next();
+		auto vtx = static_cast<Vertex*>(vtxIt.next());
 		vtx->position() += Vector3(0.01f,0.01f,0.01f);
 	}
 }

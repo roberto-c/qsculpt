@@ -238,7 +238,7 @@ void SubdivisionRenderable::fillVertexBufferPoints(ISurface* mesh, VertexBuffer*
     size_t offset = 0;
     auto it = mesh->constVertexIterator();
     while(it.hasNext()) {
-        auto v = it.next();
+        auto v = static_cast<Vertex*>(it.next());
 		vtxData[offset].v[0] = v->position().x();
 		vtxData[offset].v[1] = v->position().y();
 		vtxData[offset].v[2] = v->position().z();
@@ -272,10 +272,10 @@ void SubdivisionRenderable::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) 
     if (numFaces == 0)
         return;
     
-    Iterator<Face> it = mesh->constFaceIterator();
+    Iterator<FaceHandle> it = mesh->constFaceIterator();
     numFaces = 0; // number of faces after triangulation
     while(it.hasNext()) {
-        numFaces += it.next()->numVertices() - 2;
+        numFaces += static_cast<Face*>(it.next())->numVertices() - 2;
     }
     
     size_t numVertices = numFaces*3;
@@ -284,7 +284,7 @@ void SubdivisionRenderable::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) 
     size_t offset = 0;
     it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        auto f = it.next();
+        auto f = static_cast<Face*>(it.next());
         processPolygon(*f, vtxData, offset);
     }
     // offset contains the number of vertices in the vtxData after being
@@ -307,12 +307,12 @@ bool SubdivisionRenderable::processPolygon(const Face & f,
     }
     //GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;
     
-    Iterator<Vertex> vtxIt = f.constVertexIterator();
-    auto v1 = vtxIt.next();
-    auto v2 = vtxIt.next();
+    Iterator<VertexHandle> vtxIt = f.constVertexIterator();
+    auto v1 = static_cast<Vertex*>(vtxIt.next());
+    auto v2 = static_cast<Vertex*>(vtxIt.next());
     Vector3 n;
     while(vtxIt.hasNext()) {
-        auto v3 = vtxIt.next();
+        auto v3 = static_cast<Vertex*>(vtxIt.next());
         processTriangle(*v1, *v2, *v3, vtxData, offset);
         v2 = v3;
     }

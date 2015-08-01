@@ -187,19 +187,19 @@ void RendererPrivate::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 	std::vector<FlatVtxStruct> vtxData;
 	vtxData.reserve(numFaces*4);
     
-    Iterator<Face> it = mesh->constFaceIterator();
+    Iterator<FaceHandle> it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        auto f = it.next();
+        auto f = static_cast<Face*>(it.next());
 		Eigen::Vector4f color = f->flags() & FF_Selected ? g_selectedColor : g_normalColor;
 
 		Vertex::shared_ptr first = NULL, prev = NULL, v = NULL;
-		Iterator<Vertex> vtxIt = f->constVertexIterator();
+		Iterator<VertexHandle> vtxIt = f->constVertexIterator();
 		if (!vtxIt.hasNext()) {
 			break;
 		}
-		first = prev = vtxIt.next();
+		first = prev = static_cast<Vertex*>(vtxIt.next());
         while(vtxIt.hasNext()) {
-            v = vtxIt.next();
+            v = static_cast<Vertex*>(vtxIt.next());
 			vtxData.push_back(FlatVtxStruct::create(prev->position(), prev->normal(), color));
 			vtxData.push_back(FlatVtxStruct::create(v->position(), v->normal(), color));
 			std::swap(prev, v);

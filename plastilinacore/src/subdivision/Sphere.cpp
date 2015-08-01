@@ -69,11 +69,11 @@ void Sphere::initPoints()
 	}
     
     // adjust normals
-    Iterator<Vertex> it = vertexIterator();
+    Iterator<VertexHandle> it = vertexIterator();
     while (it.hasNext()) {
-        it.peekNext()->normal() = it.peekNext()->position();
-        it.peekNext()->normal().normalize();
-        it.next();
+        auto vtx = static_cast<Vertex*>(it.next());
+        vtx->normal() = vtx->position();
+        vtx->normal().normalize();
     }
 	
     indexList.resize(3);

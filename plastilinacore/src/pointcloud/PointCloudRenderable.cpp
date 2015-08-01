@@ -216,7 +216,7 @@ void PointCloudRenderable::fillVertexBufferPoints(ISurface* mesh, VertexBuffer* 
     size_t offset = 0;
     auto it = mesh->constVertexIterator();
     while(it.hasNext()) {
-        auto v = it.next();
+        auto v = static_cast<Vertex*>(it.next());
 		vtxData[offset].v[0] = v->position().x();
 		vtxData[offset].v[1] = v->position().y();
 		vtxData[offset].v[2] = v->position().z();

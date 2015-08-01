@@ -19,13 +19,28 @@
 class Edge;
 class Face;
 
+#define VERTEXTYPE_DEFAULT			(0)
+#define VERTEXTYPE_POS              (1)
+#define VERTEXTYPE_POS_NOR          (2)
+#define VERTEXTYPE_POS_NOR_COL      (3)
+#define VERTEXTYPE_POS_NOR_COL_TEX	(4)
+
 struct VertexHandle {
-	typedef uint32_t size_t;
-	
+    typedef VertexHandle*   shared_ptr;
+    typedef VertexHandle*   weak_ptr;
+    typedef VertexHandle*   Ptr;
+	typedef uint32_t 		size_t;
+	size_t	_id;
+    
+    uint8_t type() const { return _id >> 24; }
 	size_t iid() const { return _id; }
 	
-protected:
-	size_t	_id;
+    void setIid(size_t iid) { _id = iid & 0xFFFFFF;}
+    
+    template<typename T>
+    T cast() const {
+        return static_cast<T>(this);
+    }
 };
 
 enum VertexFlags {

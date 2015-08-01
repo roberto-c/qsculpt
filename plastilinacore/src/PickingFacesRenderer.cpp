@@ -200,13 +200,13 @@ void PickingFacesRenderer::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo)
 
 	std::vector<VtxStruct> vtxData(numVertices);
 	Color c = Color::fromUintRGBA(mesh->iid());
-    Iterator<Face> it = mesh->constFaceIterator();
+    Iterator<FaceHandle> it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        auto f = it.next();
+        auto f = static_cast<Face*>(it.next());
         //        std::cerr << "face " << fcounter++;
-        Iterator<Vertex> vtxIt = f->constVertexIterator();
+        Iterator<VertexHandle> vtxIt = f->constVertexIterator();
         while(vtxIt.hasNext()) {
-            auto v = vtxIt.next();
+            auto v = static_cast<Vertex*>(vtxIt.next());
             std::cerr << "Vertex:" << toString(v->position());
 			vtxData.push_back(vertexStructFromVector(v->position(), c));
         }
@@ -228,13 +228,13 @@ void PickingFacesRenderer::fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vb
 	std::vector<FlatVtxStruct> vtxData(numFaces*4);
 	
 	Color c = Color::fromUintRGBA(mesh->iid());
-    Iterator<Face> it = mesh->constFaceIterator();
+    Iterator<FaceHandle> it = mesh->constFaceIterator();
     while(it.hasNext()) {
-        auto f = it.next();
+        auto f = static_cast<Face*>(it.next());
         //        std::cerr << "face " << fcounter++;
-        Iterator<Vertex> vtxIt = f->constVertexIterator();
+        Iterator<VertexHandle> vtxIt = f->constVertexIterator();
         while(vtxIt.hasNext()) {
-            auto v = vtxIt.next();
+            auto v = static_cast<Vertex*>(vtxIt.next());
             std::cerr << "Vertex:" << toString(v->position());
 			vtxData.push_back(flatStructFromVector(v->position(), v->normal(), c));
         }

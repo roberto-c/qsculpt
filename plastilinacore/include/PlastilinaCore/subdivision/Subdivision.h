@@ -16,8 +16,8 @@
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/geometry/Aabb.h>
 
-class Vertex;
-class Edge;
+class VertexHandle;
+class EdgeHandle;
 class SubdivisionScheme;
 class Mesh;
 
@@ -52,52 +52,52 @@ public:
     virtual Color               		color() const;
     virtual void                		setSelected(bool val);
     virtual bool                		isSelected() const;
-    virtual Vertex::size_t              addVertex(const Point3& point);
-    virtual Vertex::size_t              addVertex(Vertex* v);
-    virtual void                		removeVertex(Vertex::size_t id);
-    virtual Vertex*             		vertex(Vertex::size_t index);
-    virtual const Vertex* 				vertex(Vertex::size_t index) const;
-    virtual Vertex::size_t              numVertices() const;
-    virtual Edge::size_t              	addEdge(const Edge& edge);
-    virtual Edge::size_t              	addEdge(Vertex::size_t v1, Vertex::size_t v2);
-	virtual Edge::size_t 				numEdges() const;
-    virtual Face::size_t              	addFace(const std::vector<Vertex::size_t>& vertexIndexList);
+    virtual VertexHandle::size_t        addVertex(const Point3& point);
+    virtual VertexHandle::size_t        addVertex(VertexHandle* v);
+    virtual void                		removeVertex(VertexHandle::size_t id);
+    virtual VertexHandle*             	vertex(VertexHandle::size_t index);
+    virtual const VertexHandle* 		vertex(VertexHandle::size_t index) const;
+    virtual VertexHandle::size_t        numVertices() const;
+    virtual EdgeHandle::size_t          addEdge(const EdgeHandle& edge);
+    virtual EdgeHandle::size_t          addEdge(VertexHandle::size_t v1, VertexHandle::size_t v2);
+	virtual EdgeHandle::size_t 			numEdges() const;
+    virtual FaceHandle::size_t          addFace(const std::vector<VertexHandle::size_t>& vertexIndexList);
     virtual void                		replaceFace(size_t index,
-											const std::vector<Vertex::size_t>& vertexIndexList);
+											const std::vector<VertexHandle::size_t>& vertexIndexList);
     virtual void                		removeFace( size_t id);
-    virtual Face::size_t              	numFaces() const;
-    virtual Face*               		face(Face::size_t index);
-    virtual Face::size_t              	getFaceIndexAtPoint(const Point3& p) const;
-    virtual Vertex::size_t              getClosestPointAtPoint(const Point3 &p) const;
-    virtual std::vector<Vertex::size_t> getPointsInRadius(const Point3 &p,
-											float radius) const;
-    virtual void                		adjustPointNormal(Vertex::size_t index);
+    virtual FaceHandle::size_t          numFaces() const;
+    virtual FaceHandle*               	face(FaceHandle::size_t index);
+    virtual FaceHandle::size_t                getFaceIndexAtPoint(const Point3& p) const;
+    virtual VertexHandle::size_t              getClosestPointAtPoint(const Point3 &p) const;
+    virtual std::vector<VertexHandle::size_t> getPointsInRadius(const Point3 &p,
+                                                    float radius) const;
+    virtual void                		adjustPointNormal(VertexHandle::size_t index);
     virtual void                		lock() const;
     virtual void                		unlock() const;
 
-    virtual std::vector<Vertex::size_t> selectedPoints() const;
-    virtual void                		setSelectedPoints(const std::vector<Vertex::size_t>& indicesArray);
+    virtual std::vector<VertexHandle::size_t> selectedPoints() const;
+    virtual void                		setSelectedPoints(const std::vector<VertexHandle::size_t>& indicesArray);
 
-    virtual Iterator<Vertex>    		vertexIterator();
-    virtual Iterator<Vertex>    		constVertexIterator() const;
-    virtual Iterator<Face>      		faceIterator();
-    virtual Iterator<Face>      		constFaceIterator() const;
-    virtual Iterator<Edge>      		edgeIterator();
-    virtual Iterator<Edge>      		constEdgeIterator() const;
+    virtual Iterator<VertexHandle>    		vertexIterator();
+    virtual Iterator<VertexHandle>    		constVertexIterator() const;
+    virtual Iterator<FaceHandle>      		faceIterator();
+    virtual Iterator<FaceHandle>      		constFaceIterator() const;
+    virtual Iterator<EdgeHandle>      		edgeIterator();
+    virtual Iterator<EdgeHandle>      		constEdgeIterator() const;
 
     // End IObject3D interface
 		
     /**
      * Returns the Edge Iid that has the vertices V1 and V2
      */
-	Edge::size_t                      	edge(Vertex::size_t iidVtxTail,
-									 		Vertex::size_t iidVtxHead) const;
+	EdgeHandle::size_t                  edge(VertexHandle::size_t iidVtxTail,
+									 		VertexHandle::size_t iidVtxHead) const;
 	
 	/**
 	 * Returns the edge
 	 */
-	Edge *		                		edge(Edge::size_t iidEdge);
-	const Edge *                		edge(Edge::size_t iidEdge) const;
+	EdgeHandle *		                edge(EdgeHandle::size_t iidEdge);
+	const EdgeHandle *                	edge(EdgeHandle::size_t iidEdge) const;
 
     //const Object3D& operator=(const Object3D& obj);
 
@@ -106,10 +106,10 @@ public:
     void            					setWorkingResolutionLevel(int level);
     int             					workingResolutionLevel();
     
-    Iterator<Vertex> 					vertexIterator(int level);
-    Iterator<Vertex> 					constVertexIterator(int level) const;
-    Iterator<Face> 						faceIterator(int level);
-    Iterator<Face> 						constFaceIterator(int level) const;
+    Iterator<VertexHandle> 				vertexIterator(int level);
+    Iterator<VertexHandle> 				constVertexIterator(int level) const;
+    Iterator<FaceHandle> 				faceIterator(int level);
+    Iterator<FaceHandle> 				constFaceIterator(int level) const;
 
     /**
      * Debugging function used to print the memory usage of this
@@ -141,7 +141,7 @@ protected:
     /**
       *
       */
-	Edge::size_t addEdge(Vertex* v1, Vertex* v2);
+	EdgeHandle::size_t addEdge(VertexHandle* v1, VertexHandle* v2);
 
 
     // inner classes

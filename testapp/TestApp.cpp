@@ -62,6 +62,7 @@
 #include "Subdivision.h"
 #include "ParticleSystem.h"
 #include "CLRender.h"
+#include "ClStlAllocator.h"
 #include "TestMaterial.h"
 #include "PrimitiveFactory.h"
 
@@ -273,6 +274,27 @@ void TestApp::keyboard(int key, int x, int y)
     }
 }
 
+struct vertex_t {
+    uint32_t iid;
+    
+    vertex_t() : iid(0)
+    {}
+};
+
+struct myvertex : public vertex_t {
+    float	p[4];
+    float 	n[4];
+    float 	c[4];
+    
+    myvertex() : p{0.f}
+    {}
+};
+
+vertex_t* vertex_new() {
+    myvertex* t = new myvertex();
+    return t;
+}
+
 void TestApp::init(int argc, char** argv) {
     d->initialized = false;
 
@@ -280,6 +302,16 @@ void TestApp::init(int argc, char** argv) {
 	std::cout << "App path: " << app_path << std::endl;
 	ResourcesManager rscMgr;
 	
+    std::vector<cl_uint> v1;
+    std::vector<cl_uint, core::cl::allocator<cl_uint> > v2;
+    v1.reserve(10);
+    v2.reserve(10);
+    std::cout << "Sizeof v1: " << sizeof(v1) << "\n";
+    std::cout << "Sizeof v2: " << sizeof(v2) << "\n";
+    
+    vertex_t* v = vertex_new();
+    std::cout << "IID: " << v->iid << "\n";
+    
     /* Initialize SDL's Video subsystem */
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         return;// false;
@@ -437,7 +469,8 @@ void TestApp::Impl::setupScene() {
     if (useFile) {
         scene->loadFromFile("/Users/rcabral/Projects/qsculpt/assets/meshes/test2.dae");
     } else {
-        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
+//        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
+        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
         SceneNode::shared_ptr node = std::make_shared<SurfaceNode>(surf);
         scene->add(node);
         Camera::shared_ptr cam = std::make_shared<Camera>();

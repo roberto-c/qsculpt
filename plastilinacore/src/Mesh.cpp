@@ -42,11 +42,11 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
-typedef std::pair<Vertex::size_t, Vertex::size_t>               VtxPair;
-typedef std::unordered_map<Vertex::size_t, Vertex*>     VertexCollection;
-typedef std::unordered_map<Edge::size_t, Edge*>       EdgesCollection;
-typedef std::unordered_map<VtxPair, Edge::size_t>     VtxPairEdgeMap;
-typedef std::map<Face::size_t, Face*>                 FacesCollection;
+typedef std::pair<VertexHandle::size_t, VertexHandle::size_t> VtxPair;
+typedef std::unordered_map<VertexHandle::size_t, ::Vertex*>   VertexCollection;
+typedef std::unordered_map<EdgeHandle::size_t, ::Edge*>       EdgesCollection;
+typedef std::unordered_map<VtxPair, EdgeHandle::size_t>       VtxPairEdgeMap;
+typedef std::map<FaceHandle::size_t, ::Face*>                 FacesCollection;
 
 
 struct VertexPool {
@@ -119,7 +119,7 @@ MeshRenderer * MeshRenderer::instamce_ = NULL;
 
 
 // Iterator classes declarations
-class Mesh::VertexIterator : public IIterator<Vertex>
+class Mesh::VertexIterator : public IIterator<VertexHandle>
 {	
 public:
     typedef Vertex::shared_ptr shared_ptr;
@@ -146,7 +146,7 @@ public:
     /**
      *
      */
-    IIterator<Vertex>* clone() const;
+    IIterator<VertexHandle>* clone() const;
     
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
@@ -200,12 +200,12 @@ public:
     bool seek(int pos, IteratorOrigin origin) const ;
 };
 
-class Mesh::FaceIterator : public IIterator<Face>
+class Mesh::FaceIterator : public IIterator<FaceHandle>
 {
 public:
-    typedef Face::shared_ptr   shared_ptr;
-    typedef Face::weak_ptr     weak_ptr;
-    typedef Face::Ptr   Ptr;
+    typedef FaceHandle::shared_ptr   shared_ptr;
+    typedef FaceHandle::weak_ptr     weak_ptr;
+    typedef FaceHandle::Ptr          Ptr;
     
 private:
     friend class Mesh;
@@ -228,7 +228,7 @@ public:
     /**
      *
      */
-    IIterator<Face>* clone() const;
+    IIterator<FaceHandle>* clone() const;
     
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
@@ -282,7 +282,7 @@ public:
     bool seek(int pos, IteratorOrigin origin) const ;
 };
 
-class Mesh::EdgeIterator : public IIterator<Edge>
+class Mesh::EdgeIterator : public IIterator<EdgeHandle>
 {
 public:
     typedef Edge::shared_ptr shared_ptr;
@@ -313,7 +313,7 @@ public:
     /**
      *
      */
-    IIterator<Edge>* clone() const {
+    IIterator<EdgeHandle>* clone() const {
         EdgeIterator *it = new EdgeIterator(surface_, level_);
         it->index_ = index_;
         return it;
@@ -438,11 +438,11 @@ void Mesh::setChanged(bool val) {
     }
 }
 
-std::vector<Vertex::size_t> Mesh::selectedPoints() const {
+std::vector<VertexHandle::size_t> Mesh::selectedPoints() const {
     return _d->_selectedPoints;
 }
 
-void Mesh::setSelectedPoints(const std::vector<Vertex::size_t>& indicesArray) {
+void Mesh::setSelectedPoints(const std::vector<VertexHandle::size_t>& indicesArray) {
     _d->_selectedPoints = indicesArray;
 }
 
@@ -493,12 +493,12 @@ bool Mesh::isSelected() const
     return _d->_selected;
 }
 
-Vertex::size_t Mesh::addVertex(const Point3& point)
+VertexHandle::size_t Mesh::addVertex(const Point3& point)
 {
     assert(_d->_vertices != NULL );
     //qWarning("%s %s", __FUNCTION__, " Not implemented");
     
-    Vertex* vertex = new Vertex(point);
+    ::Vertex* vertex = new ::Vertex(point);
     _d->_boundingBox.extend(point);
     VertexCollection::value_type value(vertex->iid(), vertex);
     this->_d->_vertices->insert(value);
@@ -506,50 +506,54 @@ Vertex::size_t Mesh::addVertex(const Point3& point)
     
 }
 
-Vertex::size_t Mesh::addVertex(Vertex* v)
+VertexHandle::size_t Mesh::addVertex(VertexHandle* vp)
 {
+    ::Vertex *v = static_cast<::Vertex*>(vp);
     _d->_boundingBox.extend(v->position());
     VertexCollection::value_type value(v->iid(), v);
     this->_d->_vertices->insert(value);
     return v->iid();
 }
 
-void Mesh::removeVertex(Vertex::size_t iid)
+void Mesh::removeVertex(VertexHandle::size_t iid)
 {
     _d->_vertices->erase(iid);
 }
 
-Vertex* Mesh::vertex(Vertex::size_t iid)
+VertexHandle* Mesh::vertex(VertexHandle::size_t iid)
 {
-    return _d->_vertices->find(iid) != _d->_vertices->end() ?
+    ::Vertex *v = _d->_vertices->find(iid) != _d->_vertices->end() ?
             _d->_vertices->at(iid) : NULL;
+    return v;
 }
 
-const Vertex* Mesh::vertex(Vertex::size_t iid) const
+const VertexHandle* Mesh::vertex(VertexHandle::size_t iid) const
 {
     return _d->_vertices->find(iid) != _d->_vertices->end() ?
         _d->_vertices->at(iid) : NULL;
 }
 
-Vertex::size_t Mesh::numVertices() const
+VertexHandle::size_t Mesh::numVertices() const
 {
-    return static_cast<Vertex::size_t>(_d->_vertices->size());
+    return static_cast<VertexHandle::size_t>(_d->_vertices->size());
 }
 
-Edge::size_t Mesh::addEdge(const Edge& edge)
+EdgeHandle::size_t Mesh::addEdge(const EdgeHandle& e)
 {
-    return addEdge(edge.pair()->head(), edge.head());
+    const Edge * edge = static_cast<const Edge *>(&e);
+    return addEdge(edge->pair()->head(), edge->head());
 }
 
-Edge::size_t Mesh::addEdge(Vertex::size_t v1, Vertex::size_t v2)
+EdgeHandle::size_t Mesh::addEdge(VertexHandle::size_t v1, VertexHandle::size_t v2)
 {    
     return addEdge(_d->_vertices->at(v1), _d->_vertices->at(v2));
 }
 
-Edge::size_t Mesh::addEdge(Vertex* tail, Vertex* head)
+EdgeHandle::size_t Mesh::addEdge(VertexHandle* t, VertexHandle* h)
 {
-    assert(tail && head);
-    
+    assert(t && h);
+    Vertex * tail = static_cast<Vertex*>(t);
+    Vertex * head = static_cast<Vertex*>(h);
 	Edge::size_t iid = -1;
     
     VtxPair pair(tail->iid(), head->iid());
@@ -580,11 +584,11 @@ Edge::size_t Mesh::addEdge(Vertex* tail, Vertex* head)
     return iid;
 }
 
-Edge::size_t Mesh::numEdges() const {
-	return static_cast<Edge::size_t>(_d->_edges->size());
+EdgeHandle::size_t Mesh::numEdges() const {
+	return static_cast<EdgeHandle::size_t>(_d->_edges->size());
 }
 
-Face::size_t Mesh::addFace(const std::vector<Vertex::size_t>& vertexIndexList)
+FaceHandle::size_t Mesh::addFace(const std::vector<VertexHandle::size_t>& vertexIndexList)
 {
     //NOT_IMPLEMENTED
     std::vector<Edge*> edges;
@@ -613,55 +617,55 @@ Face::size_t Mesh::addFace(const std::vector<Vertex::size_t>& vertexIndexList)
     return f->iid();
 }
 
-void Mesh::replaceFace(Face::size_t /*faceIndex*/, const std::vector<Vertex::size_t>& /*vertexIndexList*/)
+void Mesh::replaceFace(FaceHandle::size_t /*faceIndex*/, const std::vector<VertexHandle::size_t>& /*vertexIndexList*/)
 {
     NOT_IMPLEMENTED
 }
 
 
 // clear reference to face from edges and remove the face from this surface.
-void Mesh::removeFace( Face::size_t iid)
+void Mesh::removeFace( FaceHandle::size_t iid)
 {
-    Face * f = face(iid);
+    Face * f = static_cast<Face*>(face(iid));
     if (f == NULL)
         return;
-    Iterator<Edge> edgeIt = f->edgeIterator();
+    Iterator<EdgeHandle> edgeIt = f->edgeIterator();
     while (edgeIt.hasNext()) {
-        auto e = edgeIt.next();
+        auto e = static_cast<Edge*>(edgeIt.next());
         e->setFace(NULL);
         e->setNext(NULL);
     }
     _d->_faces->erase(iid);
 }
 
-Face* Mesh::face(Face::size_t iid)
+FaceHandle* Mesh::face(FaceHandle::size_t iid)
 {
     assert(iid > 0);
     FacesCollection::iterator it = _d->_faces->find(iid);
     return  it != _d->_faces->end() ? it->second : NULL;
 }
 
-Face::size_t Mesh::numFaces() const
+FaceHandle::size_t Mesh::numFaces() const
 {
     assert( _d->_faces!= NULL );
     return static_cast<Face::size_t>(_d->_faces->size());
 }
 
 
-Face::size_t Mesh::getFaceIndexAtPoint(const Point3& /*p*/) const
+FaceHandle::size_t Mesh::getFaceIndexAtPoint(const Point3& /*p*/) const
 {
     NOT_IMPLEMENTED
     return -1;
 }
 
-Vertex::size_t Mesh::getClosestPointAtPoint(const Point3 &/*p*/) const
+VertexHandle::size_t Mesh::getClosestPointAtPoint(const Point3 &/*p*/) const
 {
     NOT_IMPLEMENTED
     
     return -1;
 }
 
-std::vector<Vertex::size_t> Mesh::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
+std::vector<VertexHandle::size_t> Mesh::getPointsInRadius(const Point3 &/*p*/, float /*radius*/) const
 {
     //std::cerr << "Mesh::getPointsInRadius()";
     std::vector<size_t> results;
@@ -688,34 +692,34 @@ void Mesh::adjustPointNormal(size_t /*index*/)
     NOT_IMPLEMENTED
 }
 
-Iterator<Vertex> Mesh::vertexIterator()
+Iterator<VertexHandle> Mesh::vertexIterator()
 {
-    return Iterator<Vertex>(new VertexIterator(this) );
+    return Iterator<VertexHandle>(new VertexIterator(this) );
 }
 
-Iterator<Vertex> Mesh::constVertexIterator() const
+Iterator<VertexHandle> Mesh::constVertexIterator() const
 {
-    return Iterator<Vertex>(new VertexIterator(this) );
+    return Iterator<VertexHandle>(new VertexIterator(this) );
 }
 
-Iterator<Face> Mesh::faceIterator()
+Iterator<FaceHandle> Mesh::faceIterator()
 {
-    return Iterator<Face>(new FaceIterator(this));
+    return Iterator<FaceHandle>(new FaceIterator(this));
 }
 
-Iterator<Face> Mesh::constFaceIterator() const
+Iterator<FaceHandle> Mesh::constFaceIterator() const
 {
-    return Iterator<Face>(new FaceIterator(this));
+    return Iterator<FaceHandle>(new FaceIterator(this));
 }
 
-Iterator<Edge> Mesh::edgeIterator()
+Iterator<EdgeHandle> Mesh::edgeIterator()
 {
-    return Iterator<Edge>(new EdgeIterator(this));
+    return Iterator<EdgeHandle>(new EdgeIterator(this));
 }
 
-Iterator<Edge> Mesh::constEdgeIterator() const
+Iterator<EdgeHandle> Mesh::constEdgeIterator() const
 {
-    return Iterator<Edge>(new EdgeIterator(this));
+    return Iterator<EdgeHandle>(new EdgeIterator(this));
 }
 
 // Inner classes implementation
@@ -728,7 +732,7 @@ _level(level)
 }
 
 
-IIterator<Vertex>* Mesh::VertexIterator::clone() const
+IIterator<VertexHandle>* Mesh::VertexIterator::clone() const
 {
     VertexIterator *it = new VertexIterator(_surface, _level);
     it->_index = this->_index;
@@ -833,7 +837,7 @@ _level(level)
     _index = _surface->_d->_faces->begin();
 }
 
-IIterator<Face>* Mesh::FaceIterator::clone() const
+IIterator<FaceHandle>* Mesh::FaceIterator::clone() const
 {
     FaceIterator *it = new FaceIterator(_surface, _level);
     it->_index = this->_index;
