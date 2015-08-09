@@ -136,6 +136,8 @@ struct TestApp::Impl {
     void setupMaterial();
     
     void move(const Vector3 & delta);
+    
+    void print();
 };
 
 
@@ -267,6 +269,9 @@ void TestApp::keyboard(int key, int x, int y)
 			d->restart();
 			reshape(640,480);
 			break;
+        case SDLK_p:
+            d->print();
+            break;
 		}
 			
         default:
@@ -471,11 +476,18 @@ void TestApp::Impl::setupScene() {
     } else {
 //        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
         ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
-        SceneNode::shared_ptr node = std::make_shared<SurfaceNode>(surf);
+        SceneNode::shared_ptr node = std::make_shared<SurfaceNode>("Box",surf);
         scene->add(node);
         Camera::shared_ptr cam = std::make_shared<Camera>();
-        node = std::make_shared<CameraNode>(cam);
+        node = std::make_shared<CameraNode>();
+        std::dynamic_pointer_cast<CameraNode>(node)->setCamera(cam);
         scene->add(node);
+        node->transform() *= Eigen::Translation3f(0,0,3.0);
+        cam->setPerspectiveMatrix(45.0f, 1280.0f/720.0f, 0.01f, 10.0f);
+        cam->setTargetPoint(Point3(0,0,1));
+        cam->setPosition(Point3(0,0,0));
+        cam->setOrientationVector(Point3(0,1,0));
+        cam->setViewport(0, 0, 1280, 720);
     }
 }
 
@@ -534,8 +546,6 @@ void TestApp::Impl::changeColor()
 void TestApp::Impl::move(const Vector3 & delta)
 {
     static Vector4 p = Vector4(0,0,0,1);
-    static Eigen::IOFormat octaveFmt =
-    		Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ";", "", "", "[", "]");
     
     p.x() += delta.x();
     p.y() += delta.y();
@@ -544,25 +554,33 @@ void TestApp::Impl::move(const Vector3 & delta)
     if (object) {
         object->transform() *= Eigen::Translation3f(delta);
     }
+}
+
+void TestApp::Impl::print()
+{
+    static Eigen::IOFormat octaveFmt =
+    Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]");
     
     auto camera = scene->getCamera();
     if (camera && camera->camera()) {
-        auto v = p;
-        std::cout << "Point: " << v.format(octaveFmt) << "\n";
-        std::cout << "ModelView Matrix: " << camera->camera()->modelView().format(octaveFmt) << "\n";
+        //camera->transform() *= Eigen::Translation3f(delta);
+        auto v = Vector4(0,0,0,1);
+        std::cout << "Point: \n" << v.format(octaveFmt) << "\n";
+        std::cout << "ModelView Matrix: \n" << camera->camera()->modelView().format(octaveFmt) << "\n";
         v = camera->camera()->modelView() * v;
         if  ((v[3] < -0.00001f) || (v[3] > .00001f)) {
             v / v.w();
         }
-        std::cout << "v*M: " << v.format(octaveFmt) << "\n";
-        std::cout << "Projection Matrix: " << camera->camera()->projection().format(octaveFmt) << "\n";
+        std::cout << "v*M:\n" << v.format(octaveFmt) << "\n";
+        std::cout << "Projection Matrix: \n" << camera->camera()->projection().format(octaveFmt) << "\n";
         v = camera->camera()->projection() * v;
         if  ((v[3] < -0.00001f) || (v[3] > .00001f)) {
             v / v.w();
         }
-        std::cout << "v*P: " << v.format(octaveFmt) << "\n";
+        std::cout << "v*P: \n" << v.format(octaveFmt) << "\n";
+        std::cout << "Viewport Matrix: \n" << camera->camera()->viewport().format(octaveFmt) << "\n";
         v = camera->camera()->viewport() * v;
-        std::cout << "Viewport P: " << v.format(octaveFmt) << "\n";
+        std::cout << "Viewport P: \n" << v.format(octaveFmt) << "\n";
         
     }
 }
