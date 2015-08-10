@@ -40,6 +40,10 @@ PrimitiveFactory<GpuSubdivision>::createBox() {
     vertexID[1] = surface->addVertex(Point3( hw, hh,-hd));
     vertexID[2] = surface->addVertex(Point3( hw,-hh,-hd));
     vertexID[3] = surface->addVertex(Point3(-hw,-hh,-hd));
+    static_cast<Vertex*>(surface->vertex(vertexID[0]))->normal() = Vector3(-hw, hh,-hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[1]))->normal() = Vector3( hw, hh,-hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[2]))->normal() = Vector3( hw,-hh,-hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[3]))->normal() = Vector3(-hw,-hh,-hd).normalized();
     static_cast<Vertex*>(surface->vertex(vertexID[0]))->texcoords() = Point2(0,0);
     static_cast<Vertex*>(surface->vertex(vertexID[1]))->texcoords() = Point2(1,0);
     static_cast<Vertex*>(surface->vertex(vertexID[2]))->texcoords() = Point2(1,1);
@@ -49,6 +53,10 @@ PrimitiveFactory<GpuSubdivision>::createBox() {
     vertexID[5] = surface->addVertex(Point3( hw, hh, hd));
     vertexID[6] = surface->addVertex(Point3( hw,-hh, hd));
     vertexID[7] = surface->addVertex(Point3(-hw,-hh, hd));
+    static_cast<Vertex*>(surface->vertex(vertexID[4]))->normal() = Vector3(-hw, hh, hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[5]))->normal() = Vector3( hw, hh, hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[6]))->normal() = Vector3( hw,-hh, hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[7]))->normal() = Vector3(-hw,-hh, hd).normalized();
     static_cast<Vertex*>(surface->vertex(vertexID[4]))->texcoords() = Point2(0,0);
     static_cast<Vertex*>(surface->vertex(vertexID[5]))->texcoords() = Point2(1,0);
     static_cast<Vertex*>(surface->vertex(vertexID[6]))->texcoords() = Point2(1,1);
@@ -108,6 +116,10 @@ PrimitiveFactory<Subdivision>::createBox() {
     vertexID[1] = surface->addVertex(Point3( hw, hh,-hd));
     vertexID[2] = surface->addVertex(Point3( hw,-hh,-hd));
     vertexID[3] = surface->addVertex(Point3(-hw,-hh,-hd));
+    static_cast<Vertex*>(surface->vertex(vertexID[0]))->normal() = Vector3(-hw, hh,-hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[1]))->normal() = Vector3( hw, hh,-hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[2]))->normal() = Vector3( hw,-hh,-hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[3]))->normal() = Vector3(-hw,-hh,-hd).normalized();
     static_cast<Vertex*>(surface->vertex(vertexID[0]))->texcoords() = Point2(0,0);
     static_cast<Vertex*>(surface->vertex(vertexID[1]))->texcoords() = Point2(1,0);
     static_cast<Vertex*>(surface->vertex(vertexID[2]))->texcoords() = Point2(1,1);
@@ -117,6 +129,10 @@ PrimitiveFactory<Subdivision>::createBox() {
     vertexID[5] = surface->addVertex(Point3( hw, hh, hd));
     vertexID[6] = surface->addVertex(Point3( hw,-hh, hd));
     vertexID[7] = surface->addVertex(Point3(-hw,-hh, hd));
+    static_cast<Vertex*>(surface->vertex(vertexID[4]))->normal() = Vector3(-hw, hh, hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[5]))->normal() = Vector3( hw, hh, hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[6]))->normal() = Vector3( hw,-hh, hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[7]))->normal() = Vector3(-hw,-hh, hd).normalized();
     static_cast<Vertex*>(surface->vertex(vertexID[4]))->texcoords() = Point2(0,0);
     static_cast<Vertex*>(surface->vertex(vertexID[5]))->texcoords() = Point2(1,0);
     static_cast<Vertex*>(surface->vertex(vertexID[6]))->texcoords() = Point2(1,1);

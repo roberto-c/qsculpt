@@ -43,6 +43,10 @@ void Box::initPoints()
     vertexID[1] = addVertex(Point3( hw, hh,-hd));
     vertexID[2] = addVertex(Point3( hw,-hh,-hd));
     vertexID[3] = addVertex(Point3(-hw,-hh,-hd));
+    vertex(vertexID[0])->cast<const Vertex*>()->normal() = Vector3(-hw, hh,-hd).normalized();
+    vertex(vertexID[1])->cast<const Vertex*>()->normal() = Vector3( hw, hh,-hd).normalized();
+    vertex(vertexID[2])->cast<const Vertex*>()->normal() = Vector3( hw,-hh,-hd).normalized();
+    vertex(vertexID[3])->cast<const Vertex*>()->normal() = Vector3(-hw,-hh,-hd).normalized();
     vertex(vertexID[0])->cast<const Vertex*>()->texcoords() = Point2(0,0);
     vertex(vertexID[1])->cast<const Vertex*>()->texcoords() = Point2(1,0);
     vertex(vertexID[2])->cast<const Vertex*>()->texcoords() = Point2(1,1);
@@ -52,6 +56,10 @@ void Box::initPoints()
     vertexID[5] = addVertex(Point3( hw, hh, hd));
     vertexID[6] = addVertex(Point3( hw,-hh, hd));
     vertexID[7] = addVertex(Point3(-hw,-hh, hd));
+    vertex(vertexID[4])->cast<const Vertex*>()->normal() = Vector3(-hw, hh, hd).normalized();
+    vertex(vertexID[5])->cast<const Vertex*>()->normal() = Vector3( hw, hh, hd).normalized();
+    vertex(vertexID[6])->cast<const Vertex*>()->normal() = Vector3( hw,-hh, hd).normalized();
+    vertex(vertexID[7])->cast<const Vertex*>()->normal() = Vector3(-hw,-hh, hd).normalized();
     vertex(vertexID[4])->cast<const Vertex*>()->texcoords() = Point2(0,0);
     vertex(vertexID[5])->cast<const Vertex*>()->texcoords() = Point2(1,0);
     vertex(vertexID[6])->cast<const Vertex*>()->texcoords() = Point2(1,1);

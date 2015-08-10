@@ -483,7 +483,7 @@ void TestApp::Impl::setupScene() {
         std::dynamic_pointer_cast<CameraNode>(node)->setCamera(cam);
         scene->add(node);
         node->transform() *= Eigen::Translation3f(0,0,3.0);
-        cam->setPerspectiveMatrix(45.0f, 1280.0f/720.0f, 0.01f, 10.0f);
+        cam->setPerspectiveMatrix(45.0f, 1280.0f/720.0f, 0.01f, 100.0f);
         cam->setTargetPoint(Point3(0,0,1));
         cam->setPosition(Point3(0,0,0));
         cam->setOrientationVector(Point3(0,1,0));
@@ -511,7 +511,7 @@ void TestApp::Impl::setupMaterial()
         render.setGLTexDest(glTexture2);
 		
         material3->load();
-        material3->setDiffuse (Color(1.0f, 0.4f, 0.8f, 1.0f));
+        material3->setDiffuse (Color(1.0f, 1.0f, 1.0f, 1.0f));
         material3->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
         material3->setAmbient (Color(0.1f, 0.1f, 0.1f, 1.0f));
         material3->setExponent(200);
