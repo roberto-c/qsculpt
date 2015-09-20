@@ -12,12 +12,7 @@
 #include <PlastilinaCore/IRenderer.h>
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 
-class Vertex;
-class Edge;
-class Face;
-class Mesh;
 class VertexBuffer;
-class SmoothVtxStruct;
 
 class PointCloudRenderable : public IRenderable
 {

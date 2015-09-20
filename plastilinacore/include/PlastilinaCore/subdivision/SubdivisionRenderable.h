@@ -18,7 +18,8 @@ class VertexBuffer;
 struct SmoothVtxStruct;
 
 class SubdivisionRenderable : public IRenderable
-{	
+{
+
 public:
 	SubdivisionRenderable(const Subdivision * surface);
 	
@@ -54,13 +55,13 @@ private:
 	 */
 	void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) const;
     
-    bool processPolygon(const Face & f,
+    bool processPolygon(const core::subdivision::Face & f,
                         std::vector<SmoothVtxStruct> & buffer,
                         size_t & pos) const;
     
-    bool processTriangle(const Vertex & v1,
-                         const Vertex & v2,
-                         const Vertex & v3,
+    bool processTriangle(const core::subdivision::Vertex & v1,
+                         const core::subdivision::Vertex & v2,
+                         const core::subdivision::Vertex & v3,
                          std::vector<SmoothVtxStruct> & buffer,
                          size_t & pos) const;
 };

@@ -36,6 +36,9 @@
 
 #define BO_POOL_NAME "PointRendererPool"
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 struct PointVtxStruct
 {
     GLfloat v[4];

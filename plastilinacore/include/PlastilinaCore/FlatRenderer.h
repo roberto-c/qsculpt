@@ -4,7 +4,6 @@
 #include <PlastilinaCore/IRenderer.h>
 
 class VertexBuffer;
-class Face;
 class GlslProgram;
 
 class FlatRenderer : public IRenderer

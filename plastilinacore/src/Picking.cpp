@@ -33,6 +33,9 @@
 #define BO_POOL_NAME			"ObjectPickingPool"
 #define BO_VERTEX_POOL_NAME		"VertexPickingPool"
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 char* intToHexStr(unsigned int d);
 
 typedef struct tagVertexStruct {

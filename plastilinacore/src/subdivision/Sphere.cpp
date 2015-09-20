@@ -21,6 +21,9 @@
 #include <PlastilinaCore/subdivision/Sphere.h>
 #include <math.h>
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 Sphere::Sphere()
     : Subdivision(),
     m_pquadratic(0)

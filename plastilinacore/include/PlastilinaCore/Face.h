@@ -13,7 +13,6 @@
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/IIterator.h>
 
-class Edge;
 class EdgeHandle;
 class ISurface;
 
@@ -26,6 +25,15 @@ enum FaceFlags {
     FF_All      = 0xFFFFFFFF
 };
 
+enum class FaceHandleType
+{
+    NULLTYPE = 0,
+    DEFAULT,
+    GPUSUBDIVISION,
+    
+    MAX = 255
+};
+
 class FaceHandle {
 public:
     typedef FaceHandle* 		shared_ptr;
@@ -34,11 +42,32 @@ public:
     typedef uint32_t 			size_t;
     size_t _id;
     
+    FaceHandle(FaceHandleType type = FaceHandleType::NULLTYPE)
+    : _id( 0 | ((int)type << 24) )
+    {}
+    
+    FaceHandle(const FaceHandle&) = default;
+    
+    FaceHandle(FaceHandle&&) = default;
+    
+    uint8_t type() const { return _id >> 24; }
+    size_t 	iid() const { return _id & 0xFFFFFF; }
+    
+    void    setIid(size_t iid) {
+        _id = (_id & 0xFF000000) | (iid & 0xFFFFFF);
+    }
+    
     template<typename T>
     T & cast() const {
         return static_cast<T>(*this);
     }
 };
+
+namespace core
+{
+namespace subdivision
+{
+class Edge;
 
 /**
  * Face class. This class contains references to points that should
@@ -90,11 +119,6 @@ public:
      * Get the hash code for this instance
      */
     inline unsigned long hashCode() const;
-
-    /**
-     * Gets the instance id of the vertex.
-     */
-    size_t iid() const { return _id; }
 
     /**
      * Set / get attribute flags to the face.
@@ -218,5 +242,8 @@ protected:
     friend class VertexIterator;
     friend class EdgeIterator;
 };
+
+}; // namespace subdivision
+}; // namespace core
 
 #endif

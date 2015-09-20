@@ -9,12 +9,19 @@
 #ifndef HEDGE_H_
 #define HEDGE_H_
 
-class Vertex;
-
 #include <atomic>
 #include <PlastilinaCore/IIterator.h>
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/Face.h>
+
+enum class EdgeHandleType
+{
+    NULLTYPE = 0,
+    DEFAULT,
+    GPUSUBDIVISION,
+    
+    MAX = 255
+};
 
 class EdgeHandle {
 public:
@@ -25,10 +32,17 @@ public:
     
     size_t _id;
     
-    uint8_t type() const { return _id >> 24; }
-    size_t 	iid() const { return _id; }
+    EdgeHandle(EdgeHandleType type = EdgeHandleType::NULLTYPE) : _id(0 | ((int)type << 24))
+    {}
     
-    void    setIid(size_t iid) { _id = iid & 0xFFFFFF;}
+    EdgeHandle(const EdgeHandle&) = default;
+    
+    EdgeHandle(EdgeHandle&&) = default;
+    
+    uint8_t type() const { return _id >> 24; }
+    size_t 	iid() const { return _id & 0xFFFFFF; }
+    
+    void setIid(size_t iid) { _id = (_id & 0xFF000000) | (iid & 0xFFFFFF);}
     
     template<typename T>
     T & cast() const {
@@ -45,6 +59,13 @@ enum EdgeFlags {
     EF_User2    = 0x00200000,  /*< Reserved to use for the user*/
     EF_All      = 0xFFFFFFFF
 };
+
+namespace core
+{
+namespace subdivision
+{
+class Vertex;
+class Face;
 
 class Edge : public EdgeHandle {
 public:
@@ -178,5 +199,8 @@ struct EdgePtrComparator2
         //return (*_e) == (*e);
     }
 };
+
+} // namespace subdivision
+} // namespace core
 
 #endif

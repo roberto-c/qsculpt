@@ -42,11 +42,15 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
+using core::subdivision::Vertex;
+using core::subdivision::Edge;
+using core::subdivision::Face;
+
 typedef std::pair<VertexHandle::size_t, VertexHandle::size_t> VtxPair;
-typedef std::unordered_map<VertexHandle::size_t, ::Vertex*>   VertexCollection;
-typedef std::unordered_map<EdgeHandle::size_t, ::Edge*>       EdgesCollection;
+typedef std::unordered_map<VertexHandle::size_t, Vertex*>   VertexCollection;
+typedef std::unordered_map<EdgeHandle::size_t, Edge*>       EdgesCollection;
 typedef std::unordered_map<VtxPair, EdgeHandle::size_t>       VtxPairEdgeMap;
-typedef std::map<FaceHandle::size_t, ::Face*>                 FacesCollection;
+typedef std::map<FaceHandle::size_t, Face*>                 FacesCollection;
 
 
 struct VertexPool {

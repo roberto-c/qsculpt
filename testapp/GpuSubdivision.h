@@ -16,11 +16,84 @@
 #include <PlastilinaCore/IRenderer.h>
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/geometry/Aabb.h>
+#include <PlastilinaCore/opencl/ClUtils.h>
 
-class Vertex;
-class Edge;
-class SubdivisionScheme;
 class Mesh;
+
+namespace core
+{
+namespace gpusubdivision
+{
+    
+    struct Vertex : public VertexHandle {
+        typedef Vertex* shared_ptr;
+        
+        cl_float4 	p;
+        cl_float4 	n;
+        cl_float4 	c;
+        cl_float2   t;
+        cl_uint edgeIid;
+        cl_uint faceIid;
+        
+        Vertex()
+        : VertexHandle(VertexHandleType::GPUSUBDIVISION)
+        , p(), n(), c(), t(), edgeIid(-1), faceIid(-1)
+        {}
+        Vertex(const Vertex&) = default;
+        Vertex(Vertex&&) = default;
+    };
+    
+    struct Edge : public EdgeHandle {
+        typedef Edge* shared_ptr;
+        
+        cl_uint	edgePairIid;
+        cl_uint edgeNextIid;
+        cl_uint vertexHeadIid;
+        cl_uint faceIid;
+        
+        Edge()
+        : EdgeHandle(EdgeHandleType::GPUSUBDIVISION)
+        , edgePairIid(-1), edgeNextIid(-1), vertexHeadIid(-1), faceIid(-1)
+        {}
+    };
+    
+    struct Face : public FaceHandle {
+        typedef Face* shared_ptr;
+        
+        cl_uint edgeIid;
+        
+        Face()
+        : FaceHandle(FaceHandleType::GPUSUBDIVISION)
+        , edgeIid(-1)
+        {}
+        
+        /**
+         * Gets an iterator object to traverse all the vertices that form part
+         * of this face.
+         */
+        Iterator<VertexHandle> vertexIterator();
+
+        /**
+         * Gets an iterator object to traverse all the vertices that form part
+         * of this face.
+         */
+        Iterator<VertexHandle> constVertexIterator() const;
+
+        /**
+         * Gets an iterator object to traverse all the edges that form part
+         * of this face.
+         */
+        Iterator<EdgeHandle> edgeIterator();
+
+        /**
+         * Gets an iterator object to traverse all the edges that form part
+         * of this face.
+         */
+        Iterator<EdgeHandle> constEdgeIterator() const;
+
+    };
+};
+};
 
 namespace core {
     class GpuSubdivision : public ISurface

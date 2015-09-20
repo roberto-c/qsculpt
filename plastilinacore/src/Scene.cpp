@@ -38,6 +38,10 @@
 #include <PlastilinaCore/RenderState.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 
+
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 //namespace  {
     struct CenterMassFn {
         Vector3 operator()(SceneNode::weak_ptr) {

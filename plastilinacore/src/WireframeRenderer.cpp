@@ -11,6 +11,9 @@
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 #define BO_POOL_NAME "WireframeRendererPool"
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 static Eigen::Vector4f g_selectedColor(1.0f, 0.0f, 0.0f, 1.0f);
 static Eigen::Vector4f g_normalColor(0.8f, 0.8f, 0.8f, 1.0f);
 

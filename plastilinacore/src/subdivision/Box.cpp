@@ -21,6 +21,9 @@
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/subdivision/Box.h>
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 Box::Box()
     : Subdivision()
 {

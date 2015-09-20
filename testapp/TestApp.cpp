@@ -65,6 +65,7 @@
 #include "ClStlAllocator.h"
 #include "TestMaterial.h"
 #include "PrimitiveFactory.h"
+#include "SubdivisionTest.h"
 
 std::string get_app_path() {
     std::vector<char> exepath;
@@ -150,19 +151,6 @@ TestApp::TestApp(int argc, char** argv)
 TestApp::~TestApp() {
     
 }
-
-int testfunc(int x, int y) {
-    return 2 + x + y;
-}
-
-struct testfunctor : public std::binary_function<int, int, int> {
-    std::string name;
-    testfunctor(const std::string & name = "") : name(name) {};
-    int operator()(int x, int y) {
-        std::cout << "name: " << name << "\n";
-        return 4 + x + y;
-    }
-};
 
 int TestApp::run() {
     if (!d->initialized) {
@@ -279,43 +267,15 @@ void TestApp::keyboard(int key, int x, int y)
     }
 }
 
-struct vertex_t {
-    uint32_t iid;
-    
-    vertex_t() : iid(0)
-    {}
-};
-
-struct myvertex : public vertex_t {
-    float	p[4];
-    float 	n[4];
-    float 	c[4];
-    
-    myvertex() : p{0.f}
-    {}
-};
-
-vertex_t* vertex_new() {
-    myvertex* t = new myvertex();
-    return t;
-}
-
 void TestApp::init(int argc, char** argv) {
     d->initialized = false;
+    
+    SubdivisionTest test;
+    test.run();
 
 	std::string app_path = get_app_path();
 	std::cout << "App path: " << app_path << std::endl;
 	ResourcesManager rscMgr;
-	
-    std::vector<cl_uint> v1;
-    std::vector<cl_uint, core::cl::allocator<cl_uint> > v2;
-    v1.reserve(10);
-    v2.reserve(10);
-    std::cout << "Sizeof v1: " << sizeof(v1) << "\n";
-    std::cout << "Sizeof v2: " << sizeof(v2) << "\n";
-    
-    vertex_t* v = vertex_new();
-    std::cout << "IID: " << v->iid << "\n";
     
     /* Initialize SDL's Video subsystem */
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {

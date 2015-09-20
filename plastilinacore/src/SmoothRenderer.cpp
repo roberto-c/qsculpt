@@ -30,6 +30,9 @@
 
 #define BO_POOL_NAME "SmoothRendererPool"
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 typedef struct tagSmoothVtxStruct
 {
     GLfloat v[4];

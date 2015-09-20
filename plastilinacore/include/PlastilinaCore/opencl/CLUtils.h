@@ -10,6 +10,7 @@
 #define _CLUtils_h
 
 #include "cl.hpp"
+#include <PlastilinaCore/Utilities.h>
 
 namespace opencl {
 	std::string loadFromFile(const std::string & filename);

@@ -31,6 +31,9 @@
 #define BO_POOL_NAME "PickingVertexRendererPool"
 #define BO_FLAT_POOL_NAME "PickingVertexRendererPool_Flat"
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 typedef struct tagVtxStruct 
 {
     GLfloat v[4];

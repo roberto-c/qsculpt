@@ -28,4 +28,20 @@ namespace utils {
     };
 };
 
+namespace core
+{
+namespace utils
+{
+template<typename TO, typename FROM>
+void convert_to(const FROM & from, TO & to);
+
+template<typename TO, typename FROM>
+TO convert_to(const FROM & d) {
+    TO v;
+    convert_to<TO>(d, v);
+    return v;
+}
+}; // namespace utils
+}; // namespace core
+
 #endif

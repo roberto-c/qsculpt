@@ -12,17 +12,15 @@
 #include "PlastilinaCore/Document.h"
 
 class SubdivisionTest {
-    Document::shared_ptr    doc;
-    
-    SurfaceNode::shared_ptr node1;
-    
-    int setup();
-    
-    int test();
-    
-    int cleanup();
+    struct Impl;
+    std::unique_ptr<Impl> d_;
     
 public:
+    
+    SubdivisionTest();
+    
+    virtual ~SubdivisionTest();
+    
     int run();
 };
 

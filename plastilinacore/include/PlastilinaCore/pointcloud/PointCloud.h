@@ -55,7 +55,7 @@ public:
     virtual void replaceFace(FaceHandle::size_t index, const std::vector<VertexHandle::size_t>& vertexIndexList);
     virtual void removeFace( FaceHandle::size_t id);
     virtual FaceHandle::size_t numFaces() const;
-    virtual FaceHandle* face(Face::size_t index);
+    virtual FaceHandle* face(FaceHandle::size_t index);
     virtual FaceHandle::size_t getFaceIndexAtPoint(const Point3& p) const;
     virtual VertexHandle::size_t getClosestPointAtPoint(const Point3 &p) const;
     virtual std::vector<VertexHandle::size_t> getPointsInRadius(const Point3 &p, float radius) const;
