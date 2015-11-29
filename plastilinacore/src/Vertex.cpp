@@ -6,8 +6,6 @@
  *  Copyright 2010 __MyCompanyName__. All rights reserved.
  *
  */
-
-
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/HEdge.h>

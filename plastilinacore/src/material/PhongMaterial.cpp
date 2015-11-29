@@ -5,7 +5,7 @@
 //  Created by Juan Roberto Cabral Flores on 8/5/12.
 //  Copyright (c) 2012 Juan Roberto Cabral Flores. All rights reserved.
 //
-
+#include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/material/PhongMaterial.h>
 
 #include <PlastilinaCore/Camera.h>

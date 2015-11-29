@@ -163,8 +163,8 @@ find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(ASSIMP REQUIRED)
-target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
-target_link_libraries(PlastilinaCore ${OPENCL_LIBRARIES})
+target_link_libraries(PlastilinaCore ${OpenGL_LIBRARIES})
+target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
 
@@ -184,7 +184,7 @@ find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 include_directories(include 
 	${EIGEN_INCLUDE_DIRS} 
 	../thirdparty/OpenCL
-	${OPENCL_INCLUDE_DIRS}
+	${OpenCL_INCLUDE_DIRS}
 	${ASSIMP_INCLUDE_DIRS}
 	)
 	
@@ -216,6 +216,10 @@ if (APPLE)
 	target_link_libraries(PlastilinaCore ${FOUNDATION_LIBRARIES})
 	target_link_libraries(PlastilinaCore ${COCOA_LIBRARIES})
 elseif (UNIX)
+	set_property(TARGET PlastilinaCore 
+		PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+	)
+elseif (WIN32)
 	set_property(TARGET PlastilinaCore 
 		PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)

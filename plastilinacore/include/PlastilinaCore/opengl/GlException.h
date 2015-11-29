@@ -11,6 +11,7 @@
 
 #include <exception>
 #include <stdexcept>
+#include "OpenGL.h"
 
 namespace core {
     class GlException : public std::exception 

@@ -5,6 +5,7 @@
 //  Created by Juan Cabral on 7/5/12.
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
+#include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/Plastilina.h>
 #include <iostream>
 

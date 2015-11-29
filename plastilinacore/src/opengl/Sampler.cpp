@@ -5,7 +5,7 @@
 //  Created by Juan Roberto Cabral Flores on 11/2/13.
 //
 //
-
+#include <PlastilinaCore/Stable.h>
 #include "PlastilinaCore/opengl/Sampler.h"
 
 
