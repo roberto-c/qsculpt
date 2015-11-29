@@ -16,7 +16,7 @@ namespace opengl {
     VertexArrayObject::VertexArrayObject()
     {
         glGenVertexArrays(1, &vao_);
-        THROW_IF_GLERROR(__PRETTY_FUNCTION__);
+        THROW_IF_GLERROR("VertexArrayObject");
     }
     
     VertexArrayObject::~VertexArrayObject()
@@ -33,7 +33,7 @@ namespace opengl {
     void VertexArrayObject::bind() const
     {
         glBindVertexArray(vao_);
-        THROW_IF_GLERROR(__PRETTY_FUNCTION__);
+        THROW_IF_GLERROR("VertexArrayObject::bind");
     }
     
     void VertexArrayObject::release() const

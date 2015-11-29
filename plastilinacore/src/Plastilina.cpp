@@ -22,7 +22,9 @@
 #include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 
-#include <CoreFoundation/CoreFoundation.h>
+#ifdef __APPLE__
+	#include <CoreFoundation/CoreFoundation.h>
+#endif
 
 struct PlastilinaEngineState {
     std::shared_ptr<core::Context>	defaultctx;

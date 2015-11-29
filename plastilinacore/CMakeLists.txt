@@ -65,6 +65,8 @@ if (APPLE)
 	                            COMPILE_FLAGS "-x objective-c++")
 elseif(UNIX)
 	set(PLASTILINACORE_SOURCES ./src/Context_unix.cpp)
+elseif(WIN32)
+	set(PLASTILINACORE_SOURCES ./src/Context_win32.cpp)
 endif()
 
 # Public headers. These headers are meant to be distributed to users of the engine
@@ -163,7 +165,7 @@ find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(ASSIMP REQUIRED)
-target_link_libraries(PlastilinaCore ${OpenGL_LIBRARIES})
+target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
@@ -184,6 +186,7 @@ find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 include_directories(include 
 	${EIGEN_INCLUDE_DIRS} 
 	../thirdparty/OpenCL
+	${OPENGL_INCLUDE_DIRS}
 	${OpenCL_INCLUDE_DIRS}
 	${ASSIMP_INCLUDE_DIRS}
 	)

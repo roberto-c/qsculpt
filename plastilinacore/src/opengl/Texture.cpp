@@ -96,6 +96,20 @@ void Texture<TextureTarget>::setParameter(GLenum pname, GLint value)
 	glTexParameteri(TextureTarget, pname, value);
 }
 
+template <int TextureTarget>
+void Texture<TextureTarget>::setInternalFormat(GLint format, GLenum pname, GLint value)
+{
+    NOT_IMPLEMENTED
+}
+
+template <int TextureTarget>
+GLint Texture<TextureTarget>::internalFormat(GLint format, GLenum pname) const
+{
+    NOT_IMPLEMENTED;
+    return GL_NONE;
+}
+
+
 // instantiate Texture<GL_TEXTURE_2D>
 template class Texture<GL_TEXTURE_2D>;
 

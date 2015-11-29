@@ -21,7 +21,7 @@
 //    return qHash(v.first ^ (v.second << 8));
 //}
 
-__thread static void * logptr = 0;
+THREAD static void * logptr = 0;
 
 struct Log{
     std::string indent;

@@ -39,13 +39,13 @@ struct SceneNode::Impl {
     
     Impl(const std::string & name, NodeType nodeType = NT_Normal) :
      iid(0), nodeType(nodeType), isSelected(false),name(name),
-    	octaveFmt(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]")
+        octaveFmt(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]")
     {
-        std::cerr << __PRETTY_FUNCTION__ << std::endl;
+        TRACEFUNCTION("");
     }
     
     ~Impl() {
-        std::cerr << __PRETTY_FUNCTION__ << std::endl;
+        TRACEFUNCTION("");
     }
     
     void dump(int indent = 0) const {
@@ -317,7 +317,7 @@ bool SceneNode::SceneNodeTreeIterator::seek(int pos, IteratorOrigin origin) cons
 SceneNode::SceneNode(const std::string& name)
 : _d(new Impl(name))
 {
-	std::cerr << __PRETTY_FUNCTION__ << " Name : " << name.c_str() << std::endl;
+    TRACEFUNCTION(("Name : " + name));
     _d->iid = NEXTID.fetch_add(1);
     
     _d->transform = Eigen::Affine3f::Identity();
@@ -326,7 +326,7 @@ SceneNode::SceneNode(const std::string& name)
 SceneNode::SceneNode(const std::string & name, NodeType nodeType)
 : _d(new Impl(name, nodeType))
 {
-    std::cerr << __PRETTY_FUNCTION__ << " Name : " << name.c_str() << std::endl;
+    TRACEFUNCTION(("Name : " + name));
     _d->iid = NEXTID.fetch_add(1);
     
     _d->transform = Eigen::Affine3f::Identity();
@@ -334,7 +334,7 @@ SceneNode::SceneNode(const std::string & name, NodeType nodeType)
 
 SceneNode::~SceneNode()
 {
-    std::cerr << __PRETTY_FUNCTION__ << " Name : " << name().c_str() << std::endl;
+    TRACEFUNCTION(("Name : " + name()));
 }
 
 uint32_t SceneNode::iid() const { 
@@ -619,7 +619,7 @@ void SurfaceNode::setMaterial(const std::shared_ptr<Material> & mat)
 
 void SurfaceNode::render(const RenderState * state) const
 {
-	this->surface_->renderable()->render(state);
+    this->surface_->renderable()->render(state);
 }
 
 LightNode::LightNode(const std::string & name)

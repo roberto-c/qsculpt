@@ -56,6 +56,12 @@
 #define OBJC_CLASS(name) typedef struct objc_object name
 #endif
 
+#ifdef _MSC_VER
+#define THREAD __declspec(thread)
+#else
+#define THREAD __thread
+#endif
+
 namespace Eigen {
     typedef Affine3f Transform3f;    
 };

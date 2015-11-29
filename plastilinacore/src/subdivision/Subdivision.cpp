@@ -18,9 +18,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#define __CL_ENABLE_EXCEPTIONS
-#include <OpenCL/opencl.h>
-#include "cl.hpp"
+#include <PlastilinaCore/Plastilina.h>
+#include <PlastilinaCore/opencl/OCLManager.h>
+
 #include <math.h>
 #include <Eigen/Core>
 #include <map>
@@ -54,31 +54,31 @@ typedef std::unordered_map<EdgeHandle::size_t, Edge*>       EdgesCollection;
 typedef std::unordered_map<VtxPair, EdgeHandle::size_t>     VtxPairEdgeMap;
 typedef std::map<FaceHandle::size_t, Face*>                 FacesCollection;
 
+namespace {
+    struct VertexPool {
+        std::vector<size_t> free;
+        std::vector<Vertex> element;
 
-struct VertexPool {
-    std::vector<size_t> free;
-    std::vector<Vertex> element;
-    
-    VertexPool();
-    
-    Vertex * allocate(const Point3 & p);
-    void delloacate(Vertex * ptr);
-};
+        VertexPool();
 
-VertexPool::VertexPool() {
-    element.reserve(1000);
+        Vertex * allocate(const Point3 & p);
+        void delloacate(Vertex * ptr);
+    };
+
+    VertexPool::VertexPool() {
+        element.reserve(1000);
+    }
+
+    Vertex * VertexPool::allocate(const Point3 &p) {
+        element.insert(element.end(), p);
+        return &element.at(element.size() - 1);
+        //return new Vertex(p);
+    }
+
+    void VertexPool::delloacate(Vertex *ptr) {
+        //delete ptr;
+    }
 }
-
-Vertex * VertexPool::allocate(const Point3 &p) {
-    element.insert(element.end(), p);
-    return &element.at(element.size() - 1);
-    //return new Vertex(p);
-}
-
-void VertexPool::delloacate(Vertex *ptr) {
-    //delete ptr;
-}
-
 struct EdgePool {
     std::vector<size_t> free;
     std::vector<Edge> element;
@@ -818,7 +818,7 @@ FaceHandle::size_t Subdivision::getFaceIndexAtPoint(const Point3& /*p*/) const
 
 VertexHandle::size_t Subdivision::getClosestPointAtPoint(const Point3 & p) const
 {
-    float d = MAXFLOAT;
+    float d = std::numeric_limits<float>::max();
     Vertex::shared_ptr vtx = nullptr, tmpVtx = nullptr;
     Point3 v;
     Iterator<VertexHandle> it = constVertexIterator();

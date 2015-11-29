@@ -93,7 +93,8 @@ std::string ResourcesManager::findResourcePath(const std::string name,
 }
 #else
 std::string ResourcesManager::findResourcePath(const std::string name,
-											   const std::string type)
+    const std::string type,
+    const std::string subdir)
 {
 	NOT_IMPLEMENTED;
 	

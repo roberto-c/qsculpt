@@ -70,9 +70,9 @@ public:
      */
     void unbind();
 
-	void setInternalFormat(GLint format);
+	void setInternalFormat(GLint format, GLenum pname, GLint value);
 	
-	GLint internalFormat() const;
+	GLint internalFormat(GLint format, GLenum pname) const;
 	
     void setParameter(GLenum pname, GLint value);
     
