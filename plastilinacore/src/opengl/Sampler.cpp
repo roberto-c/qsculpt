@@ -28,11 +28,11 @@ void gl::Sampler::bind(GLuint unit)
 }
 		
 		
-void gl::Sampler::create(uint num, uint * samplers)
+void gl::Sampler::create(uint32_t num, uint32_t * samplers)
 {
 	glGenSamplers(num, samplers);
 }
-void gl::Sampler::destroy(uint num, uint * samplers)
+void gl::Sampler::destroy(uint32_t num, uint32_t * samplers)
 {
 	glDeleteSamplers(num, samplers);
 }

@@ -353,7 +353,7 @@ size_t Document::childrenCount ( const SceneNode::shared_ptr & parent ) const
     return ret;
 }
 
-SceneNode::shared_ptr Document::findItem(uint iid) 
+SceneNode::shared_ptr Document::findItem(uint32_t iid) 
 {
     TRACEFUNCTION();
     //std::cerr << "Arg1: " << iid;

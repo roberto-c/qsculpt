@@ -60,7 +60,7 @@ public:
     
     virtual ~SceneNode();
     
-    uint iid() const;
+    uint32_t iid() const;
     
     virtual NodeType nodeType() const { return NT_Normal; }
     
@@ -152,7 +152,7 @@ public:
     /**
      * Removed the node with an instance id of iid.
      */
-    void remove(uint iid);
+    void remove(uint32_t iid);
     
     /**
      * Returns the number of children nodes that this node has.
@@ -177,7 +177,7 @@ public:
      *
      * @return true if node found, otherwise, false.
      */
-    bool itemIndexFromIid(uint childIID, size_t * index) const; 
+    bool itemIndexFromIid(uint32_t childIID, size_t * index) const; 
     
     /**
      *

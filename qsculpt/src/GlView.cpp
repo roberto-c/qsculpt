@@ -93,7 +93,7 @@ struct GlCanvas::Impl {
     QImage              cursorImage;
     QPen                pen;
     QBrush              brush;
-    uint                flags;
+    uint32_t                flags;
     
     Impl() : isGridVisible(false),
     areNormalsVisible(false),
@@ -760,7 +760,7 @@ Color GlCanvas::color(int x, int y)
     return Color::fromUintRGBA(colorUint(x, y));
 }
 
-uint GlCanvas::colorUint(const Point3 & p)
+uint32_t GlCanvas::colorUint(const Point3 & p)
 {
     GLint x = p[0];
     GLint y = p[1];
@@ -768,7 +768,7 @@ uint GlCanvas::colorUint(const Point3 & p)
 }
 
 
-uint GlCanvas::colorUint(int x, int y)
+uint32_t GlCanvas::colorUint(int x, int y)
 {
     GLuint d;
     

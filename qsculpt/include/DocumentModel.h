@@ -45,12 +45,12 @@ public:
      * @param iid Instance ID of the node to look for.
      * @return QModelIndex representing the node.
      */
-    virtual QModelIndex findItemIndex(uint iid) const;
+    virtual QModelIndex findItemIndex(uint32_t iid) const;
     
     /**
      *
      */
-    virtual SceneNode::shared_ptr findItem(uint iid) const;
+    virtual SceneNode::shared_ptr findItem(uint32_t iid) const;
     
     /**
      * Returns the number of columns for this model.

@@ -10,7 +10,7 @@
 
 #include "Stable.h"
 
-//uint qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key)
+//uint32_t qHash(const Eigen::Matrix<float, 3, 1, 2, 3, 1> &key)
 //{
 //	qint16 x = lrintf(key[0] * 1000.0f);
 //	qint16 y = lrintf(key[1] * 1000.0f);
@@ -19,7 +19,7 @@
 //	return qHash(d);
 //}
 //
-//uint qHash(const std::pair<int, int> & v)
+//uint32_t qHash(const std::pair<int, int> & v)
 //{
 //    return qHash(v.first ^ (v.second << 8));
 //}

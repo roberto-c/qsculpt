@@ -70,7 +70,7 @@ public:
     /**
      * Returns the node with the specified instance ID. NULL if not found.
      */
-    SceneNode::shared_ptr findByIID(uint iid) const;
+    SceneNode::shared_ptr findByIID(uint32_t iid) const;
     
 	/**
 	 *

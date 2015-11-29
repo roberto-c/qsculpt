@@ -7,6 +7,7 @@
 //  Created by Juan Roberto Cabral Flores on 8/2/11.
 //  Copyright 2011 plastilinaware. All rights reserved.
 //
+#include <cstdint>
 #include "Eigen/Core"
 
 class Color {
@@ -36,34 +37,34 @@ public:
     float a() const { return _d.w(); }
     void a(float v) { _d.w() = v; }
     
-    static Color fromUintRGBA(uint color) {
-        Color c = Color(((color & 0xFF000000) >> 24) / 255.0,
-                        ((color & 0x00FF0000) >> 16) / 255.0,
-                        ((color & 0x0000FF00) >>  8) / 255.0,
-                        ((color & 0x000000FF) >>  0) / 255.0);
+    static Color fromUintRGBA(uint32_t color) {
+        Color c = Color(((color & 0xFF000000) >> 24) / 255.0f,
+                        ((color & 0x00FF0000) >> 16) / 255.0f,
+                        ((color & 0x0000FF00) >>  8) / 255.0f,
+                        ((color & 0x000000FF) >>  0) / 255.0f);
         return c;
     }
     
-    static Color fromUintBGRA(uint color) {
-        Color c = Color(((color & 0x0000FF00) >> 8) / 255.0,
-                        ((color & 0x00FF0000) >> 16) / 255.0,
-                        ((color & 0xFF000000) >> 24) / 255.0,
-                        ((color & 0x000000FF) >>  0) / 255.0);
+    static Color fromUintBGRA(uint32_t color) {
+        Color c = Color(((color & 0x0000FF00) >> 8) / 255.0f,
+                        ((color & 0x00FF0000) >> 16) / 255.0f,
+                        ((color & 0xFF000000) >> 24) / 255.0f,
+                        ((color & 0x000000FF) >>  0) / 255.0f);
         return c;
     }
     
-    static Color fromUintRGB(uint color) {
-        Color c = Color(((color & 0xFF000000) >> 24) / 255.0,
-                        ((color & 0x00FF0000) >> 16) / 255.0,
-                        ((color & 0x0000FF00) >>  8) / 255.0,
+    static Color fromUintRGB(uint32_t color) {
+        Color c = Color(((color & 0xFF000000) >> 24) / 255.0f,
+                        ((color & 0x00FF0000) >> 16) / 255.0f,
+                        ((color & 0x0000FF00) >>  8) / 255.0f,
                         1.0f);
         return c;
     }
     
-    static Color fromUintBGR(uint color) {
-        Color c = Color(((color & 0x0000FF00) >> 8) / 255.0,
-                        ((color & 0x00FF0000) >> 16) / 255.0,
-                        ((color & 0xFF000000) >> 24) / 255.0,
+    static Color fromUintBGR(uint32_t color) {
+        Color c = Color(((color & 0x0000FF00) >> 8) / 255.0f,
+                        ((color & 0x00FF0000) >> 16) / 255.0f,
+                        ((color & 0xFF000000) >> 24) / 255.0f,
                         1.0f);
         return c;
     }

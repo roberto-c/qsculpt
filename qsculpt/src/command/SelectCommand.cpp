@@ -87,7 +87,7 @@ void SelectCommand::execute()
     const QString output("\tselected object %1");
     
     bool ok = true;
-    uint iid = 0;
+    uint32_t iid = 0;
     // If the config container has a numeric key, then we assume it was
     // called by the console.
     qDebug() << "SelectCommand execute";

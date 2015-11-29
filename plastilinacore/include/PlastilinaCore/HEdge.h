@@ -147,7 +147,7 @@ private:
 
     friend class VertexIterator;
     friend class HEdgeIterator;
-    friend uint qHash(const Edge&);
+    friend uint32_t qHash(const Edge&);
 };
 
 

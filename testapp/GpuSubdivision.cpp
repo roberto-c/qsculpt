@@ -1092,7 +1092,7 @@ struct clFace {
 };
 
 struct clSurfaceList {
-    uint 					num_polygons;
+    uint32_t 					num_polygons;
     std::vector<clVertex>	vertex;
     std::vector<clEdge>		edge;
     std::vector<clFace>		face;

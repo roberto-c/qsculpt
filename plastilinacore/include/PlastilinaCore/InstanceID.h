@@ -22,13 +22,13 @@
 #define INSTANCEID_H_
 
 class InstanceId {
-    uint _iid;
+    uint32_t _iid;
     
 public:
-    uint iid() const { return iid; };
+    uint32_t iid() const { return iid; };
     
 protected:
-    void setIid(uint iid) { _iid = iid; };
+    void setIid(uint32_t iid) { _iid = iid; };
 };
 
 #endif

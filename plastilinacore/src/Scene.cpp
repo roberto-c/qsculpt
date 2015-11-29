@@ -57,7 +57,7 @@ struct Scene::Impl {
     }
     
     SceneNode::shared_ptr findByIidRecursive(SceneNode::const_shared_ptr root,
-                                             uint IID) const;
+                                             uint32_t IID) const;
 	
 	void renderRecursive(RenderState & state, const SceneNode * root) const;
     
@@ -82,7 +82,7 @@ struct Scene::Impl {
 
 SceneNode::shared_ptr
 Scene::Impl::findByIidRecursive(SceneNode::const_shared_ptr root,
-                                                      uint IID) const
+                                                      uint32_t IID) const
 {
     auto it = root->constIterator();
     while (it.hasNext()) {
@@ -115,18 +115,18 @@ Scene::Impl::renderRecursive(RenderState & state, const SceneNode * root) const
 
 Scene::Scene() : SceneNode(), _d(new Impl())
 {
-	std::cerr << __PRETTY_FUNCTION__ << std::endl;
+	TRACEFUNCTION("");
 }
 
 Scene::Scene(const std::string& name): SceneNode(name.c_str()), _d(new Impl())
 {
-	std::cerr << __PRETTY_FUNCTION__ << " Name: " << name << std::endl;
+	TRACEFUNCTION(("Name: " + name));
 }
 
 
 Scene::~Scene()
 {
-	std::cerr << __PRETTY_FUNCTION__ << " Name: " << name() << std::endl;
+	TRACEFUNCTION("Name: " + name());
 }
 
 UpAxis Scene::upAxis() const
@@ -144,7 +144,7 @@ SceneNode::shared_ptr Scene::findByName(const std::string& name) const
     return NULL;
 }
 
-SceneNode::shared_ptr Scene::findByIID(uint IID) const
+SceneNode::shared_ptr Scene::findByIID(uint32_t IID) const
 {
     auto thisptr = shared_from_this();
     return _d->findByIidRecursive(thisptr, IID);
