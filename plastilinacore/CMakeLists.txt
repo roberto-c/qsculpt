@@ -105,6 +105,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/OctreeNode.h
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/CLUtils.h
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/OCLManager.h
+	${PLASTILINACORE_HEADERS_ROOT}/opencl/OpenCL.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlException.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlslProgram.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlslShader.h
@@ -223,9 +224,7 @@ elseif (UNIX)
 		PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)
 elseif (WIN32)
-	set_property(TARGET PlastilinaCore 
-		PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
-	)
+	
 else()
 	Message("Unsupported platform")		
 endif()
