@@ -38,6 +38,7 @@
 #include <PlastilinaCore/geometry/Aabb.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
+#include <PlastilinaCore/RenderState.h>
 #include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/subdivision/Box.h>
@@ -56,11 +57,48 @@ static std::atomic_int NEXT_ID;
 using core::gpusubdivision::Vertex;
 using core::gpusubdivision::Edge;
 using core::gpusubdivision::Face;
-template<class T> using vector = std::vector<T, core::cl::allocator<T>>;
+using core::gpusubdivision::Triangle;
+template<class T> using vector = std::vector<T, core::cl::gpu_allocator<T>>;
 
 typedef vector<Vertex>  VertexCollection;
 typedef vector<Edge>    EdgesCollection;
 typedef vector<Face>    FacesCollection;
+typedef vector<Triangle> TriangleCollection;
+namespace
+{
+class FaceVertexIterator : public IIterator<VertexHandle>
+{
+    core::GpuSubdivision        *surface;
+    core::gpusubdivision::Face  *face;
+    core::gpusubdivision::Edge  *currentEdge;
+public:
+    FaceVertexIterator(core::GpuSubdivision *surface, Face *face)
+    : surface(surface), face(face), currentEdge(nullptr)
+    {
+        currentEdge = static_cast<Edge*>(surface->edge(face->edgeIid));
+    }
+    
+    IIterator<VertexHandle>* clone() const;
+    
+    bool hasNext() const;
+    
+    bool hasPrevious() const;
+    
+    shared_ptr next();
+    
+    const shared_ptr next() const;
+    
+    shared_ptr peekNext();
+    
+    const shared_ptr peekNext() const ;
+    
+    shared_ptr previous();
+    
+    const shared_ptr previous() const;
+    
+    bool seek(int pos, IteratorOrigin origin) const ;
+};
+};
 
 namespace core
 {
@@ -68,25 +106,26 @@ namespace gpusubdivision
 {
 
 Iterator<VertexHandle>
-Face::vertexIterator()
+Face::vertexIterator(ISurface* surface)
 {
-    return Iterator<VertexHandle>();
+    GpuSubdivision *gpusurf = dynamic_cast<GpuSubdivision*>(surface);
+    return Iterator<VertexHandle>(new FaceVertexIterator(gpusurf, this));
 }
 
 Iterator<VertexHandle>
-Face::constVertexIterator() const
+Face::constVertexIterator(ISurface* surface) const
 {
     return Iterator<VertexHandle>();
 }
 
 Iterator<EdgeHandle>
-Face::edgeIterator()
+Face::edgeIterator(ISurface* surface)
 {
     NOT_IMPLEMENTED
 }
 
 Iterator<EdgeHandle>
-Face::constEdgeIterator() const
+Face::constEdgeIterator(ISurface* surface) const
 {
     NOT_IMPLEMENTED
 }
@@ -104,6 +143,7 @@ namespace core {
     VertexCollection    *_vertices;
     EdgesCollection     *_edges;
     FacesCollection     *_faces;
+    TriangleCollection  *_triangleOutput;
     
     Scene*          _scene;
     Color           _color;
@@ -113,7 +153,7 @@ namespace core {
     bool            _genereateCallList;
     int             _currentResolutionLevel;
     bool            _hasChanged;
-        
+    GpuSubdivisionRenderable*   _renderable;
     static bool 				oclInitialized;
     static ::cl::Program  		program;
     static ::cl::Kernel			krnInit;
@@ -130,7 +170,8 @@ namespace core {
     _callListId(0),
     _genereateCallList(true),
     _currentResolutionLevel(0),
-    _hasChanged(true)
+    _hasChanged(true),
+    _renderable(new GpuSubdivisionRenderable(surface))
     {
     }
     
@@ -440,12 +481,17 @@ ISurface::size_t GpuSubdivision::iid() const
 void GpuSubdivision::initPoints()
 {
     lock();
-    _d->_vertices = new VertexCollection;
-    _d->_edges = new EdgesCollection;
-    _d->_faces = new FacesCollection;
+    CLManager * oclManager = CLManager::instance();
+    ::cl::CommandQueue clctx= oclManager->commandQueue();
+    VertexCollection::allocator_type gpu_allocator(clctx);
+    _d->_vertices = new VertexCollection(gpu_allocator);
+    _d->_edges = new EdgesCollection(gpu_allocator);
+    _d->_faces = new FacesCollection(gpu_allocator);
+    _d->_triangleOutput = new TriangleCollection(gpu_allocator);
     
-    _d->_vertices->reserve(50000);
-    _d->_edges->reserve(50000);
+    _d->_vertices->reserve(500);
+    _d->_edges->reserve(500);
+    //_d->_faces->reserve(500);
     
     unlock();
 }
@@ -620,26 +666,26 @@ EdgeHandle::size_t GpuSubdivision::numEdges() const
 FaceHandle::size_t GpuSubdivision::addFace(const std::vector<VertexHandle::size_t>& vertexIndexList)
 {
     assert(_d && _d->_edges && _d->_faces);
-    std::vector<Edge*> edges;
+    std::vector<Edge::size_t> edges;
     auto size = vertexIndexList.size();
     if (size < 3) {
         std::cerr << "addFace: not enough vertices: " << size << std::endl;
         return -1;
     }
     for (int i = 0; i < size; ++i) {
-        size_t iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
+        Edge::size_t iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
         assert(iid > 0);
-        auto *e = &_d->_edges->at(iid);
-        assert(e->faceIid == -1);
-        edges.push_back(e);
+        edges.push_back(iid);
     }
     _d->_faces->push_back(Face());
     Face *f = &_d->_faces->back();
     f->setIid(_d->_faces->size() - 1);
-    f->edgeIid = edges[0]->iid();
+    f->edgeIid = edges[0];
     for (int i = 0; i < size; ++i) {
-        edges[i]->edgeNextIid = edges[(i+1)%size]->iid();
-        edges[i]->faceIid = f->_id;
+        Edge* e_i = static_cast<Edge*>(edge(edges[i]));
+        Edge* e_ii = static_cast<Edge*>(edge(edges[(i+1)%size]));
+        e_i->edgeNextIid = e_ii->iid();
+        e_i->faceIid = f->iid();
     }
     return f->iid();
 }
@@ -1173,6 +1219,80 @@ GpuSubdivision::Impl::subdivide(GpuSubdivision * s)
 void
 GpuSubdivision::Impl::render(const RenderState *state) const
 {
+    assert(state != nullptr && state->isValid());
+    assert(_renderable != nullptr);
+    _renderable->render(state);
 }
 
 }; /* End namespace*/
+
+
+
+namespace
+{
+
+IIterator<VertexHandle>*
+FaceVertexIterator::clone() const
+{
+    return nullptr;
+}
+
+bool
+FaceVertexIterator::hasNext() const
+{
+    NOT_IMPLEMENTED
+}
+
+bool
+FaceVertexIterator::hasPrevious() const
+{
+    NOT_IMPLEMENTED
+}
+
+VertexHandle::shared_ptr
+FaceVertexIterator::next()
+{
+    NOT_IMPLEMENTED
+    return nullptr;
+}
+
+const VertexHandle::shared_ptr
+FaceVertexIterator::next() const
+{
+    NOT_IMPLEMENTED
+    return nullptr;
+}
+
+VertexHandle::shared_ptr
+FaceVertexIterator::peekNext()
+{
+    NOT_IMPLEMENTED
+}
+
+const VertexHandle::shared_ptr
+FaceVertexIterator::peekNext() const 
+{
+    NOT_IMPLEMENTED
+}
+
+VertexHandle::shared_ptr
+FaceVertexIterator::previous()
+{
+    NOT_IMPLEMENTED
+}
+
+const VertexHandle::shared_ptr
+FaceVertexIterator::previous() const
+{
+    NOT_IMPLEMENTED
+}
+
+bool
+FaceVertexIterator::seek(int pos, IteratorOrigin origin) const 
+{
+    NOT_IMPLEMENTED
+}
+
+}; // namespace anonymous
+
+

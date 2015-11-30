@@ -71,26 +71,33 @@ namespace gpusubdivision
          * Gets an iterator object to traverse all the vertices that form part
          * of this face.
          */
-        Iterator<VertexHandle> vertexIterator();
+        Iterator<VertexHandle> vertexIterator(ISurface* surface);
 
         /**
          * Gets an iterator object to traverse all the vertices that form part
          * of this face.
          */
-        Iterator<VertexHandle> constVertexIterator() const;
+        Iterator<VertexHandle> constVertexIterator(ISurface* surface) const;
 
         /**
          * Gets an iterator object to traverse all the edges that form part
          * of this face.
          */
-        Iterator<EdgeHandle> edgeIterator();
+        Iterator<EdgeHandle> edgeIterator(ISurface* surface);
 
         /**
          * Gets an iterator object to traverse all the edges that form part
          * of this face.
          */
-        Iterator<EdgeHandle> constEdgeIterator() const;
+        Iterator<EdgeHandle> constEdgeIterator(ISurface* surface) const;
 
+    };
+    
+    struct Triangle {
+        cl_float4 	p;
+        cl_float4 	n;
+        cl_float4 	c;
+        cl_float2   t;
     };
 };
 };

@@ -270,9 +270,6 @@ void TestApp::keyboard(int key, int x, int y)
 void TestApp::init(int argc, char** argv) {
     d->initialized = false;
     
-    SubdivisionTest test;
-    test.run();
-
 	std::string app_path = get_app_path();
 	std::cout << "App path: " << app_path << std::endl;
 	ResourcesManager rscMgr;
@@ -377,6 +374,10 @@ void TestApp::init(int argc, char** argv) {
 	
 	reshape(1280,720);
     
+    SubdivisionTest test;
+    test.run();
+
+    
     d->initialized = true;
 }
 
@@ -434,8 +435,8 @@ void TestApp::Impl::setupScene() {
     if (useFile) {
         scene->loadFromFile("/Users/rcabral/Projects/qsculpt/assets/meshes/test2.dae");
     } else {
-//        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
-        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
+        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
+//        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
         SceneNode::shared_ptr node = std::make_shared<SurfaceNode>("Box",surf);
         scene->add(node);
         Camera::shared_ptr cam = std::make_shared<Camera>();

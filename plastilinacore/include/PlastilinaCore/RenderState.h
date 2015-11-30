@@ -23,6 +23,8 @@ struct RenderState {
     Material			*material;
     
     RenderState 		merge(const RenderState & state) const;
+    
+    bool                isValid() const;
 };
 
 #endif
