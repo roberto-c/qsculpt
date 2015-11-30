@@ -17,6 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Document.h>
 
@@ -353,7 +354,7 @@ size_t Document::childrenCount ( const SceneNode::shared_ptr & parent ) const
     return ret;
 }
 
-SceneNode::shared_ptr Document::findItem(uint iid) 
+SceneNode::shared_ptr Document::findItem(uint32_t iid) 
 {
     TRACEFUNCTION();
     //std::cerr << "Arg1: " << iid;

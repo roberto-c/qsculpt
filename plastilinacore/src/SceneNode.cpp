@@ -28,7 +28,7 @@
 static std::atomic_int NEXTID;
 
 struct SceneNode::Impl {
-    uint                                iid;
+    uint32_t                                iid;
     NodeType							nodeType;
     bool                                isSelected;
     SceneNode::weak_ptr                  parent;
@@ -183,7 +183,7 @@ public:
     typedef SceneNode::Ptr           Ptr;
     
     mutable SceneNode::const_shared_ptr     _parent;
-    mutable std::vector<uint>		_levelStack;
+    mutable std::vector<uint32_t>		_levelStack;
     mutable int _nextIndex;
     
 public:
@@ -339,7 +339,7 @@ SceneNode::~SceneNode()
     std::cerr << __PRETTY_FUNCTION__ << " Name : " << name().c_str() << std::endl;
 }
 
-uint SceneNode::iid() const { 
+uint32_t SceneNode::iid() const { 
     assert(_d);
     return _d->iid;
 }
@@ -402,7 +402,7 @@ bool SceneNode::itemIndex(const SceneNode::weak_ptr child, size_t * index) const
     return false;
 }
 
-bool SceneNode::itemIndexFromIid(uint childIID, size_t * index) const
+bool SceneNode::itemIndexFromIid(uint32_t childIID, size_t * index) const
 {
     assert(_d);
     
@@ -441,12 +441,12 @@ void SceneNode::remove(SceneNode::weak_ptr child)
     
     auto ptr = child.lock();
     if (ptr) {
-        uint iid = ptr->iid();
+        uint32_t iid = ptr->iid();
         remove(iid);
     }
 }
 
-void SceneNode::remove(uint iid)
+void SceneNode::remove(uint32_t iid)
 {
     assert(_d);
     auto it = _d->children.begin();

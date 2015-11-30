@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2011 by Juan Roberto Cabral Flores   *
+ *   Copyright (C) 2015 by Juan Roberto Cabral Flores   *
  *   roberto.cabral@gmail.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,18 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#pragma once
 
-#ifndef INSTANCEID_H_
-#define INSTANCEID_H_
-
-class InstanceId {
-    uint32_t _iid;
-    
-public:
-    uint32_t iid() const { return iid; };
-    
-protected:
-    void setIid(uint32_t iid) { _iid = iid; };
-};
-
-#endif
+#define __CL_ENABLE_EXCEPTIONS
+#include "cl.hpp"

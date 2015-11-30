@@ -5,7 +5,7 @@
 //  Created by Juan Cabral on 2/18/12.
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
-
+#include <PlastilinaCore/Stable.h>
 #include <iostream>
 #include <fstream>
 #include <PlastilinaCore/opengl/GlslShader.h>

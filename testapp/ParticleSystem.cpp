@@ -27,9 +27,9 @@ struct Impl {
     /** Instance ID of the surface */
     size_t _iid;
 	
-	std::unordered_map<uint, uint> hndVtxIndex;
-	std::unordered_map<uint, uint> hndEdgeIndex;
-	std::unordered_map<uint, uint> hndFaceIndex;
+	std::unordered_map<uint32_t, uint32_t> hndVtxIndex;
+	std::unordered_map<uint32_t, uint32_t> hndEdgeIndex;
+	std::unordered_map<uint32_t, uint32_t> hndFaceIndex;
 	bool 				oclInitialized;
 	cl::Program 		program;
 	cl::Kernel			krnInit;
@@ -122,7 +122,7 @@ Impl::create_from_surface(Subdivision * surface) {
 		vtx.v.s[2] = 0.01f;
 		vtx.v.s[3] = 0;
 		ret.p.push_back(vtx);
-		hndVtxIndex[v->iid()] = uint(ret.p.size()) - 1;
+		hndVtxIndex[v->iid()] = uint32_t(ret.p.size()) - 1;
 	}
 
 	return ret;
@@ -137,9 +137,9 @@ Impl::update_surface_from_polygon(Subdivision * surface,
 	}
 
 	
-	std::vector<uint> vtxIdxIid(hndVtxIndex.size());
+	std::vector<uint32_t> vtxIdxIid(hndVtxIndex.size());
 	
-	for (uint i = 0; i < list.p.size(); ++i) {
+	for (uint32_t i = 0; i < list.p.size(); ++i) {
 		Point3 p(list.p[i].x.s[0],list.p[i].x.s[1],list.p[i].x.s[2]);
 		Vertex::size_t iid = surface->addVertex(p);
 		hndVtxIndex[iid] = i;

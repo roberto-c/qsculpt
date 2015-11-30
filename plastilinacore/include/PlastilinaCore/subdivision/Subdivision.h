@@ -16,8 +16,8 @@
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/geometry/Aabb.h>
 
-class VertexHandle;
-class EdgeHandle;
+struct VertexHandle;
+struct EdgeHandle;
 class SubdivisionScheme;
 class Mesh;
 

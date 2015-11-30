@@ -54,7 +54,7 @@ public:
     virtual Iterator<SceneNode> constSceneIterator() const;
     Iterator<ISurface> surfaceIterator();
     
-    virtual SceneNode::shared_ptr   findItem(uint iid);
+    virtual SceneNode::shared_ptr   findItem(uint32_t iid);
         
     virtual SceneNode::shared_ptr   index (int row,
                                            const SceneNode::shared_ptr & parent = SceneNode::shared_ptr() ) const;

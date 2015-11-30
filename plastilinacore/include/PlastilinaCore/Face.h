@@ -13,7 +13,8 @@
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/IIterator.h>
 
-class EdgeHandle;
+class Edge;
+struct EdgeHandle;
 class ISurface;
 
 enum FaceFlags {

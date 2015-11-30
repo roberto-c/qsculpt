@@ -110,8 +110,10 @@ bool CLManager::initialize()
 		}
         std::vector<cl_context_properties> prop;
         if (d->glCtxHnd) {
+#ifdef __APPLE__
             prop.push_back(CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE);
             prop.push_back(d->glCtxHnd);
+#endif
         }
         prop.push_back(0);
 		d->context = cl::Context(d->devices, prop.size() ==1 ? NULL : prop.data());

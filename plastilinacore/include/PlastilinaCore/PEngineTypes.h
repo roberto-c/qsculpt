@@ -9,7 +9,12 @@
 #ifndef ENGINE_GLOBALDEFS_H_
 #define ENGINE_GLOBALDEFS_H_
 
+namespace core
+{
 
 typedef unsigned int IID;
+
+};
+
 
 #endif

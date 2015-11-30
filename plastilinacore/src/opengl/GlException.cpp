@@ -5,7 +5,7 @@
 //  Created by Juan Cabral on 2/14/12.
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
-
+#include <PlastilinaCore/Stable.h>
 #include <iostream>
 #include <PlastilinaCore/opengl/GlException.h>
 

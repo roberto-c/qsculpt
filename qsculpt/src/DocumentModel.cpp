@@ -37,12 +37,12 @@ DocumentModel::~DocumentModel()
     
 }
 
-SceneNode::shared_ptr DocumentModel::findItem(uint iid) const
+SceneNode::shared_ptr DocumentModel::findItem(uint32_t iid) const
 {
     return NULL;
 }
 
-QModelIndex DocumentModel::findItemIndex(uint iid) const
+QModelIndex DocumentModel::findItemIndex(uint32_t iid) const
 {
     return QModelIndex();
 }

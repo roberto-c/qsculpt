@@ -5,6 +5,7 @@
 //  Created by Juan Roberto Cabral Flores on 8/19/12.
 //
 //
+#include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/opengl/VertexArrayObject.h>

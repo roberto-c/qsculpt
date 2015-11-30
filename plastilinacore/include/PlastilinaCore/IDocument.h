@@ -83,7 +83,7 @@ public:
      *
      * @param iid instance id of the item to find
      */
-    virtual SceneNode::shared_ptr findItem(uint iid) = 0;
+    virtual SceneNode::shared_ptr findItem(uint32_t iid) = 0;
     
     /**
      * 

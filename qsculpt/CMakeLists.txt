@@ -11,7 +11,11 @@ set(CMKAE_INCLUDE_CURRENT_DIR ON)
 
 find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
-find_package(Qt4 REQUIRED QtGui QtOpenGL)
+find_package(Qt5 REQUIRED Core Widgets OpenGL)
+
+set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 
 # Sources for the project
@@ -78,7 +82,7 @@ set(QSCULPT_PRIVATE_HEADERS
 	./src/CustomGLContext.h
 )
 
-QT4_WRAP_UI(UISrcs
+QT5_WRAP_UI(UISrcs
 	./ui/BrushProperties.ui
 	./ui/ConsoleWindow.ui
 	./ui/DocumentTreeWidget.ui
@@ -126,7 +130,7 @@ target_link_libraries(QSculpt ${OPENGL_LIBRARIES})
 target_link_libraries(QSculpt ${OPENCL_LIBRARIES})
 target_link_libraries(QSculpt ${Boost_LIBRARIES})
 target_link_libraries(QSculpt PlastilinaCore)
-target_link_libraries(QSculpt Qt4::QtGui Qt4::QtOpenGL)
+target_link_libraries(QSculpt Qt5::Widgets Qt5::OpenGL)
 
 
 if (APPLE)	

@@ -261,12 +261,12 @@ public:
      * Returns the color under pixel at coordinate p. This function 
      * ignores Z component.
      */
-    uint colorUint(const Point3 & p);
+    uint32_t colorUint(const Point3 & p);
     
     /**
      * Returns the color under pixel at screen coordinate (x,y). 
      */
-    uint colorUint(int x, int y);
+    uint32_t colorUint(int x, int y);
     
     /**
      * Returns the depth component at p in screen coordinates. This function 

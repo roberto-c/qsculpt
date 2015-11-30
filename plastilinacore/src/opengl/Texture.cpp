@@ -5,7 +5,7 @@
 //  Created by Juan Roberto Cabral Flores on 10/18/13.
 //
 //
-
+#include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/opengl/Texture.h>
 
 namespace gl {
