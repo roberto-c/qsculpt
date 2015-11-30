@@ -65,6 +65,7 @@
 #include "ClStlAllocator.h"
 #include "TestMaterial.h"
 #include "PrimitiveFactory.h"
+#include "SubdivisionTest.h"
 
 std::string get_app_path() {
     std::vector<char> exepath;
@@ -136,6 +137,8 @@ struct TestApp::Impl {
     void setupMaterial();
     
     void move(const Vector3 & delta);
+    
+    void print();
 };
 
 
@@ -148,19 +151,6 @@ TestApp::TestApp(int argc, char** argv)
 TestApp::~TestApp() {
     
 }
-
-int testfunc(int x, int y) {
-    return 2 + x + y;
-}
-
-struct testfunctor : public std::binary_function<int, int, int> {
-    std::string name;
-    testfunctor(const std::string & name = "") : name(name) {};
-    int operator()(int x, int y) {
-        std::cout << "name: " << name << "\n";
-        return 4 + x + y;
-    }
-};
 
 int TestApp::run() {
     if (!d->initialized) {
@@ -267,6 +257,9 @@ void TestApp::keyboard(int key, int x, int y)
 			d->restart();
 			reshape(640,480);
 			break;
+        case SDLK_p:
+            d->print();
+            break;
 		}
 			
         default:
@@ -274,43 +267,12 @@ void TestApp::keyboard(int key, int x, int y)
     }
 }
 
-struct vertex_t {
-    uint32_t iid;
-    
-    vertex_t() : iid(0)
-    {}
-};
-
-struct myvertex : public vertex_t {
-    float	p[4];
-    float 	n[4];
-    float 	c[4];
-    
-    myvertex() : p{0.f}
-    {}
-};
-
-vertex_t* vertex_new() {
-    myvertex* t = new myvertex();
-    return t;
-}
-
 void TestApp::init(int argc, char** argv) {
     d->initialized = false;
-
+    
 	std::string app_path = get_app_path();
 	std::cout << "App path: " << app_path << std::endl;
 	ResourcesManager rscMgr;
-	
-    std::vector<cl_uint> v1;
-    std::vector<cl_uint, core::cl::allocator<cl_uint> > v2;
-    v1.reserve(10);
-    v2.reserve(10);
-    std::cout << "Sizeof v1: " << sizeof(v1) << "\n";
-    std::cout << "Sizeof v2: " << sizeof(v2) << "\n";
-    
-    vertex_t* v = vertex_new();
-    std::cout << "IID: " << v->iid << "\n";
     
     /* Initialize SDL's Video subsystem */
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -412,6 +374,10 @@ void TestApp::init(int argc, char** argv) {
 	
 	reshape(1280,720);
     
+    SubdivisionTest test;
+    test.run();
+
+    
     d->initialized = true;
 }
 
@@ -469,13 +435,20 @@ void TestApp::Impl::setupScene() {
     if (useFile) {
         scene->loadFromFile("/Users/rcabral/Projects/qsculpt/assets/meshes/test2.dae");
     } else {
-//        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
-        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
-        SceneNode::shared_ptr node = std::make_shared<SurfaceNode>(surf);
+        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
+//        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
+        SceneNode::shared_ptr node = std::make_shared<SurfaceNode>("Box",surf);
         scene->add(node);
         Camera::shared_ptr cam = std::make_shared<Camera>();
-        node = std::make_shared<CameraNode>(cam);
+        node = std::make_shared<CameraNode>();
+        std::dynamic_pointer_cast<CameraNode>(node)->setCamera(cam);
         scene->add(node);
+        node->transform() *= Eigen::Translation3f(0,0,3.0);
+        cam->setPerspectiveMatrix(45.0f, 1280.0f/720.0f, 0.01f, 100.0f);
+        cam->setTargetPoint(Point3(0,0,1));
+        cam->setPosition(Point3(0,0,0));
+        cam->setOrientationVector(Point3(0,1,0));
+        cam->setViewport(0, 0, 1280, 720);
     }
 }
 
@@ -499,7 +472,7 @@ void TestApp::Impl::setupMaterial()
         render.setGLTexDest(glTexture2);
 		
         material3->load();
-        material3->setDiffuse (Color(1.0f, 0.4f, 0.8f, 1.0f));
+        material3->setDiffuse (Color(1.0f, 1.0f, 1.0f, 1.0f));
         material3->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
         material3->setAmbient (Color(0.1f, 0.1f, 0.1f, 1.0f));
         material3->setExponent(200);
@@ -534,8 +507,6 @@ void TestApp::Impl::changeColor()
 void TestApp::Impl::move(const Vector3 & delta)
 {
     static Vector4 p = Vector4(0,0,0,1);
-    static Eigen::IOFormat octaveFmt =
-    		Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ";", "", "", "[", "]");
     
     p.x() += delta.x();
     p.y() += delta.y();
@@ -544,25 +515,33 @@ void TestApp::Impl::move(const Vector3 & delta)
     if (object) {
         object->transform() *= Eigen::Translation3f(delta);
     }
+}
+
+void TestApp::Impl::print()
+{
+    static Eigen::IOFormat octaveFmt =
+    Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]");
     
     auto camera = scene->getCamera();
     if (camera && camera->camera()) {
-        auto v = p;
-        std::cout << "Point: " << v.format(octaveFmt) << "\n";
-        std::cout << "ModelView Matrix: " << camera->camera()->modelView().format(octaveFmt) << "\n";
+        //camera->transform() *= Eigen::Translation3f(delta);
+        auto v = Vector4(0,0,0,1);
+        std::cout << "Point: \n" << v.format(octaveFmt) << "\n";
+        std::cout << "ModelView Matrix: \n" << camera->camera()->modelView().format(octaveFmt) << "\n";
         v = camera->camera()->modelView() * v;
         if  ((v[3] < -0.00001f) || (v[3] > .00001f)) {
             v / v.w();
         }
-        std::cout << "v*M: " << v.format(octaveFmt) << "\n";
-        std::cout << "Projection Matrix: " << camera->camera()->projection().format(octaveFmt) << "\n";
+        std::cout << "v*M:\n" << v.format(octaveFmt) << "\n";
+        std::cout << "Projection Matrix: \n" << camera->camera()->projection().format(octaveFmt) << "\n";
         v = camera->camera()->projection() * v;
         if  ((v[3] < -0.00001f) || (v[3] > .00001f)) {
             v / v.w();
         }
-        std::cout << "v*P: " << v.format(octaveFmt) << "\n";
+        std::cout << "v*P: \n" << v.format(octaveFmt) << "\n";
+        std::cout << "Viewport Matrix: \n" << camera->camera()->viewport().format(octaveFmt) << "\n";
         v = camera->camera()->viewport() * v;
-        std::cout << "Viewport P: " << v.format(octaveFmt) << "\n";
+        std::cout << "Viewport P: \n" << v.format(octaveFmt) << "\n";
         
     }
 }

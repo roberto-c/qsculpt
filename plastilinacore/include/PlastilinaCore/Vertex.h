@@ -16,26 +16,40 @@
 #include <PlastilinaCore/IIterator.h>
 #include <PlastilinaCore/Color.h>
 
-class Edge;
-class Face;
-
 #define VERTEXTYPE_DEFAULT			(0)
 #define VERTEXTYPE_POS              (1)
 #define VERTEXTYPE_POS_NOR          (2)
 #define VERTEXTYPE_POS_NOR_COL      (3)
 #define VERTEXTYPE_POS_NOR_COL_TEX	(4)
 
-struct VertexHandle {
+enum class VertexHandleType
+{
+    NULLTYPE = 0,
+    DEFAULT,
+    GPUSUBDIVISION,
+    
+    MAX = 255
+};
+
+class VertexHandle {
+public:
     typedef VertexHandle*   shared_ptr;
     typedef VertexHandle*   weak_ptr;
     typedef VertexHandle*   Ptr;
 	typedef uint32_t 		size_t;
 	size_t	_id;
+        
+    VertexHandle(VertexHandleType type = VertexHandleType::NULLTYPE) : _id(0 | ((int)type << 24))
+    {}
+    
+    VertexHandle(const VertexHandle&) = default;
+    
+    VertexHandle(VertexHandle&&) = default;
     
     uint8_t type() const { return _id >> 24; }
-	size_t iid() const { return _id; }
+	size_t iid() const { return _id & 0xFFFFFF; }
 	
-    void setIid(size_t iid) { _id = iid & 0xFFFFFF;}
+    void setIid(size_t iid) { _id = (_id & 0xFF000000) | (iid & 0xFFFFFF);}
     
     template<typename T>
     T cast() const {
@@ -52,6 +66,13 @@ enum VertexFlags {
     VF_User2    = 0x00200000, /*< Flag to use for the user */
     VF_ALL      = 0xFFFFFFFF
 };
+
+namespace core
+{
+namespace subdivision
+{
+class Edge;
+class Face;
 
 class Vertex : public VertexHandle
 {
@@ -196,5 +217,8 @@ private:
     friend class FaceIterator;
     friend class EdgeIterator;
 };
+
+} // namespace subdivision
+} // namespace core
 
 #endif

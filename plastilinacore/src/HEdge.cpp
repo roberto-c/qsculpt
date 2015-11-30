@@ -10,6 +10,10 @@
 #include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/Vertex.h>
 
+namespace core
+{
+namespace subdivision
+{
 
 class Edge::VertexIterator : public IIterator<Vertex>
 {
@@ -320,3 +324,6 @@ bool Edge::HEdgeIterator::seek(int pos, IteratorOrigin origin) const
     NOT_IMPLEMENTED
     return false;
 }
+
+} // namepace subdivision
+} // namespace core

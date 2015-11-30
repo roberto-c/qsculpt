@@ -28,6 +28,8 @@
 
 #define BO_POOL_NAME "PointRendererPool"
 
+using core::subdivision::Vertex;
+
 struct PointRenderer::Impl {
     Impl(const std::string & name = std::string(BO_POOL_NAME)) 
     : name(name), pointSize(3.0), colorSelected(1.f, 0, 0) 

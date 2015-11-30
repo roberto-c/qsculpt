@@ -12,6 +12,11 @@
 #include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/ISurface.h>
 
+namespace core
+{
+namespace subdivision
+{
+
 class Face::VertexIterator : public IIterator<VertexHandle>
 {
 public:
@@ -552,3 +557,7 @@ bool Face::EdgeIterator::seek(int pos, IteratorOrigin origin) const
     }
     return res;
 }
+
+} // namespace subdivision
+} // namespace core
+

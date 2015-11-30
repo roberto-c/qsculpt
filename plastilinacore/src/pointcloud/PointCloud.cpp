@@ -12,6 +12,9 @@
 #include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/Face.h>
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 // Iterator classes declarations
 class PointCloud::VertexIterator : public IIterator<VertexHandle>
 {

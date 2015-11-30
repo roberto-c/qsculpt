@@ -28,7 +28,8 @@
 #define WINDOW_FAR  (1.0f)
 
 Camera::Camera()
-:  	m_position(0.f,0.f,0.f),
+:  	CameraNode(),
+    m_position(0.f,0.f,0.f),
     m_target(0.f,0.f,-1.f),
     m_orientation(0.f,1.f,0.f),
     m_colatitude(0.0),
@@ -36,7 +37,7 @@ Camera::Camera()
 {
 }
 
-Camera::Camera(const Camera & orig) : 
+Camera::Camera(const Camera & orig) :
 _projMat(orig._projMat),
 _viewMat(orig._viewMat),
 _viewportMat(orig._viewportMat),
@@ -227,7 +228,7 @@ void Camera::updateViewMatrix()
     _viewMat(0, 3) = -position.x();
     _viewMat(1, 3) = -position.y();
     _viewMat(2, 3) = -position.z();
-    //_viewMat = (parentTransform() * transform() * t).inverse().matrix();
+    _viewMat = tp.inverse().matrix();
 }
 
 void Camera::setProjectionMatrix(const Eigen::Matrix4f &m)

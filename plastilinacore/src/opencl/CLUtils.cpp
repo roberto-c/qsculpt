@@ -97,3 +97,60 @@ const char* opencl::errorToString(cl_int errorcode)
     return "<UNKNOWN_CODE>";
 #undef CLERRSTR
 }
+
+
+namespace core
+{
+namespace utils
+{
+template<>
+void convert_to<cl_float4, Eigen::Vector3f>(const Eigen::Vector3f & d,
+                                            cl_float4 & to)
+{
+    to.s[0] = d[0];
+    to.s[1] = d[1];
+    to.s[2] = d[2];
+    to.s[3] = 0.0f;
+}
+template<>
+void convert_to<cl_float2, Eigen::Vector2f>(const Eigen::Vector2f & d,
+                                            cl_float2 & to)
+{
+    to.s[0] = d[0];
+    to.s[1] = d[1];
+}
+
+template<>
+void convert_to<cl_float4, Eigen::Vector4f>(const Eigen::Vector4f & d,
+                                            cl_float4 & to)
+{
+    to.s[0] = d[0];
+    to.s[1] = d[1];
+    to.s[2] = d[2];
+    to.s[3] = d[3];
+}
+
+template<>
+void convert_to<Eigen::Vector4f, cl_float4>(
+    const cl_float4 & from,
+    Eigen::Vector4f & to)
+{
+    to[0] = from.s[0];
+    to[1] = from.s[1];
+    to[2] = from.s[2];
+    to[3] = from.s[3];
+}
+
+template<>
+void convert_to<Eigen::Vector3f, cl_float4>(
+    const cl_float4 & from,
+    Eigen::Vector3f & to)
+{
+    to[0] = from.s[0];
+    to[1] = from.s[1];
+    to[2] = from.s[2];
+}
+
+
+} // namespace utils
+} // namespace core

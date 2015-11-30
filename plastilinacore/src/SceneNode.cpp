@@ -315,7 +315,8 @@ bool SceneNode::SceneNodeTreeIterator::seek(int pos, IteratorOrigin origin) cons
 
 
 SceneNode::SceneNode(const std::string& name)
-: _d(new Impl(name))
+: enable_shared_from_this(),
+  _d(new Impl(name))
 {
     TRACEFUNCTION(("Name : " + name));
     _d->iid = NEXTID.fetch_add(1);
@@ -324,7 +325,8 @@ SceneNode::SceneNode(const std::string& name)
 }
 
 SceneNode::SceneNode(const std::string & name, NodeType nodeType)
-: _d(new Impl(name, nodeType))
+: enable_shared_from_this(),
+  _d(new Impl(name, nodeType))
 {
     TRACEFUNCTION(("Name : " + name));
     _d->iid = NEXTID.fetch_add(1);
@@ -523,7 +525,8 @@ Eigen::Affine3f SceneNode::parentTransform() const
 
 Point3 SceneNode::worldToLocal(Point3 p) const
 {
-    return transform().inverse() * parentTransform().inverse() * p;
+//    return transform().inverse() * parentTransform().inverse() * p;
+    return (transform() * parentTransform()).inverse() * p;
 }
 
 Point3 SceneNode::localToWorld(Point3 p) const
@@ -667,6 +670,7 @@ CameraNode::~CameraNode()
 void CameraNode::setCamera(const std::shared_ptr<Camera> & cam)
 {
     d->camera = cam;
+    add(cam);
 }
 
 std::shared_ptr<Camera> CameraNode::camera() const

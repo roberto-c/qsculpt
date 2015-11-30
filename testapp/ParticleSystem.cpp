@@ -18,6 +18,9 @@
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
 
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+
 struct clSurfaceList;
 
 struct Impl {

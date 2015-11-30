@@ -18,8 +18,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#include <PlastilinaCore/subdivision/SubdivisionRenderable.h>
+#include "GpuSubdivisionRenderable.h"
 
+#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/Color.h>
@@ -29,38 +30,64 @@
 #include <PlastilinaCore/SmoothRenderer.h>
 #include <PlastilinaCore/Scene.h>
 
+#include <PlastilinaCore/opencl/CLUtils.h>
 #include <PlastilinaCore/opengl/GlslShader.h>
 #include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 #define BO_POOL_NAME "SmoothRendererPool"
 
-using core::subdivision::Vertex;
-using core::subdivision::Face;
-
 struct SmoothVtxStruct
 {
     GLfloat v[4];
     GLfloat n[4];
-    GLfloat color[4];
+    GLfloat c[4];
     GLfloat t[2];
-}; 
+};
 
+namespace core {
+using core::subdivision::Vertex;
+using core::subdivision::Face;
+using core::subdivision::Edge;
 
-SubdivisionRenderable::SubdivisionRenderable(const Subdivision * surface)
+struct GpuSubdivisionRenderable::Impl {
+    const core::GpuSubdivision * surface;
+    
+    Impl() {}
+    
+    void renderObject(const RenderState * state) const;
+    
+    VertexBuffer* getVBO(ISurface* mesh) const;
+    
+    VAO* getVAO(ISurface* mesh) const;
+    
+    void fillVertexBuffer(ISurface* mesh,
+        VertexBuffer* vbo) const;
+};
+
+GpuSubdivisionRenderable::GpuSubdivisionRenderable(
+    const core::GpuSubdivision * surface)
+: _d(new Impl())
 {
-	std::cerr << "SmoothRenderer constructor" << std::endl;
+    _d->surface = surface;
 }
 
-SubdivisionRenderable::~SubdivisionRenderable()
+GpuSubdivisionRenderable::~GpuSubdivisionRenderable()
 {
-	std::cerr << "SmoothRenderer destructor" << std::endl;
-	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
+    
 }
 
-void SubdivisionRenderable::renderObject(const RenderState * state) const
+void GpuSubdivisionRenderable::render(
+    const RenderState * state) const
 {
-	ISurface * obj = NULL;
+    _d->renderObject(state);
+}
+    
+
+void GpuSubdivisionRenderable::Impl::renderObject(
+    const RenderState * state) const
+{
+    ISurface * obj = NULL;
 	std::shared_ptr<Material> mat;
 	
 	const SceneNode * node = state->currentNode;
@@ -130,12 +157,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
     vbo->bind();
 	if (vbo->needUpdate())
 	{
-		if (state->renderMode == RenderMode::RM_Points) {
-			fillVertexBufferPoints(obj, vbo);
-		} else {
-			fillVertexBuffer(obj, vbo);
-		}
-		
+        fillVertexBuffer(obj, vbo);
 		vbo->setNeedUpdate(false);
 		
 		GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
@@ -143,7 +165,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 			glEnableVertexAttribArray(attColor);
 			glVertexAttribPointer(attColor, 4, GL_FLOAT, GL_FALSE,
 								  sizeof(SmoothVtxStruct),
-								  (GLvoid*)offsetof(SmoothVtxStruct, color));
+								  (GLvoid*)offsetof(SmoothVtxStruct, c));
 		}
 		GLint attVtx = mat->shaderProgram()->attributeLocation("glVertex");
 		if (attVtx >= 0) {
@@ -201,10 +223,11 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
     
     
     vao->release();
-	
 }
 
-VertexBuffer* SubdivisionRenderable::getVBO(ISurface* mesh) const
+VertexBuffer*
+GpuSubdivisionRenderable::Impl::getVBO(
+    ISurface* mesh) const
 {
 	VertexBuffer* vbo = NULL;
 	vbo = BOManager::getInstance()->getVBO(BO_POOL_NAME, mesh);
@@ -215,7 +238,9 @@ VertexBuffer* SubdivisionRenderable::getVBO(ISurface* mesh) const
 	return vbo;
 }
 
-VAO* SubdivisionRenderable::getVAO(ISurface* mesh) const
+VAO*
+GpuSubdivisionRenderable::Impl::getVAO(
+    ISurface* mesh) const
 {
 	VAO* vao = NULL;
 	vao = BOManager::getInstance()->getVAO(BO_POOL_NAME, mesh);
@@ -226,46 +251,9 @@ VAO* SubdivisionRenderable::getVAO(ISurface* mesh) const
 	return vao;
 }
 
-void SubdivisionRenderable::fillVertexBufferPoints(ISurface* mesh, VertexBuffer* vbo) const
-{
-    //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
-    if (mesh == NULL || vbo->objectID() == 0)
-        return;
-    
-    size_t numVertices = mesh->numVertices();
-    if (numVertices == 0)
-        return;
-    
-    std::vector<SmoothVtxStruct> vtxData(numVertices); // Triangles
-    
-    size_t offset = 0;
-    auto it = mesh->constVertexIterator();
-    while(it.hasNext()) {
-        auto v = static_cast<Vertex*>(it.next());
-		vtxData[offset].v[0] = v->position().x();
-		vtxData[offset].v[1] = v->position().y();
-		vtxData[offset].v[2] = v->position().z();
-		vtxData[offset].v[3] = 1.0f;
-		vtxData[offset].n[0] = v->normal().x();
-		vtxData[offset].n[1] = v->normal().y();
-		vtxData[offset].n[2] = v->normal().z();
-		vtxData[offset].n[3] = 0.0f;
-        vtxData[offset].t[0] = v->texcoords().x();
-        vtxData[offset].t[1] = v->texcoords().y();
-		memcpy(vtxData[offset].color, v->color().data().data(), sizeof(vtxData[offset].color)) ;
-        offset++;
-    }
-    // offset contains the number of vertices in the vtxData after being
-    // processed.
-    GLuint dataSize = static_cast<GLuint>(offset*sizeof(SmoothVtxStruct));
-    vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
-    THROW_IF_GLERROR(__func__);
-    
-    //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
-}
-
-
-void SubdivisionRenderable::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) const
+void
+GpuSubdivisionRenderable::Impl::fillVertexBuffer(ISurface* mesh,
+    VertexBuffer* vbo) const
 {
     //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
     if (mesh == NULL || vbo->objectID() == 0)
@@ -276,102 +264,42 @@ void SubdivisionRenderable::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) 
         return;
     
     Iterator<FaceHandle> it = mesh->constFaceIterator();
-    numFaces = 0; // number of faces after triangulation
-    while(it.hasNext()) {
-        numFaces += static_cast<Face*>(it.next())->numVertices() - 2;
-    }
+    numFaces = 1; // number of faces after triangulation
+//    while(it.hasNext()) {
+//        numFaces += static_cast<Face*>(it.next())->numVertices() - 2;
+//    }
     
     size_t numVertices = numFaces*3;
     std::vector<SmoothVtxStruct> vtxData(numVertices); // Triangles
     
     size_t offset = 0;
-    it = mesh->constFaceIterator();
-    while(it.hasNext()) {
-        auto f = static_cast<Face*>(it.next());
-        processPolygon(*f, vtxData, offset);
-    }
+//    it = mesh->constFaceIterator();
+//    while(it.hasNext()) {
+//        auto f = static_cast<Face*>(it.next());
+//        processPolygon(*f, vtxData, offset);
+//    }
+    vtxData[0].v[0] = 0.0f; vtxData[0].v[1] = 1.0f; vtxData[0].v[2] = 0.0f; vtxData[0].v[3] = 1.0f;
+    vtxData[1].v[0] = 1.0f; vtxData[1].v[1] = 1.0f; vtxData[1].v[2] = 0.0f; vtxData[1].v[3] = 1.0f;
+    vtxData[2].v[0] = 1.0f; vtxData[2].v[1] = 0.0f; vtxData[2].v[2] = 0.0f; vtxData[2].v[3] = 1.0f;
+    vtxData[3].v[0] = 0.0f; vtxData[3].v[1] = 0.0f; vtxData[3].v[2] = 0.0f; vtxData[3].v[3] = 1.0f;
+    
+    vtxData[0].n[0] = 0.0f; vtxData[0].n[1] = 1.0f; vtxData[0].n[2] = 0.0f; vtxData[0].n[3] = 0.0f;
+    vtxData[1].n[0] = 1.0f; vtxData[1].n[1] = 1.0f; vtxData[1].n[2] = 0.0f; vtxData[1].n[3] = 0.0f;
+    vtxData[2].n[0] = 1.0f; vtxData[2].n[1] = 0.0f; vtxData[2].n[2] = 0.0f; vtxData[2].n[3] = 0.0f;
+    vtxData[3].n[0] = 0.0f; vtxData[3].n[1] = 0.0f; vtxData[3].n[2] = 0.0f; vtxData[3].n[3] = 0.0f;
+    
+    vtxData[0].c[0] = 0.0f; vtxData[0].c[1] = 1.0f; vtxData[0].c[2] = 0.0f; vtxData[0].c[3] = 1.0f;
+    vtxData[1].c[0] = 1.0f; vtxData[1].c[1] = 1.0f; vtxData[1].c[2] = 0.0f; vtxData[1].c[3] = 1.0f;
+    vtxData[2].c[0] = 1.0f; vtxData[2].c[1] = 0.0f; vtxData[2].c[2] = 0.0f; vtxData[2].c[3] = 1.0f;
+    vtxData[3].c[0] = 0.0f; vtxData[3].c[1] = 0.0f; vtxData[3].c[2] = 0.0f; vtxData[3].c[3] = 1.0f;
     // offset contains the number of vertices in the vtxData after being
     // processed.
+    offset = 3;
     GLuint dataSize = static_cast<GLuint>(offset*sizeof(SmoothVtxStruct));
     vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
     THROW_IF_GLERROR(__func__);
     
     //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }
-
-bool SubdivisionRenderable::processPolygon(const Face & f,
-										  std::vector<SmoothVtxStruct> & vtxData,
-										  size_t & offset) const
-{
-    size_t nVtx = f.numVertices();
-    if (nVtx < 3) {
-        std::cerr << "Incomplete polygon. A polygon should have at least 3 vertices" << std::endl;
-        return false;
-    }
-    //GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;
     
-    Iterator<VertexHandle> vtxIt = f.constVertexIterator();
-    auto v1 = static_cast<Vertex*>(vtxIt.next());
-    auto v2 = static_cast<Vertex*>(vtxIt.next());
-    Vector3 n;
-    while(vtxIt.hasNext()) {
-        auto v3 = static_cast<Vertex*>(vtxIt.next());
-        processTriangle(*v1, *v2, *v3, vtxData, offset);
-        v2 = v3;
-    }
-    return true;
-}
-
-bool SubdivisionRenderable::processTriangle(const Vertex & v1,
-										   const Vertex & v2,
-										   const Vertex & v3,
-										   std::vector<SmoothVtxStruct> & vtxData,
-										   size_t & offset) const
-{
-    vtxData[offset].v[0] = v1.position().x();
-    vtxData[offset].v[1] = v1.position().y();
-    vtxData[offset].v[2] = v1.position().z();
-    vtxData[offset].v[3] = 1;
-    vtxData[offset].n[0] = v1.normal().x();
-    vtxData[offset].n[1] = v1.normal().y();
-    vtxData[offset].n[2] = v1.normal().z();
-    vtxData[offset].n[3] = 0;
-    vtxData[offset].t[0] = v1.texcoords().x();
-    vtxData[offset].t[1] = v1.texcoords().y();
-    memcpy(vtxData[offset].color, v1.color().data().data(), sizeof(vtxData[offset].color)) ;
-    offset++;
-    
-    vtxData[offset].v[0] = v2.position().x();
-    vtxData[offset].v[1] = v2.position().y();
-    vtxData[offset].v[2] = v2.position().z();
-    vtxData[offset].v[3] = 1;
-    vtxData[offset].n[0] = v2.normal().x();
-    vtxData[offset].n[1] = v2.normal().y();
-    vtxData[offset].n[2] = v2.normal().z();
-    vtxData[offset].n[3] = 0;
-    vtxData[offset].t[0] = v2.texcoords().x();
-    vtxData[offset].t[1] = v2.texcoords().y();
-    memcpy(vtxData[offset].color, v2.color().data().data(), sizeof(vtxData[offset].color)) ;
-    offset++;
-    
-    vtxData[offset].v[0] = v3.position().x();
-    vtxData[offset].v[1] = v3.position().y();
-    vtxData[offset].v[2] = v3.position().z();
-    vtxData[offset].v[3] = 1;
-    vtxData[offset].n[0] = v3.normal().x();
-    vtxData[offset].n[1] = v3.normal().y();
-    vtxData[offset].n[2] = v3.normal().z();
-    vtxData[offset].n[3] = 0;
-    vtxData[offset].t[0] = v3.texcoords().x();
-    vtxData[offset].t[1] = v3.texcoords().y();
-    memcpy(vtxData[offset].color, v3.color().data().data(), sizeof(vtxData[offset].color)) ;
-    offset++;
-    
-    return true;
-}
-
-
-void SubdivisionRenderable::render(const RenderState * state) const
-{
-	renderObject(state);
-}
+}; // namspace core
