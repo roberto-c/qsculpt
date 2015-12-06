@@ -50,7 +50,7 @@ set(PLASTILINACORE_SOURCES
 	./src/SceneNode.cpp
 	./src/SmoothRenderer.cpp
 	./src/SpEnums.cpp
-	./src/StdAfx.cpp
+	./src/Stable.cpp
 	./src/subdivision/Box.cpp
 	./src/subdivision/Sphere.cpp
 	./src/subdivision/Subdivision.cpp
@@ -64,9 +64,9 @@ if (APPLE)
 	set_source_files_properties(${PLASTILINACORE_SOURCES_OBJCXX} PROPERTIES 
 	                            COMPILE_FLAGS "-x objective-c++")
 elseif(UNIX)
-	set(PLASTILINACORE_SOURCES ./src/Context_unix.cpp)
+	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/Context_unix.cpp)
 elseif(WIN32)
-	set(PLASTILINACORE_SOURCES ./src/Context_win32.cpp)
+	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/Context_win32.cpp)
 endif()
 
 # Public headers. These headers are meant to be distributed to users of the engine

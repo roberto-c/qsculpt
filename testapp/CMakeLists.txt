@@ -80,11 +80,11 @@ include_directories(include
 	../thirdparty/OpenCL
 	${CMAKE_SOURCE_DIR}/plastilinacore/include
 	${Boost_INCLUDE_DIRS}
-	${OPENCL_INCLUDE_DIRS}
+	${OpenCL_INCLUDE_DIRS}
 	)
 
 target_link_libraries(PTestApp ${OPENGL_LIBRARIES})
-target_link_libraries(PTestApp ${OPENCL_LIBRARIES})
+target_link_libraries(PTestApp ${OpenCL_LIBRARIES})
 target_link_libraries(PTestApp ${SDL2_LIBRARIES})
 target_link_libraries(PTestApp ${SDL2IMAGE_LIBRARIES})
 target_link_libraries(PTestApp ${Boost_LIBRARIES})
