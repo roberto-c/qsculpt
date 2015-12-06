@@ -9,16 +9,7 @@
 #ifndef __PlastilinaCore__opencl__OCLManager__
 #define __PlastilinaCore__opencl__OCLManager__
 
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/cl.h>
-#endif
-
-#ifdef __cplusplus
-
-#define __CL_ENABLE_EXCEPTIONS
-#include "cl.hpp"
+#include <PlastilinaCore/opencl/OpenCL.h>
 
 class CLManager {
 	
@@ -69,6 +60,5 @@ private:
 	std::unique_ptr<Impl> d;
 	
 };
-#endif
 
 #endif /* defined(__PlastilinaCore__OCLManager__) */

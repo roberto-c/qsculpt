@@ -194,7 +194,7 @@ void BOManager::destroyPool(const std::string& poolName)
         }
     }
 
-    for (int i = 0; i < boId.size(); ++i)
+    for (unsigned int i = 0; i < boId.size(); ++i)
     {
         auto bo = d->m_boMap.find(boId[i]);
         if (bo != d->m_boMap.end()) {
@@ -211,7 +211,7 @@ void BOManager::destroyPool(const std::string& poolName)
             boId.push_back((*it).second);
         }
     }
-    for (int i = 0; i < boId.size(); ++i)
+    for (unsigned int i = 0; i < boId.size(); ++i)
     {
         auto bo = d->m_vaoMap.find(boId[i]);
         if (bo != d->m_vaoMap.end()) {

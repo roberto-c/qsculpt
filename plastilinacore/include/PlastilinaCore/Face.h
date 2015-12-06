@@ -14,7 +14,7 @@
 #include <PlastilinaCore/IIterator.h>
 
 class Edge;
-struct EdgeHandle;
+class EdgeHandle;
 class ISurface;
 
 enum FaceFlags {
