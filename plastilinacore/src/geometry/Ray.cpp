@@ -25,7 +25,7 @@
 namespace geometry
 {
 
-    float      Ray::DEFAULT_EPSILON= 0.0001;
+    float      Ray::DEFAULT_EPSILON= 0.0001f;
     Point3     Ray::DEFAULT_ORIGIN = Point3(0, 0, 0);
     Vector3    Ray::DEFAULT_DIR    = Vector3(1, 0, 0);
 
@@ -55,7 +55,7 @@ namespace geometry
         if (d < ep) {
             if (p) *p = point;
             double l = (point - this->m_origin).norm();
-            return l / this->m_direction.norm();
+            return float(l / this->m_direction.norm());
         }
         return -1.0f;
     }
@@ -80,9 +80,9 @@ namespace geometry
         float distSqrt = sqrtf(disc);
         float q;
         if (b < 0)
-            q = (-b - distSqrt)/2.0;
+            q = (-b - distSqrt)/2.0f;
         else
-            q = (-b + distSqrt)/2.0;
+            q = (-b + distSqrt)/2.0f;
         
         // compute t0 and t1
         float t0 = q / a;
