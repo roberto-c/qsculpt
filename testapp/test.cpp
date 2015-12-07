@@ -6,7 +6,7 @@
  *  Copyright 2011-2013 Roberto Cabral. All rights reserved.
  *
  */
-#define __CL_ENABLE_EXCEPTIONS
+#include "stable.h"
 
 #include <iostream>
 #include <sstream>
@@ -17,8 +17,7 @@
 //#include <omp.h>
 
 #include <PlastilinaCore/Plastilina.h>
-#include <OpenCL/opencl.h>
-#include "cl.hpp"
+#include <PlastilinaCore/opencl/OpenCL.h>
 
 #include "TestApp.h"
 

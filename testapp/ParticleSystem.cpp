@@ -5,16 +5,13 @@
 //  Created by Juan Roberto Cabral Flores on 1/21/13.
 //  Copyright (c) 2013 Juan Roberto Cabral Flores. All rights reserved.
 //
-
+#include "stable.h"
 #include "ParticleSystem.h"
-#define __CL_ENABLE_EXCEPTIONS
-#include <OpenCL/opencl.h>
-#include "cl.hpp"
-
 
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
+#include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
 

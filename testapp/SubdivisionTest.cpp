@@ -5,7 +5,7 @@
 //  Created by Juan Cabral on 6/21/12.
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
-
+#include "stable.h"
 #include <iostream>
 
 #include "SubdivisionTest.h"

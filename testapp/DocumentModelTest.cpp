@@ -5,7 +5,7 @@
 //  Created by Juan Cabral on 6/6/12.
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
-
+#include "stable.h"
 #include <iostream>
 
 #include <PlastilinaCore/Document.h>
@@ -18,11 +18,11 @@
 static void printModelRecursive(const Document::shared_ptr & doc, 
                                 const SceneNode::shared_ptr& parent = SceneNode::shared_ptr())
 {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     
     Logging_increaseIndentation();
     size_t numrows = doc->childrenCount(parent);
-    for(int i = 0; i < numrows; ++i) {
+    for(unsigned int i = 0; i < numrows; ++i) {
         auto index = doc->index(i, parent);
         std::cerr << "iid: " << index->iid() << std::endl;
         printModelRecursive(doc, index);
@@ -32,7 +32,7 @@ static void printModelRecursive(const Document::shared_ptr & doc,
 
 
 int DocumentModelTest::setup() {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     doc = std::make_shared<Document>();
     
     ISurface * surf = new Subdivision();
@@ -67,7 +67,7 @@ int DocumentModelTest::setup() {
 }
 
 int DocumentModelTest::test() {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     // Print points in nodes:
     auto scene = doc->scene().lock();
 //    printSceneNode(scene);
@@ -92,12 +92,12 @@ int DocumentModelTest::test() {
 }
 
 int DocumentModelTest::cleanup() {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     return 0;
 }
 
 int DocumentModelTest::run() {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     if (setup() != 0) {
         return -1;
     }

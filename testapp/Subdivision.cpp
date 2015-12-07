@@ -5,15 +5,12 @@
 //  Created by Juan Roberto Cabral Flores on 11/25/12.
 //  Copyright (c) 2012 Juan Roberto Cabral Flores. All rights reserved.
 //
-
+#include "stable.h"
 #include "Subdivision.h"
-#define __CL_ENABLE_EXCEPTIONS
-#include <OpenCL/opencl.h>
-#include "cl.hpp"
-
 
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 

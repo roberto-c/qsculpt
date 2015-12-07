@@ -5,7 +5,7 @@
 //  Created by Juan Roberto Cabral Flores on 8/5/12.
 //  Copyright (c) 2012 Juan Roberto Cabral Flores. All rights reserved.
 //
-
+#include "stable.h"
 #include "PhongMaterial.h"
 
 #include <PlastilinaCore/opengl/GlslShader.h>

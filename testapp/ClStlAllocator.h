@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Juan Roberto Cabral Flores. All rights reserved.
 //
 
+#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/opencl/opencl.h>
 #include <new>

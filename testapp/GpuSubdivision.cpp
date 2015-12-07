@@ -17,11 +17,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "stable.h"
 
-#define __CL_ENABLE_EXCEPTIONS
 #include <atomic>
-#include <OpenCL/opencl.h>
-#include "cl.hpp"
+#include <PlastilinaCore/opencl/OpenCL.h>
 #include <math.h>
 #include <Eigen/Core>
 #include <map>

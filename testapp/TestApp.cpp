@@ -5,6 +5,7 @@
 //  Created by Juan Cabral on 7/1/12.
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
+#include "stable.h"
 #include <PlastilinaCore/Plastilina.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>

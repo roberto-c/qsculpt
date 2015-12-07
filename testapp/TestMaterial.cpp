@@ -5,7 +5,7 @@
 //  Created by Juan Roberto Cabral Flores on 11/16/13.
 //  Copyright (c) 2013 Juan Roberto Cabral Flores. All rights reserved.
 //
-
+#include "stable.h"
 #include "TestMaterial.h"
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/opengl/GlslShader.h>

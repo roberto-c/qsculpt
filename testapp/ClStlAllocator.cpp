@@ -17,6 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "stable.h"
 #include "ClStlAllocator.h"
 
 namespace core
@@ -83,7 +84,7 @@ MemoryPoolGpu::MemoryPoolGpu(
     std::cerr << "MemoryPoolGpu()\n";
     
     context = queue.getInfo<CL_QUEUE_CONTEXT>();
-    buffer = ::cl::Buffer(context, n, flags|CL_MEM_ALLOC_HOST_PTR);
+    buffer = ::cl::Buffer(context, flags|CL_MEM_ALLOC_HOST_PTR, n);
     size = n;
 }
 
@@ -97,7 +98,7 @@ MemoryPoolGpu::MemoryPoolGpu(
     std::cerr << "MemoryPoolGpu()\n";
     context = queue.getInfo<CL_QUEUE_CONTEXT>();
     size = bufobj.getBufferSize();
-    buffer = ::cl::BufferGL(context, bufobj.objectID(), flags);
+    buffer = ::cl::BufferGL(context, flags, bufobj.objectID());
 }
 
 MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu && pool)

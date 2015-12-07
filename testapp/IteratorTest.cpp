@@ -5,7 +5,7 @@
 //  Created by Juan Roberto Cabral Flores on 10/18/11.
 //  Copyright (c) 2011 plastilinaware. All rights reserved.
 //
-
+#include "stable.h"
 #include <iostream>
 
 #include <iostream>
