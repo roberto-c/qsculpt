@@ -13,9 +13,8 @@
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/IIterator.h>
 
-class Edge;
-class EdgeHandle;
 class ISurface;
+class EdgeHandle;
 
 enum FaceFlags {
     FF_None     = 0,
@@ -68,7 +67,7 @@ namespace core
 {
 namespace subdivision
 {
-class Edge;
+    class Edge;
 
 /**
  * Face class. This class contains references to points that should

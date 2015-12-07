@@ -31,7 +31,6 @@
 using namespace std;
 using core::subdivision::Vertex;
 using core::subdivision::Face;
-using core::subdivision::Edge;
 
 #define BO_POOL_NAME "FlatRendererPool"
 

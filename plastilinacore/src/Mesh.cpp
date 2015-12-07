@@ -42,9 +42,9 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
-using core::subdivision::Vertex;
-using core::subdivision::Edge;
-using core::subdivision::Face;
+using Vertex = core::subdivision::Vertex;
+using Edge = core::subdivision::Edge;
+using Face = core::subdivision::Face;
 
 typedef std::pair<VertexHandle::size_t, VertexHandle::size_t> VtxPair;
 typedef std::unordered_map<VertexHandle::size_t, Vertex*>   VertexCollection;

@@ -111,7 +111,7 @@ static std::atomic_int NEXT_ID;
 
 struct clSurfaceList;
 
-struct Subdivision::Impl {
+struct alignas(16) Subdivision::Impl {
     /** Instance ID of the surface */
 	ISurface::size_t _iid;
     

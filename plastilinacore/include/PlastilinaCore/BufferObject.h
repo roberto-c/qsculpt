@@ -21,6 +21,7 @@
 #ifndef BUFFEROBJECT_H_
 #define BUFFEROBJECT_H_
 
+#include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/Point3D.h>
 
 class BufferObject
@@ -214,7 +215,7 @@ inline bool BufferObject::unmapBuffer()
     RET_ON_GLERROR(result);
 	
 	// Unmap the buffer object
-	result = glUnmapBuffer(m_boTarget);
+	result = glUnmapBuffer(m_boTarget) == GL_TRUE ? true : false;
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(result);
 	
