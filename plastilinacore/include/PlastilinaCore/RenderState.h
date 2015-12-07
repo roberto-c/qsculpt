@@ -15,7 +15,7 @@ class SceneNode;
 class CameraNode;
 class Material;
 
-struct RenderState {
+struct DLLEXPORT RenderState {
     const SceneNode 	*root;
     const SceneNode 	*currentNode;
     RenderMode  		renderMode;

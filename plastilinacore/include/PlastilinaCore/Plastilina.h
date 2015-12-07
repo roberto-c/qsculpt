@@ -139,7 +139,7 @@ namespace core {
 class Context;
 };
 
-class PlastilinaEngine
+class DLLEXPORT PlastilinaEngine
 {
 public:
 	static bool initialize(PlastilinaSubsystem subsystem);

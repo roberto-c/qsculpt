@@ -14,7 +14,7 @@
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Color.h>
 
-class PointMaterial : public Material
+class DLLEXPORT PointMaterial : public Material
 {
 public:
     PointMaterial();

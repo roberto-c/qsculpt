@@ -11,7 +11,7 @@
 
 #include <string>
 
-class ResourcesManager {
+class DLLEXPORT ResourcesManager {
 public:
     /**
      * 

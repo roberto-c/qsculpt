@@ -33,7 +33,7 @@ class ISurface;
  *
  * TODO: describes the pool part on this class
  */
-class BOManager 
+class DLLEXPORT BOManager
 {
 	typedef std::unordered_map<GLuint, BufferObject*>   IdBufferObjectMap;
     typedef std::unordered_map<GLuint, VAO*>            IdVaoMap;

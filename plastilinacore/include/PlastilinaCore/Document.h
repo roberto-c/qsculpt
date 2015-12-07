@@ -30,7 +30,7 @@ class ISurface;
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class Document : public IDocument
+class DLLEXPORT Document : public IDocument
 {
 public:
     typedef std::shared_ptr<Document>   shared_ptr;

@@ -103,6 +103,7 @@ namespace core
 {
 namespace utils
 {
+
 template<>
 void convert_to<cl_float4, Eigen::Vector3f>(const Eigen::Vector3f & d,
                                             cl_float4 & to)

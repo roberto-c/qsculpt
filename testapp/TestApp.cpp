@@ -446,7 +446,7 @@ void TestApp::Impl::setupScene() {
     } else {
         ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
 //        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
-        SceneNode::shared_ptr node = std::make_shared<SurfaceNode>("Box",surf);
+        SceneNode::shared_ptr node = std::make_shared<SurfaceNode>(surf, "Box");
         scene->add(node);
         Camera::shared_ptr cam = std::make_shared<Camera>();
         node = std::make_shared<CameraNode>();

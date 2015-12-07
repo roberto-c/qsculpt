@@ -12,10 +12,10 @@
 #include <string>
 #include <iostream>
 
-void Logging_increaseIndentation();
-void Logging_decreaseIndentation();
+DLLEXPORT void Logging_increaseIndentation();
+DLLEXPORT void Logging_decreaseIndentation();
 
-class Logging {
+class DLLEXPORT Logging {
     std::string msg;
     
 public:

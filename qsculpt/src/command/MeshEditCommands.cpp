@@ -56,7 +56,7 @@ void AddSurfaceCommand::execute()
         QString cmdName = _configContainer->getString("0");
         QString cmdArg1 = _configContainer->getString("1");
         if (cmdArg1.isEmpty()) cmdArg1 = "Unamed";
-        _surface = std::make_shared<SurfaceNode>(cmdArg1.toStdString(), new Box);
+        _surface = std::make_shared<SurfaceNode>(new Box, cmdArg1.toStdString());
         _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
 		auto material = std::make_shared<PhongMaterial>();
 		_surface->setMaterial(material);

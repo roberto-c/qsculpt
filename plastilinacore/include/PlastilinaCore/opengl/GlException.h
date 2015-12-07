@@ -14,7 +14,7 @@
 #include "OpenGL.h"
 
 namespace core {
-    class GlException : public std::exception 
+    class DLLEXPORT GlException : public std::exception
     {
         const char* what_;
         GLenum error_;

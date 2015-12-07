@@ -15,7 +15,7 @@
 
 namespace core {
 namespace opengl {
-    class VertexArrayObject {
+    class DLLEXPORT VertexArrayObject {
         GLuint vao_;
         
     public:

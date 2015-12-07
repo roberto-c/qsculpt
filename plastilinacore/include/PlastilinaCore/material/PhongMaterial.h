@@ -14,7 +14,7 @@
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Color.h>
 
-class PhongMaterial : public Material
+class DLLEXPORT PhongMaterial : public Material
 {
 public:
     PhongMaterial();
