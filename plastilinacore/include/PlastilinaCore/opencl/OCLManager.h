@@ -11,10 +11,12 @@
 
 #include <PlastilinaCore/opencl/OpenCL.h>
 
-class CLManager {
+class DLLEXPORT CLManager {
 	
 public:
 	static CLManager*	instance();
+
+    ~CLManager();
 	
 	void setUseGPU(bool useGPU);
     

@@ -13,9 +13,9 @@
 #include <PlastilinaCore/Utilities.h>
 
 namespace opencl {
-	std::string loadFromFile(const std::string & filename);
+    DLLEXPORT std::string loadFromFile(const std::string & filename);
     
-    const char* errorToString(cl_int errorcode);
+    DLLEXPORT const char* errorToString(cl_int errorcode);
 }
 
 #endif

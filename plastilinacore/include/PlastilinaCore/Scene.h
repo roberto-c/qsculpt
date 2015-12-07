@@ -48,7 +48,7 @@ enum class UpAxis {
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class Scene : public SceneNode {
+class DLLEXPORT Scene : public SceneNode {
 public:
     //typedef QSharedPointer<Scene>   shared_ptr;
     //typedef QWeakPointer<Scene>     weak_ptr;

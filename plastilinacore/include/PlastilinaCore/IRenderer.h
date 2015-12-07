@@ -15,7 +15,7 @@ enum class RenderMode {
 };
 
 
-class IRenderer
+class DLLEXPORT IRenderer
 {
 public:
 	virtual ~IRenderer() {}
@@ -27,7 +27,7 @@ public:
 	virtual void renderObject(std::shared_ptr<SceneNode> & node) = 0;
 };
 
-class IRenderable
+class DLLEXPORT IRenderable
 {
 public:
 	virtual ~IRenderable(){};

@@ -39,6 +39,10 @@ CLManager::CLManager() : d(new Impl)
 	
 }
 
+CLManager::~CLManager()
+{
+}
+
 void CLManager::setUseGPU(bool useGPU)
 {
 	d->useGpu = useGPU;

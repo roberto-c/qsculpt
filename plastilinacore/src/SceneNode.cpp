@@ -575,17 +575,12 @@ void SceneNode::dump()
     _d->dump();
 }
 
-SurfaceNode::SurfaceNode(const std::string & name, 
-                         ISurface *surface)
+SurfaceNode::SurfaceNode(ISurface *surface,
+    const std::string & name)
 : SceneNode(name, NT_Surface),
   surface_(surface)
 {
     
-}
-SurfaceNode::SurfaceNode(ISurface *surface)
-: SceneNode("", NT_Surface),
- surface_(surface)
-{
 }
 
 SurfaceNode::~SurfaceNode()
@@ -676,4 +671,21 @@ void CameraNode::setCamera(const std::shared_ptr<Camera> & cam)
 std::shared_ptr<Camera> CameraNode::camera() const
 {
     return d->camera;
+}
+
+EffectNode::EffectNode(const std::shared_ptr<Material>& material, const std::string & name)
+{
+}
+
+EffectNode::~EffectNode()
+{
+}
+
+std::shared_ptr<Material> EffectNode::material() const
+{
+    return std::shared_ptr<Material>(nullptr);
+}
+
+void EffectNode::setMaterial(const std::shared_ptr<Material>& material)
+{
 }

@@ -44,7 +44,7 @@ enum NodeType {
  * This class inherit from QStandardItem to be able to be displayed
  * in the document tree widget.
  */
-class SceneNode : public std::enable_shared_from_this<SceneNode>
+class DLLEXPORT SceneNode : public std::enable_shared_from_this<SceneNode>
 {
     struct Impl;
     std::unique_ptr<Impl> _d;
@@ -234,7 +234,7 @@ private:
     friend class SceneNodeTreeIterator;
 };
 
-class SurfaceNode : public SceneNode, public IRenderable
+class DLLEXPORT SurfaceNode : public SceneNode, public IRenderable
 {
     ISurface *surface_;
     std::shared_ptr<Material> material_;
@@ -249,11 +249,7 @@ public:
     /**
      *
      */
-    SurfaceNode(const std::string & name = "NoName", ISurface *surface = NULL);
-    /**
-     *
-     */
-    SurfaceNode(ISurface *surface = NULL);
+    SurfaceNode(ISurface *surface = nullptr, const std::string & name = "NoName");
     
     //SurfaceNode(const ISurface *surface = NULL);
     
@@ -299,7 +295,7 @@ private:
     SurfaceNode & operator=(const SurfaceNode &); 
 };
 
-class LightNode : public SceneNode
+class DLLEXPORT LightNode : public SceneNode
 {
 public:
     LightNode(const std::string & name = "Light");
@@ -315,7 +311,7 @@ public:
  *
  *
  */
-class CameraNode : public SceneNode
+class DLLEXPORT CameraNode : public SceneNode
 {
 public:
     typedef std::shared_ptr<CameraNode>       	shared_ptr;
@@ -350,7 +346,7 @@ private:
  *
  * Effects are program shaders that are made active before rendering children.
  */
-class EffectNode: public SceneNode
+class DLLEXPORT EffectNode: public SceneNode
 {
 public:
     typedef std::shared_ptr<EffectNode>       	shared_ptr;

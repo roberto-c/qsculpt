@@ -43,7 +43,7 @@ Interface that every 3D object should implement.
 
   @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class ISurface {
+class DLLEXPORT ISurface {
     
 public:
 	typedef uint32_t size_t;

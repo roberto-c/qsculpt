@@ -35,7 +35,7 @@ class IDocument;
  * Each material is composed by a shader objects for real time rendring using
  * OpenGL.
  */
-class Material
+class DLLEXPORT Material
 {
 public:
     Material();
@@ -110,7 +110,7 @@ enum MaterialPropertyType {
     Texture3D
     };
 
-struct MaterialProperty {
+struct DLLEXPORT MaterialProperty {
     MaterialPropertyType type;
     bool pointer;
     bool input;
@@ -120,7 +120,7 @@ struct MaterialProperty {
 };
 
 
-class MaterialNode
+class DLLEXPORT MaterialNode
 {
 public:
     /**
@@ -138,7 +138,7 @@ protected:
     bool registerProperty(const std::string & name, MaterialProperty type);
 };
 
-class CookTorrance : public Material
+class DLLEXPORT CookTorrance : public Material
 {
     struct Impl;
     std::unique_ptr<Impl> d;

@@ -90,3 +90,21 @@ void CookTorrance::setup(const std::shared_ptr<const SceneNode> & doc)
 {
     
 }
+
+MaterialNode::MaterialNode()
+{
+}
+
+MaterialNode::~MaterialNode()
+{
+}
+
+bool MaterialNode::connect(const std::string & name, MaterialNode * node2, const std::string & inputName)
+{
+    return false;
+}
+
+bool MaterialNode::registerProperty(const std::string & name, MaterialProperty type)
+{
+    return false;
+}

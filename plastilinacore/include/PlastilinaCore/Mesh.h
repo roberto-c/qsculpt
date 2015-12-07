@@ -34,7 +34,7 @@ class SubdivisionScheme;
 /**
  * Class that implement subdivision surfaces.
  */
-class Mesh : public ISurface, public IRenderable
+class DLLEXPORT Mesh : public ISurface, public IRenderable
 {
     struct Impl;
     std::unique_ptr<Impl> _d;

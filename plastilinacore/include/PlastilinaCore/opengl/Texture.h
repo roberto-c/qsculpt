@@ -11,7 +11,7 @@
 
 namespace gl {
 	
-class TextureManager
+class DLLEXPORT TextureManager
 {
 	GLenum currentTextureUnit_;
 public:
@@ -38,7 +38,7 @@ private:
 };
 
 template <int TextureTarget>
-class Texture
+class DLLEXPORT Texture
 {
 public:
 	typedef std::shared_ptr<Texture<TextureTarget> > shared_ptr;
@@ -81,10 +81,10 @@ protected:
 		Target = TextureTarget
 	};
 	
-	Texture(GLuint width = 1,
-			GLuint height = 1,
-			GLuint depth = 1,
-			GLenum flags = 0);
+	Texture(GLuint width,
+			GLuint height,
+			GLuint depth,
+			GLenum flags);
 	
 
 	template <int TextureTarget2>
@@ -92,7 +92,7 @@ protected:
 	std::unique_ptr<Impl<TextureTarget> > d;
 };
 
-class Texture2D : public Texture<GL_TEXTURE_2D>
+class DLLEXPORT Texture2D : public Texture<GL_TEXTURE_2D>
 {
 public:
     typedef std::shared_ptr<Texture2D> shared_ptr;
@@ -114,6 +114,6 @@ public:
 					GLenum type,
 					const void *data);
 };
-}; /* End namespace */
+}; /* End namespace gl*/
 
 #endif
