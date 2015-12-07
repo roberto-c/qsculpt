@@ -32,7 +32,7 @@ class SceneNode;
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class IDocument :public std::enable_shared_from_this<IDocument>
+class DLLEXPORT IDocument :public std::enable_shared_from_this<IDocument>
 {
 
 

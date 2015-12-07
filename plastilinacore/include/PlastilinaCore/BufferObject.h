@@ -24,7 +24,7 @@
 #include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/Point3D.h>
 
-class BufferObject
+class DLLEXPORT BufferObject
 {
 public:		
 	/**

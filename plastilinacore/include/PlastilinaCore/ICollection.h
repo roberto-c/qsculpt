@@ -66,7 +66,7 @@ namespace data
      * intersects other primitives, and more.
      */
     template<typename T>
-    class ICollection
+    class DLLEXPORT ICollection
     {
     public:
         /**

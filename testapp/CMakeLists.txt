@@ -14,7 +14,6 @@ set(TESTAPP_SOURCES
 	./test.cpp
 	./TestApp.cpp
 	./TestMaterial.cpp
-	./SDLMain.mm
 )
 
 set(TESTAPP_PRIVATE_HEADERS 
@@ -27,7 +26,6 @@ set(TESTAPP_PRIVATE_HEADERS
 	./PhongMaterial.h
 	./PrimitiveFactory.h
 	./SceneNodeTest.h
-	./SDLMain.h
 	./stable.h
 	./Subdivision.h
 	./SubdivisionTest.h
@@ -51,6 +49,14 @@ add_executable(PTestApp MACOSX_BUNDLE
 )
 
 if (APPLE)
+	set(TESTAPP_SOURCES 
+		${TESTAPP_SOURCES} 
+		./SDLMain.mm
+	)
+	set(TESTAPP_PRIVATE_HEADERS 
+		${TESTAPP_PRIVATE_HEADERS} 
+		./SDLMain.h
+	)
 	set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h )
 elseif (UNIX)
     set_property(TARGET PlastilinaCore
@@ -68,7 +74,7 @@ find_package(SDL2Image REQUIRED)
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost REQUIRED COMPONENTS filesystem system)
+find_package(Boost REQUIRED COMPONENTS filesystem system log date_time thread)
 
 find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 	PATH /usr/local/include/eigen3 /usr/include/eigen3

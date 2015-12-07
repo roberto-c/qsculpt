@@ -224,7 +224,9 @@ elseif (UNIX)
 		PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)
 elseif (WIN32)
-	
+	set_property(TARGET PlastilinaCore 
+		PROPERTY COMPILE_FLAGS /DPLASTILINACORE_EXPORT
+	)
 else()
 	Message("Unsupported platform")		
 endif()

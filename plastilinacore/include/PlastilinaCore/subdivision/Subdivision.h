@@ -24,7 +24,7 @@ class Mesh;
 /**
  * Class that implement subdivision surfaces.
  */
-class Subdivision : public ISurface
+class DLLEXPORT Subdivision : public ISurface
 {
     struct Impl;
     std::unique_ptr<Impl> _d;

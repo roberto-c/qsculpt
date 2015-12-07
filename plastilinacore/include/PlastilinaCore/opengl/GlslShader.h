@@ -17,7 +17,7 @@
 #include <PlastilinaCore/opengl/OpenGL.h>
 
 template <GLenum SHADERTYPE>
-class GlslShader
+class DLLEXPORT GlslShader
 {
 public:
     GlslShader();

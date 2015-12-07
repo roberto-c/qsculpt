@@ -10,6 +10,7 @@
 #define PlastilinaCore_Context_private_h
 
 #include <PlastilinaCore/Context.h>
+#include <PlastilinaCore/opencl/OpenCL.h>
 
 OBJC_CLASS(NSView);
 OBJC_CLASS(NSOpenGLContext);

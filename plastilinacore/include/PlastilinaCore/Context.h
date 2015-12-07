@@ -10,8 +10,6 @@
 #define PlastilinaCore_Context_h
 
 #include <memory>
-#include "cl.hpp"
-
 
 namespace core {
     typedef intptr_t CtxAttribute;
@@ -30,7 +28,7 @@ namespace core {
         CTX_ATR_CL_SHARE_GL
     };
 
-    class Context {
+    class DLLEXPORT Context {
         struct Impl;
         std::unique_ptr<Impl> d;
         

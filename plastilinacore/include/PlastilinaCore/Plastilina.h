@@ -58,8 +58,14 @@
 
 #ifdef _MSC_VER
 #define THREAD __declspec(thread)
+#ifdef PLASTILINACORE_EXPORT
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
 #else
 #define THREAD __thread
+#define DLLEXPORT
 #endif
 
 namespace Eigen {

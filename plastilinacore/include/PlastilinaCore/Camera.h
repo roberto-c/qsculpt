@@ -32,7 +32,7 @@
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class Camera : public CameraNode
+class DLLEXPORT Camera : public CameraNode
 {
 public:
     typedef std::shared_ptr<Camera>       	shared_ptr;

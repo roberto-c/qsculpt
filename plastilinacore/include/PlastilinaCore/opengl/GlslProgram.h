@@ -11,7 +11,7 @@
 
 #include <PlastilinaCore/opengl/GlslShader.h>
 
-class GlslProgram
+class DLLEXPORT GlslProgram
 {
 public:
 	/**

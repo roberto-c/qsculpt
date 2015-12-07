@@ -9,9 +9,11 @@
 #include <PlastilinaCore/Plastilina.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
-#include <SDL2_image/SDL_image.h>
+#include <SDL2/SDL_image.h>
 
+#ifdef __APPLE__
 #include <mach-o/dyld.h> // for application directory
+#endif
 
 #include <iostream>
 #include <sstream>
@@ -71,6 +73,7 @@
 std::string get_app_path() {
     std::vector<char> exepath;
     uint32_t size = 0;
+#if defined(__APPLE__)
     _NSGetExecutablePath(NULL, &size);
     if (size > 0) {
         exepath.resize(size + 1);
@@ -79,13 +82,18 @@ std::string get_app_path() {
     } else {
         exepath.push_back('\0');
     }
+#elif defined(_WIN32)
+    exepath.resize(size + 1);
+    size = GetModuleFileNameA(0, exepath.data(), size);
+    exepath.resize(size + 1);
+#endif
     std::string p(exepath.data());
     boost::filesystem::path path(p);
     
     if (boost::filesystem::is_regular_file(path)) {
-        return path.parent_path().native();
+        return path.parent_path().string();
     } else if (boost::filesystem::is_directory(path)) {
-        return path.native();
+        return path.string();
     }
     
     return std::string();

@@ -49,7 +49,7 @@ int DocumentModelTest::setup() {
     
     node2 = std::make_shared<SurfaceNode>(surf);
     node2->setName("Node 2");
-    node2->transform().rotate(Eigen::AngleAxisf(M_PI_4, Vector3(0.f, 0.f, 1.f)));
+    node2->transform().rotate(Eigen::AngleAxisf(float(M_PI_4), Vector3(0.f, 0.f, 1.f)));
     
     node3 = std::make_shared<SurfaceNode>(surf);
     node3->setName("Node 3");

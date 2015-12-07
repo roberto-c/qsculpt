@@ -671,7 +671,7 @@ FaceHandle::size_t GpuSubdivision::addFace(const std::vector<VertexHandle::size_
         std::cerr << "addFace: not enough vertices: " << size << std::endl;
         return -1;
     }
-    for (int i = 0; i < size; ++i) {
+    for (decltype(size) i = 0; i < size; ++i) {
         Edge::size_t iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
         assert(iid > 0);
         edges.push_back(iid);
@@ -680,7 +680,7 @@ FaceHandle::size_t GpuSubdivision::addFace(const std::vector<VertexHandle::size_
     Face *f = &_d->_faces->back();
     f->setIid(_d->_faces->size() - 1);
     f->edgeIid = edges[0];
-    for (int i = 0; i < size; ++i) {
+    for (decltype(size) i = 0; i < size; ++i) {
         Edge* e_i = static_cast<Edge*>(edge(edges[i]));
         Edge* e_ii = static_cast<Edge*>(edge(edges[(i+1)%size]));
         e_i->edgeNextIid = e_ii->iid();
@@ -722,7 +722,7 @@ FaceHandle::size_t GpuSubdivision::getFaceIndexAtPoint(const Point3& /*p*/) cons
 
 VertexHandle::size_t GpuSubdivision::getClosestPointAtPoint(const Point3 & p) const
 {
-    float d = MAXFLOAT;
+    float d = std::numeric_limits<float>::max();
     Vertex::shared_ptr vtx = nullptr, tmpVtx = nullptr;
     Point3 v;
     Iterator<VertexHandle> it = constVertexIterator();

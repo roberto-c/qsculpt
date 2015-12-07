@@ -9,7 +9,7 @@
 #ifndef _CLUtils_h
 #define _CLUtils_h
 
-#include "cl.hpp"
+#include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/Utilities.h>
 
 namespace opencl {

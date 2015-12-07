@@ -9,7 +9,7 @@
 #ifndef qsculpt_TestApp_h
 #define qsculpt_TestApp_h
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 class TestApp
 {
