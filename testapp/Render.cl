@@ -19,7 +19,7 @@ int function2(int x, int y, float t) {
 }
 
 int2 function3(int x, int y, float step, float4 c) {
-    if (c.r < 0.4f && c.g < 0.3f) {
+    if (c.x < 0.4f && c.y < 0.3f) {
         return (int2)(x, y+1);
     }
     return (int2)(x, y);

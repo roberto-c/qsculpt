@@ -17,6 +17,10 @@ std::string opencl::loadFromFile(const std::string &filename)
 	std::string	source;
     std::ifstream file(filename);
 	
+    if (!file.good()) {
+        throw std::runtime_error(std::string("file not found: ") + filename);
+    }
+
     std::string line;
     while (file.good()) {
         getline(file, line);

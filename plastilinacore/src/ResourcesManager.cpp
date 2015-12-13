@@ -8,6 +8,7 @@
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/Plastilina.h>
 #include <iostream>
+#include <boost/filesystem.hpp>
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
@@ -90,6 +91,41 @@ std::string ResourcesManager::findResourcePath(const std::string name,
 
 	
 	return path;
+}
+#elif defined(_WIN32)
+std::string ResourcesManager::findResourcePath(const std::string name,
+    const std::string type,
+    const std::string subdir)
+{
+    using std::string;
+    using namespace boost::filesystem;
+    
+    path fname(name + string(".") + type);
+    path p(this->resourcesDirectory());
+    if (is_directory(p))
+    {
+        TRACE(trace) << "Searching under " << p.string();
+        for (directory_entry& x : directory_iterator(p)) 
+        {
+            if (x.path().filename().compare(fname) == 0)
+            {
+                return x.path().string();
+            }
+        }
+    }
+    p = p.parent_path().append("share");
+    if (is_directory(p))
+    {
+        TRACE(trace) << "Searching under " << p.string();
+        for (directory_entry& x : directory_iterator(p))
+        {
+            if (x.path().filename().compare(fname) == 0)
+            {
+                return x.path().string();
+            }
+        }
+    }
+    throw std::runtime_error("resource name: " + name + " not found");
 }
 #else
 std::string ResourcesManager::findResourcePath(const std::string name,

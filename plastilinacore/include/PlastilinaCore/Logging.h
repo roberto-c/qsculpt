@@ -11,6 +11,7 @@
 
 #include <string>
 #include <iostream>
+#include <boost/log/trivial.hpp>
 
 DLLEXPORT void Logging_increaseIndentation();
 DLLEXPORT void Logging_decreaseIndentation();
@@ -40,5 +41,7 @@ public:
 #else
 #	define TRACEFUNCTION(msg)
 #endif /* DEBUG */
+
+#define TRACE BOOST_LOG_TRIVIAL
 
 #endif

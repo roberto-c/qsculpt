@@ -171,6 +171,12 @@ target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
 
+set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+find_package(Boost REQUIRED COMPONENTS filesystem system log date_time thread)
+target_link_libraries(PlastilinaCore ${Boost_LIBRARIES})
+
 #find_package(Subversion)
 #if(SUBVERSION_FOUND)
 #    Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)
@@ -193,6 +199,11 @@ include_directories(include
 	)
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
+
+install(TARGETS PlastilinaCore
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
 
 if (APPLE)
 	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h

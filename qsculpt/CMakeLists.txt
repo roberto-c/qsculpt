@@ -1,6 +1,6 @@
 # Copyright 2015 Juan R Cabral
 #
-# Module: PlastilinaCore 
+# Module: QScult 
 # Description: 
 #   Build system for PlastilinaCore library. Main purpose of the library is to be
 #   a framework for 3D graphics and physics.
@@ -90,13 +90,17 @@ QT5_WRAP_UI(UISrcs
 	./ui/TransformWidget.ui
 )
 
-add_executable(QSculpt MACOSX_BUNDLE
+add_executable(QSculpt MACOSX_BUNDLE EXCLUDE_FROM_ALL
 	${QSCULPT_SOURCES}
 	${QSCULTPT_SOURCES_OBJCXX}
 	${UISrcs}
 	${QSCULPT_PRIVATE_HEADERS}
 	${RESOURCES}
 )
+
+set_property(TARGET QSculpt 
+		PROPERTY EXCLUDE_FROM_ALL
+	)
 
 if (APPLE)
 	set_property(TARGET QSculpt 

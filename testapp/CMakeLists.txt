@@ -89,12 +89,13 @@ include_directories(include
 	${OpenCL_INCLUDE_DIRS}
 	)
 
-target_link_libraries(PTestApp ${OPENGL_LIBRARIES})
-target_link_libraries(PTestApp ${OpenCL_LIBRARIES})
-target_link_libraries(PTestApp ${SDL2_LIBRARIES})
-target_link_libraries(PTestApp ${SDL2IMAGE_LIBRARIES})
-target_link_libraries(PTestApp ${Boost_LIBRARIES})
-target_link_libraries(PTestApp PlastilinaCore)
+target_link_libraries(PTestApp ${OPENGL_LIBRARIES}
+	${OpenCL_LIBRARIES}
+	${SDL2_LIBRARIES}
+	${SDL2IMAGE_LIBRARIES}
+	${Boost_LIBRARIES}
+	PlastilinaCore
+)
 
 if (APPLE)	
 	find_library(FOUNDATION_LIBRARIES CoreFoundation )
@@ -104,4 +105,9 @@ if (APPLE)
 	
 endif(APPLE)
 
-
+install(TARGETS PTestApp
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RESOURCE DESTINATION share)
+        

@@ -20,6 +20,7 @@
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Context.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 
 #ifdef __APPLE__
@@ -60,6 +61,10 @@ intptr_t get_window_handle() {
 
 bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
 {
+    if ((subsystem & PlastilinaSubsystem::OPENGL) != PlastilinaSubsystem::NONE) {
+        glewInit();
+        g_engineState.openglInitialized = true;
+    }
 	if ( (subsystem & PlastilinaSubsystem::OPENCL) != PlastilinaSubsystem::NONE) {
         if ((subsystem & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) != PlastilinaSubsystem::NONE) {
             intptr_t sharegrp = get_window_handle();

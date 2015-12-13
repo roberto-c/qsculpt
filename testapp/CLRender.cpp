@@ -68,6 +68,12 @@ void CLRender::initialize()
         d->krnFilterImg = cl::Kernel(d->program, "filter_img");
 	} catch (cl::Error & e) {
 		std::cerr << "OpenCL exception:" << e.err() << ": " << e.what() << "\n";
+        if (e.err() == CL_BUILD_PROGRAM_FAILURE)
+        {
+            std::string buildlog;
+            d->program.getBuildInfo(mngr->devices()[0], CL_PROGRAM_BUILD_LOG, &buildlog);
+            std::cerr << buildlog << std::endl;
+        }
 	}
 }
 

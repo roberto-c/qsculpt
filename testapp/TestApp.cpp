@@ -83,8 +83,8 @@ std::string get_app_path() {
         exepath.push_back('\0');
     }
 #elif defined(_WIN32)
-    exepath.resize(size + 1);
-    size = GetModuleFileNameA(0, exepath.data(), size);
+    exepath.resize(MAX_PATH);
+    size = GetModuleFileNameA(nullptr, exepath.data(), exepath.size());
     exepath.resize(size + 1);
 #endif
     std::string p(exepath.data());
@@ -282,7 +282,8 @@ void TestApp::init(int argc, char** argv) {
 	std::string app_path = get_app_path();
 	std::cout << "App path: " << app_path << std::endl;
 	ResourcesManager rscMgr;
-    
+    rscMgr.setResourcesDirectory(app_path);
+
     /* Initialize SDL's Video subsystem */
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         return;// false;
