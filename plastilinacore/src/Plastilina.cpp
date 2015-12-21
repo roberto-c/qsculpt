@@ -62,7 +62,20 @@ intptr_t get_window_handle() {
 bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
 {
     if ((subsystem & PlastilinaSubsystem::OPENGL) != PlastilinaSubsystem::NONE) {
-        glewInit();
+        glewExperimental = TRUE;
+        GLenum glewerror = glewInit();
+        if (glewerror != GLEW_OK)
+        {
+            throw core::GlException("Failed to initialize GLEW", glewerror);
+        }
+        // clear glError g=flags
+        glewerror = glGetError();
+        if (glewerror != GL_NO_ERROR)
+        {
+            TRACE(debug) << "GLEW initialization succeded, but there is GL error code, ignoring...";
+            while (glGetError() != GL_NO_ERROR)
+                ;
+        }
         g_engineState.openglInitialized = true;
     }
 	if ( (subsystem & PlastilinaSubsystem::OPENCL) != PlastilinaSubsystem::NONE) {
@@ -76,7 +89,6 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
 			std::cerr << "Failed to initialize OpenCL" << std::endl;
 		}
 	}
-	
 	return true;
 }
 

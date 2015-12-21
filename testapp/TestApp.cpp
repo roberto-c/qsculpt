@@ -293,7 +293,7 @@ void TestApp::init(int argc, char** argv) {
      * You may need to change this to 16 or 32 for your system */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    
+
     /* Request opengl 3.2 context.
      * SDL doesn't have the ability to choose which profile at this time of writing,
      * but it should default to the core profile */
@@ -315,16 +315,17 @@ void TestApp::init(int argc, char** argv) {
 		std::cerr << "ERROR: Unable to create OpenGL context" <<  std::endl;
 		return;
 	}
+
     // Now that we have the window created with an apropriate GL context,
     // Setup the engine with O
     //CLManager::instance()->setUseGPU(false);
-    PlastilinaSubsystem flags = PlastilinaSubsystem::OPENGL |
-    							PlastilinaSubsystem::OPENCL |
-    							PlastilinaSubsystem::ENABLE_CL_GL_SHARING;
+    PlastilinaSubsystem flags = PlastilinaSubsystem::OPENGL
+        | PlastilinaSubsystem::OPENCL;
+    	// | PlastilinaSubsystem::ENABLE_CL_GL_SHARING;
 	if (!PlastilinaEngine::initialize(flags)) {
 		return;
 	}
-	
+
 	d->render.initialize();
     
 	// Set up the rendering context, define display lists etc.:
@@ -333,9 +334,7 @@ void TestApp::init(int argc, char** argv) {
     glEnable( GL_DEPTH_TEST);
     glEnable( GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-	
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
     
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -347,34 +346,35 @@ void TestApp::init(int argc, char** argv) {
 		std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
 	} else {
 		std::cerr << "Texture loaded" << std::endl;
-		std::cerr << "Size " << d->texture->w << "x" << d->texture->h << std::endl;
+        std::cerr << "TextureFormat: " << SDL_GetPixelFormatName(d->texture->format->format) << std::endl;
+        std::cerr << "Size " << d->texture->w << "x" << d->texture->h << std::endl;
+        std::cerr << "Bytes Per Pixel: " << int(d->texture->format->BytesPerPixel) << std::endl;
+
 		d->glTexture1 = gl::Texture2D::shared_ptr(new gl::Texture2D());
         gl::TextureManager::instance()->setActiveTexture(GL_TEXTURE0);
         d->glTexture1->bind();
         d->glTexture1->setParameter(GL_TEXTURE_BASE_LEVEL, 0);
         d->glTexture1->setParameter(GL_TEXTURE_MAX_LEVEL, 0);
-		d->glTexture1->texImage2D(GL_TEXTURE_2D,
-                                 0,
-                                 GL_RGBA8,
-                                 d->texture->w,
-                                 d->texture->h,
-                                 0,
-                                 GL_BGRA,
-                                 GL_UNSIGNED_BYTE,
-                                 d->texture->pixels);
+		d->glTexture1->texImage2D(0,
+            GL_RGBA8,
+            d->texture->w,
+            d->texture->h,
+            0,
+            GL_RGB,
+            GL_UNSIGNED_BYTE,
+            d->texture->pixels);
         
         d->glTexture2 = gl::Texture2D::shared_ptr(new gl::Texture2D());
         gl::TextureManager::instance()->setActiveTexture(GL_TEXTURE0);
         d->glTexture2->bind();
         d->glTexture2->setParameter(GL_TEXTURE_BASE_LEVEL, 0);
         d->glTexture2->setParameter(GL_TEXTURE_MAX_LEVEL, 0);
-		d->glTexture2->texImage2D(GL_TEXTURE_2D,
-                                  0,
+		d->glTexture2->texImage2D(0,
                                   GL_RGBA8,
                                   d->texture->w,
                                   d->texture->h,
                                   0,
-                                  GL_BGRA,
+                                  GL_RGB,
                                   GL_UNSIGNED_BYTE,
                                   d->texture->pixels);
 	}
@@ -384,8 +384,8 @@ void TestApp::init(int argc, char** argv) {
 	
 	reshape(1280,720);
     
-    SubdivisionTest test;
-    test.run();
+    //SubdivisionTest test;
+    //test.run();
 
     
     d->initialized = true;
@@ -445,8 +445,8 @@ void TestApp::Impl::setupScene() {
     if (useFile) {
         scene->loadFromFile("/Users/rcabral/Projects/qsculpt/assets/meshes/test2.dae");
     } else {
-        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
-//        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
+        //ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
+        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
         SceneNode::shared_ptr node = std::make_shared<SurfaceNode>(surf, "Box");
         scene->add(node);
         Camera::shared_ptr cam = std::make_shared<Camera>();
@@ -478,8 +478,8 @@ void TestApp::Impl::setupMaterial()
         material2->setAmbient (Color(0.1f, 0.1f, 0.1f, 1.0f));
         material2->setExponent(200);
         material2->setDiffuseTexture(glTexture1);
-        render.setGLTexSrc(glTexture1);
-        render.setGLTexDest(glTexture2);
+        //render.setGLTexSrc(glTexture1);
+        //render.setGLTexDest(glTexture2);
 		
         material3->load();
         material3->setDiffuse (Color(1.0f, 1.0f, 1.0f, 1.0f));

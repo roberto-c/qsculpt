@@ -232,6 +232,9 @@ private:
     
     friend class SceneNodeIterator;
     friend class SceneNodeTreeIterator;
+
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 class DLLEXPORT SurfaceNode : public SceneNode, public IRenderable
@@ -287,7 +290,7 @@ public:
      */
     void setMaterial(const std::shared_ptr<Material> & material);
 	
-	virtual void render(const RenderState * state) const;
+	virtual void render(RenderState & state) const;
     
 private:
     // disabled copy semantics for now
@@ -314,6 +317,8 @@ public:
 class DLLEXPORT CameraNode : public SceneNode
 {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
     typedef std::shared_ptr<CameraNode>       	shared_ptr;
     typedef std::weak_ptr<CameraNode>    		weak_ptr;
     typedef std::shared_ptr<const CameraNode> 	const_shared_ptr;

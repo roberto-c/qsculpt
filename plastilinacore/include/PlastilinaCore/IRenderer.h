@@ -32,7 +32,7 @@ class DLLEXPORT IRenderable
 public:
 	virtual ~IRenderable(){};
 	
-	virtual void render(const RenderState * state) const = 0;
+	virtual void render(RenderState & state) const = 0;
 };
 
 #endif /*IRENDERER_H_*/

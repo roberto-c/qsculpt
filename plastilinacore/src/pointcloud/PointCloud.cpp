@@ -268,6 +268,7 @@ public:
 
 
 struct PointCloud::Impl {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     /** Instance ID of the surface */
 	ISurface::size_t _iid;
     

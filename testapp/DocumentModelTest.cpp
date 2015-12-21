@@ -20,14 +20,12 @@ static void printModelRecursive(const Document::shared_ptr & doc,
 {
     TRACEFUNCTION("");
     
-    Logging_increaseIndentation();
     size_t numrows = doc->childrenCount(parent);
     for(unsigned int i = 0; i < numrows; ++i) {
         auto index = doc->index(i, parent);
         std::cerr << "iid: " << index->iid() << std::endl;
         printModelRecursive(doc, index);
     }
-    Logging_decreaseIndentation();
 }
 
 

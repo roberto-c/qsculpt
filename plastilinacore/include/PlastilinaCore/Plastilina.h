@@ -29,6 +29,9 @@
 #include <functional>
 #include <string>
 
+#define EIGEN_DONT_ALIGN_STATICALLY
+#define EIGEN_DONT_VECTORIZE
+#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
 #define EIGEN_INITIALIZE_MATRICES_BY_ZERO
 
 #include <Eigen/Core>
@@ -58,11 +61,12 @@
 
 #ifdef _MSC_VER
 #define THREAD __declspec(thread)
-#ifdef PLASTILINACORE_EXPORT
-#define DLLEXPORT __declspec(dllexport)
-#else
 #define DLLEXPORT
-#endif
+//#ifdef PLASTILINACORE_EXPORT
+//#define DLLEXPORT __declspec( dllexport )
+//#else
+//#define DLLEXPORT __declspec( dllimport )
+//#endif
 #else
 #define THREAD __thread
 #define DLLEXPORT

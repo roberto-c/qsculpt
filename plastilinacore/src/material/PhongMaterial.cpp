@@ -17,6 +17,7 @@
 
 struct PhongMaterial::Impl
 {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     Color           specular;
     Color           diffuse;
     Color           ambient;
@@ -165,8 +166,7 @@ getCamera(const std::shared_ptr<const SceneNode> & doc)
 
 void PhongMaterial::setup(const std::shared_ptr<SceneNode> & doc)
 {
-	const std::shared_ptr<const SceneNode> d(doc);
-    setup(d);
+    setup(std::dynamic_pointer_cast<const SceneNode>(doc));
 }
 
 void PhongMaterial::setup(const std::shared_ptr<const SceneNode> & doc)

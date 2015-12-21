@@ -27,7 +27,8 @@ public:
 		return currentTextureUnit_;
 	}
 	void setActiveTexture(GLenum textureUnit) {
-		glActiveTexture(currentTextureUnit_);
+		glActiveTexture(textureUnit);
+        THROW_IF_GLERROR("Failed to activate texture");
 		currentTextureUnit_ = textureUnit;
 	}
 	
@@ -45,8 +46,6 @@ public:
 	typedef std::weak_ptr<Texture<TextureTarget> > weak_ptr;
 	typedef std::shared_ptr<const Texture<TextureTarget> > const_shared_ptr;
 	typedef std::weak_ptr<const Texture<TextureTarget> > const_weak_ptr;
-	
-    Texture();
 
     virtual ~Texture();
     
@@ -75,21 +74,23 @@ public:
 	GLint internalFormat(GLint format, GLenum pname) const;
 	
     void setParameter(GLenum pname, GLint value);
+
+    void setParameter(GLenum pname, GLfloat value);
     
 protected:
 	enum {
 		Target = TextureTarget
 	};
 	
+    Texture();
+
 	Texture(GLuint width,
 			GLuint height,
 			GLuint depth,
 			GLenum flags);
 	
-
-	template <int TextureTarget2>
 	struct Impl;
-	std::unique_ptr<Impl<TextureTarget> > d;
+	std::unique_ptr<Impl> d;
 };
 
 class DLLEXPORT Texture2D : public Texture<GL_TEXTURE_2D>
@@ -104,8 +105,7 @@ public:
 	Texture2D(GLuint width, GLuint height, GLenum flags);
 	virtual ~Texture2D();
 	
-	void texImage2D(GLenum target,
-					GLint level,
+	void texImage2D(GLint level,
 					GLint internalformat,
 					GLsizei width,
 					GLsizei height,

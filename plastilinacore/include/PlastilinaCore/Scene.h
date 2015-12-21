@@ -101,7 +101,7 @@ public:
 	 */
 	virtual void render() const;
     
-    virtual void render(const RenderState * state) const;
+    virtual void render(RenderState & state) const;
     
     void loadFromFile(const std::string & filename);
     

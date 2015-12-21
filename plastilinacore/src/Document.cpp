@@ -107,7 +107,7 @@ public:
 private:
     Document::const_shared_ptr  _doc;
     Scene::shared_ptr            _scene;
-    mutable int                 _current;
+    mutable size_t               _current;
     
 public:
     SceneIterator(const Document::const_weak_ptr & doc) ;
@@ -284,7 +284,7 @@ Scene::weak_ptr Document::scene() const
 SceneNode::shared_ptr Document::index (int row, 
                                const SceneNode::shared_ptr & parent ) const
 {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
 //    std::cerr << "Arg1: " << row << " Arg2:" << column << " Arg3:" << parent;
     assert(_d && _d->scene);
     
@@ -299,7 +299,7 @@ SceneNode::shared_ptr Document::index (int row,
 
 SceneNode::shared_ptr Document::parent ( const SceneNode::shared_ptr & index ) const
 {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
 //    std::cerr << "Arg1: " << index;
     assert(_d && _d->scene);
     
@@ -336,7 +336,7 @@ SceneNode::shared_ptr Document::parent ( const SceneNode::shared_ptr & index ) c
 
 size_t Document::childrenCount ( const SceneNode::shared_ptr & parent ) const
 {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
 //    std::cerr << "Arg1: " << parent;
     
     assert(_d && _d->scene);
@@ -356,7 +356,7 @@ size_t Document::childrenCount ( const SceneNode::shared_ptr & parent ) const
 
 SceneNode::shared_ptr Document::findItem(uint32_t iid) 
 {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     //std::cerr << "Arg1: " << iid;
     SceneNode::shared_ptr p;
     return _d->scene->findByIID(iid);
@@ -365,7 +365,7 @@ SceneNode::shared_ptr Document::findItem(uint32_t iid)
 void Document::addItem(const SceneNode::shared_ptr & node, 
                      const SceneNode::shared_ptr & parent)
 {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
 //    std::cerr << "Arg1: " << node->iid() << " Arg2:" << parent;
     assert(_d && _d->scene);
     

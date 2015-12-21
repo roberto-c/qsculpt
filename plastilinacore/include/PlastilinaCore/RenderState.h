@@ -9,6 +9,8 @@
 #ifndef QSculpt_RenderState_h
 #define QSculpt_RenderState_h
 
+#include <memory>
+
 enum class RenderMode;
 
 class SceneNode;
@@ -16,11 +18,11 @@ class CameraNode;
 class Material;
 
 struct DLLEXPORT RenderState {
-    const SceneNode 	*root;
-    const SceneNode 	*currentNode;
-    RenderMode  		renderMode;
-    CameraNode			*camera;
-    Material			*material;
+    std::shared_ptr<const SceneNode> root;
+    std::shared_ptr<const SceneNode> currentNode;
+    RenderMode  		             renderMode;
+    std::shared_ptr<CameraNode>      camera;
+    std::shared_ptr<Material>	     material;
     
     RenderState 		merge(const RenderState & state) const;
     

@@ -136,6 +136,7 @@ namespace core {
     struct clSurfaceList;
     
     struct GpuSubdivision::Impl : public IRenderable {
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     /** Instance ID of the surface */
     ISurface::size_t _iid;
     
@@ -178,7 +179,7 @@ namespace core {
     
     static int 	initialize_ocl(void);
         
-    virtual void render(const RenderState * state) const;
+    virtual void render(RenderState & state) const;
 };
     
 bool 				GpuSubdivision::Impl::oclInitialized;
@@ -1216,9 +1217,9 @@ GpuSubdivision::Impl::subdivide(GpuSubdivision * s)
 }
 
 void
-GpuSubdivision::Impl::render(const RenderState *state) const
+GpuSubdivision::Impl::render(RenderState & state) const
 {
-    assert(state != nullptr && state->isValid());
+    assert(state.isValid() && "state is not valid");
     assert(_renderable != nullptr);
     _renderable->render(state);
 }

@@ -61,6 +61,7 @@ struct VertexPool {
 static std::atomic_int NEXT_ID;
 
 struct Mesh::Impl {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     /** Instance ID of the surface */
 	ISurface::size_t _iid;
     
@@ -114,7 +115,7 @@ public:
 		NOT_IMPLEMENTED;
 	}
 	
-	void render(const Mesh* mesh, const RenderState * state) const {
+	void render(const Mesh* mesh, RenderState & state) const {
 		NOT_IMPLEMENTED;
 	}
 };
@@ -466,7 +467,7 @@ const IRenderable* Mesh::renderable() const
 }
 
 // IRenderable
-void Mesh::render(const RenderState * state) const
+void Mesh::render(RenderState & state) const
 {
 	MeshRenderer::instance()->render(this, state);
 }

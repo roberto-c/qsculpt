@@ -37,7 +37,7 @@ public:
     
     virtual ~GpuSubdivisionRenderable();
     
-    virtual void render(const RenderState * state) const;
+    virtual void render( RenderState & state) const;
     
 private:
     struct Impl;

@@ -115,8 +115,8 @@ private:
 	
 private:
     struct Impl;
-    std::unique_ptr<Impl> d;
-    
+    //std::unique_ptr<Impl> d;
+    Impl* d;
 	static BOManager* m_instance;
 };
 

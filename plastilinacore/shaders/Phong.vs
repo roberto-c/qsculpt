@@ -16,7 +16,7 @@ uniform mat4 objectTransform;
 /* Outputs -> fragment program */
 out vec3 lightVector, eyeVector, normal;
 out vec4 color;
-//out vec4 gl_Position;
+out vec4 gl_Position;
 
 vec4 ftransform() {
     return glProjectionMatrix * glModelViewMatrix * objectTransform * glVertex;

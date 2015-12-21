@@ -42,6 +42,7 @@ BOManager::BOManager()
 
 BOManager::~BOManager()
 {
+    delete d;
 }
 
 BOManager* BOManager::getInstance()

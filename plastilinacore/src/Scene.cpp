@@ -63,7 +63,8 @@ struct Scene::Impl {
     SceneNode::shared_ptr findByIidRecursive(SceneNode::const_shared_ptr root,
                                              uint32_t IID) const;
 	
-	void renderRecursive(RenderState & state, const SceneNode * root) const;
+	void renderRecursive(RenderState & state, 
+        const SceneNode::const_shared_ptr & root) const;
     
     void importScene(const aiScene * scene, SceneNode::shared_ptr & outScene);
     
@@ -103,17 +104,18 @@ Scene::Impl::findByIidRecursive(SceneNode::const_shared_ptr root,
 }
 
 void
-Scene::Impl::renderRecursive(RenderState & state, const SceneNode * root) const
+Scene::Impl::renderRecursive(RenderState & state, 
+    const SceneNode::const_shared_ptr & root) const
 {
 	Iterator<SceneNode> it = root->constIterator();
 	while (it.hasNext()) {
 		auto n = it.next();
 		auto s = n ? std::dynamic_pointer_cast<SurfaceNode>(n) : nullptr;
 		if (s) {
-			state.currentNode = n.get();
-			s->render(&state);
+			state.currentNode = n;
+			s->render(state);
 		}
-		renderRecursive(state, n.get());
+		renderRecursive(state, n);
 	}
 }
 
@@ -172,20 +174,21 @@ void Scene::render() const
 {
 	try {
 		RenderState state;
-		state.camera = getCamera().get();
-		state.root = this;
-		state.currentNode = this;
+        auto sceneptr = this->shared_from_this();
+		state.camera = getCamera();
+        state.root = sceneptr;
+		state.currentNode = sceneptr;
         state.renderMode = RenderMode::RM_Smooth;
-		_d->renderRecursive(state,this);
+		render(state);
     } catch(core::GlException & e) {
         std::cerr   << "GLException: " << e.what() << std::endl
         << e.error() << ": " << e.errorString() << std::endl;
     }
 }
 
-void Scene::render(const RenderState * state) const
+void Scene::render(RenderState & state) const
 {
-    this->render();
+    _d->renderRecursive(state, state.currentNode);
 }
 
 CameraNode::shared_ptr Scene::createCamera()

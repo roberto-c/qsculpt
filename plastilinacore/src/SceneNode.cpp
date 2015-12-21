@@ -28,6 +28,7 @@
 static std::atomic_int NEXTID;
 
 struct SceneNode::Impl {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     uint32_t                                iid;
     NodeType							nodeType;
     bool                                isSelected;
@@ -615,7 +616,7 @@ void SurfaceNode::setMaterial(const std::shared_ptr<Material> & mat)
     material_ = mat;
 }
 
-void SurfaceNode::render(const RenderState * state) const
+void SurfaceNode::render(RenderState & state) const
 {
     this->surface_->renderable()->render(state);
 }

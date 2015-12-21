@@ -95,6 +95,7 @@ private:
     void        * _userData; // 8
 
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     /**
      * Contructs a new vertex instance

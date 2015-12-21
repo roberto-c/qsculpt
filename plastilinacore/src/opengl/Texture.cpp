@@ -11,7 +11,6 @@
 namespace gl {
 
 template <int TextureTarget>
-template <int TextureUnit2>
 struct Texture<TextureTarget>::Impl {
 	GLuint  name;
 	GLsizei width, height, depth;
@@ -24,25 +23,27 @@ struct Texture<TextureTarget>::Impl {
 	std::vector<GLubyte> data;
 	
 	Impl()
-	:name(0),width(0),height(0),depth(1),format(0),target(TextureUnit2) {
+	:name(0),width(0),height(0),depth(1),format(0),target(TextureTarget)
+    , level(0), internalFormat(GL_RGB), border(0), type(0) {
 	}
 	
 	Impl(GLsizei width, GLsizei height = 1, GLsizei depth = 1, GLenum flags = 0)
 	:name(0),width(width),height(height),depth(depth),format(0),
-	 target(TextureUnit2) {
+	 target(TextureTarget)
+    ,level(0), internalFormat(GL_RGB), border(0), type(0){
 	}
 	
 };
 
 template <int TextureTarget>
-Texture<TextureTarget>::Texture() : d(new Impl<TextureTarget>)
+Texture<TextureTarget>::Texture() : d(new Impl)
 {
 	glGenTextures(1, &d->name);
 }
 
 template <int TextureTarget>
 Texture<TextureTarget>::Texture(GLuint width, GLuint height, GLuint depth, GLenum flags)
-: d(new Impl<TextureTarget>(width,height,depth,flags))
+: d(new Impl(width,height,depth,flags))
 {
 	glGenTextures(1, &d->name);
 }
@@ -79,6 +80,7 @@ template <int TextureTarget>
 void Texture<TextureTarget>::bind()
 {
 	glBindTexture(TextureTarget, d->name);
+    THROW_IF_GLERROR("Failed to bind texture");
 }
 
 /**
@@ -88,13 +90,23 @@ template <int TextureTarget>
 void Texture<TextureTarget>::unbind()
 {
 	glBindTexture(TextureTarget, 0);
+    THROW_IF_GLERROR("Failed to unbind texture");
 }
     
 template <int TextureTarget>
 void Texture<TextureTarget>::setParameter(GLenum pname, GLint value)
 {
 	glTexParameteri(TextureTarget, pname, value);
+    THROW_IF_GLERROR("Failed to set paramter");
 }
+
+template <int TextureTarget>
+void Texture<TextureTarget>::setParameter(GLenum pname, GLfloat value)
+{
+    glTexParameterf(TextureTarget, pname, value);
+    THROW_IF_GLERROR("Failed to set paramter");
+}
+
 
 template <int TextureTarget>
 void Texture<TextureTarget>::setInternalFormat(GLint format, GLenum pname, GLint value)
@@ -133,7 +145,7 @@ Texture2D::~Texture2D()
 	
 }
 
-void Texture2D::texImage2D(GLenum target,
+void Texture2D::texImage2D(
 						  GLint level,
 						  GLint internalformat,
 						  GLsizei width,

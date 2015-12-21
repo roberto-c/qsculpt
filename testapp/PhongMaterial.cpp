@@ -13,9 +13,11 @@
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/Camera.h>
+#include <PlastilinaCore/ResourcesManager.h>
 
 struct PhongMaterial::Impl
 {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     Color           specular;
     Color           diffuse;
     Color           ambient;
@@ -42,15 +44,21 @@ PhongMaterial::~PhongMaterial()
 
 void PhongMaterial::load()
 {
-    d->vtxShader.loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/testapp/Sample.vs");
+    ResourcesManager rscMgr;
+
+    std::string shaderPath = rscMgr.findResourcePath("Sample", "vs");
+    d->vtxShader.loadFromFile(shaderPath);
     if (!d->vtxShader.compile()){
         std::cerr << "vtxShader: Compilation failed" << std::endl;
         std::cerr << d->vtxShader.infoLog() << std::endl;
+        throw core::GlException("Failed to compile shader", glGetError());
     }
-    d->fragShader.loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/testapp/Sample.fs");
+    shaderPath = rscMgr.findResourcePath("Sample", "fs");
+    d->fragShader.loadFromFile(shaderPath);
     if (!d->fragShader.compile()){
         std::cerr << "fragShader: Compilation failed" << std::endl;
         std::cerr << d->fragShader.infoLog() << std::endl;
+        throw core::GlException("Failed to compile fragment shader", glGetError());
     }
     shaderProgram()->attachShader(&d->vtxShader);
     shaderProgram()->attachShader(&d->fragShader);
@@ -61,6 +69,7 @@ void PhongMaterial::load()
     
     if (!shaderProgram()->link()) {
         std::cerr << "Link failed: \n" << shaderProgram()->buildLog() << std::endl;
+        throw core::GlException("Failed to link shader", glGetError());
     }
     
     std::string name;
@@ -79,61 +88,68 @@ void PhongMaterial::unload()
     
 }
 
-
-void
-getAllLightsRecursive(const SceneNode::shared_ptr & scene,
-                      std::vector<LightNode::shared_ptr> & container)
-{
-    auto it = scene->iterator();
-    while(it.hasNext()) {
-        SceneNode::shared_ptr child = it.next();
-        LightNode::shared_ptr light = std::dynamic_pointer_cast<LightNode>(child);
-        if (light) {
-            container.push_back(light);
-        }
-        getAllLightsRecursive(child, container);
-    }
-}
-
-std::vector<LightNode::shared_ptr>
-getAllLights(const std::shared_ptr<SceneNode> & doc)
-{
-    std::vector<LightNode::shared_ptr> res;
-    
-    getAllLightsRecursive(doc, res);
-    
-    return res;
-}
-
-void
-getCameraRecursive(const SceneNode::shared_ptr & scene,
-                   CameraNode::shared_ptr & container)
-{
-    if (container) return;
-    
-    auto it = scene->iterator();
-    while(it.hasNext()) {
-        SceneNode::shared_ptr child = it.next();
-        CameraNode::shared_ptr cam = std::dynamic_pointer_cast<CameraNode>(child);
-        if (cam) {
-            container = cam;
-        } else {
-            getCameraRecursive(child, container);
+namespace {
+    void
+        getAllLightsRecursive(const SceneNode::const_shared_ptr & scene,
+            std::vector<LightNode::shared_ptr> & container)
+    {
+        auto it = scene->constIterator();
+        while (it.hasNext()) {
+            SceneNode::shared_ptr child = it.next();
+            LightNode::shared_ptr light = std::dynamic_pointer_cast<LightNode>(child);
+            if (light) {
+                container.push_back(light);
+            }
+            getAllLightsRecursive(child, container);
         }
     }
-}
 
-CameraNode::shared_ptr
-getCamera(const std::shared_ptr<SceneNode> & doc)
-{
-    CameraNode::shared_ptr res;
-    
-    getCameraRecursive(doc, res);
-    
-    return res;
+    std::vector<LightNode::shared_ptr>
+        getAllLights(const SceneNode::const_shared_ptr & doc)
+    {
+        std::vector<LightNode::shared_ptr> res;
+
+        getAllLightsRecursive(doc, res);
+
+        return res;
+    }
+
+    void
+        getCameraRecursive(const SceneNode::const_shared_ptr & scene,
+            CameraNode::shared_ptr & container)
+    {
+        if (container) return;
+
+        auto it = scene->constIterator();
+        while (it.hasNext()) {
+            SceneNode::shared_ptr child = it.next();
+            CameraNode::shared_ptr cam = std::dynamic_pointer_cast<CameraNode>(child);
+            if (cam) {
+                container = cam;
+            }
+            else {
+                getCameraRecursive(child, container);
+            }
+        }
+    }
+
+    CameraNode::shared_ptr
+        getCamera(const SceneNode::const_shared_ptr & doc)
+    {
+        CameraNode::shared_ptr res;
+
+        getCameraRecursive(doc, res);
+
+        return res;
+    }
 }
 
 void PhongMaterial::setup(const std::shared_ptr<SceneNode> & doc)
+{
+    setup(std::dynamic_pointer_cast<const SceneNode>(doc));
+}
+
+void PhongMaterial::setup(const std::shared_ptr<const SceneNode> & doc)
 {
     Eigen::Vector4f camPos(0,0,0,1);
     Eigen::Vector4f lightPos(4,0,0,1);

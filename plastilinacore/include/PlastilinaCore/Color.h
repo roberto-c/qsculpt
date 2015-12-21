@@ -14,6 +14,7 @@ class Color {
     Eigen::Vector4f _d;
     
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     Color() : _d(Eigen::Vector4f(1, 1, 1,1)) {}
     
     Color(const Eigen::Vector4f & color) : _d(color)

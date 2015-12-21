@@ -58,16 +58,16 @@ SubdivisionRenderable::~SubdivisionRenderable()
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
-void SubdivisionRenderable::renderObject(const RenderState * state) const
+void SubdivisionRenderable::renderObject(RenderState & state) const
 {
 	ISurface * obj = NULL;
 	std::shared_ptr<Material> mat;
 	
-	const SceneNode * node = state->currentNode;
+	auto node = state.currentNode;
 	if (!node) {
 		return;
 	}
-	const SurfaceNode * snode = dynamic_cast<const SurfaceNode*>(node);
+	auto snode = std::dynamic_pointer_cast<const SurfaceNode>(node);
 	if (!snode) {
 		std::cerr << __func__ << ": Node is not a SurfaceNode.\n";
 		return;
@@ -75,12 +75,12 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 	
 	if (snode->material() && snode->material()->shaderProgram()) {
 		snode->material()->shaderProgram()->useProgram();
-		snode->material()->setup(state->root->shared_from_this());
+		snode->material()->setup(state.root);
 	}
 	
 	GlslProgram * prog = GlslProgram::currentProgram();
 	if (prog->programID() > 0) {
-		CameraNode * cameraNode = state->camera;
+		auto cameraNode = state.camera;
         Camera * camera = cameraNode->camera().get();
 		GLint matId = prog->uniformLocation("glModelViewMatrix");
         Eigen::Affine3f t(camera->modelView());
@@ -130,7 +130,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
     vbo->bind();
 	if (vbo->needUpdate())
 	{
-		if (state->renderMode == RenderMode::RM_Points) {
+		if (state.renderMode == RenderMode::RM_Points) {
 			fillVertexBufferPoints(obj, vbo);
 		} else {
 			fillVertexBuffer(obj, vbo);
@@ -169,7 +169,7 @@ void SubdivisionRenderable::renderObject(const RenderState * state) const
 		THROW_IF_GLERROR("Failed to get attribute");
     }
 	
-	switch (state->renderMode) {
+	switch (state.renderMode) {
 		case RenderMode::RM_Smooth:
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -371,7 +371,7 @@ bool SubdivisionRenderable::processTriangle(const Vertex & v1,
 }
 
 
-void SubdivisionRenderable::render(const RenderState * state) const
+void SubdivisionRenderable::render(RenderState & state) const
 {
 	renderObject(state);
 }

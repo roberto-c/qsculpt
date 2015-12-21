@@ -71,6 +71,7 @@ bool GlslShader<SHADERTYPE>::loadFromString(const std::vector<std::string> & sou
             lines.push_back(source[i].c_str());
         }
         glShaderSource(shaderId_, size, lines.data(), NULL);
+        THROW_IF_GLERROR("Failed to set shader source");
         ret = true;
     } catch (std::exception & e) {
         std::cerr << e.what() << std::endl;

@@ -17,6 +17,7 @@
 
 struct TestMaterial::Impl
 {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     Color           specular;
     Color           diffuse;
     Color           ambient;

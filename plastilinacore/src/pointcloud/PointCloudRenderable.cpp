@@ -59,16 +59,16 @@ PointCloudRenderable::~PointCloudRenderable()
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
-void PointCloudRenderable::renderObject(const RenderState * state) const
+void PointCloudRenderable::renderObject(RenderState & state) const
 {
 	ISurface * obj = NULL;
 	std::shared_ptr<Material> mat;
 	
-	const SceneNode * node = state->currentNode;
+	auto node = state.currentNode;
 	if (!node) {
 		return;
 	}
-	const SurfaceNode * snode = dynamic_cast<const SurfaceNode*>(node);
+	auto snode = std::dynamic_pointer_cast<const SurfaceNode>(node);
 	if (!snode) {
 		std::cerr << __func__ << ": Node is not a SurfaceNode.\n";
 		return;
@@ -76,12 +76,12 @@ void PointCloudRenderable::renderObject(const RenderState * state) const
 	
 	if (snode->material() && snode->material()->shaderProgram()) {
 		snode->material()->shaderProgram()->useProgram();
-		snode->material()->setup(state->root->shared_from_this());
+		snode->material()->setup(state.root);
 	}
 	
 	GlslProgram * prog = GlslProgram::currentProgram();
 	if (prog->programID() > 0) {
-		CameraNode * cameraNode = state->camera;
+		auto cameraNode = state.camera;
         Camera * camera = cameraNode->camera().get();
 		GLint matId = prog->uniformLocation("glModelViewMatrix");
         if (matId != -1) prog->setUniform(matId, camera->modelView());
@@ -162,7 +162,7 @@ void PointCloudRenderable::renderObject(const RenderState * state) const
 		THROW_IF_GLERROR("Failed to get attribute");
     }
 	
-	switch (state->renderMode) {
+	switch (state.renderMode) {
         case RenderMode::RM_Smooth:
 		case RenderMode::RM_WireFrame:
 		case RenderMode::RM_Points:
@@ -242,7 +242,7 @@ void PointCloudRenderable::fillVertexBufferPoints(ISurface* mesh, VertexBuffer* 
     //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }
 
-void PointCloudRenderable::render(const RenderState * state) const
+void PointCloudRenderable::render(RenderState & state) const
 {
 	renderObject(state);
 }

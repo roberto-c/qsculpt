@@ -204,6 +204,9 @@ private:
     double m_colatitude;
     double m_longitude;
     double m_distanceFromTarget;
+
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 #endif

@@ -55,7 +55,7 @@ struct GpuSubdivisionRenderable::Impl {
     
     Impl() {}
     
-    void renderObject(const RenderState * state) const;
+    void renderObject(RenderState & state) const;
     
     VertexBuffer* getVBO(ISurface* mesh) const;
     
@@ -78,23 +78,23 @@ GpuSubdivisionRenderable::~GpuSubdivisionRenderable()
 }
 
 void GpuSubdivisionRenderable::render(
-    const RenderState * state) const
+    RenderState & state) const
 {
     _d->renderObject(state);
 }
     
 
 void GpuSubdivisionRenderable::Impl::renderObject(
-    const RenderState * state) const
+    RenderState & state) const
 {
     ISurface * obj = NULL;
 	std::shared_ptr<Material> mat;
 	
-	const SceneNode * node = state->currentNode;
+	auto node = state.currentNode;
 	if (!node) {
 		return;
 	}
-	const SurfaceNode * snode = dynamic_cast<const SurfaceNode*>(node);
+	auto snode = std::dynamic_pointer_cast<const SurfaceNode>(node);
 	if (!snode) {
 		std::cerr << __func__ << ": Node is not a SurfaceNode.\n";
 		return;
@@ -102,12 +102,12 @@ void GpuSubdivisionRenderable::Impl::renderObject(
 	
 	if (snode->material() && snode->material()->shaderProgram()) {
 		snode->material()->shaderProgram()->useProgram();
-		snode->material()->setup(state->root->shared_from_this());
+		snode->material()->setup(state.root);
 	}
 	
 	GlslProgram * prog = GlslProgram::currentProgram();
 	if (prog->programID() > 0) {
-		CameraNode * cameraNode = state->camera;
+		auto cameraNode = state.camera;
         Camera * camera = cameraNode->camera().get();
 		GLint matId = prog->uniformLocation("glModelViewMatrix");
         Eigen::Affine3f t(camera->modelView());
@@ -191,7 +191,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(
 		THROW_IF_GLERROR("Failed to get attribute");
     }
 	
-	switch (state->renderMode) {
+	switch (state.renderMode) {
 		case RenderMode::RM_Smooth:
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

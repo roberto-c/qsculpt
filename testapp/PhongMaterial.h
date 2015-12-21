@@ -27,6 +27,8 @@ public:
     
     virtual void setup(const std::shared_ptr<SceneNode> & doc);
 
+    virtual void setup(const std::shared_ptr<const SceneNode> & doc);
+
     /**
      * Exponent used for phong lighting model
      */

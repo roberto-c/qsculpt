@@ -9,6 +9,7 @@
 #include <PlastilinaCore/Plastilina.h>
 #include <iostream>
 #include <boost/filesystem.hpp>
+#include <mutex>
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
@@ -21,15 +22,18 @@ struct ResourcesManagerData {
     std::string path;
 };
 
+std::mutex g_resourcesManagerLock;
 ResourcesManagerData g_data;
 
 void ResourcesManager::setResourcesDirectory(const std::string &path)
 {
+    std::lock_guard<std::mutex> lock(g_resourcesManagerLock);
     g_data.path = path;
 }
 
 std::string ResourcesManager::resourcesDirectory()
 {
+    std::lock_guard<std::mutex> lock(g_resourcesManagerLock);
     return g_data.path;
 }
 

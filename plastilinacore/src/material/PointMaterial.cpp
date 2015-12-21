@@ -99,8 +99,7 @@ void PointMaterial::unload()
 
 void PointMaterial::setup(const std::shared_ptr<SceneNode> & node)
 {
-    const std::shared_ptr<const SceneNode> d(node);
-	setup(d);
+	setup(std::dynamic_pointer_cast<const SceneNode>(node));
 }
 
 void PointMaterial::setup(const std::shared_ptr<const SceneNode> & node)

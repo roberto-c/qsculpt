@@ -13,35 +13,16 @@
 #include <iostream>
 #include <boost/log/trivial.hpp>
 
-DLLEXPORT void Logging_increaseIndentation();
-DLLEXPORT void Logging_decreaseIndentation();
-
-class DLLEXPORT Logging {
-    std::string msg;
-    
-public:
-    Logging(const std::string & msg) : msg(msg) {
-        std::cerr << ">>" << msg << std::endl;
-        Logging_increaseIndentation();
-    }
-    
-    ~Logging() {
-        Logging_decreaseIndentation();
-        std::cerr << "<<" << msg << std::endl;
-    }
-};
-
+#define TRACE BOOST_LOG_TRIVIAL
 
 #if (defined(DEBUG) || defined(_DEBUG)) && !defined(PLASTILINA_TRACE_DISABLE)
 #	ifdef _MSC_VER
-#		define TRACEFUNCTION(msg) Logging tracelog(std::string(__FUNCTION__) + std::string(#msg))
+#		define TRACEFUNCTION(msg) TRACE(trace) << std::string(__FUNCTION__) << std::string(#msg)
 #	else
-#		define TRACEFUNCTION(msg) Logging tracelog(std::string(__PRETTY_FUNCTION__) + std::string(#msg))
+#       define TRACEFUNCTION(msg) TRACE(trace) << std::string(__PRETTY_FUNCTION__) << std::string(#msg)
 #	endif
 #else
 #	define TRACEFUNCTION(msg)
 #endif /* DEBUG */
-
-#define TRACE BOOST_LOG_TRIVIAL
 
 #endif

@@ -91,7 +91,7 @@ public:
     // End IObject3D interface
 	
 	// IRenderable
-	virtual void 						render(const RenderState * state) const;
+	virtual void 						render(RenderState & state) const;
     // End IRendeable
     
     //const Object3D& operator=(const Object3D& obj);
