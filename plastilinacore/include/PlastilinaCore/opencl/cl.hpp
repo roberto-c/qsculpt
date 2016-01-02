@@ -2133,6 +2133,11 @@ public:
         return CL_SUCCESS;
     }
 
+    void* getExtensionFunctionAddress(const char  *funcname)
+    {
+        return clGetExtensionFunctionAddressForPlatform(object_, funcname);
+    }
+
 #if defined(USE_DX_INTEROP)
    /*! \brief Get the list of available D3D10 devices.
      *

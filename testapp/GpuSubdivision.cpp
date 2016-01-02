@@ -482,8 +482,10 @@ void GpuSubdivision::initPoints()
 {
     lock();
     CLManager * oclManager = CLManager::instance();
-    ::cl::CommandQueue clctx= oclManager->commandQueue();
-    VertexCollection::allocator_type gpu_allocator(clctx);
+    
+    ::cl::Context clctx = oclManager->context();
+    ::cl::CommandQueue clqueue= oclManager->commandQueue();
+    VertexCollection::allocator_type gpu_allocator(clctx,clqueue);
     _d->_vertices = new VertexCollection(gpu_allocator);
     _d->_edges = new EdgesCollection(gpu_allocator);
     _d->_faces = new FacesCollection(gpu_allocator);
@@ -1219,7 +1221,7 @@ GpuSubdivision::Impl::subdivide(GpuSubdivision * s)
 void
 GpuSubdivision::Impl::render(RenderState & state) const
 {
-    assert(state.isValid() && "state is not valid");
+    //assert(state.isValid() && "state is not valid");
     assert(_renderable != nullptr);
     _renderable->render(state);
 }

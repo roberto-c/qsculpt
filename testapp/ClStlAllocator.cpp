@@ -75,7 +75,8 @@ MemoryPool::unlock()
 
 
 MemoryPoolGpu::MemoryPoolGpu(
-    ::cl::CommandQueue & queue
+    ::cl::Context & ctx
+    , ::cl::CommandQueue & queue
     , std::size_t n
     , cl_mem_flags flags)
     : MemoryPool(1)
@@ -83,23 +84,34 @@ MemoryPoolGpu::MemoryPoolGpu(
 {
     std::cerr << "MemoryPoolGpu()\n";
     
-    context = queue.getInfo<CL_QUEUE_CONTEXT>();
+    context = ctx;
     buffer = ::cl::Buffer(context, flags|CL_MEM_ALLOC_HOST_PTR, n);
     size = n;
 }
 
 MemoryPoolGpu::MemoryPoolGpu(
-      ::cl::CommandQueue & queue
+    ::cl::Context & ctx
+    , ::cl::CommandQueue & queue
     , BufferObject & bufobj
     , cl_mem_flags flags ) 
     : MemoryPool(1)
     , queue(queue)
 {
     std::cerr << "MemoryPoolGpu()\n";
-    context = queue.getInfo<CL_QUEUE_CONTEXT>();
+    context = ctx;
     size = bufobj.getBufferSize();
     buffer = ::cl::BufferGL(context, flags, bufobj.objectID());
 }
+
+MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu & pool)
+    : MemoryPool(pool)
+    , context(pool.context)
+    , queue(pool.queue)
+    , buffer(pool.buffer)
+{
+    NOT_IMPLEMENTED;
+}
+
 
 MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu && pool)
 : MemoryPool(std::move(pool))

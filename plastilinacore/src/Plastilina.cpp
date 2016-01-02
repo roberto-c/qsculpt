@@ -45,14 +45,23 @@ struct PlastilinaEngineState {
 PlastilinaEngineState g_engineState;
 
 #ifdef __APPLE__
-intptr_t get_window_handle() {
+intptr_t get_gl_context() {
     // Get current CGL Context and CGL Share group
     CGLContextObj kCGLContext = CGLGetCurrentContext();
     CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
 	return (intptr_t)kCGLShareGroup;
 }
+#elif defined(_WIN32)
+intptr_t get_gl_context() {
+    // Get current CGL Context and CGL Share group
+    return (intptr_t)wglGetCurrentContext();
+}
+HDC get_device_context()
+{
+    return wglGetCurrentDC();
+}
 #else
-intptr_t get_window_handle() {
+intptr_t get_gl_context() {
     std::cout << "Unknow system. Don't know how to get the window handle" << std::endl;
 	return NULL;
 }
@@ -80,8 +89,9 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
     }
 	if ( (subsystem & PlastilinaSubsystem::OPENCL) != PlastilinaSubsystem::NONE) {
         if ((subsystem & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) != PlastilinaSubsystem::NONE) {
-            intptr_t sharegrp = get_window_handle();
-            CLManager::instance()->setOpenGLContext(sharegrp);
+            intptr_t glCtx = get_gl_context();
+            CLManager::instance()->setOpenGLContext(glCtx);
+            CLManager::instance()->setDeviceContext(get_device_context());
         }
         
 		g_engineState.openclInitialized = CLManager::instance()->initialize();

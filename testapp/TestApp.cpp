@@ -7,6 +7,7 @@
 //
 #include "stable.h"
 #include <PlastilinaCore/Plastilina.h>
+#include <PlastilinaCore/Logging.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_image.h>
@@ -163,7 +164,7 @@ TestApp::~TestApp() {
 
 int TestApp::run() {
     if (!d->initialized) {
-        std::cerr << "Application failed to initialized." << std::endl;
+        TRACE(debug) << "Application failed to initialized." ;
         return 1;
     }
 	
@@ -232,7 +233,7 @@ void TestApp::loop()
 
 void TestApp::keyboard(int key, int x, int y)
 {
-    std::cout << "Key: " << (int)key << std::endl;
+    TRACE(debug)  << "Key: " << (int)key ;
     switch (key) {
         case SDLK_ESCAPE:
             SDL_Event event;
@@ -280,7 +281,7 @@ void TestApp::init(int argc, char** argv) {
     d->initialized = false;
     
 	std::string app_path = get_app_path();
-	std::cout << "App path: " << app_path << std::endl;
+	TRACE(debug)  << "App path: " << app_path ;
 	ResourcesManager rscMgr;
     rscMgr.setResourcesDirectory(app_path);
 
@@ -306,22 +307,23 @@ void TestApp::init(int argc, char** argv) {
                                   1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!d->mainwindow) {
         /* Die if creation failed */
-        std::cerr << "Unable to create window" << std::endl;
+        TRACE(debug) << "Unable to create window" ;
         return;
     }
     /* Create our opengl context and attach it to our window */
     d->maincontext = SDL_GL_CreateContext(d->mainwindow);
 	if (!d->maincontext) {
-		std::cerr << "ERROR: Unable to create OpenGL context" <<  std::endl;
+		TRACE(debug) << "ERROR: Unable to create OpenGL context" <<  std::endl;
 		return;
 	}
 
     // Now that we have the window created with an apropriate GL context,
     // Setup the engine with O
-    //CLManager::instance()->setUseGPU(false);
+    SDL_GL_MakeCurrent(d->mainwindow, d->maincontext);
+    CLManager::instance()->setUseGPU(true);
     PlastilinaSubsystem flags = PlastilinaSubsystem::OPENGL
-        | PlastilinaSubsystem::OPENCL;
-    	// | PlastilinaSubsystem::ENABLE_CL_GL_SHARING;
+        | PlastilinaSubsystem::OPENCL
+    	| PlastilinaSubsystem::ENABLE_CL_GL_SHARING;
 	if (!PlastilinaEngine::initialize(flags)) {
 		return;
 	}
@@ -342,13 +344,13 @@ void TestApp::init(int argc, char** argv) {
 	std::string texture = rscMgr.findResourcePath("Texture01", "png");
 	d->texture = IMG_Load(texture.c_str());
 	if (!d->texture) {
-		std::cerr << "Failed to load texture" << std::endl;
-		std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
+		TRACE(debug) << "Failed to load texture" ;
+		TRACE(debug) << "SDL Error: " << SDL_GetError() ;
 	} else {
-		std::cerr << "Texture loaded" << std::endl;
-        std::cerr << "TextureFormat: " << SDL_GetPixelFormatName(d->texture->format->format) << std::endl;
-        std::cerr << "Size " << d->texture->w << "x" << d->texture->h << std::endl;
-        std::cerr << "Bytes Per Pixel: " << int(d->texture->format->BytesPerPixel) << std::endl;
+		TRACE(debug) << "Texture loaded" ;
+        TRACE(debug) << "TextureFormat: " << SDL_GetPixelFormatName(d->texture->format->format) ;
+        TRACE(debug) << "Size " << d->texture->w << "x" << d->texture->h ;
+        TRACE(debug) << "Bytes Per Pixel: " << int(d->texture->format->BytesPerPixel) ;
 
 		d->glTexture1 = gl::Texture2D::shared_ptr(new gl::Texture2D());
         gl::TextureManager::instance()->setActiveTexture(GL_TEXTURE0);
@@ -412,7 +414,7 @@ void TestApp::display()
     
 	d->scene->render();
 	SDL_GL_SwapWindow(d->mainwindow);
-    //d->changeColor();
+    d->changeColor();
 }
 
 void TestApp::Impl::restart() {
@@ -421,15 +423,14 @@ void TestApp::Impl::restart() {
     setupScene();
     setupMaterial();
     
-    std::cout << "Dump scene: \n";
+    TRACE(debug)  << "Dump scene: \n";
     scene->dump();
     auto camera = scene->getCamera();
     if (camera && camera->camera()) {
-        std::cout << "Camera modelview: \n";
-        std::cout << camera->camera()->modelView().format(octaveFmt) << "\n";
-        std::cout << "Camera projection: \n";
-        std::cout << camera->camera()->projection().format(octaveFmt);
-        std::cout << "\n";
+        TRACE(debug) << "Camera modelview:"
+          << camera->camera()->modelView().format(octaveFmt)
+          << "Camera projection: \n"
+          << camera->camera()->projection().format(octaveFmt);
     }
     object = camera;
 }
@@ -445,8 +446,8 @@ void TestApp::Impl::setupScene() {
     if (useFile) {
         scene->loadFromFile("/Users/rcabral/Projects/qsculpt/assets/meshes/test2.dae");
     } else {
-        //ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
-        ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
+        ISurface * surf = core::PrimitiveFactory<core::GpuSubdivision>::createBox();
+        //ISurface * surf = core::PrimitiveFactory<Subdivision>::createBox();
         SceneNode::shared_ptr node = std::make_shared<SurfaceNode>(surf, "Box");
         scene->add(node);
         Camera::shared_ptr cam = std::make_shared<Camera>();
@@ -478,8 +479,8 @@ void TestApp::Impl::setupMaterial()
         material2->setAmbient (Color(0.1f, 0.1f, 0.1f, 1.0f));
         material2->setExponent(200);
         material2->setDiffuseTexture(glTexture1);
-        //render.setGLTexSrc(glTexture1);
-        //render.setGLTexDest(glTexture2);
+        render.setGLTexSrc(glTexture1);
+        render.setGLTexDest(glTexture2);
 		
         material3->load();
         material3->setDiffuse (Color(1.0f, 1.0f, 1.0f, 1.0f));
@@ -490,17 +491,17 @@ void TestApp::Impl::setupMaterial()
         auto it = scene->treeIterator();
         while (it.hasNext()) {
             auto node = it.next();
-            std::cout << "Node: " << node->name() << " Type: " << node->nodeType() << "\n";
+            TRACE(debug)  << "Node: " << node->name() << " Type: " << node->nodeType();
             if (node->nodeType() == NT_Surface) {
                 SurfaceNode::shared_ptr surface = std::static_pointer_cast<SurfaceNode>(node);
-                surface->setMaterial(material3);
+                surface->setMaterial(material2);
             }
         }
 	} catch(core::GlException & e) {
-        std::cerr   << "GLException: " << e.what() << std::endl
-        << e.error() << ": " << e.errorString() << std::endl;
+        TRACE(debug)   << "GLException: " << e.what() 
+        << e.error() << ": " << e.errorString() ;
     } catch (std::exception & e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+        TRACE(debug) << "Exception: " << e.what() ;
     }
     
 }
@@ -530,28 +531,28 @@ void TestApp::Impl::move(const Vector3 & delta)
 void TestApp::Impl::print()
 {
     static Eigen::IOFormat octaveFmt =
-    Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]");
+      Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]");
     
     auto camera = scene->getCamera();
     if (camera && camera->camera()) {
         //camera->transform() *= Eigen::Translation3f(delta);
         auto v = Vector4(0,0,0,1);
-        std::cout << "Point: \n" << v.format(octaveFmt) << "\n";
-        std::cout << "ModelView Matrix: \n" << camera->camera()->modelView().format(octaveFmt) << "\n";
-        v = camera->camera()->modelView() * v;
+        Vector4 v2 = camera->camera()->modelView() * v;
+        if ((v2[3] < -0.00001f) || (v2[3] > .00001f)) {
+            v2 / v2.w();
+        }
+        TRACE(debug)  << "Point: \n" << v.format(octaveFmt)
+          << "ModelView Matrix: \n" << camera->camera()->modelView().format(octaveFmt)
+          << "v*M:\n" << v2.format(octaveFmt)
+          << "Projection Matrix: \n" << camera->camera()->projection().format(octaveFmt);
+        v = camera->camera()->projection() * v2;
         if  ((v[3] < -0.00001f) || (v[3] > .00001f)) {
             v / v.w();
         }
-        std::cout << "v*M:\n" << v.format(octaveFmt) << "\n";
-        std::cout << "Projection Matrix: \n" << camera->camera()->projection().format(octaveFmt) << "\n";
-        v = camera->camera()->projection() * v;
-        if  ((v[3] < -0.00001f) || (v[3] > .00001f)) {
-            v / v.w();
-        }
-        std::cout << "v*P: \n" << v.format(octaveFmt) << "\n";
-        std::cout << "Viewport Matrix: \n" << camera->camera()->viewport().format(octaveFmt) << "\n";
-        v = camera->camera()->viewport() * v;
-        std::cout << "Viewport P: \n" << v.format(octaveFmt) << "\n";
+        v2 = camera->camera()->viewport() * v;
+        TRACE(debug)  << "v*P: \n" << v.format(octaveFmt)
+          << "Viewport Matrix: \n" << camera->camera()->viewport().format(octaveFmt)
+          << "Viewport P: \n" << v2.format(octaveFmt);
         
     }
 }

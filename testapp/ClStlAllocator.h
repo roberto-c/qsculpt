@@ -27,7 +27,7 @@ public:
     
     MemoryPool(const MemoryPool && pool);
     
-    MemoryPool(const MemoryPool& other) = delete;
+    MemoryPool(const MemoryPool& other) = default;
     
     MemoryPool& operator=(MemoryPool&& other) = default;
     
@@ -51,6 +51,7 @@ public:
      * Create a memory pool backed by OpenCL memory object.
      */
     MemoryPoolGpu(
+        ::cl::Context & ctx,
         ::cl::CommandQueue & queue,
         std::size_t n,
         cl_mem_flags flags);
@@ -60,11 +61,12 @@ public:
      * Useful for sharing data between CL ang GL
      */
     MemoryPoolGpu(
-          ::cl::CommandQueue & queue
+        ::cl::Context & ctx
+        , ::cl::CommandQueue & queue
         , BufferObject & bufobj
         , cl_mem_flags flags);
     
-    MemoryPoolGpu(const MemoryPoolGpu& other) = delete;
+    MemoryPoolGpu(const MemoryPoolGpu& other);
     
     MemoryPoolGpu(const MemoryPoolGpu && pool);
     
@@ -149,20 +151,39 @@ struct gpu_allocator {
     typedef T value_type;
 
     private:
+    ::cl::Context       ctx;
     ::cl::CommandQueue  queue;
 
     public:
-    gpu_allocator(::cl::CommandQueue & queue) noexcept
-    : queue(queue)
+    gpu_allocator(::cl::Context & ctx, ::cl::CommandQueue & queue) noexcept
+    : ctx(ctx), queue(queue)
     {
-        std::cerr << "gpu_allocator::gpu_allocator\n";
+        std::cerr << "gpu_allocator::gpu_allocator(ctx,queue)\n";
+    }
+
+    gpu_allocator() noexcept
+    {
+        std::cerr << "gpu_allocator::gpu_allocator()\n";
     }
     
-    template <class U> gpu_allocator (const gpu_allocator<U>&) noexcept {std::cerr << "gpu_allocator::gpu_allocator\n";}
+    gpu_allocator(const gpu_allocator & cpy) noexcept
+        : ctx(cpy.ctx)
+        , queue(cpy.queue)
+    {
+        std::cerr << "gpu_allocator::gpu_allocator(cpy)\n";
+    }
+
+    template <class U> 
+    gpu_allocator (const gpu_allocator<U>& cpy) noexcept
+        : ctx(cpy.ctx)
+        , queue(cpy.queue)
+    {
+        std::cerr << "gpu_allocator::gpu_allocator(cpy)\n";
+    }
     
     T* allocate (std::size_t n) {
         std::cerr << "gpu_allocator::allocate size n = " << n << "\n";
-        MemoryPoolGpu *pool = new MemoryPoolGpu(queue, n*sizeof(T), 0);
+        MemoryPoolGpu *pool = new MemoryPoolGpu(ctx, queue, n*sizeof(T), 0);
         pool->lock();
         g_poolList.push_back(pool);
         return static_cast<T*>( pool->data() );
@@ -180,6 +201,9 @@ struct gpu_allocator {
             throw std::runtime_error("Failed to deallocate. buffer not found");
         }
     }
+
+    template<class U>
+    friend class gpu_allocator;
 };
 
 

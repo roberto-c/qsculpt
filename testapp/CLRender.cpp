@@ -159,7 +159,7 @@ void CLRender::render(float step)
                                                    cl::NullRange,
                                                    cl::NDRange(256,256));
         clmgr->commandQueue().enqueueReleaseGLObjects(&obj);
-        clmgr->commandQueue().finish();
+        clmgr->commandQueue().flush();
 	} catch (cl::Error & e) {
 		std::cerr << "OpenCL exception:" << e.err() << ": " << e.what() << "\n";
 	}

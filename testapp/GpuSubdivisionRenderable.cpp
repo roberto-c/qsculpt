@@ -258,43 +258,27 @@ GpuSubdivisionRenderable::Impl::fillVertexBuffer(ISurface* mesh,
     //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
     if (mesh == NULL || vbo->objectID() == 0)
         return;
-    
+
     size_t numFaces = mesh->numFaces();
     if (numFaces == 0)
         return;
-    
-    Iterator<FaceHandle> it = mesh->constFaceIterator();
-    numFaces = 1; // number of faces after triangulation
-//    while(it.hasNext()) {
-//        numFaces += static_cast<Face*>(it.next())->numVertices() - 2;
-//    }
-    
-    size_t numVertices = numFaces*3;
+
+    size_t numVertices = numFaces * 4;
     std::vector<SmoothVtxStruct> vtxData(numVertices); // Triangles
-    
+
     size_t offset = 0;
-//    it = mesh->constFaceIterator();
-//    while(it.hasNext()) {
-//        auto f = static_cast<Face*>(it.next());
-//        processPolygon(*f, vtxData, offset);
-//    }
-    vtxData[0].v[0] = 0.0f; vtxData[0].v[1] = 1.0f; vtxData[0].v[2] = 0.0f; vtxData[0].v[3] = 1.0f;
-    vtxData[1].v[0] = 1.0f; vtxData[1].v[1] = 1.0f; vtxData[1].v[2] = 0.0f; vtxData[1].v[3] = 1.0f;
-    vtxData[2].v[0] = 1.0f; vtxData[2].v[1] = 0.0f; vtxData[2].v[2] = 0.0f; vtxData[2].v[3] = 1.0f;
-    vtxData[3].v[0] = 0.0f; vtxData[3].v[1] = 0.0f; vtxData[3].v[2] = 0.0f; vtxData[3].v[3] = 1.0f;
-    
-    vtxData[0].n[0] = 0.0f; vtxData[0].n[1] = 1.0f; vtxData[0].n[2] = 0.0f; vtxData[0].n[3] = 0.0f;
-    vtxData[1].n[0] = 1.0f; vtxData[1].n[1] = 1.0f; vtxData[1].n[2] = 0.0f; vtxData[1].n[3] = 0.0f;
-    vtxData[2].n[0] = 1.0f; vtxData[2].n[1] = 0.0f; vtxData[2].n[2] = 0.0f; vtxData[2].n[3] = 0.0f;
-    vtxData[3].n[0] = 0.0f; vtxData[3].n[1] = 0.0f; vtxData[3].n[2] = 0.0f; vtxData[3].n[3] = 0.0f;
-    
-    vtxData[0].c[0] = 0.0f; vtxData[0].c[1] = 1.0f; vtxData[0].c[2] = 0.0f; vtxData[0].c[3] = 1.0f;
-    vtxData[1].c[0] = 1.0f; vtxData[1].c[1] = 1.0f; vtxData[1].c[2] = 0.0f; vtxData[1].c[3] = 1.0f;
-    vtxData[2].c[0] = 1.0f; vtxData[2].c[1] = 0.0f; vtxData[2].c[2] = 0.0f; vtxData[2].c[3] = 1.0f;
-    vtxData[3].c[0] = 0.0f; vtxData[3].c[1] = 0.0f; vtxData[3].c[2] = 0.0f; vtxData[3].c[3] = 1.0f;
-    // offset contains the number of vertices in the vtxData after being
-    // processed.
-    offset = 3;
+    auto it = mesh->constFaceIterator();
+    while (it.hasNext()) {
+        auto f = static_cast<Face*>(it.next());
+        auto vtxIt = f->constVertexIterator();
+        while(vtxIt.hasNext()) 
+        {
+            auto v = static_cast<Vertex*>(vtxIt.next());
+            vtxData[offset].v[0] = v->position()[0]; vtxData[offset].v[1] = v->position()[1]; vtxData[offset].v[2] = v->position()[2]; vtxData[offset].v[3] = 1.0f;
+            vtxData[offset].n[0] = v->normal()[0]; vtxData[offset].n[1] = v->normal()[1]; vtxData[offset].n[2] = v->normal()[2]; vtxData[offset].n[3] = 0.0f;
+            offset++;
+        }
+    }
     GLuint dataSize = static_cast<GLuint>(offset*sizeof(SmoothVtxStruct));
     vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
     THROW_IF_GLERROR(__func__);

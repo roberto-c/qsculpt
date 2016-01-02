@@ -113,13 +113,13 @@ void SubdivisionRenderable::renderObject(RenderState & state) const
 	VertexBuffer* vbo= getVBO(obj);
 	if (vbo == NULL || vbo->objectID() == 0)
 	{
-		std::cerr << "Failed to create VBO."  << std::endl;
+		TRACE(debug) << "Failed to create VBO.";
 		return;
 	}
     VAO* vao = getVAO(obj);
     if (vao == NULL || vao->objectID() == 0)
 	{
-		std::cerr << "Failed to create VAO."  << std::endl;
+		TRACE(debug) << "Failed to create VAO.";
 		return;
 	}
 	

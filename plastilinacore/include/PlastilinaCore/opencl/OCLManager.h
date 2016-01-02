@@ -17,16 +17,26 @@ public:
 	static CLManager*	instance();
 
     ~CLManager();
-	
+
 	void setUseGPU(bool useGPU);
     
     void setOpenGLContext(intptr_t hnd);
-    
+
+#ifdef _WIN32
+    void setDeviceContext(HDC hdc);
+#endif 
+
 	/**
 	 * Method used to initialize OpenCL. This creates a default context and
 	 * a command queue.
 	 */
 	bool initialize();
+
+    /**
+     * Initialize OpenCL context with the use of OpenGL context specified.
+     *
+     */
+    bool initializeWithGLContext(void* oglCtx, void* deviceCtx);
 	
 	/**
 	 * Method used to free all OpenCL objects. This will destroy all command
@@ -49,12 +59,26 @@ public:
 	 */
 	cl::CommandQueue commandQueue();
 	
+    /**
+     */
+    std::vector<cl::Platform> platforms() const;
+
 	/**
 	 *
 	 */
 	std::vector<cl::Device> devices();
 	
+    /**
+     * Returns a list of devices that can be shared with the current
+     * OpenGL context
+    */
+    std::vector<cl::Device> devicesForGLContext();
 	
+    /**
+     * Return s true if the extension is supported
+    */
+    bool isExtensionSupported(const cl::Platform platform, const std::string & name) const;
+
 private:
 	CLManager();
 	
