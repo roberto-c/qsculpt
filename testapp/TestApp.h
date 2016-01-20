@@ -25,21 +25,6 @@ public:
     void init(int argc, char** argv);
     
     int run() ;
-    
-    void display();
-    
-    void reshape(int w, int h);
-    
-    void keyboard(int key, int x, int y);
-    
-    bool quitRequested();
-    
-    void onQuit();
-    
-    void loop();
-    
-protected:
-    void dispatchEvent(SDL_Event * event);
 };
 
 #endif

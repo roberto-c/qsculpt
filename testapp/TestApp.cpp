@@ -24,6 +24,7 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/program_options.hpp>
 //#include <omp.h>
 
 
@@ -71,6 +72,8 @@
 #include "PrimitiveFactory.h"
 #include "SubdivisionTest.h"
 
+namespace po = boost::program_options;
+
 std::string get_app_path() {
     std::vector<char> exepath;
     uint32_t size = 0;
@@ -101,6 +104,8 @@ std::string get_app_path() {
 }
 
 struct TestApp::Impl {
+    po::options_description optionsDesc;
+    po::variables_map   options;
     bool                running;
     bool                initialized;
     SDL_Surface*        surfDisplay;
@@ -125,7 +130,8 @@ struct TestApp::Impl {
     gl::Texture2D::shared_ptr		 glTexture2;
 	
 	Impl()
-	: running(false),
+	: optionsDesc("Allowed options"),
+    running(false),
 	initialized(false),
 	surfDisplay(NULL),
 	mainwindow(NULL),
@@ -136,6 +142,24 @@ struct TestApp::Impl {
 	fragShader(NULL)
 	{}
 	
+    void display();
+
+    void reshape(int w, int h);
+
+    void keyboard(int key, int x, int y);
+
+    bool quitRequested();
+
+    void onQuit();
+
+    void loop();
+
+    void dispatchEvent(SDL_Event * event);
+
+    void initialize();
+
+    void mainLoop();
+
 	void restart();
     
     void changeColor();
@@ -162,35 +186,47 @@ TestApp::~TestApp() {
     
 }
 
-int TestApp::run() {
-    if (!d->initialized) {
-        TRACE(debug) << "Application failed to initialized." ;
+void TestApp::init(int argc, char** argv) 
+{
+    // Declare the supported options.
+    d->optionsDesc.add_options()
+        ("help", "produce help message")
+        ("interactive", po::value<bool>()->default_value(true), "True to run interactive test bed. False to run automated tests")
+        ;
+
+    po::store(po::parse_command_line(argc, argv, d->optionsDesc), d->options);
+    po::notify(d->options);
+}
+
+int TestApp::run() 
+{
+    if (d->options.count("help")) {
+        std::cout << d->optionsDesc << "\n";
         return 1;
     }
 	
-    SDL_Event Event;
-    d->running = true;
-    while(d->running) {
-        while(SDL_PollEvent(&Event)) {
-            dispatchEvent(&Event);
-        }
-        
-        loop();
-        display();
+    if (d->options.count("interactive") && d->options["interactive"].as<bool>()) 
+    {
+        // initialize gui
+        d->initialize();
+        d->mainLoop();
+    }
+    else
+    {
+        TRACE(info) << "Running tests";
+        SubdivisionTest test;
+        test.run();
     }
     
-    onQuit();
-    
     return 0;
-    //glutMainLoop();
 }
 
-void TestApp::dispatchEvent(SDL_Event * event)
+void TestApp::Impl::dispatchEvent(SDL_Event * event)
 {
     switch(event->type) {
         case SDL_QUIT: {
             if (quitRequested()) {
-                d->running = false;
+                running = false;
             }
             break;
         }
@@ -212,26 +248,26 @@ void TestApp::dispatchEvent(SDL_Event * event)
     }
 }
 
-bool TestApp::quitRequested()
+bool TestApp::Impl::quitRequested()
 {
     return true;
 }
 
-void TestApp::onQuit()
+void TestApp::Impl::onQuit()
 {
     /* Delete our opengl context, destroy our window, and shutdown SDL */
-	SDL_FreeSurface(d->texture);
-    SDL_GL_DeleteContext(d->maincontext);
-    SDL_DestroyWindow(d->mainwindow);
+	SDL_FreeSurface(texture);
+    SDL_GL_DeleteContext(maincontext);
+    SDL_DestroyWindow(mainwindow);
     SDL_Quit();
 }
 
-void TestApp::loop()
+void TestApp::Impl::loop()
 {
 	SDL_Delay(15);
 }
 
-void TestApp::keyboard(int key, int x, int y)
+void TestApp::Impl::keyboard(int key, int x, int y)
 {
     TRACE(debug)  << "Key: " << (int)key ;
     switch (key) {
@@ -243,32 +279,32 @@ void TestApp::keyboard(int key, int x, int y)
 		
         case SDLK_w:
 		case SDLK_UP:
-            d->move(Vector3(    0,    0, 0.5f));
+            move(Vector3(    0,    0, 0.5f));
 			break;
         case SDLK_s:
         case SDLK_DOWN:
-            d->move(Vector3(    0,    0,-0.5f));
+            move(Vector3(    0,    0,-0.5f));
             break;
         case SDLK_a:
         case SDLK_LEFT:
-            d->move(Vector3(-0.5f,    0,    0));
+            move(Vector3(-0.5f,    0,    0));
             break;
         case SDLK_d:
         case SDLK_RIGHT:
-            d->move(Vector3( 0.5f,    0,    0));
+            move(Vector3( 0.5f,    0,    0));
             break;
         case SDLK_q:
-            d->move(Vector3(    0,-0.5f,    0));
+            move(Vector3(    0,-0.5f,    0));
             break;
         case SDLK_e:
-            d->move(Vector3(    0, 0.5f,    0));
+            move(Vector3(    0, 0.5f,    0));
             break;
 		case SDLK_SPACE: {
-			d->restart();
+			restart();
 			reshape(640,480);
 			break;
         case SDLK_p:
-            d->print();
+            print();
             break;
 		}
 			
@@ -277,8 +313,9 @@ void TestApp::keyboard(int key, int x, int y)
     }
 }
 
-void TestApp::init(int argc, char** argv) {
-    d->initialized = false;
+void TestApp::Impl::initialize()
+{
+    initialized = false;
     
 	std::string app_path = get_app_path();
 	TRACE(debug)  << "App path: " << app_path ;
@@ -303,23 +340,23 @@ void TestApp::init(int argc, char** argv) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     
     /* Create our window centered at 512x512 resolution */
-    d->mainwindow = SDL_CreateWindow("TEST", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    mainwindow = SDL_CreateWindow("TEST", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if (!d->mainwindow) {
+    if (!mainwindow) {
         /* Die if creation failed */
         TRACE(debug) << "Unable to create window" ;
         return;
     }
     /* Create our opengl context and attach it to our window */
-    d->maincontext = SDL_GL_CreateContext(d->mainwindow);
-	if (!d->maincontext) {
+    maincontext = SDL_GL_CreateContext(mainwindow);
+	if (!maincontext) {
 		TRACE(debug) << "ERROR: Unable to create OpenGL context" <<  std::endl;
 		return;
 	}
 
     // Now that we have the window created with an apropriate GL context,
     // Setup the engine with O
-    SDL_GL_MakeCurrent(d->mainwindow, d->maincontext);
+    SDL_GL_MakeCurrent(mainwindow, maincontext);
     CLManager::instance()->setUseGPU(true);
     PlastilinaSubsystem flags = PlastilinaSubsystem::OPENGL
         | PlastilinaSubsystem::OPENCL
@@ -328,7 +365,7 @@ void TestApp::init(int argc, char** argv) {
 		return;
 	}
 
-	d->render.initialize();
+	render.initialize();
     
 	// Set up the rendering context, define display lists etc.:
     glClearColor( 0.0, 0.0, 0.0, 1.0 );
@@ -341,80 +378,92 @@ void TestApp::init(int argc, char** argv) {
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	std::string texture = rscMgr.findResourcePath("Texture01", "png");
-	d->texture = IMG_Load(texture.c_str());
-	if (!d->texture) {
+	std::string texturePath = rscMgr.findResourcePath("Texture01", "png");
+	texture = IMG_Load(texturePath.c_str());
+	if (!texture) {
 		TRACE(debug) << "Failed to load texture" ;
 		TRACE(debug) << "SDL Error: " << SDL_GetError() ;
 	} else {
 		TRACE(debug) << "Texture loaded" ;
-        TRACE(debug) << "TextureFormat: " << SDL_GetPixelFormatName(d->texture->format->format) ;
-        TRACE(debug) << "Size " << d->texture->w << "x" << d->texture->h ;
-        TRACE(debug) << "Bytes Per Pixel: " << int(d->texture->format->BytesPerPixel) ;
+        TRACE(debug) << "TextureFormat: " << SDL_GetPixelFormatName(texture->format->format) ;
+        TRACE(debug) << "Size " << texture->w << "x" << texture->h ;
+        TRACE(debug) << "Bytes Per Pixel: " << int(texture->format->BytesPerPixel) ;
 
-		d->glTexture1 = gl::Texture2D::shared_ptr(new gl::Texture2D());
+		glTexture1 = gl::Texture2D::shared_ptr(new gl::Texture2D());
         gl::TextureManager::instance()->setActiveTexture(GL_TEXTURE0);
-        d->glTexture1->bind();
-        d->glTexture1->setParameter(GL_TEXTURE_BASE_LEVEL, 0);
-        d->glTexture1->setParameter(GL_TEXTURE_MAX_LEVEL, 0);
-		d->glTexture1->texImage2D(0,
+        glTexture1->bind();
+        glTexture1->setParameter(GL_TEXTURE_BASE_LEVEL, 0);
+        glTexture1->setParameter(GL_TEXTURE_MAX_LEVEL, 0);
+		glTexture1->texImage2D(0,
             GL_RGBA8,
-            d->texture->w,
-            d->texture->h,
+            texture->w,
+            texture->h,
             0,
             GL_RGB,
             GL_UNSIGNED_BYTE,
-            d->texture->pixels);
+            texture->pixels);
         
-        d->glTexture2 = gl::Texture2D::shared_ptr(new gl::Texture2D());
+        glTexture2 = gl::Texture2D::shared_ptr(new gl::Texture2D());
         gl::TextureManager::instance()->setActiveTexture(GL_TEXTURE0);
-        d->glTexture2->bind();
-        d->glTexture2->setParameter(GL_TEXTURE_BASE_LEVEL, 0);
-        d->glTexture2->setParameter(GL_TEXTURE_MAX_LEVEL, 0);
-		d->glTexture2->texImage2D(0,
+        glTexture2->bind();
+        glTexture2->setParameter(GL_TEXTURE_BASE_LEVEL, 0);
+        glTexture2->setParameter(GL_TEXTURE_MAX_LEVEL, 0);
+		glTexture2->texImage2D(0,
                                   GL_RGBA8,
-                                  d->texture->w,
-                                  d->texture->h,
+                                  texture->w,
+                                  texture->h,
                                   0,
                                   GL_RGB,
                                   GL_UNSIGNED_BYTE,
-                                  d->texture->pixels);
+                                  texture->pixels);
 	}
 	
 	
-	d->restart();
+	restart();
 	
 	reshape(1280,720);
     
-    //SubdivisionTest test;
-    //test.run();
-
-    
-    d->initialized = true;
+    initialized = true;
 }
 
-void TestApp::reshape(int w, int h)
+void TestApp::Impl::reshape(int w, int h)
 {
 #define DEFAULT_HEIGHT (4.0f)
 
     // setup viewport, projection etc. for OpenGL:
     glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
-	auto camera = d->scene->getCamera();
+	auto camera = scene->getCamera();
     if (camera && camera->camera()) {
     	camera->camera()->setViewport(0, 0, w, h);
     }
 	
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	SDL_GL_SwapWindow(d->mainwindow);
+	SDL_GL_SwapWindow(mainwindow);
 }
 
-void TestApp::display()
+void TestApp::Impl::display()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
-	d->scene->render();
-	SDL_GL_SwapWindow(d->mainwindow);
-    d->changeColor();
+	scene->render();
+	SDL_GL_SwapWindow(mainwindow);
+    changeColor();
+}
+
+void TestApp::Impl::mainLoop()
+{
+    SDL_Event Event;
+    running = true;
+    while (running) {
+        while (SDL_PollEvent(&Event)) {
+            dispatchEvent(&Event);
+        }
+
+        loop();
+        display();
+    }
+
+    onQuit();
 }
 
 void TestApp::Impl::restart() {

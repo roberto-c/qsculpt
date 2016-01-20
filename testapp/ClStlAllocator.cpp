@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "stable.h"
 #include "ClStlAllocator.h"
+#include <PlastilinaCore/Logging.h>
 
 namespace core
 {
@@ -31,7 +32,7 @@ MemoryPool::MemoryPool(std::size_t n, int alignment) noexcept
 : dataPtr(nullptr)
 , size(n)
 {
-    std::cerr << "MemoryPool()\n";
+    TRACE(debug) << "MemoryPool()";
     initialize();
 }
 
@@ -39,11 +40,12 @@ MemoryPool::MemoryPool(const MemoryPool && pool)
 : dataPtr(std::move(pool.dataPtr))
 , size(std::move(pool.size))
 {
+    TRACE(debug) << "MemoryPool(const MemoryPool && pool)";
 }
 
 MemoryPool::~MemoryPool()
 {
-    std::cerr << "~MemoryPool()\n";
+    TRACE(debug) << "~MemoryPool()";
     delete dataPtr;
     dataPtr = nullptr;
 }
@@ -82,7 +84,7 @@ MemoryPoolGpu::MemoryPoolGpu(
     : MemoryPool(1)
     , queue(queue)
 {
-    std::cerr << "MemoryPoolGpu()\n";
+    TRACE(debug) << "MemoryPoolGpu()";
     
     context = ctx;
     buffer = ::cl::Buffer(context, flags|CL_MEM_ALLOC_HOST_PTR, n);
@@ -93,13 +95,23 @@ MemoryPoolGpu::MemoryPoolGpu(
     ::cl::Context & ctx
     , ::cl::CommandQueue & queue
     , BufferObject & bufobj
+    , std::size_t n
     , cl_mem_flags flags ) 
     : MemoryPool(1)
     , queue(queue)
 {
-    std::cerr << "MemoryPoolGpu()\n";
+    TRACE(trace) << "MemoryPoolGpu()";
     context = ctx;
-    size = bufobj.getBufferSize();
+    if (n == 0)
+    {
+        size = bufobj.getBufferSize();
+    }
+    else
+    {
+        bufobj.setBufferData(nullptr, n);
+        size = n;
+    }
+    
     buffer = ::cl::BufferGL(context, flags, bufobj.objectID());
 }
 
@@ -109,6 +121,7 @@ MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu & pool)
     , queue(pool.queue)
     , buffer(pool.buffer)
 {
+    TRACE(trace) << "MemoryPoolGpu(const MemoryPoolGpu &)";
     NOT_IMPLEMENTED;
 }
 
@@ -119,12 +132,13 @@ MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu && pool)
 , queue(std::move(pool.queue))
 , buffer(std::move(pool.buffer))
 {
+    TRACE(trace) << "MemoryPoolGpu(const MemoryPoolGpu &&)";
 }
 
 
 MemoryPoolGpu::~MemoryPoolGpu()
 {
-    std::cerr << "~MemoryPoolGpu()\n";
+    TRACE(trace) << "~MemoryPoolGpu()";
     if (dataPtr) {
         unlock();
     }
@@ -133,6 +147,7 @@ MemoryPoolGpu::~MemoryPoolGpu()
 bool
 MemoryPoolGpu::lock()
 {
+    TRACE(trace) << "MemoryPoolGpu::lock()";
     dataPtr = static_cast<char*>(queue.enqueueMapBuffer(buffer,
         CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, 0, size));
     
@@ -142,6 +157,7 @@ MemoryPoolGpu::lock()
 bool
 MemoryPoolGpu::unlock()
 {
+    TRACE(trace) << "MemoryPoolGpu::unlock()";
     queue.enqueueUnmapMemObject(buffer, dataPtr);
     dataPtr = nullptr;
     return true;

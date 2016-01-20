@@ -9,6 +9,8 @@
 #include "ParticleSystem.h"
 
 #include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/Logging.h>
+#include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/opencl/OpenCL.h>
@@ -55,8 +57,10 @@ Impl::initialize_ocl(void)
 	
 	try {
 		CLManager * oclManager = CLManager::instance();
-		
-		std::string kernelSource = opencl::loadFromFile("/Users/rcabral/Projects/qsculpt/qsculpt/testapp/ParticleSystem.cl");
+        ResourcesManager rscMgr;
+
+        std::string sourcePath = rscMgr.findResourcePath("ParticleSystem", "cl");
+		std::string kernelSource = core::cl::loadFromFile(sourcePath);
 		cl::Program::Sources source(1,
 									std::make_pair(kernelSource.c_str(),kernelSource.length()));
 		program = cl::Program(oclManager->context(), source);
@@ -67,14 +71,8 @@ Impl::initialize_ocl(void)
 		krnSubdivideFaces = cl::Kernel(program, "subdivide_faces_midpoint", &err);
 		krnSubdivideAddFaces = cl::Kernel(program, "subdivide_add_faces", &err);
 	}
-	catch (cl::Error err) {
-		std::cerr
-		<< "ERROR: "
-		<< err.what()
-		<< "("
-		<< err.err()
-		<< ")"
-		<< std::endl;
+	catch (cl::Error e) {
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
 	}
 	
 	return EXIT_SUCCESS;
@@ -207,14 +205,8 @@ void Impl::step(Subdivision * s)
 		
 		//		BOManager::getInstance()->invalidateBO(s);
 		
-	} catch (cl::Error err) {
-		std::cerr
-		<< "ERROR: "
-		<< err.what()
-		<< "("
-		<< err.err()
-		<< ")"
-		<< std::endl;
+	} catch (cl::Error e) {
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
 	}
 }
 

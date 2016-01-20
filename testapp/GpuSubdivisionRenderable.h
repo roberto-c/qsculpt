@@ -21,14 +21,13 @@
 #ifndef __PLASTILINACORE_GPUSUBDIVISIONRENDERABLE__
 #define __PLASTILINACORE_GPUSUBDIVISIONRENDERABLE__
 
-#include <iostream>
 #include <PlastilinaCore/IRenderer.h>
-#include <PlastilinaCore/opengl/VertexArrayObject.h>
-#include "GpuSubdivision.h"
 
 class VertexBuffer;
 struct SmoothVtxStruct;
+
 namespace core {
+class GpuSubdivision;
 
 class GpuSubdivisionRenderable : public IRenderable
 {

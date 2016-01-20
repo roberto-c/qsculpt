@@ -9,14 +9,19 @@
 
 #include <fstream>
 #include <string>
+#include <sstream>
 
 #include <PlastilinaCore/opencl/CLUtils.h>
 
-std::string opencl::loadFromFile(const std::string &filename)
+namespace core
 {
-	std::string	source;
+namespace cl
+{
+std::string loadFromFile(const std::string &filename)
+{
+    std::string	source;
     std::ifstream file(filename);
-	
+
     if (!file.good()) {
         throw std::runtime_error(std::string("file not found: ") + filename);
     }
@@ -30,7 +35,7 @@ std::string opencl::loadFromFile(const std::string &filename)
     return source;
 }
 
-const char* opencl::errorToString(cl_int errorcode)
+const char* errorToString(cl_int errorcode)
 {
 #define CLERRSTR(X) case X: return #X; break
     switch (errorcode) {
@@ -54,7 +59,7 @@ const char* opencl::errorToString(cl_int errorcode)
         CLERRSTR(CL_LINK_PROGRAM_FAILURE);
         CLERRSTR(CL_DEVICE_PARTITION_FAILED);
         CLERRSTR(CL_KERNEL_ARG_INFO_NOT_AVAILABLE);
-                    
+
         CLERRSTR(CL_INVALID_VALUE);
         CLERRSTR(CL_INVALID_DEVICE_TYPE);
         CLERRSTR(CL_INVALID_PLATFORM);
@@ -95,12 +100,14 @@ const char* opencl::errorToString(cl_int errorcode)
         CLERRSTR(CL_INVALID_LINKER_OPTIONS);
         CLERRSTR(CL_INVALID_DEVICE_PARTITION_COUNT);
 
-        default:
-            break;
+    default:
+        break;
     }
     return "<UNKNOWN_CODE>";
 #undef CLERRSTR
 }
+}; // namespace cl
+}; // namespace core
 
 
 namespace core
@@ -156,6 +163,19 @@ void convert_to<Eigen::Vector3f, cl_float4>(
     to[2] = from.s[2];
 }
 
+std::string to_string(const cl_float2 & v)
+{
+    std::stringstream strout;
+    strout << "(" << v.x << "," << v.y << ")";
+    return strout.str();
+}
+
+std::string to_string(const cl_float4 & v)
+{
+    std::stringstream strout;
+    strout << "(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
+    return strout.str();
+}
 
 } // namespace utils
 } // namespace core

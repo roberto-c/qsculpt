@@ -21,6 +21,8 @@ set(TESTAPP_PRIVATE_HEADERS
 	./ClStlAllocator.h
 	./DocumentModelTest.h
 	./GpuSubdivision.h
+	./GpuSubdivision_private.h
+	./GpuSubdivisionPrimitives.h
 	./GpuSubdivisionRenderable.h
 	./ParticleSystem.h
 	./PhongMaterial.h
@@ -74,7 +76,7 @@ find_package(SDL2Image REQUIRED)
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost REQUIRED COMPONENTS filesystem system log date_time thread)
+find_package(Boost REQUIRED COMPONENTS filesystem system log date_time thread program_options)
 
 find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 	PATH /usr/local/include/eigen3 /usr/include/eigen3

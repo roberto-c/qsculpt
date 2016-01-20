@@ -216,6 +216,55 @@ public:
         assert(_it != 0);
         return _it->seek(pos, origin);
     }
+
+    /**
+     * Implementation to use for STL algorithms
+     */
+    inline Iterator begin()
+    {
+        return *this;
+    }
+
+    /**
+    * Implementation to use for STL algorithms
+    */
+    inline Iterator end()
+    {
+        assert(_it !- 0);
+        Iterator<T> tmp(*this);
+        tmp.seek(0, Iter_End);
+        return _tmp;
+    }
+
+    /**
+    * Implementation to use for STL algorithms
+    */
+    inline Iterator & operator++()
+    {
+        assert(_it != 0);
+        next();
+        return *this;
+    }
+
+    /**
+    * Implementation to use for STL algorithms
+    */
+    inline Iterator operator++(int)
+    {
+        assert(_it != 0);
+        Itarator<T> tmp(*this);
+        ++(*this);
+        return tmp;
+    }
+
+    /**
+    * Implementation to use for STL algorithms
+    */
+    inline T & operator*()
+    {
+        assert(_it != 0);
+        return *peekNext();
+    }
 };
 
 #endif

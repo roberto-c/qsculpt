@@ -36,9 +36,9 @@ PrimitiveFactory<GpuSubdivision>::createBox() {
     GpuSubdivision * surface = new GpuSubdivision;
     
     //qDebug("Box::initPoints()");
-    double hw = 1.0;
-    double hh = 1.0;
-    double hd = 1.0;
+    float hw = 1.0f;
+    float hh = 1.0f;
+    float hd = 1.0f;
     
     std::vector<size_t> vertexID(8);
     vertexID[0] = surface->addVertex(Point3(-hw, hh,-hd));
@@ -114,9 +114,9 @@ PrimitiveFactory<Subdivision>::createBox() {
     Subdivision * surface = new Subdivision;
     
     //qDebug("Box::initPoints()");
-    double hw = 1.0;
-    double hh = 1.0;
-    double hd = 1.0;
+    float hw = 1.0f;
+    float hh = 1.0f;
+    float hd = 1.0f;
     
     std::vector<size_t> vertexID(8);
     vertexID[0] = surface->addVertex(Point3(-hw, hh,-hd));

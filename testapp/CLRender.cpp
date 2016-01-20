@@ -8,6 +8,8 @@
 #include "stable.h"
 #include "CLRender.h"
 
+#include <PlastilinaCore/Plastilina.h>
+#include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
 #include <PlastilinaCore/ResourcesManager.h>
@@ -60,19 +62,19 @@ void CLRender::initialize()
 		
         ResourcesManager mgr;
         std::string path = mgr.findResourcePath("Render", "cl");
-		std::string kernelSource = opencl::loadFromFile(path);
+		std::string kernelSource = core::cl::loadFromFile(path);
 		cl::Program::Sources source(1,
 									std::make_pair(kernelSource.c_str(),kernelSource.length()));
 		d->program = cl::Program(mngr->context(), source);
 		d->program.build();
         d->krnFilterImg = cl::Kernel(d->program, "filter_img");
 	} catch (cl::Error & e) {
-		std::cerr << "OpenCL exception:" << e.err() << ": " << e.what() << "\n";
+		TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what() << "\n";
         if (e.err() == CL_BUILD_PROGRAM_FAILURE)
         {
             std::string buildlog;
             d->program.getBuildInfo(mngr->devices()[0], CL_PROGRAM_BUILD_LOG, &buildlog);
-            std::cerr << buildlog << std::endl;
+            TRACE(error) << "Build log: " << buildlog << std::endl;
         }
 	}
 }
@@ -161,6 +163,6 @@ void CLRender::render(float step)
         clmgr->commandQueue().enqueueReleaseGLObjects(&obj);
         clmgr->commandQueue().flush();
 	} catch (cl::Error & e) {
-		std::cerr << "OpenCL exception:" << e.err() << ": " << e.what() << "\n";
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
 	}
 }

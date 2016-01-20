@@ -26,8 +26,9 @@
 #include <map>
 #include <unordered_map>
 #include "GpuSubdivision.h"
-#include "ClStlAllocator.h"
+#include "GpuSubdivision_private.h"
 
+#include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/IRenderer.h>
@@ -53,16 +54,6 @@
 
 static std::atomic_int NEXT_ID;
 
-using core::gpusubdivision::Vertex;
-using core::gpusubdivision::Edge;
-using core::gpusubdivision::Face;
-using core::gpusubdivision::Triangle;
-template<class T> using vector = std::vector<T, core::cl::gpu_allocator<T>>;
-
-typedef vector<Vertex>  VertexCollection;
-typedef vector<Edge>    EdgesCollection;
-typedef vector<Face>    FacesCollection;
-typedef vector<Triangle> TriangleCollection;
 namespace
 {
 class FaceVertexIterator : public IIterator<VertexHandle>
@@ -74,7 +65,7 @@ public:
     FaceVertexIterator(core::GpuSubdivision *surface, Face *face)
     : surface(surface), face(face), currentEdge(nullptr)
     {
-        currentEdge = static_cast<Edge*>(surface->edge(face->edgeIid));
+        currentEdge = static_cast<Edge*>(surface->edge(face->edge));
     }
     
     IIterator<VertexHandle>* clone() const;
@@ -129,41 +120,37 @@ Face::constEdgeIterator(ISurface* surface) const
     NOT_IMPLEMENTED
 }
 
+Vertex::Vertex()
+    : VertexHandle(VertexHandleType::GPUSUBDIVISION)
+    , device::Vertex()
+{
+    TRACE(debug) << "Vertex()";
+}
+
+Vertex::Vertex(const Vertex& cpy)
+    : VertexHandle(cpy)
+    , device::Vertex(cpy)
+{
+    TRACE(debug) << "Vertex(const Vertex& cpy)";
+}
+
+Vertex::Vertex(Vertex&& cpy)
+    : VertexHandle(cpy)
+    , device::Vertex(cpy)
+{
+    TRACE(debug) << "Vertex(Vertex&& cpy)";
+}
+
 }
 }
 
 namespace core {
-    struct clSurfaceList;
-    
-    struct GpuSubdivision::Impl : public IRenderable {
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    /** Instance ID of the surface */
-    ISurface::size_t _iid;
-    
-    VertexCollection    *_vertices;
-    EdgesCollection     *_edges;
-    FacesCollection     *_faces;
-    TriangleCollection  *_triangleOutput;
-    
-    Scene*          _scene;
-    Color           _color;
-    geometry::AABB  _boundingBox;
-    bool            _selected;
-    int             _callListId;
-    bool            _genereateCallList;
-    int             _currentResolutionLevel;
-    bool            _hasChanged;
-    GpuSubdivisionRenderable*   _renderable;
-    static bool 				oclInitialized;
-    static ::cl::Program  		program;
-    static ::cl::Kernel			krnInit;
-    static ::cl::Kernel 		krnSubdivideEdges;
-    static ::cl::Kernel			krnSubdivideAddFaces;
-    static ::cl::Kernel			krnSubdivideAdjustPos;
-    
-    Impl(GpuSubdivision * surface) :     _vertices(NULL),
+GpuSubdivision::Impl::Impl(GpuSubdivision * surface) 
+    : _surface(surface),
+    _vertices(NULL),
     _edges(NULL),
     _faces(NULL),
+    _lock(_mutex, std::defer_lock),
     _scene(NULL),
     _color(1.f,1.f,1.f),
     _selected(false),
@@ -173,14 +160,13 @@ namespace core {
     _hasChanged(true),
     _renderable(new GpuSubdivisionRenderable(surface))
     {
+        _dataBuffer = std::unique_ptr<VertexBuffer>(BOManager::getInstance()->createVBO("GPUSUBDIVISION", surface));
     }
-    
-    void 		subdivide(GpuSubdivision * surf);
-    
-    static int 	initialize_ocl(void);
-        
-    virtual void render(RenderState & state) const;
-};
+
+GpuSubdivision::Impl::~Impl()
+{
+    BOManager::getInstance()->destroyAllMeshBO(_surface);
+}
     
 bool 				GpuSubdivision::Impl::oclInitialized;
 ::cl::Program  		GpuSubdivision::Impl::program;
@@ -494,7 +480,24 @@ void GpuSubdivision::initPoints()
     _d->_vertices->reserve(500);
     _d->_edges->reserve(500);
     //_d->_faces->reserve(500);
-    
+
+    using Eigen::Vector4f;
+    std::vector<Vector4f> buffer;
+    buffer.resize(12);
+    buffer[0] = Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+    buffer[1] = Vector4f(0.0f, 0.0f, 1.0f, 0.0f);
+    buffer[2] = Vector4f(0.8f, 0.8f, 0.8f, 1.0f);
+    buffer[3] = Vector4f(0.0f, 0.0f, 0.0f, 0.0f);
+    buffer[4] = Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+    buffer[5] = Vector4f(0.0f, 0.0f, 1.0f, 0.0f);
+    buffer[6] = Vector4f(0.8f, 0.8f, 0.8f, 1.0f);
+    buffer[7] = Vector4f(0.0f, 0.0f, 0.0f, 0.0f);
+    buffer[8] = Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
+    buffer[9] = Vector4f(0.0f, 0.0f, 1.0f, 0.0f);
+    buffer[10] = Vector4f(0.8f, 0.8f, 0.8f, 1.0f);
+    buffer[11] = Vector4f(0.0f, 0.0f, 0.0f, 0.0f);
+    _d->_dataBuffer->setBufferData(buffer.data(), buffer.size()*sizeof(Vector4f));
+
     unlock();
 }
 
@@ -539,6 +542,7 @@ const geometry::AABB& GpuSubdivision::boundingBox() const
 
 void GpuSubdivision::setColor(const Color& color)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     _d->_color = color;
     auto it = vertexIterator();
     while (it.hasNext()) {
@@ -548,6 +552,7 @@ void GpuSubdivision::setColor(const Color& color)
 
 Color GpuSubdivision::color() const
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     return _d->_color;
 }
 
@@ -563,6 +568,7 @@ bool GpuSubdivision::isSelected() const
 
 VertexHandle::size_t GpuSubdivision::addVertex(const Point3& point)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     _d->_vertices->push_back(Vertex());
     Vertex * v = &_d->_vertices->back();
     v->setIid(_d->_vertices->size());
@@ -575,6 +581,7 @@ VertexHandle::size_t GpuSubdivision::addVertex(const Point3& point)
 
 VertexHandle::size_t GpuSubdivision::addVertex(VertexHandle* v)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     _d->_vertices->push_back(Vertex());
     Vertex * v1 = &_d->_vertices->back();
     v1->setIid(_d->_vertices->size());
@@ -587,6 +594,7 @@ VertexHandle::size_t GpuSubdivision::addVertex(VertexHandle* v)
 
 void GpuSubdivision::removeVertex(VertexHandle::size_t iid)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     //TODO: need to mark as free space
 }
 
@@ -607,14 +615,16 @@ VertexHandle::size_t GpuSubdivision::numVertices() const
 
 EdgeHandle::size_t GpuSubdivision::addEdge(const EdgeHandle& e)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     const Edge * edge = static_cast<const Edge*>(&e);
-    const Edge * edge_pair = static_cast<const Edge*>(this->edge(edge->edgePairIid));
-    Vertex::size_t pair_head_iid = edge_pair->vertexHeadIid;
-    return addEdge(pair_head_iid, edge->vertexHeadIid);
+    const Edge * edge_pair = static_cast<const Edge*>(this->edge(edge->pair));
+    Vertex::size_t pair_head = edge_pair->head;
+    return addEdge(pair_head, edge->head);
 }
 
 EdgeHandle::size_t GpuSubdivision::addEdge(VertexHandle::size_t v1, VertexHandle::size_t v2)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     assert(_d && _d->_vertices && v1 <= _d->_vertices->size() && v2 <= _d->_vertices->size());
 
     return addEdge(&_d->_vertices->at(v1-1), &_d->_vertices->at(v2-1));
@@ -622,6 +632,7 @@ EdgeHandle::size_t GpuSubdivision::addEdge(VertexHandle::size_t v1, VertexHandle
 
 EdgeHandle::size_t GpuSubdivision::addEdge(VertexHandle* tail, VertexHandle* head)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     assert(tail && head);
     
     return edge(tail->iid(), head->iid());
@@ -637,12 +648,12 @@ EdgeHandle::size_t GpuSubdivision::edge(VertexHandle::size_t iidVtxTail, VertexH
     Edge * edge2 = & _d->_edges->back();
     edge2->setIid(_d->_edges->size());
     
-    edge1->vertexHeadIid = iidVtxHead;
-    edge1->edgePairIid = edge2->iid();
-    edge1->edgeNextIid = -1;
-    edge2->vertexHeadIid = iidVtxTail;
-    edge2->edgePairIid = edge1->iid();
-    edge2->edgeNextIid = -1;
+    edge1->head = iidVtxHead;
+    edge1->pair = edge2->iid();
+    edge1->next = -1;
+    edge2->head = iidVtxTail;
+    edge2->pair = edge1->iid();
+    edge2->next = -1;
     
     return edge1->iid();
 }
@@ -667,6 +678,7 @@ EdgeHandle::size_t GpuSubdivision::numEdges() const
 
 FaceHandle::size_t GpuSubdivision::addFace(const std::vector<VertexHandle::size_t>& vertexIndexList)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     assert(_d && _d->_edges && _d->_faces);
     std::vector<Edge::size_t> edges;
     auto size = vertexIndexList.size();
@@ -682,18 +694,19 @@ FaceHandle::size_t GpuSubdivision::addFace(const std::vector<VertexHandle::size_
     _d->_faces->push_back(Face());
     Face *f = &_d->_faces->back();
     f->setIid(_d->_faces->size() - 1);
-    f->edgeIid = edges[0];
+    f->edge = edges[0];
     for (decltype(size) i = 0; i < size; ++i) {
         Edge* e_i = static_cast<Edge*>(edge(edges[i]));
         Edge* e_ii = static_cast<Edge*>(edge(edges[(i+1)%size]));
-        e_i->edgeNextIid = e_ii->iid();
-        e_i->faceIid = f->iid();
+        e_i->next = e_ii->iid();
+        e_i->face = f->iid();
     }
     return f->iid();
 }
 
 void GpuSubdivision::replaceFace(FaceHandle::size_t /*faceIndex*/, const std::vector<VertexHandle::size_t>& /*vertexIndexList*/)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     NOT_IMPLEMENTED
 }
 
@@ -701,6 +714,7 @@ void GpuSubdivision::replaceFace(FaceHandle::size_t /*faceIndex*/, const std::ve
 // clear reference to face from edges and remove the face from this surface.
 void GpuSubdivision::removeFace( FaceHandle::size_t iid)
 {
+    assert(_d != nullptr && _d->_lock.owns_lock());
     NOT_IMPLEMENTED
 }
 
@@ -756,16 +770,14 @@ void GpuSubdivision::lock() const
 {
     // lock access
     // acquire gpu memory pointers and update container with valid pointers
-//    NOT_IMPLEMENTED
-    //_mutex.lock();
+    _d->_lock.lock();
 }
 
 void GpuSubdivision::unlock() const
 {
     // invalidate pointers/submit data to gpu
     // release lock
-//    NOT_IMPLEMENTED
-    //_mutex.unlock();
+    _d->_lock.unlock();
 }
 
 void GpuSubdivision::addResolutionLevel()
@@ -1145,7 +1157,7 @@ GpuSubdivision::Impl::initialize_ocl(void)
         
         ResourcesManager mgr;
         std::string path = mgr.findResourcePath("Subdivision", "cl");
-        std::string kernelSource = opencl::loadFromFile(path);
+        std::string kernelSource = core::cl::loadFromFile(path);
         ::cl::Program::Sources source(1,
                                     std::make_pair(kernelSource.c_str(),kernelSource.length()));
         program = ::cl::Program(oclManager->context(), source);
@@ -1226,7 +1238,7 @@ GpuSubdivision::Impl::render(RenderState & state) const
     _renderable->render(state);
 }
 
-}; /* End namespace*/
+}; /* namespace core */
 
 
 

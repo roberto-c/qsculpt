@@ -41,6 +41,10 @@ TO convert_to(const FROM & d) {
     convert_to<TO>(d, v);
     return v;
 }
+
+std::string to_string(Eigen::Vector3f & v);
+std::string to_string(Eigen::Vector4f & v);
+
 }; // namespace utils
 }; // namespace core
 

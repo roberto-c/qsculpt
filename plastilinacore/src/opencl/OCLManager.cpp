@@ -7,7 +7,7 @@
 //
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
-
+#include <PlastilinaCore/opencl/CLUtils.h>
 
 #include <iostream>
 
@@ -100,7 +100,8 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
         }
         catch (cl::Error & e)
         {
-            TRACE(error) << "Failed to get platform info. Error Code: " << e.err() << "Function: " << e.what();
+            TRACE(error) << "Failed to get platform info";
+            TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
             d->printPlatformInfo(platform);
         }
     }
@@ -199,8 +200,8 @@ bool CLManager::initialize()
 		d->context = cl::Context(d->devices[0], prop.size() ==1 ? NULL : prop.data());
 		d->queue = cl::CommandQueue(d->context, d->devices[0], 0, &err);
 	}
-	catch (cl::Error err) {
-		TRACE(error) << "ERROR: " << err.what() << "(" << err.err() << ")";
+	catch (cl::Error e) {
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what() << "\n";
 	}
 	
 	d->initialized = true;

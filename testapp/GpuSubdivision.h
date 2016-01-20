@@ -24,47 +24,31 @@ namespace core
 {
 namespace gpusubdivision
 {
-    
-    struct Vertex : public VertexHandle {
+    namespace device
+    {
+#include "GpuSubdivisionPrimitives.h"
+    }
+    struct Vertex : public VertexHandle, public device::Vertex {
         typedef Vertex* shared_ptr;
-        
-        cl_float4 	p;
-        cl_float4 	n;
-        cl_float4 	c;
-        cl_float2   t;
-        cl_uint edgeIid;
-        cl_uint faceIid;
-        
-        Vertex()
-        : VertexHandle(VertexHandleType::GPUSUBDIVISION)
-        , p(), n(), c(), t(), edgeIid(-1), faceIid(-1)
-        {}
-        Vertex(const Vertex&) = default;
-        Vertex(Vertex&&) = default;
+                
+        Vertex();
+        Vertex(const Vertex&);
+        Vertex(Vertex&&);
     };
     
-    struct Edge : public EdgeHandle {
+    struct Edge : public EdgeHandle, public device::Edge {
         typedef Edge* shared_ptr;
-        
-        cl_uint	edgePairIid;
-        cl_uint edgeNextIid;
-        cl_uint vertexHeadIid;
-        cl_uint faceIid;
         
         Edge()
         : EdgeHandle(EdgeHandleType::GPUSUBDIVISION)
-        , edgePairIid(-1), edgeNextIid(-1), vertexHeadIid(-1), faceIid(-1)
         {}
     };
     
-    struct Face : public FaceHandle {
+    struct Face : public FaceHandle, public device::Face {
         typedef Face* shared_ptr;
-        
-        cl_uint edgeIid;
         
         Face()
         : FaceHandle(FaceHandleType::GPUSUBDIVISION)
-        , edgeIid(-1)
         {}
         
         /**
@@ -233,6 +217,7 @@ namespace core {
         friend class FaceIterator;
         friend class EdgeIterator;
 
+        friend class GpuSubdivisionRenderable;
     };
 };
 

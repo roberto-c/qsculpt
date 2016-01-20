@@ -22,7 +22,7 @@
 
 #include <PlastilinaCore/subdivision/Subdivision.h>
 
-struct GLUquadric;
+class GLUquadric;
 /**
  * Class that implement a sphere object.
  *

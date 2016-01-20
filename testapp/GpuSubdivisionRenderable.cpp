@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "stable.h"
 #include "GpuSubdivisionRenderable.h"
+#include "GpuSubdivision_private.h"
 
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/BOManager.h>
@@ -43,12 +44,13 @@ struct SmoothVtxStruct
     GLfloat n[4];
     GLfloat c[4];
     GLfloat t[2];
+    GLfloat padding[2];
 };
 
 namespace core {
-using core::subdivision::Vertex;
-using core::subdivision::Face;
-using core::subdivision::Edge;
+using core::gpusubdivision::Vertex;
+using core::gpusubdivision::Face;
+using core::gpusubdivision::Edge;
 
 struct GpuSubdivisionRenderable::Impl {
     const core::GpuSubdivision * surface;
@@ -60,9 +62,6 @@ struct GpuSubdivisionRenderable::Impl {
     VertexBuffer* getVBO(ISurface* mesh) const;
     
     VAO* getVAO(ISurface* mesh) const;
-    
-    void fillVertexBuffer(ISurface* mesh,
-        VertexBuffer* vbo) const;
 };
 
 GpuSubdivisionRenderable::GpuSubdivisionRenderable(
@@ -87,7 +86,7 @@ void GpuSubdivisionRenderable::render(
 void GpuSubdivisionRenderable::Impl::renderObject(
     RenderState & state) const
 {
-    ISurface * obj = NULL;
+    GpuSubdivision * obj = NULL;
 	std::shared_ptr<Material> mat;
 	
 	auto node = state.currentNode;
@@ -131,13 +130,14 @@ void GpuSubdivisionRenderable::Impl::renderObject(
 	}
 	
 	
-	obj = snode->surface();
+	obj = static_cast<GpuSubdivision*>(snode->surface());
 	mat = snode->material();
 	//std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
 	if (obj == NULL || mat == NULL)
 		return;
 	
-	VertexBuffer* vbo= getVBO(obj);
+	//VertexBuffer* vbo= getVBO(obj);
+    VertexBuffer* vbo = this->surface->_d->_dataBuffer.get();
 	if (vbo == NULL || vbo->objectID() == 0)
 	{
 		std::cerr << "Failed to create VBO."  << std::endl;
@@ -157,8 +157,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(
     vbo->bind();
 	if (vbo->needUpdate())
 	{
-        fillVertexBuffer(obj, vbo);
-		vbo->setNeedUpdate(false);
+        vbo->setNeedUpdate(false);
 		
 		GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
 		if (attColor >= 0) {
@@ -249,41 +248,6 @@ GpuSubdivisionRenderable::Impl::getVAO(
 		vao = BOManager::getInstance()->createVAO(BO_POOL_NAME, mesh);
 	}
 	return vao;
-}
-
-void
-GpuSubdivisionRenderable::Impl::fillVertexBuffer(ISurface* mesh,
-    VertexBuffer* vbo) const
-{
-    //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
-    if (mesh == NULL || vbo->objectID() == 0)
-        return;
-
-    size_t numFaces = mesh->numFaces();
-    if (numFaces == 0)
-        return;
-
-    size_t numVertices = numFaces * 4;
-    std::vector<SmoothVtxStruct> vtxData(numVertices); // Triangles
-
-    size_t offset = 0;
-    auto it = mesh->constFaceIterator();
-    while (it.hasNext()) {
-        auto f = static_cast<Face*>(it.next());
-        auto vtxIt = f->constVertexIterator();
-        while(vtxIt.hasNext()) 
-        {
-            auto v = static_cast<Vertex*>(vtxIt.next());
-            vtxData[offset].v[0] = v->position()[0]; vtxData[offset].v[1] = v->position()[1]; vtxData[offset].v[2] = v->position()[2]; vtxData[offset].v[3] = 1.0f;
-            vtxData[offset].n[0] = v->normal()[0]; vtxData[offset].n[1] = v->normal()[1]; vtxData[offset].n[2] = v->normal()[2]; vtxData[offset].n[3] = 0.0f;
-            offset++;
-        }
-    }
-    GLuint dataSize = static_cast<GLuint>(offset*sizeof(SmoothVtxStruct));
-    vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
-    THROW_IF_GLERROR(__func__);
-    
-    //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }
     
 }; // namspace core

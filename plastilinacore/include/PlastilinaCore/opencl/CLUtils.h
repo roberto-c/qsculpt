@@ -12,11 +12,15 @@
 #include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/Utilities.h>
 
-namespace opencl {
+namespace core
+{
+namespace cl
+{
     DLLEXPORT std::string loadFromFile(const std::string & filename);
-    
+
     DLLEXPORT const char* errorToString(cl_int errorcode);
-}
+};
+};
 
 namespace core
 {
@@ -32,6 +36,9 @@ namespace utils
     DLLEXPORT void convert_to(const cl_float4 & from, Eigen::Vector4f & to);
     template<>
     DLLEXPORT void convert_to(const cl_float4 & from, Eigen::Vector3f & to);
+
+    std::string to_string(const cl_float2 & v);
+    std::string to_string(const cl_float4 & v);
 };
 };
 

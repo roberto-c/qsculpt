@@ -8,6 +8,7 @@
 
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/BufferObject.h>
+#include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/opencl/opencl.h>
 #include <new>
 #include <memory>
@@ -58,12 +59,15 @@ public:
     
     /**
      * Create a memory pool backed up by an OpenGL buffer object. 
-     * Useful for sharing data between CL ang GL
+     * Useful for sharing data between CL ang GL.
+     * GL buffer is initilized to the size specified. If size is 0, then
+     * no initialization is performed.
      */
     MemoryPoolGpu(
         ::cl::Context & ctx
         , ::cl::CommandQueue & queue
         , BufferObject & bufobj
+        , std::size_t n
         , cl_mem_flags flags);
     
     MemoryPoolGpu(const MemoryPoolGpu& other);
@@ -110,19 +114,19 @@ struct allocator {
     
     typedef T value_type;
     
-    allocator() noexcept {std::cerr << "allocator::allocator\n";}
+    allocator() noexcept { TRACE(debug) << "allocator::allocator";}
     
-    template <class U> allocator (const allocator<U>&) noexcept {std::cerr << "allocator::allocator\n";}
+    template <class U> allocator (const allocator<U>&) noexcept { TRACE(debug) << "allocator::allocator";}
     
     T* allocate (std::size_t n) {
-        std::cerr << "Allocastor::allocate size n = " << n << "\n";
+        TRACE(debug) << "allocastor::allocate size n = " << n;
         MemoryPool *pool = new MemoryPool(n*sizeof(T));
         pool->lock();
         g_poolList.push_back(pool);
         return static_cast<T*>( pool->data() );
     }
     void deallocate (T* ptr, std::size_t n) {
-        std::cerr << "Allocastor::deallocate size n = " << n << "\n";
+        TRACE(debug) << "allocastor::deallocate size n = " << n;
         auto it = std::find_if(g_poolList.begin(),g_poolList.end(),SearchPtr((const char*)ptr));
         if (it != g_poolList.end())
         {
@@ -158,19 +162,19 @@ struct gpu_allocator {
     gpu_allocator(::cl::Context & ctx, ::cl::CommandQueue & queue) noexcept
     : ctx(ctx), queue(queue)
     {
-        std::cerr << "gpu_allocator::gpu_allocator(ctx,queue)\n";
+        TRACE(debug) << "gpu_allocator::gpu_allocator(ctx,queue)";
     }
 
     gpu_allocator() noexcept
     {
-        std::cerr << "gpu_allocator::gpu_allocator()\n";
+        TRACE(debug) << "gpu_allocator::gpu_allocator()";
     }
     
     gpu_allocator(const gpu_allocator & cpy) noexcept
         : ctx(cpy.ctx)
         , queue(cpy.queue)
     {
-        std::cerr << "gpu_allocator::gpu_allocator(cpy)\n";
+        TRACE(debug) << "gpu_allocator::gpu_allocator(cpy)";
     }
 
     template <class U> 
@@ -178,18 +182,18 @@ struct gpu_allocator {
         : ctx(cpy.ctx)
         , queue(cpy.queue)
     {
-        std::cerr << "gpu_allocator::gpu_allocator(cpy)\n";
+        TRACE(debug) << "gpu_allocator::gpu_allocator(cpy)";
     }
     
     T* allocate (std::size_t n) {
-        std::cerr << "gpu_allocator::allocate size n = " << n << "\n";
+        TRACE(debug) << "gpu_allocator::allocate size n = " << n;
         MemoryPoolGpu *pool = new MemoryPoolGpu(ctx, queue, n*sizeof(T), 0);
         pool->lock();
         g_poolList.push_back(pool);
         return static_cast<T*>( pool->data() );
     }
     void deallocate (T* ptr, std::size_t n) {
-        std::cerr << "gpu_allocator::deallocate size n = " << n << "\n";
+        TRACE(debug) << "gpu_allocator::deallocate size n = " << n ;
         auto it = std::find_if(g_poolList.begin(),g_poolList.end(),SearchPtr((const char*)ptr));
         if (it != g_poolList.end())
         {
@@ -203,7 +207,7 @@ struct gpu_allocator {
     }
 
     template<class U>
-    friend class gpu_allocator;
+    friend struct gpu_allocator;
 };
 
 

@@ -9,9 +9,11 @@
 #include "Subdivision.h"
 
 #include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/opencl/CLUtils.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 
 
@@ -24,13 +26,7 @@ void subdivide(SurfaceNode::shared_ptr & node)
 			surfSubdivision->addResolutionLevel();
 			BOManager::getInstance()->invalidateBO(s);
 		}
-	} catch (cl::Error err) {
-		std::cerr
-		<< "ERROR: "
-		<< err.what()
-		<< "("
-		<< err.err()
-		<< ")"
-		<< std::endl;
+	} catch (cl::Error e) {
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
 	}
 }
