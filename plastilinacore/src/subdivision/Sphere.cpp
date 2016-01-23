@@ -43,9 +43,9 @@ void Sphere::initPoints()
 
     typedef std::vector<size_t>::size_type size_type;
     
-	float lat_step = M_PI * 2 / NUM_LAT;
-	float par_step = M_PI  / NUM_PAR;
-	float s = M_PI, u = 0;
+	float lat_step = float(M_PI) * 2 / NUM_LAT;
+	float par_step = float(M_PI)  / NUM_PAR;
+	float s = float(M_PI), u = 0;
 	Point3 vtx, tmp;
     std::vector<size_t> vertexID;
     size_type i, j, index, num_points;
