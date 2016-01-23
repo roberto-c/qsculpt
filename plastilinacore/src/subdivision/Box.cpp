@@ -37,9 +37,9 @@ Box::~Box()
 void Box::initPoints()
 {
     //qDebug("Box::initPoints()");
-    double hw = 1.0;
-    double hh = 1.0;
-    double hd = 1.0;
+    float hw = 1.0;
+    float hh = 1.0;
+    float hd = 1.0;
     
     std::vector<size_t> vertexID(8);
     vertexID[0] = addVertex(Point3(-hw, hh,-hd));
@@ -134,17 +134,17 @@ void Plane::initPoints(int m, int n)
     if ( m <= 0 || n <= 0) return;
     
     //qDebug("Box::initPoints()");
-    double hw = 2.0;
-    double hh = 2.0;
-    double wstep = hw / m;
-    double hstep = hh / n;
-    double x=0, y=0;
+    float hw = 2.0;
+    float hh = 2.0;
+    float wstep = hw / m;
+    float hstep = hh / n;
+    float x=0, y=0;
     int j=0,i=0, numVtx=0;
     
 
     std::vector<size_t> vertexID((m+1) * (n+1));
     y = -hh / 2;
-    double v = 0, u = 0;
+    float v = 0, u = 0;
     for (i = 0; i <= m; ++i) {
         x = -hw/2;
         u = 0;

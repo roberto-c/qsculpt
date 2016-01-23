@@ -457,7 +457,7 @@ void Subdivision::Impl::subdivide(Subdivision * surf) {
         while(vtxIt.hasNext()) {
             p += static_cast<Vertex*>(vtxIt.next())->position();
         }
-        p = p / face->numVertices();
+        p = p / float(face->numVertices());
         size_t midPointIid = surf->addVertex(p);
         face->setUserData( static_cast<void*>(&midPointIid) );
         
@@ -763,7 +763,7 @@ FaceHandle::size_t Subdivision::addFace(const std::vector<VertexHandle::size_t>&
         return -1;
     }
     
-    for (int i = 0; i < size; ++i) {
+    for (auto i = 0U; i < size; ++i) {
         size_t iid = addEdge(vertexIndexList[i], vertexIndexList[(i+1) % size]);
         assert(iid > 0);
         Edge *e = _d->_edges->at(iid);
@@ -772,7 +772,7 @@ FaceHandle::size_t Subdivision::addFace(const std::vector<VertexHandle::size_t>&
     }
     Face *f = new Face(this);
     f->setHEdge(edges[0]);
-    for (int i = 0; i < size; ++i) {
+    for (auto i = 0U; i < size; ++i) {
         edges[i]->setNext(edges[(i+1)%size]);
         edges[i]->setFace(f);
         //_edges[edgesIndices[i]].setNext(edgesIndices[(i+1)%size]);

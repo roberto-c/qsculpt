@@ -72,7 +72,7 @@ public:
     typedef SceneNode::Ptr          Ptr;
     
     SceneNode::const_shared_ptr     _parent;
-    mutable int _index;
+    mutable unsigned int _index;
     
 public:
     SceneNodeIterator(const SceneNode::const_weak_ptr & parent) ;
@@ -185,7 +185,7 @@ public:
     
     mutable SceneNode::const_shared_ptr     _parent;
     mutable std::vector<uint32_t>		_levelStack;
-    mutable int _nextIndex;
+    mutable unsigned int _nextIndex;
     
 public:
     SceneNodeTreeIterator(const SceneNode::const_weak_ptr & parent) ;
