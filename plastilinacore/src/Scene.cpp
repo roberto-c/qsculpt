@@ -224,7 +224,7 @@ void Scene::Impl::importScene(const aiScene * scene, SceneNode::shared_ptr & out
     assert(scene->mRootNode && "Scene->mRootNode is NULL");
     
     if (scene->HasCameras()) {
-        for (int i = 0; i < scene->mNumCameras; ++i) {
+        for (auto i = 0U; i < scene->mNumCameras; ++i) {
             aiNode* cnd = scene->mRootNode->FindNode(scene->mCameras[i]->mName);
             if (cnd) {
             	cameraNodes.push_back(cnd);
@@ -243,11 +243,11 @@ void Scene::Impl::importScene(const aiScene * scene, SceneNode::shared_ptr & out
         camPtr->setOrientationVector(Point3(0,1,0));
         camPtr->setTargetPoint(-Point3(0,0,0));
         float yfov = 45;
-        yfov = (45) / 1.77;
+        yfov = (45) / 1.77f;
         camPtr->setPerspectiveMatrix(yfov,
-                                     1.33,
-                                     0.01,
-                                     1000);
+                                     1.33f,
+                                     0.01f,
+                                     1000.f);
     }
     if (scene->HasMeshes()) {
         aiNode * node = scene->mRootNode;
@@ -350,8 +350,8 @@ void Scene::Impl::processCamera(const aiScene * scene,
     camPtr->setPosition(Point3(&camera->mPosition.x));
     camPtr->setOrientationVector(Point3(&camera->mUp.x));
     camPtr->setTargetPoint(Point3(&camera->mLookAt.x));
-    float yfov = camera->mHorizontalFOV * 180 / M_PI;
-    yfov = (camera->mHorizontalFOV * 2 * 180 / M_PI) / camera->mAspect;
+    float yfov = camera->mHorizontalFOV * 180 / float(M_PI);
+    yfov = (camera->mHorizontalFOV * 2.f * 180 / float(M_PI)) / camera->mAspect;
     camPtr->setPerspectiveMatrix(yfov,
                                  camera->mAspect,
                                  camera->mClipPlaneNear,

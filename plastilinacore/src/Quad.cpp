@@ -42,9 +42,9 @@ void Quad::initPoints()
 void Quad::initTriangles()
 {
     //qDebug("Box::initTriangles()");
-    double hw = 1.0;
-    double hh = 1.0;
-    double hd = 0.0;
+    float hw = 1.0f;
+    float hh = 1.0f;
+    float hd = 0.0f;
 
     std::vector<size_t> indexList(4);
     indexList[0] = addVertex(new Vertex(Point3(-hw, hh, hd), Vector3(-hw, hh, hd)));
