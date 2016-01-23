@@ -60,15 +60,15 @@ public:
 
     Point3 getOrientationVector();
 
-    void setLongitude(double longitude);
+    void setLongitude(float longitude);
 
     double getLongitude();
 
-    void setColatitude(double colatitude);
+    void setColatitude(float colatitude);
 
     double getColatitude();
 
-    void setDistanceFromTarget(double distance);
+    void setDistanceFromTarget(float distance);
 
     double getDistanceFromTarget();
 
@@ -201,9 +201,9 @@ private:
     Point3 m_target;
     Point3 m_orientation;
 
-    double m_colatitude;
-    double m_longitude;
-    double m_distanceFromTarget;
+    float m_colatitude;
+    float m_longitude;
+    float m_distanceFromTarget;
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

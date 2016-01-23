@@ -123,13 +123,13 @@ Point3 Camera::getOrientationVector()
     return m_orientation;
 }
 
-void Camera::setLongitude(double longitude)
+void Camera::setLongitude(float longitude)
 {
     m_longitude = longitude;
 
-    double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-    double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-    double z = m_distanceFromTarget * cos(m_colatitude);
+    float x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
+    float y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
+    float z = m_distanceFromTarget * cos(m_colatitude);
 
     m_position = m_target + Point3(x, y, z);
 
@@ -141,13 +141,13 @@ double Camera::getLongitude()
     return m_longitude;
 }
 
-void Camera::setColatitude(double colatitude)
+void Camera::setColatitude(float colatitude)
 {
     m_colatitude = colatitude;
 
-    double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-    double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-    double z = m_distanceFromTarget * cos(m_colatitude);
+    float x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
+    float y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
+    float z = m_distanceFromTarget * cos(m_colatitude);
 
     m_position = m_target + Point3(x, y, z);
 
@@ -164,13 +164,13 @@ double Camera::getDistanceFromTarget()
     return m_distanceFromTarget;
 }
 
-void Camera::setDistanceFromTarget(double distance)
+void Camera::setDistanceFromTarget(float distance)
 {
     m_distanceFromTarget = distance;
 
-    double x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-    double y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-    double z = m_distanceFromTarget * cos(m_colatitude);
+    float x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
+    float y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
+    float z = m_distanceFromTarget * cos(m_colatitude);
 
     m_position = m_target + Point3(x, y, z);
 
@@ -257,9 +257,9 @@ void Camera::setPerspectiveMatrix(float left, float right,
     float D = - (2 * far * near) / dNF;
 
     _projMat.setZero();
-    _projMat(0, 0) =  ( 2.0 * near) / dLR;
+    _projMat(0, 0) =  ( 2.0f * near) / dLR;
     _projMat(0, 2) = A;
-    _projMat(1, 1) =  ( 2.0 * near) / dBT;
+    _projMat(1, 1) =  ( 2.0f * near) / dBT;
     _projMat(1, 2) = B;
     _projMat(2, 2) = C;
     _projMat(2, 3) = D;
@@ -294,8 +294,8 @@ void Camera::setPerspectiveMatrix(float fovy, float aspect, float zNear, float z
 {
     assert(zNear > 0 && zFar > 0 && fovy > 0 && fovy < 180.0);
     
-    fovy = fovy/2.0;
-    float t = tanf(fovy * M_PI / 180.0) * zNear;
+    fovy = fovy/2.0f;
+    float t = tanf(fovy * float(M_PI) / 180.0f) * zNear;
     float b = -t;
     float r = t * aspect;
     float l = -r;
@@ -312,12 +312,12 @@ void Camera::setViewport(int x, int y, int w, int h)
 {
     float n = WINDOW_NEAR, f = WINDOW_FAR;
     _viewportMat.setZero();
-    _viewportMat(0, 0) = w/2;
-    _viewportMat(1, 1) = h/2;
-    _viewportMat(0, 3) = w / 2 + x;
-    _viewportMat(1, 3) = h / 2 + y;
-    _viewportMat(2, 2) = (f-n)/2;
-    _viewportMat(2, 3) = (f+n)/2;
+    _viewportMat(0, 0) = w/2.f;
+    _viewportMat(1, 1) = h/2.f;
+    _viewportMat(0, 3) = w / 2.f + x;
+    _viewportMat(1, 3) = h / 2.f + y;
+    _viewportMat(2, 2) = (f-n)/2.f;
+    _viewportMat(2, 3) = (f+n)/2.f;
 }
 
 const Eigen::Matrix4f& Camera::viewport() const
