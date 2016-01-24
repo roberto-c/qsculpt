@@ -164,13 +164,17 @@ void BOManager::destroyBO(const std::string& poolName, VAO* bo)
 void BOManager::destroyAllMeshBO(const ISurface* mesh)
 {
     assert(mesh);
-    BOMeshMap::iterator itEnd = d->m_boMeshMap.end();
-    for (BOMeshMap::iterator it = d->m_boMeshMap.begin(); it != itEnd; ++it)
+    auto keyList = std::vector<GLuint>();
+    for (auto it : d->m_boMeshMap)
     {
-        if ((*it).second == mesh)
+        if (it.second == mesh)
         {
-            d->m_boMeshMap.erase((*it).first);
+            keyList.push_back(it.first);
         }
+    }
+    for (auto key : keyList)
+    {
+        d->m_boMeshMap.erase(key);
     }
 }
 

@@ -97,6 +97,10 @@ public:
      * @param origin states the reference to jump.
      */
     virtual bool seek(int pos, IteratorOrigin origin) const = 0;
+
+    virtual bool operator==(const IIterator & rhs) { return false;  }
+
+    virtual bool operator!=(const IIterator & rhs) { return false;  }
 };
 
 
@@ -129,6 +133,11 @@ public:
      * Contructor to make a copy of another iterator.
      */
     Iterator(const Iterator<T>& cpy) : _it(cpy._it->clone()) {}
+
+    /**
+    * Contructor to make a copy of another iterator.
+    */
+    Iterator(Iterator<T>&& cpy) = default;
 
     /**
      * Deletes the iterator implementation instance.
@@ -230,10 +239,10 @@ public:
     */
     inline Iterator end()
     {
-        assert(_it !- 0);
+        assert(_it != 0);
         Iterator<T> tmp(*this);
         tmp.seek(0, Iter_End);
-        return _tmp;
+        return tmp;
     }
 
     /**
@@ -264,6 +273,22 @@ public:
     {
         assert(_it != 0);
         return *peekNext();
+    }
+
+    /**
+    * Implementation to use for STL algorithms
+    */
+    friend bool operator==(const Iterator& lhs, const Iterator& rhs) 
+    {
+        assert(lhs._it != 0 && rhs._it);
+        if (&lhs == &rhs)
+            return true;
+        return lhs._it->operator==(*(rhs._it));
+    }
+
+    friend bool operator!=(const Iterator& lhs, const Iterator& rhs) 
+    { 
+        return !(lhs == rhs);
     }
 };
 

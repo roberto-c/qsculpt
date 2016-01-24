@@ -249,6 +249,27 @@ public:
      * @param origin states the reference to jump.
      */
     bool seek(int pos, IteratorOrigin origin) const ;
+
+    virtual bool operator==(const IIterator & rhs)
+    {
+        if (this == &rhs)
+            return true;
+        const VertexIterator * r = static_cast<const VertexIterator*>(&rhs);
+        return this->_surface == r->_surface
+            && this->_level == r->_level
+            && this->_index == r->_index;
+    }
+
+    friend bool operator==(const VertexIterator &lhs, const VertexIterator& rhs)
+    {
+        return lhs._surface == rhs._surface
+            && lhs._level == rhs._level
+            && lhs._index == rhs._index;
+    }
+    friend bool operator!=(const VertexIterator &lhs, const VertexIterator& rhs)
+    {
+        return !(lhs == rhs);
+    }
 };
 
 class GpuSubdivision::FaceIterator : public IIterator<FaceHandle>
@@ -257,7 +278,6 @@ class GpuSubdivision::FaceIterator : public IIterator<FaceHandle>
     
     typedef FacesCollection::iterator iterator;
     
-    char tmp[4];
     const GpuSubdivision*  _surface;
     int                 _level;
     mutable iterator    _index;
@@ -325,6 +345,27 @@ public:
      * @param origin states the reference to jump.
      */
     bool seek(int pos, IteratorOrigin origin) const ;
+
+    virtual bool operator==(const IIterator & rhs)
+    {
+        if (this == &rhs)
+            return true;
+        const FaceIterator * r = static_cast<const FaceIterator*>(&rhs);
+        return this->_surface == r->_surface
+            && this->_level == r->_level
+            && this->_index == r->_index;
+    }
+
+    friend bool operator==(const FaceIterator &lhs, const FaceIterator& rhs)
+    {
+        return lhs._surface == rhs._surface
+            && lhs._level == rhs._level
+            && lhs._index == rhs._index;
+    }
+    friend bool operator!=(const FaceIterator &lhs, const FaceIterator& rhs)
+    {
+        return !(lhs == rhs);
+    }
 };
 
 class GpuSubdivision::EdgeIterator : public IIterator<EdgeHandle>
@@ -695,6 +736,7 @@ FaceHandle::size_t GpuSubdivision::addFace(const std::vector<VertexHandle::size_
     Face *f = &_d->_faces->back();
     f->setIid(_d->_faces->size() - 1);
     f->edge = edges[0];
+    f->vertex = vertexIndexList[0];
     for (decltype(size) i = 0; i < size; ++i) {
         Edge* e_i = static_cast<Edge*>(edge(edges[i]));
         Edge* e_ii = static_cast<Edge*>(edge(edges[(i+1)%size]));
@@ -938,14 +980,16 @@ GpuSubdivision::VertexIterator::next() const
 GpuSubdivision::VertexIterator::shared_ptr
 GpuSubdivision::VertexIterator::peekNext()
 {
-    NOT_IMPLEMENTED
-    return nullptr;
+    assert(hasNext());
+    auto *v = &*_index;
+    return v;
 }
 
 const GpuSubdivision::VertexIterator::shared_ptr
 GpuSubdivision::VertexIterator::peekNext() const {
-    NOT_IMPLEMENTED
-    return nullptr;
+    assert(hasNext());
+    auto *v = &*_index;
+    return v;
 }
 
 GpuSubdivision::VertexIterator::shared_ptr
@@ -983,9 +1027,7 @@ GpuSubdivision::VertexIterator::seek(int pos, IteratorOrigin origin) const
     }
     
     if (pos > 0) {
-        while(--pos && _index != _surface->_d->_vertices->end()) {
-            ++_index;
-        }
+        _index += pos;
         if (_index == _surface->_d->_vertices->end())
             return false;
     } else if (pos < 0 ) {
@@ -1004,8 +1046,6 @@ GpuSubdivision::FaceIterator::FaceIterator(
 , _level(level)
 {
     assert(surface);
-    this->tmp[0] = 'a';
-    this->tmp[1] = 'b';
     _index = _surface->_d->_faces->begin();
 }
 
@@ -1055,15 +1095,13 @@ GpuSubdivision::FaceIterator::next() const
 GpuSubdivision::FaceIterator::shared_ptr
 GpuSubdivision::FaceIterator::peekNext()
 {
-    NOT_IMPLEMENTED
-    return nullptr;
+    return &*_index;
 }
 
 const GpuSubdivision::FaceIterator::shared_ptr
 GpuSubdivision::FaceIterator::peekNext() const
 {
-    NOT_IMPLEMENTED
-    return nullptr;
+    return &*_index;
 }
 
 
@@ -1099,19 +1137,10 @@ GpuSubdivision::FaceIterator::seek(int pos, IteratorOrigin origin) const
             break;
     }
     
-    if (pos > 0) {
-        while(--pos && _index != _surface->_d->_faces->end()) {
-            ++_index;
-        }
-        if (_index == _surface->_d->_faces->end())
-            return false;
-    } else if (pos < 0 ) {
-        while(++pos && _index != _surface->_d->_faces->end()) {
-            --_index;
-        }
-        if (_index == _surface->_d->_faces->end())
-            return false;
-    }
+    _index += pos;
+    if (_index == _surface->_d->_faces->end())
+        return false;
+    
     return true;
 }
 

@@ -44,7 +44,7 @@ struct SubdivisionTest::Impl
 };
 
 int SubdivisionTest::Impl::setup() {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
 
     /* Initialize SDL's Video subsystem */
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -93,7 +93,7 @@ int SubdivisionTest::Impl::setup() {
 }
 
 int SubdivisionTest::Impl::test() {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     vectorPrimitivesTest();
     surfaceTest();
 
@@ -101,7 +101,7 @@ int SubdivisionTest::Impl::test() {
 }
 
 int SubdivisionTest::Impl::cleanup() {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     return 0;
 }
 
@@ -109,6 +109,8 @@ int SubdivisionTest::Impl::vectorPrimitivesTest()
 {
     TRACE(info) << "vectorPrimitivrTest";
     using core::gpusubdivision::Vertex;
+    using core::gpusubdivision::Edge;
+    using core::gpusubdivision::Face;
     using core::utils::convert_to;
     using core::utils::to_string;
 
@@ -146,6 +148,29 @@ int SubdivisionTest::Impl::vectorPrimitivesTest()
         TRACE(info) << "v[" << idx << "].p=" << to_string(v.p);
         idx++;
     }
+
+    vector<Edge> edgeList(gpu_allocator);
+    Edge edge;
+    edge.setIid(1);
+    edge.head = 1;
+    edge.pair = 2;
+    edge.face = 0;
+    edgeList.push_back(edge);
+    edge.setIid(2);
+    edge.head = 2;
+    edge.pair = 1;
+    edge.face = 0;
+    edgeList.push_back(edge);
+    TRACE(info) << "sizeof(Edge) = " << sizeof(Edge);
+    TRACE(info) << "List values:";
+    idx = 0;
+    for (const Edge & v : edgeList)
+    {
+        TRACE(info) << "addressof(v) = " << std::addressof(v);
+        TRACE(info) << "edgeList[" << idx << "].iid=" << v.iid();
+        TRACE(info) << "edgeList[" << idx << "].head=" << v.head;
+        idx++;
+    }
     return 0;
 }
 
@@ -154,6 +179,9 @@ int SubdivisionTest::Impl::surfaceTest()
     using core::gpusubdivision::Vertex;
     using core::gpusubdivision::Face;
     using core::utils::convert_to;
+    using core::utils::to_string;
+
+    int ret = 1;
 
     doc = std::make_shared<Document>();
 
@@ -223,35 +251,31 @@ int SubdivisionTest::Impl::surfaceTest()
     indexList[3] = vertexID[6];
     surface->addFace(indexList);
 
-    surface->unlock();
-
-    int counter = 0;
+    int counter=0;
     auto vtxIt = surface->constVertexIterator();
-    while (vtxIt.hasNext()) {
-        auto vertex = vtxIt.next();
-        if (vertex->type() == (int)VertexHandleType::GPUSUBDIVISION) {
-            counter++;
-            Vertex *vtx = static_cast<Vertex*>(vertex);
-            std::cout << "Vertex: " << vtx->p.s[0] << "," << vtx->p.s[1] << ","
-                << vtx->p.s[2] << "," << vtx->p.s[3] << "\n";
+    for (auto & vertex : vtxIt)
+    {
+        TRACE(debug) << "Vertex: " << vertex.iid();
+        if (vertex.type() == (int)VertexHandleType::GPUSUBDIVISION) {
+            Vertex *vtx = static_cast<Vertex*>(&vertex);
+            TRACE(debug) << "  p: " << to_string(vtx->p) ;
         }
     }
-    std::cout << "Number of vertices: " << counter << std::endl;
+
     counter = 0;
     auto faceIt = surface->constFaceIterator();
-    while (faceIt.hasNext()) {
-        auto face = faceIt.next();
-        if (face->type() == (int)FaceHandleType::GPUSUBDIVISION) {
-            counter++;
-            Face *face = static_cast<Face*>(face);
-
+    for (auto & face : faceIt)
+    {
+        TRACE(debug) << "Face: " << face.iid();
+        if (face.type() == (int)FaceHandleType::GPUSUBDIVISION) {
+            Face *f = static_cast<Face*>(&face);
+            TRACE(debug) << "  VertexId: " << f->vertex;
         }
     }
-    std::cout << "Number of faces: " << counter << std::endl;
-    if (counter == 8) {
-        return 0;
-    }
-    return 1;
+
+    surface->unlock();
+
+    return ret;
 }
 
 SubdivisionTest::SubdivisionTest()
@@ -264,7 +288,7 @@ SubdivisionTest::~SubdivisionTest()
 }
 
 int SubdivisionTest::run() {
-    TRACEFUNCTION();
+    TRACEFUNCTION("");
     if (d_->setup() != 0) {
         return -1;
     }
