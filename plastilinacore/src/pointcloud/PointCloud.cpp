@@ -57,7 +57,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const;
+    const_shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
@@ -67,7 +67,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const ;
+    const_shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
@@ -79,7 +79,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const;
+    const_shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -133,7 +133,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const {
+    const_shared_ptr next() const {
         return shared_ptr(nullptr);
     }
     
@@ -147,7 +147,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const {
+    const_shared_ptr peekNext() const {
         return shared_ptr(nullptr);
     }
     
@@ -163,7 +163,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const {
+    const_shared_ptr previous() const {
         return shared_ptr(nullptr);
     }
     
@@ -221,7 +221,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const {
+    const_shared_ptr next() const {
         return shared_ptr(nullptr);
     }
     
@@ -235,7 +235,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const {
+    const_shared_ptr peekNext() const {
         return shared_ptr(nullptr);
     }
     
@@ -251,7 +251,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const {
+    const_shared_ptr previous() const {
         return shared_ptr(nullptr);
     }
     
@@ -555,7 +555,7 @@ PointCloud::VertexIterator::shared_ptr PointCloud::VertexIterator::next()
     return v;
 }
 
-const PointCloud::VertexIterator::shared_ptr PointCloud::VertexIterator::next() const
+PointCloud::VertexIterator::const_shared_ptr PointCloud::VertexIterator::next() const
 {
     Vertex *v = *_index;
     ++_index;
@@ -566,7 +566,7 @@ PointCloud::VertexIterator::shared_ptr PointCloud::VertexIterator::peekNext() {
     return *_index;
 }
 
-const PointCloud::VertexIterator::shared_ptr PointCloud::VertexIterator::peekNext() const {
+PointCloud::VertexIterator::const_shared_ptr PointCloud::VertexIterator::peekNext() const {
     return *_index;
 }
 
@@ -577,7 +577,7 @@ PointCloud::VertexIterator::shared_ptr PointCloud::VertexIterator::previous()
     //    return _index->second;
 }
 
-const PointCloud::VertexIterator::shared_ptr PointCloud::VertexIterator::previous() const
+PointCloud::VertexIterator::const_shared_ptr PointCloud::VertexIterator::previous() const
 {
     NOT_IMPLEMENTED
     //    --_index;

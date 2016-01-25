@@ -47,9 +47,11 @@ class DLLEXPORT ISurface {
     
 public:
 	typedef uint32_t size_t;
-    typedef std::shared_ptr<ISurface>   shared_ptr;
-    typedef std::weak_ptr<ISurface>     weak_ptr;
-    typedef std::unique_ptr<ISurface>   Ptr;
+    typedef std::shared_ptr<ISurface>           shared_ptr;
+    typedef std::shared_ptr<const ISurface>     const_shared_ptr;
+    typedef std::weak_ptr<ISurface>             weak_ptr;
+    typedef std::unique_ptr<ISurface>           ptr;
+    typedef std::unique_ptr<const ISurface>     const_ptr;
 
 public:
     /**

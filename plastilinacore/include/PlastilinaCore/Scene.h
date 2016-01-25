@@ -50,11 +50,11 @@ enum class UpAxis {
 */
 class DLLEXPORT Scene : public SceneNode {
 public:
-    //typedef QSharedPointer<Scene>   shared_ptr;
-    //typedef QWeakPointer<Scene>     weak_ptr;
-    typedef std::shared_ptr<Scene>      shared_ptr;
-    typedef std::weak_ptr<Scene>        weak_ptr;
-    typedef std::unique_ptr<Scene>      Ptr;
+    typedef std::shared_ptr<Scene>          shared_ptr;
+    typedef std::shared_ptr<const Scene>    const_shared_ptr;
+    typedef std::weak_ptr<Scene>            weak_ptr;
+    typedef std::unique_ptr<Scene>          ptr;
+    typedef std::unique_ptr<const Scene>    const_ptr;
     
     Scene();
     

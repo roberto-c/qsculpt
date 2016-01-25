@@ -42,4 +42,27 @@ namespace utils
 };
 };
 
+inline bool operator==(const cl_float4 &lhs, const cl_float4 &rhs)
+{
+    return lhs.s[0] == rhs.s[0]
+        && lhs.s[1] == rhs.s[1]
+        && lhs.s[2] == rhs.s[2]
+        && lhs.s[3] == rhs.s[3];
+}
+inline bool operator!=(const cl_float4 &lhs, const cl_float4 &rhs)
+{
+    return !(lhs == rhs);
+}
+
+inline bool operator==(const cl_float2 &lhs, const cl_float2 &rhs)
+{
+    return lhs.s[0] == rhs.s[0]
+        && lhs.s[1] == rhs.s[1];
+}
+inline bool operator!=(const cl_float2 &lhs, const cl_float2 &rhs)
+{
+    return !(lhs == rhs);
+}
+
+
 #endif

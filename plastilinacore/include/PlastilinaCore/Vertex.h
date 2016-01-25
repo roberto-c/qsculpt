@@ -33,10 +33,12 @@ enum class VertexHandleType
 
 class VertexHandle {
 public:
-    typedef VertexHandle*   shared_ptr;
-    typedef VertexHandle*   weak_ptr;
-    typedef VertexHandle*   Ptr;
-	typedef uint32_t 		size_t;
+    typedef VertexHandle*           shared_ptr;
+    typedef const VertexHandle*     const_shared_ptr;
+    typedef VertexHandle*           weak_ptr;
+    typedef VertexHandle*           ptr;
+    typedef const VertexHandle*     const_ptr;
+	typedef uint32_t 		        size_t;
 	size_t	_id;
         
     VertexHandle(VertexHandleType type = VertexHandleType::NULLTYPE) : _id(0 | ((int)type << 24))
@@ -77,9 +79,11 @@ class Face;
 class Vertex : public VertexHandle
 {
 public:
-    typedef Vertex*   shared_ptr;
-    typedef Vertex*   weak_ptr;
-    typedef Vertex*   Ptr;
+    typedef Vertex*         shared_ptr;
+    typedef const Vertex*   const_shared_ptr;
+    typedef Vertex*         weak_ptr;
+    typedef Vertex*         ptr;
+    typedef const Vertex*   const_ptr;
     
     typedef VertexHandle::size_t        size_t;
     

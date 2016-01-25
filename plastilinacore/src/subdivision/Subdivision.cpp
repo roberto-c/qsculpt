@@ -211,7 +211,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const;
+    const_shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
@@ -221,7 +221,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const ;
+    const_shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
@@ -233,7 +233,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const;
+    const_shared_ptr previous() const;
 
     /**
      * Set the current position to pos relative to origin.
@@ -287,7 +287,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const;
+    const_shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
@@ -297,7 +297,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const ;
+    const_shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
@@ -309,7 +309,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const;
+    const_shared_ptr previous() const;
 
     /**
      * Set the current position to pos relative to origin.
@@ -378,7 +378,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const {
+    const_shared_ptr next() const {
         Edge * e = index_->second;
         ++index_;
         return e;
@@ -394,7 +394,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const {
+    const_shared_ptr peekNext() const {
         return index_->second;
     }
     
@@ -410,7 +410,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const {
+    const_shared_ptr previous() const {
         NOT_IMPLEMENTED
     }
     
@@ -1006,7 +1006,7 @@ Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::next()
     return v;
 }
 
-const Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::next() const
+Subdivision::VertexIterator::const_shared_ptr Subdivision::VertexIterator::next() const
 {
     Vertex *v = _index->second;
     ++_index;
@@ -1017,7 +1017,7 @@ Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::peekNext() 
     return _index->second;
 }
 
-const Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::peekNext() const {
+Subdivision::VertexIterator::const_shared_ptr Subdivision::VertexIterator::peekNext() const {
     return _index->second;
 }
 
@@ -1028,7 +1028,7 @@ Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::previous()
 //    return _index->second;
 }
 
-const Subdivision::VertexIterator::shared_ptr Subdivision::VertexIterator::previous() const
+Subdivision::VertexIterator::const_shared_ptr Subdivision::VertexIterator::previous() const
 {
     NOT_IMPLEMENTED
 //    --_index;
@@ -1114,7 +1114,7 @@ Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::next()
     return f;
 }
 
-const Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::next() const
+Subdivision::FaceIterator::const_shared_ptr Subdivision::FaceIterator::next() const
 {
     Face *f = _index->second;
     assert(f);
@@ -1126,7 +1126,7 @@ Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::peekNext() {
     return _index->second;
 }
 
-const Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::peekNext() const {
+Subdivision::FaceIterator::const_shared_ptr Subdivision::FaceIterator::peekNext() const {
     return _index->second;
 }
 
@@ -1137,7 +1137,7 @@ Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::previous()
     return _index->second;
 }
 
-const Subdivision::FaceIterator::shared_ptr Subdivision::FaceIterator::previous() const
+Subdivision::FaceIterator::const_shared_ptr Subdivision::FaceIterator::previous() const
 {
     --_index;
     return _index->second;

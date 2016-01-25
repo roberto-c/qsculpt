@@ -37,11 +37,12 @@ class DLLEXPORT IDocument :public std::enable_shared_from_this<IDocument>
 
 
 public:
-    typedef std::shared_ptr<IDocument>   shared_ptr;
-    typedef std::shared_ptr<const IDocument>   const_shared_ptr;
-    typedef std::weak_ptr<IDocument>     weak_ptr;
-    typedef std::weak_ptr<const IDocument>  const_weak_ptr;
-    typedef std::unique_ptr<IDocument>   Ptr;
+    typedef std::shared_ptr<IDocument>          shared_ptr;
+    typedef std::shared_ptr<const IDocument>    const_shared_ptr;
+    typedef std::weak_ptr<IDocument>            weak_ptr;
+    typedef std::weak_ptr<const IDocument>      const_weak_ptr;
+    typedef std::unique_ptr<IDocument>          ptr;
+    typedef std::unique_ptr<const IDocument>    const_ptr;
     
     enum ObjectType {
         Mesh,

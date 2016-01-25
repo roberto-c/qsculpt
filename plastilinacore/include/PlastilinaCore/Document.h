@@ -37,7 +37,7 @@ public:
     typedef std::shared_ptr<const Document>   const_shared_ptr;
     typedef std::weak_ptr<Document>     weak_ptr;
     typedef std::weak_ptr<const Document>  const_weak_ptr;
-    typedef std::unique_ptr<Document>   Ptr;
+    typedef std::unique_ptr<Document>   ptr;
     
     Document();
 

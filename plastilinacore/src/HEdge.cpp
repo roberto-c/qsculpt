@@ -20,7 +20,7 @@ class Edge::VertexIterator : public IIterator<Vertex>
 public:
     typedef Vertex::shared_ptr shared_ptr;
     typedef Vertex::weak_ptr weak_ptr;
-    typedef Vertex::Ptr Ptr;
+    typedef Vertex::ptr ptr;
     
 private:
     friend class Edge;
@@ -60,7 +60,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const;
+    const_shared_ptr next() const;
 
     /**
      * Returns the previous elements and move the iterator one position
@@ -72,7 +72,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const;
+    const_shared_ptr previous() const;
 
     /**
      * Set the current position to pos relative to origin.
@@ -88,7 +88,7 @@ class Edge::HEdgeIterator : public IIterator<Edge>
 public:
     typedef Edge::shared_ptr shared_ptr;
     typedef Edge::weak_ptr weak_ptr;
-    typedef Edge::Ptr Ptr;
+    typedef Edge::ptr ptr;
     
 private:
     friend class Edge;
@@ -128,7 +128,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const;
+    const_shared_ptr next() const;
 
     /**
      * Returns the previous elements and move the iterator one position
@@ -140,7 +140,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const;
+    const_shared_ptr previous() const;
 
     /**
      * Set the current position to pos relative to origin.
@@ -256,7 +256,7 @@ Edge::VertexIterator::shared_ptr Edge::VertexIterator::next()
     NOT_IMPLEMENTED
 }
 
-const Edge::VertexIterator::shared_ptr Edge::VertexIterator::next() const
+Edge::VertexIterator::const_shared_ptr Edge::VertexIterator::next() const
 {
     NOT_IMPLEMENTED
 }
@@ -266,7 +266,7 @@ Edge::VertexIterator::shared_ptr Edge::VertexIterator::previous()
     NOT_IMPLEMENTED
 }
 
-const Edge::VertexIterator::shared_ptr Edge::VertexIterator::previous() const
+Edge::VertexIterator::const_shared_ptr Edge::VertexIterator::previous() const
 {
     NOT_IMPLEMENTED
 }
@@ -304,7 +304,7 @@ Edge::HEdgeIterator::shared_ptr Edge::HEdgeIterator::next()
     NOT_IMPLEMENTED
 }
 
-const Edge::HEdgeIterator::shared_ptr Edge::HEdgeIterator::next() const
+Edge::HEdgeIterator::const_shared_ptr Edge::HEdgeIterator::next() const
 {
     NOT_IMPLEMENTED
 }
@@ -314,7 +314,7 @@ Edge::HEdgeIterator::shared_ptr Edge::HEdgeIterator::previous()
     NOT_IMPLEMENTED
 }
 
-const Edge::HEdgeIterator::shared_ptr Edge::HEdgeIterator::previous() const
+Edge::HEdgeIterator::const_shared_ptr Edge::HEdgeIterator::previous() const
 {
     NOT_IMPLEMENTED
 }

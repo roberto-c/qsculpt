@@ -269,7 +269,16 @@ int SubdivisionTest::Impl::surfaceTest()
         TRACE(debug) << "Face: " << face.iid();
         if (face.type() == (int)FaceHandleType::GPUSUBDIVISION) {
             Face *f = static_cast<Face*>(&face);
-            TRACE(debug) << "  VertexId: " << f->vertex;
+            TRACE(debug) << "  FacexId: " << f->vertex;
+            auto faceVtxIt = f->constVertexIterator(surface.get());
+            for (auto & vertex : faceVtxIt)
+            {
+                TRACE(debug) << "    Vertex: " << vertex.iid();
+                if (vertex.type() == (int)VertexHandleType::GPUSUBDIVISION) {
+                    Vertex *vtx = static_cast<Vertex*>(&vertex);
+                    TRACE(debug) << "      p: " << to_string(vtx->p);
+                }
+            }
         }
     }
 

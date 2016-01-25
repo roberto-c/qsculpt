@@ -69,7 +69,7 @@ class SceneNode::SceneNodeIterator : public IIterator<SceneNode>
 public:
     typedef SceneNode::shared_ptr    shared_ptr;
     typedef SceneNode::weak_ptr      weak_ptr;
-    typedef SceneNode::Ptr          Ptr;
+    typedef SceneNode::ptr          ptr;
     
     SceneNode::const_shared_ptr     _parent;
     mutable unsigned int _index;
@@ -101,7 +101,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual const shared_ptr next() const;
+    virtual const_shared_ptr next() const;
     
     /**
      * Returns the previous elements and move the iterator one position
@@ -113,7 +113,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual const shared_ptr previous() const;
+    virtual const_shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -154,7 +154,7 @@ SceneNode::SceneNodeIterator::shared_ptr SceneNode::SceneNodeIterator::next()
     return  ptr;
 }
 
-const SceneNode::SceneNodeIterator::shared_ptr SceneNode::SceneNodeIterator::next() const
+SceneNode::SceneNodeIterator::const_shared_ptr SceneNode::SceneNodeIterator::next() const
 {
     //throw std::runtime_error("Not implemented");
     SceneNode::shared_ptr ptr = _parent->_d->children[_index++];
@@ -166,7 +166,7 @@ SceneNode::SceneNodeIterator::shared_ptr SceneNode::SceneNodeIterator::previous(
     throw std::runtime_error("Not implemented");
 }
 
-const SceneNode::SceneNodeIterator::shared_ptr SceneNode::SceneNodeIterator::previous() const
+SceneNode::SceneNodeIterator::const_shared_ptr SceneNode::SceneNodeIterator::previous() const
 {
     throw std::runtime_error("Not implemented");
 }
@@ -181,7 +181,7 @@ class SceneNode::SceneNodeTreeIterator : public IIterator<SceneNode>
 public:
     typedef SceneNode::shared_ptr    shared_ptr;
     typedef SceneNode::weak_ptr      weak_ptr;
-    typedef SceneNode::Ptr           Ptr;
+    typedef SceneNode::ptr           ptr;
     
     mutable SceneNode::const_shared_ptr     _parent;
     mutable std::vector<uint32_t>		_levelStack;
@@ -214,7 +214,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual const shared_ptr next() const;
+    virtual const_shared_ptr next() const;
     
     /**
      * Returns the previous elements and move the iterator one position
@@ -226,7 +226,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual const shared_ptr previous() const;
+    virtual const_shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -268,7 +268,7 @@ bool SceneNode::SceneNodeTreeIterator::hasPrevious() const
     return false;
 }
 
-const SceneNode::SceneNodeTreeIterator::shared_ptr SceneNode::SceneNodeTreeIterator::next() const
+SceneNode::SceneNodeTreeIterator::const_shared_ptr SceneNode::SceneNodeTreeIterator::next() const
 {
     //throw std::runtime_error("Not implemented");
     auto ret = _parent->item(_nextIndex).lock();
@@ -304,7 +304,7 @@ SceneNode::SceneNodeTreeIterator::shared_ptr SceneNode::SceneNodeTreeIterator::p
     throw std::runtime_error("Not implemented");
 }
 
-const SceneNode::SceneNodeTreeIterator::shared_ptr SceneNode::SceneNodeTreeIterator::previous() const
+SceneNode::SceneNodeTreeIterator::const_shared_ptr SceneNode::SceneNodeTreeIterator::previous() const
 {
     throw std::runtime_error("Not implemented");
 }

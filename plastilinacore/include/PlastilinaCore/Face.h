@@ -37,8 +37,10 @@ enum class FaceHandleType
 class FaceHandle {
 public:
     typedef FaceHandle* 		shared_ptr;
+    typedef const FaceHandle*   const_shared_ptr;
     typedef FaceHandle* 		weak_ptr;
-    typedef FaceHandle* 		Ptr;
+    typedef FaceHandle* 		ptr;
+    typedef const FaceHandle*   const_ptr;
     typedef uint32_t 			size_t;
     size_t _id;
     
@@ -84,8 +86,9 @@ namespace subdivision
 class Face : public FaceHandle {
 public:
     typedef Face* 		shared_ptr;
+    typedef const Face* const_shared_ptr;
     typedef Face* 		weak_ptr;
-    typedef Face* 		Ptr;
+    typedef Face* 		ptr;
     
     typedef uint32_t 	size_t;
     

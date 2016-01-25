@@ -31,9 +31,11 @@ template< typename T >
 class IIterator
 {
 public:
-    typedef typename T::shared_ptr  shared_ptr;
-    typedef typename T::weak_ptr    weak_ptr;
-    typedef typename T::Ptr        	Ptr;
+    typedef typename T::shared_ptr          shared_ptr;
+    typedef typename T::const_shared_ptr    const_shared_ptr;
+    typedef typename T::weak_ptr            weak_ptr;
+    typedef typename T::ptr        	        ptr;
+    typedef typename T::const_ptr           const_ptr;
     
 public:
     virtual ~IIterator(){}
@@ -62,7 +64,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    virtual const shared_ptr next() const = 0;
+    virtual const_shared_ptr next() const = 0;
     
     /**
      * Return the next element without advancing to the iterator
@@ -74,7 +76,7 @@ public:
     /**
      * Return the next element without advancing to the iterator
      */
-    virtual const shared_ptr peekNext() const {
+    virtual const_shared_ptr peekNext() const {
         NOT_IMPLEMENTED
     };
 
@@ -88,7 +90,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    virtual const shared_ptr previous() const = 0;
+    virtual const_shared_ptr previous() const = 0;
 
     /**
      * Set the current position to pos relative to origin.
@@ -114,9 +116,11 @@ template< typename T>
 class Iterator
 {
 public:
-    typedef typename T::shared_ptr  shared_ptr;
-    typedef typename T::weak_ptr    weak_ptr;
-    typedef typename T::Ptr        Ptr;
+    typedef typename T::shared_ptr          shared_ptr;
+    typedef typename T::const_shared_ptr    const_shared_ptr;
+    typedef typename T::weak_ptr            weak_ptr;
+    typedef typename T::ptr        	        ptr;
+    typedef typename T::const_ptr           const_ptr;
 
 private:
     std::unique_ptr< IIterator<T> > _it;
@@ -176,7 +180,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    inline const shared_ptr next() const { 
+    inline const_shared_ptr next() const {
         assert(_it != 0);
         return _it->next(); 
     }
@@ -192,7 +196,7 @@ public:
     /**
      * Return the next element without advancing to the iterator
      */
-    inline const shared_ptr peekNext() const { 
+    inline const_shared_ptr peekNext() const {
         assert(_it != 0);
         return _it->peekNext();
     }
@@ -210,7 +214,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    inline const shared_ptr previous() const { 
+    inline const_shared_ptr previous() const {
         assert(_it != 0);
         return _it->previous();
     }

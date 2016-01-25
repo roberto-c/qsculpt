@@ -29,23 +29,48 @@ namespace gpusubdivision
 #include "GpuSubdivisionPrimitives.h"
     }
     struct Vertex : public VertexHandle, public device::Vertex {
-        typedef Vertex* shared_ptr;
+        typedef Vertex*         shared_ptr;
+        typedef const Vertex*   const_shared_ptr;
                 
         Vertex();
         Vertex(const Vertex&);
         Vertex(Vertex&&);
+
+        friend bool operator==(const Vertex &lhs, const Vertex& rhs)
+        {
+            return lhs._id == rhs._id
+                && lhs.p == rhs.p
+                && lhs.n == rhs.n;
+        }
+        friend bool operator!=(const Vertex &lhs, const Vertex& rhs)
+        {
+            return !(lhs == rhs);
+        }
     };
     
     struct Edge : public EdgeHandle, public device::Edge {
-        typedef Edge* shared_ptr;
+        typedef Edge*           shared_ptr;
+        typedef const Edge*     const_shared_ptr;
         
         Edge()
         : EdgeHandle(EdgeHandleType::GPUSUBDIVISION)
         {}
+
+        friend bool operator==(const Edge &lhs, const Edge& rhs)
+        {
+            return lhs._id == rhs._id
+                && lhs.next == rhs.next
+                && lhs.pair == rhs.pair;
+        }
+        friend bool operator!=(const Edge &lhs, const Edge& rhs)
+        {
+            return !(lhs == rhs);
+        }
     };
     
     struct Face : public FaceHandle, public device::Face {
-        typedef Face* shared_ptr;
+        typedef Face*       shared_ptr;
+        typedef const Face* const_shared_ptr;
         
         Face()
         : FaceHandle(FaceHandleType::GPUSUBDIVISION)
@@ -55,13 +80,13 @@ namespace gpusubdivision
          * Gets an iterator object to traverse all the vertices that form part
          * of this face.
          */
-        Iterator<VertexHandle> vertexIterator(ISurface* surface);
+        Iterator<VertexHandle> vertexIterator(const ISurface* surface);
 
         /**
          * Gets an iterator object to traverse all the vertices that form part
          * of this face.
          */
-        Iterator<VertexHandle> constVertexIterator(ISurface* surface) const;
+        Iterator<VertexHandle> constVertexIterator(const ISurface* surface) const;
 
         /**
          * Gets an iterator object to traverse all the edges that form part
@@ -75,6 +100,16 @@ namespace gpusubdivision
          */
         Iterator<EdgeHandle> constEdgeIterator(ISurface* surface) const;
 
+        friend bool operator==(const Face &lhs, const Face& rhs)
+        {
+            return lhs._id == rhs._id
+                && lhs.edge == rhs.edge
+                && lhs.vertex == rhs.vertex;
+        }
+        friend bool operator!=(const Face &lhs, const Face& rhs)
+        {
+            return !(lhs == rhs);
+        }
     };
     
     struct Triangle {

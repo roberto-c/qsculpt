@@ -25,10 +25,12 @@ enum class EdgeHandleType
 
 class EdgeHandle {
 public:
-    typedef EdgeHandle*     shared_ptr;
-    typedef EdgeHandle*     weak_ptr;
-    typedef EdgeHandle*     Ptr;
-    typedef uint32_t        size_t;
+    typedef EdgeHandle*         shared_ptr;
+    typedef const EdgeHandle*   const_shared_ptr;
+    typedef EdgeHandle*         weak_ptr;
+    typedef EdgeHandle*         ptr;
+    typedef const EdgeHandle*   const_ptr;
+    typedef uint32_t            size_t;
     
     size_t _id;
     
@@ -45,8 +47,13 @@ public:
     void setIid(size_t iid) { _id = (_id & 0xFF000000) | (iid & 0xFFFFFF);}
     
     template<typename T>
-    T & cast() const {
-        return static_cast<T>(*this);
+    const T & cast() const {
+        return *static_cast<T*>(this);
+    }
+
+    template<typename T>
+    T & cast() {
+        return *static_cast<T*>(this);
     }
 };
 
@@ -69,9 +76,11 @@ class Face;
 
 class Edge : public EdgeHandle {
 public:
-    typedef Edge*   shared_ptr;
-    typedef Edge*   weak_ptr;
-    typedef Edge*   Ptr;
+    typedef Edge*           shared_ptr;
+    typedef const Edge*     const_shared_ptr;
+    typedef Edge*           weak_ptr;
+    typedef Edge*           ptr;
+    typedef const Edge*     const_ptr;
 
     typedef uint32_t    size_t;
     

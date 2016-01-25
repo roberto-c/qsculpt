@@ -58,14 +58,14 @@ namespace
 {
 class FaceVertexIterator : public IIterator<VertexHandle>
 {
-    core::GpuSubdivision        *surface;
-    core::gpusubdivision::Face  *face;
-    core::gpusubdivision::Edge  *currentEdge;
+    const core::GpuSubdivision        *surface;
+    const core::gpusubdivision::Face  *face;
+    mutable const core::gpusubdivision::Edge  *currentEdge;
 public:
-    FaceVertexIterator(core::GpuSubdivision *surface, Face *face)
+    FaceVertexIterator(const core::GpuSubdivision *surface, const Face *face)
     : surface(surface), face(face), currentEdge(nullptr)
     {
-        currentEdge = static_cast<Edge*>(surface->edge(face->edge));
+        currentEdge = static_cast<const Edge*>(surface->edge(face->edge));
     }
     
     IIterator<VertexHandle>* clone() const;
@@ -76,17 +76,38 @@ public:
     
     shared_ptr next();
     
-    const shared_ptr next() const;
+    const_shared_ptr next() const;
     
     shared_ptr peekNext();
     
-    const shared_ptr peekNext() const ;
+    const_shared_ptr peekNext() const ;
     
     shared_ptr previous();
     
-    const shared_ptr previous() const;
+    const_shared_ptr previous() const;
     
     bool seek(int pos, IteratorOrigin origin) const ;
+
+    virtual bool operator==(const IIterator & rhs)
+    {
+        if (this == &rhs)
+            return true;
+        const FaceVertexIterator * r = static_cast<const FaceVertexIterator*>(&rhs);
+        return this->surface == r->surface
+            && this->face == r->face
+            && this->currentEdge == r->currentEdge;
+    }
+
+    friend bool operator==(const FaceVertexIterator &lhs, const FaceVertexIterator& rhs)
+    {
+        return lhs.surface == rhs.surface
+            && lhs.face == rhs.face
+            && lhs.currentEdge == rhs.currentEdge;
+    }
+    friend bool operator!=(const FaceVertexIterator &lhs, const FaceVertexIterator& rhs)
+    {
+        return !(lhs == rhs);
+    }
 };
 };
 
@@ -96,16 +117,17 @@ namespace gpusubdivision
 {
 
 Iterator<VertexHandle>
-Face::vertexIterator(ISurface* surface)
+Face::vertexIterator(const ISurface* surface)
 {
-    GpuSubdivision *gpusurf = dynamic_cast<GpuSubdivision*>(surface);
+    const GpuSubdivision *gpusurf = dynamic_cast<const GpuSubdivision*>(surface);
     return Iterator<VertexHandle>(new FaceVertexIterator(gpusurf, this));
 }
 
 Iterator<VertexHandle>
-Face::constVertexIterator(ISurface* surface) const
+Face::constVertexIterator(const ISurface* surface) const
 {
-    return Iterator<VertexHandle>();
+    const GpuSubdivision *gpusurf = dynamic_cast<const GpuSubdivision*>(surface);
+    return Iterator<VertexHandle>(new FaceVertexIterator(gpusurf, this));
 }
 
 Iterator<EdgeHandle>
@@ -218,7 +240,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const;
+    const_shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
@@ -228,7 +250,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const ;
+    const_shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
@@ -240,7 +262,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const;
+    const_shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -314,7 +336,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const;
+    const_shared_ptr next() const;
     
     /**
      * Returns the next element without advancing to the next
@@ -324,7 +346,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const ;
+    const_shared_ptr peekNext() const ;
     
     /**
      * Returns the previous elements and move the iterator one position
@@ -336,7 +358,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const;
+    const_shared_ptr previous() const;
     
     /**
      * Set the current position to pos relative to origin.
@@ -427,7 +449,7 @@ public:
     /**
      * Returns the next element and advance the iterator by one.
      */
-    const shared_ptr next() const {
+    const_shared_ptr next() const {
         NOT_IMPLEMENTED
         Edge * e = nullptr;
         ++index_;
@@ -445,7 +467,7 @@ public:
     /**
      * Returns the next element without advancing to the next
      */
-    const shared_ptr peekNext() const {
+    const_shared_ptr peekNext() const {
         NOT_IMPLEMENTED
         return nullptr;
     }
@@ -462,7 +484,7 @@ public:
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
-    const shared_ptr previous() const {
+    const_shared_ptr previous() const {
         NOT_IMPLEMENTED
     }
     
@@ -969,7 +991,7 @@ GpuSubdivision::VertexIterator::next()
     return v;
 }
 
-const GpuSubdivision::VertexIterator::shared_ptr
+GpuSubdivision::VertexIterator::const_shared_ptr
 GpuSubdivision::VertexIterator::next() const
 {
     auto *v = &*_index;
@@ -985,7 +1007,7 @@ GpuSubdivision::VertexIterator::peekNext()
     return v;
 }
 
-const GpuSubdivision::VertexIterator::shared_ptr
+GpuSubdivision::VertexIterator::const_shared_ptr
 GpuSubdivision::VertexIterator::peekNext() const {
     assert(hasNext());
     auto *v = &*_index;
@@ -1000,7 +1022,7 @@ GpuSubdivision::VertexIterator::previous()
     //    return _index->second;
 }
 
-const GpuSubdivision::VertexIterator::shared_ptr
+GpuSubdivision::VertexIterator::const_shared_ptr
 GpuSubdivision::VertexIterator::previous() const
 {
     NOT_IMPLEMENTED
@@ -1084,7 +1106,7 @@ GpuSubdivision::FaceIterator::next()
     return v;
 }
 
-const GpuSubdivision::FaceIterator::shared_ptr
+GpuSubdivision::FaceIterator::const_shared_ptr
 GpuSubdivision::FaceIterator::next() const
 {
     auto *v = &*_index;
@@ -1098,7 +1120,7 @@ GpuSubdivision::FaceIterator::peekNext()
     return &*_index;
 }
 
-const GpuSubdivision::FaceIterator::shared_ptr
+GpuSubdivision::FaceIterator::const_shared_ptr
 GpuSubdivision::FaceIterator::peekNext() const
 {
     return &*_index;
@@ -1112,7 +1134,7 @@ GpuSubdivision::FaceIterator::previous()
     return nullptr;
 }
 
-const GpuSubdivision::FaceIterator::shared_ptr
+GpuSubdivision::FaceIterator::const_shared_ptr
 GpuSubdivision::FaceIterator::previous() const
 {
     NOT_IMPLEMENTED
@@ -1200,55 +1222,11 @@ GpuSubdivision::Impl::initialize_ocl(void)
         std::cout << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnSubdivideAdjustPos.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL) << std::endl;
     }
     catch (::cl::Error err) {
-        std::cerr
-        << "ERROR: "
-        << err.what()
-        << "("
-        << err.err()
-        << ")"
-        << std::endl;
+        TRACE(error) << "ERROR: " << err.what() << "(" << err.err() << ")";
     }
     
     return err;
 }
-
-
-struct clVertex {
-    cl_float4 	p;	// position
-    cl_float4 	n;	// normal
-    cl_uint		e;	// edge index
-};
-
-struct clEdge {
-    cl_uint	head;	// index to vertex array
-    cl_uint pair; 	// index to edge array
-    cl_uint face;	// index to a face
-    cl_uint next;	// next half-edge
-    //	cl_uint midpoint; // index to mid vertex point
-};
-
-struct clFace {
-    cl_uint 	num_edges;	// number of edges
-    cl_uint 	edge;		// first edge
-    cl_uint		vertex;		// vertex index in face
-};
-
-struct clSurfaceList {
-    uint32_t 					num_polygons;
-    std::vector<clVertex>	vertex;
-    std::vector<clEdge>		edge;
-    std::vector<clFace>		face;
-};
-
-struct clSurface {
-    cl_uint					num_vertices;
-    cl_uint					num_edges;
-    cl_uint					num_faces;
-    cl_ulong  				v;
-    cl_ulong				e;
-    cl_ulong				f;
-    cl_uint					user[4];
-};
 
 void
 GpuSubdivision::Impl::subdivide(GpuSubdivision * s)
@@ -1277,13 +1255,16 @@ namespace
 IIterator<VertexHandle>*
 FaceVertexIterator::clone() const
 {
-    return nullptr;
+    auto cpy = new FaceVertexIterator(surface, face);
+    cpy->currentEdge = currentEdge;
+    return cpy;
 }
 
 bool
 FaceVertexIterator::hasNext() const
 {
-    NOT_IMPLEMENTED
+    assert(surface && face && "surface or face are null");
+    return face->edge != currentEdge->next ;
 }
 
 bool
@@ -1295,27 +1276,33 @@ FaceVertexIterator::hasPrevious() const
 VertexHandle::shared_ptr
 FaceVertexIterator::next()
 {
-    NOT_IMPLEMENTED
-    return nullptr;
+    assert(surface && face && "surface or face are null");
+    currentEdge = &(surface->edge(currentEdge->next)->cast<const core::gpusubdivision::Edge>());
+    return const_cast<VertexHandle::shared_ptr>(surface->vertex(currentEdge->head));
 }
 
-const VertexHandle::shared_ptr
+VertexHandle::const_shared_ptr
 FaceVertexIterator::next() const
 {
-    NOT_IMPLEMENTED
-    return nullptr;
+    assert(surface && face && "surface or face are null");
+    currentEdge = &surface->edge(currentEdge->next)->cast<const core::gpusubdivision::Edge>();
+    return const_cast<const VertexHandle::shared_ptr>(surface->vertex(currentEdge->head));
 }
 
 VertexHandle::shared_ptr
 FaceVertexIterator::peekNext()
 {
-    NOT_IMPLEMENTED
+    assert(surface && face && "surface or face are null");
+    auto nextEdge = &surface->edge(currentEdge->next)->cast<const core::gpusubdivision::Edge>();
+    return const_cast<VertexHandle::shared_ptr>(surface->vertex(nextEdge->head));
 }
 
-const VertexHandle::shared_ptr
+VertexHandle::const_shared_ptr
 FaceVertexIterator::peekNext() const 
 {
-    NOT_IMPLEMENTED
+    assert(surface && face && "surface or face are null");
+    auto nextEdge = &surface->edge(currentEdge->next)->cast<const core::gpusubdivision::Edge>();
+    return const_cast<const VertexHandle::shared_ptr>(surface->vertex(nextEdge->head));
 }
 
 VertexHandle::shared_ptr
@@ -1324,7 +1311,7 @@ FaceVertexIterator::previous()
     NOT_IMPLEMENTED
 }
 
-const VertexHandle::shared_ptr
+VertexHandle::const_shared_ptr
 FaceVertexIterator::previous() const
 {
     NOT_IMPLEMENTED
@@ -1333,7 +1320,43 @@ FaceVertexIterator::previous() const
 bool
 FaceVertexIterator::seek(int pos, IteratorOrigin origin) const 
 {
-    NOT_IMPLEMENTED
+    switch (origin)
+    {
+    case Iter_Current:
+        //nothing
+        break;
+    case Iter_End:
+        while(face->edge != currentEdge->next) 
+        {
+            currentEdge = &(surface->edge(currentEdge->next)->cast<const Edge>());
+        }
+        break;
+
+    case Iter_Start:
+    default:
+        currentEdge = &(surface->edge(face->edge)->cast<const Edge>());
+        break;
+    }
+
+    if (pos > 0)
+    {
+        int step = 0;
+        while (face->edge != currentEdge->next && step < pos)
+        {
+            currentEdge = &(surface->edge(currentEdge->next)->cast<const Edge>());
+            ++pos;
+        }
+    }
+    else if (pos == 0)
+    {
+        // Nothing to do
+    }
+    else
+    {
+        return false;
+    }
+    
+    return true;
 }
 
 }; // namespace anonymous

@@ -54,7 +54,8 @@ public:
     typedef std::shared_ptr<const SceneNode>    const_shared_ptr;
     typedef std::weak_ptr<SceneNode>            weak_ptr;
     typedef std::weak_ptr<const SceneNode>      const_weak_ptr;
-    typedef std::unique_ptr<SceneNode>   Ptr;
+    typedef std::unique_ptr<SceneNode>          ptr;
+    typedef std::unique_ptr<const SceneNode>    const_ptr;
     
     SceneNode(const std::string& = "");
     
@@ -247,7 +248,7 @@ public:
     typedef std::weak_ptr<SurfaceNode>    		weak_ptr;
     typedef std::shared_ptr<const SurfaceNode>  const_shared_ptr;
     typedef std::weak_ptr<const SurfaceNode>    const_weak_ptr;
-    typedef std::unique_ptr<SurfaceNode>        Ptr;
+    typedef std::unique_ptr<SurfaceNode>        ptr;
     
     /**
      *

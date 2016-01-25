@@ -17,7 +17,7 @@ class PointCloud : public ISurface
 public:
     typedef std::shared_ptr<PointCloud>   shared_ptr;
     typedef std::weak_ptr<PointCloud>     weak_ptr;
-    typedef std::unique_ptr<PointCloud>   Ptr;
+    typedef std::unique_ptr<PointCloud>   ptr;
     
 public:
     /**
