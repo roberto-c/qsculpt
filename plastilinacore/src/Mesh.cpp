@@ -589,6 +589,16 @@ EdgeHandle::size_t Mesh::addEdge(VertexHandle* t, VertexHandle* h)
     return iid;
 }
 
+EdgeHandle* Mesh::edge(EdgeHandle::size_t iidEdge)
+{
+    return _d->_edges->at(iidEdge);
+}
+
+const EdgeHandle* Mesh::edge(EdgeHandle::size_t iidEdge) const
+{
+    return _d->_edges->at(iidEdge);
+}
+
 EdgeHandle::size_t Mesh::numEdges() const {
 	return static_cast<EdgeHandle::size_t>(_d->_edges->size());
 }

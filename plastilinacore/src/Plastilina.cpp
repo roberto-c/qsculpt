@@ -94,7 +94,7 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
             CLManager::instance()->setDeviceContext(get_device_context());
         }
         
-		g_engineState.openclInitialized = CLManager::instance()->initialize();
+		g_engineState.openclInitialized = CLManager::instance()->initialize(subsystem);
 		if (!g_engineState.openclInitialized) {
 			std::cerr << "Failed to initialize OpenCL" << std::endl;
 		}

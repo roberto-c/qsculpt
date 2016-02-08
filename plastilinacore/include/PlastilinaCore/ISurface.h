@@ -177,6 +177,8 @@ public:
      */
     virtual EdgeHandle::size_t addEdge(VertexHandle::size_t v1, VertexHandle::size_t v2) = 0;
 	
+    virtual EdgeHandle* edge(EdgeHandle::size_t iid) = 0;
+    virtual const EdgeHandle* edge(EdgeHandle::size_t iid) const = 0;
 	/**
 	 *
 	 */

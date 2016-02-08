@@ -28,24 +28,17 @@
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/RenderState.h>
+#include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/SmoothRenderer.h>
 #include <PlastilinaCore/Scene.h>
 
 #include <PlastilinaCore/opencl/CLUtils.h>
+#include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opengl/GlslShader.h>
 #include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 #define BO_POOL_NAME "SmoothRendererPool"
-
-struct SmoothVtxStruct
-{
-    GLfloat v[4];
-    GLfloat n[4];
-    GLfloat c[4];
-    GLfloat t[2];
-    GLfloat padding[2];
-};
 
 namespace core {
 using core::gpusubdivision::Vertex;
@@ -55,20 +48,34 @@ using core::gpusubdivision::Edge;
 struct GpuSubdivisionRenderable::Impl {
     const core::GpuSubdivision * surface;
     
+    static bool 				oclInitialized;
+    static ::cl::Program  		program;
+    static ::cl::Kernel			krnGenerateMesh;
+
     Impl() {}
     
+    bool initializeOcl();
+
     void renderObject(RenderState & state) const;
     
     VertexBuffer* getVBO(ISurface* mesh) const;
     
     VAO* getVAO(ISurface* mesh) const;
+
+    void build_mesh(const core::GpuSubdivision & surface) const;
 };
+
+bool 				GpuSubdivisionRenderable::Impl::oclInitialized = false;
+::cl::Program  		GpuSubdivisionRenderable::Impl::program;
+::cl::Kernel		GpuSubdivisionRenderable::Impl::krnGenerateMesh;
+
 
 GpuSubdivisionRenderable::GpuSubdivisionRenderable(
     const core::GpuSubdivision * surface)
 : _d(new Impl())
 {
     _d->surface = surface;
+    _d->initializeOcl();
 }
 
 GpuSubdivisionRenderable::~GpuSubdivisionRenderable()
@@ -82,6 +89,40 @@ void GpuSubdivisionRenderable::render(
     _d->renderObject(state);
 }
     
+bool GpuSubdivisionRenderable::Impl::initializeOcl()
+{
+    cl_int err = CL_SUCCESS;
+
+    if (GpuSubdivisionRenderable::Impl::oclInitialized)
+    {
+        return true;
+    }
+
+    CLManager * oclManager = CLManager::instance();
+    try {
+        ResourcesManager mgr;
+        std::string path = mgr.findResourcePath("Subdivision", "cl");
+        std::string kernelSource = core::cl::loadFromFile(path);
+        ::cl::Program::Sources source(1,
+            std::make_pair(kernelSource.c_str(), kernelSource.length()));
+        program = ::cl::Program(oclManager->context(), source);
+        program.build("-I C:/Users/Roberto/Documents/workspace/qsculpt/testapp");
+
+        krnGenerateMesh = ::cl::Kernel(program, "build_mesh", &err);
+        std::cout << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnGenerateMesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL) << std::endl;
+    }
+    catch (::cl::Error err) {
+        TRACE(error) << "ERROR: " << err.what() << "(" << err.err() << ")";
+        if (err.err() == CL_BUILD_PROGRAM_FAILURE)
+        {
+            std::string buildlog;
+            program.getBuildInfo(oclManager->devices()[0], CL_PROGRAM_BUILD_LOG, &buildlog);
+            TRACE(error) << "Build log: " << buildlog << std::endl;
+        }
+    }
+    GpuSubdivisionRenderable::Impl::oclInitialized = true;
+    return err == CL_SUCCESS;
+}
 
 void GpuSubdivisionRenderable::Impl::renderObject(
     RenderState & state) const
@@ -137,7 +178,9 @@ void GpuSubdivisionRenderable::Impl::renderObject(
 		return;
 	
 	//VertexBuffer* vbo= getVBO(obj);
-    VertexBuffer* vbo = this->surface->_d->_dataBuffer.get();
+    //VertexBuffer* vbo = this->surface->_d->_dataBuffer.get();
+    BufferObject *bo = core::cl::get_glbuffer_backing_store(*(this->surface->_d->_triangleOutput));
+    VertexBuffer* vbo = static_cast<VertexBuffer*>(bo);
 	if (vbo == NULL || vbo->objectID() == 0)
 	{
 		std::cerr << "Failed to create VBO."  << std::endl;
@@ -157,35 +200,36 @@ void GpuSubdivisionRenderable::Impl::renderObject(
     vbo->bind();
 	if (vbo->needUpdate())
 	{
+        build_mesh(*obj);
         vbo->setNeedUpdate(false);
 		
 		GLint attColor = mat->shaderProgram()->attributeLocation("glColor");
 		if (attColor >= 0) {
 			glEnableVertexAttribArray(attColor);
 			glVertexAttribPointer(attColor, 4, GL_FLOAT, GL_FALSE,
-								  sizeof(SmoothVtxStruct),
-								  (GLvoid*)offsetof(SmoothVtxStruct, c));
+								  sizeof(GLVertexData),
+								  (GLvoid*)offsetof(GLVertexData, c));
 		}
 		GLint attVtx = mat->shaderProgram()->attributeLocation("glVertex");
 		if (attVtx >= 0) {
 			glEnableVertexAttribArray(attVtx);
 			glVertexAttribPointer(attVtx, 4, GL_FLOAT, GL_FALSE,
-								  sizeof(SmoothVtxStruct),
-								  (GLvoid*)offsetof(SmoothVtxStruct, v));
+								  sizeof(GLVertexData),
+								  (GLvoid*)offsetof(GLVertexData, p));
 		}
 		GLint attNormal = mat->shaderProgram()->attributeLocation("glNormal");
 		if (attNormal >= 0) {
 			glEnableVertexAttribArray(attNormal);
 			glVertexAttribPointer(attNormal, 4, GL_FLOAT, GL_FALSE,
-								  sizeof(SmoothVtxStruct),
-								  (GLvoid*)offsetof(SmoothVtxStruct, n));
+								  sizeof(GLVertexData),
+								  (GLvoid*)offsetof(GLVertexData, n));
 		}
         GLint attTexCoord = mat->shaderProgram()->attributeLocation("glTexCoord");
 		if (attTexCoord >= 0) {
 			glEnableVertexAttribArray(attTexCoord);
 			glVertexAttribPointer(attTexCoord, 2, GL_FLOAT, GL_FALSE,
-								  sizeof(SmoothVtxStruct),
-								  (GLvoid*)offsetof(SmoothVtxStruct, t));
+								  sizeof(GLVertexData),
+								  (GLvoid*)offsetof(GLVertexData, t));
 		}
 		THROW_IF_GLERROR("Failed to get attribute");
     }
@@ -195,7 +239,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			mat->shaderProgram()->useProgram();
-			GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+			GLsizei numVertices = vbo->getBufferSize() / sizeof(GLVertexData);
 			glDrawArrays(GL_TRIANGLES, 0, numVertices);
 		}
 			break;
@@ -204,7 +248,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			mat->shaderProgram()->useProgram();
-			GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+			GLsizei numVertices = vbo->getBufferSize() / sizeof(GLVertexData);
 			glDrawArrays(GL_TRIANGLES, 0, numVertices);
 		}
 			break;
@@ -212,7 +256,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(
 		{
 			mat->shaderProgram()->useProgram();
 			glPointSize(3.0f);
-			GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+			GLsizei numVertices = vbo->getBufferSize() / sizeof(GLVertexData);
 			glDrawArrays(GL_POINTS, 0, numVertices);
 		}
 			
@@ -249,5 +293,36 @@ GpuSubdivisionRenderable::Impl::getVAO(
 	}
 	return vao;
 }
-    
+
+void
+GpuSubdivisionRenderable::Impl::build_mesh(const core::GpuSubdivision & surface) const
+{
+    try {
+        CLManager * clmgr = CLManager::instance();
+
+        //surface._d->_triangleOutput
+        std::vector<::cl::Memory> list;
+        ::cl::Memory mem (core::cl::get_mem_backing_store(*(surface._d->_triangleOutput)));
+        list.push_back(mem);
+        clmgr->commandQueue().enqueueAcquireGLObjects(&list);
+        this->krnGenerateMesh.setArg(0, core::cl::get_mem_backing_store(*(surface._d->_vertices)));
+        this->krnGenerateMesh.setArg(1, surface._d->_vertices->size());
+        this->krnGenerateMesh.setArg(2, core::cl::get_mem_backing_store(*(surface._d->_edges)));
+        this->krnGenerateMesh.setArg(3, surface._d->_edges->size());
+        this->krnGenerateMesh.setArg(4, core::cl::get_mem_backing_store(*(surface._d->_faces)));
+        this->krnGenerateMesh.setArg(5, surface._d->_faces->size());
+        this->krnGenerateMesh.setArg(6, mem);
+        this->krnGenerateMesh.setArg(7, surface._d->_triangleOutput->size());
+        clmgr->commandQueue().enqueueNDRangeKernel(this->krnGenerateMesh,
+            ::cl::NullRange,
+            ::cl::NDRange(surface._d->_faces->size()));
+        clmgr->commandQueue().enqueueReleaseGLObjects(&list);
+        clmgr->commandQueue().flush();
+    }
+    catch (::cl::Error & e) {
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
+    }
+}
+
+
 }; // namspace core

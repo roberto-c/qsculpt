@@ -64,6 +64,8 @@ public:
     virtual VertexHandle::size_t numVertices() const;
     virtual EdgeHandle::size_t addEdge(const EdgeHandle& edge);
     virtual EdgeHandle::size_t addEdge(VertexHandle::size_t v1, VertexHandle::size_t v2);
+    virtual EdgeHandle* edge(EdgeHandle::size_t iid);
+    virtual const EdgeHandle* edge(EdgeHandle::size_t iid) const;
 	virtual EdgeHandle::size_t numEdges() const;
     virtual FaceHandle::size_t addFace(const std::vector<VertexHandle::size_t>& vertexIndexList);
     virtual void replaceFace(FaceHandle::size_t index, const std::vector<VertexHandle::size_t>& vertexIndexList);

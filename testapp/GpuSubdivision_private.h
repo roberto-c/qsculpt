@@ -13,17 +13,35 @@
 #include <PlastilinaCore/BufferObject.h>
 
 #include <mutex>
+#include <unordered_map>
+
+namespace core
+{
+namespace gpusubdivision
+{
+    struct GLVertexData {
+        cl_float4 	p;
+        cl_float4 	n;
+        cl_float4 	c;
+        cl_float2   t;
+        cl_float2   padding;
+    };
+};
+};
 
 using core::gpusubdivision::Vertex;
 using core::gpusubdivision::Edge;
 using core::gpusubdivision::Face;
-using core::gpusubdivision::Triangle;
+using core::gpusubdivision::GLVertexData;
 template<class T> using vector = std::vector<T, core::cl::gpu_allocator<T>>;
 
 typedef vector<Vertex>  VertexCollection;
 typedef vector<Edge>    EdgesCollection;
 typedef vector<Face>    FacesCollection;
-typedef vector<Triangle> TriangleCollection;
+typedef std::vector<GLVertexData, core::cl::glgpu_allocator<GLVertexData>> GlVertexCollection;
+
+typedef std::pair<Vertex::size_t, Vertex::size_t> VertexPairKey;
+typedef std::unordered_map<VertexPairKey, Edge::size_t> VerticesToEdgeMap;
 
 namespace core {
     struct clSurfaceList;
@@ -38,7 +56,9 @@ namespace core {
         VertexCollection    *_vertices;
         EdgesCollection     *_edges;
         FacesCollection     *_faces;
-        TriangleCollection  *_triangleOutput;
+        GlVertexCollection  *_triangleOutput;
+
+        VerticesToEdgeMap   _vertexToEdge;
 
         std::mutex                   _mutex;
         std::unique_lock<std::mutex> _lock;
@@ -68,5 +88,8 @@ namespace core {
         static int 	initialize_ocl(void);
 
         virtual void render(RenderState & state) const;
+
+        void        copyToDevice();
     };
 };
+

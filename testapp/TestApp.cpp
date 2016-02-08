@@ -188,10 +188,13 @@ TestApp::~TestApp() {
 
 void TestApp::init(int argc, char** argv) 
 {
+    using namespace std;
+    vector<string> default_search_dirs = { get_app_path() };
     // Declare the supported options.
     d->optionsDesc.add_options()
         ("help", "produce help message")
         ("interactive", po::value<bool>()->default_value(true), "True to run interactive test bed. False to run automated tests")
+        ("resourcesdir", po::value<vector<string>>()->default_value(default_search_dirs, get_app_path()), "path used to load all resources")
         ;
 
     po::store(po::parse_command_line(argc, argv, d->optionsDesc), d->options);
@@ -205,6 +208,12 @@ int TestApp::run()
         return 1;
     }
 	
+    // Set Resources search directories
+    for (auto path : (d->options["resourcesdir"].as<std::vector<std::string>>()))
+    {
+        ResourcesManager::addResourcesDirectory(path);
+    }
+
     if (d->options.count("interactive") && d->options["interactive"].as<bool>()) 
     {
         // initialize gui
@@ -317,10 +326,7 @@ void TestApp::Impl::initialize()
 {
     initialized = false;
     
-	std::string app_path = get_app_path();
-	TRACE(debug)  << "App path: " << app_path ;
 	ResourcesManager rscMgr;
-    rscMgr.setResourcesDirectory(app_path);
 
     /* Initialize SDL's Video subsystem */
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -383,6 +389,7 @@ void TestApp::Impl::initialize()
 	if (!texture) {
 		TRACE(debug) << "Failed to load texture" ;
 		TRACE(debug) << "SDL Error: " << SDL_GetError() ;
+        throw std::runtime_error("Failed to load asset: Texture01.png");
 	} else {
 		TRACE(debug) << "Texture loaded" ;
         TRACE(debug) << "TextureFormat: " << SDL_GetPixelFormatName(texture->format->format) ;

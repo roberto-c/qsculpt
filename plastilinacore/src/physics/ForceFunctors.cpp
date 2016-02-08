@@ -38,7 +38,7 @@ namespace physics {
                     Eigen::Vector3f v = sphere1->v + sphere2->v;
                     float l = a->v.norm();
                     f = 2 * (n.dot(v.normalized()))*n - v.normalized();
-                    f *= -(l*0.8);
+                    f *= -(l*0.8f);
                     r = f;
                 }
             }

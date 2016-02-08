@@ -46,6 +46,8 @@ namespace gpusubdivision
         {
             return !(lhs == rhs);
         }
+
+        static const Vertex VERTEX_END;
     };
     
     struct Edge : public EdgeHandle, public device::Edge {
@@ -66,6 +68,8 @@ namespace gpusubdivision
         {
             return !(lhs == rhs);
         }
+
+        static const Edge EDGE_END;
     };
     
     struct Face : public FaceHandle, public device::Face {
@@ -110,13 +114,6 @@ namespace gpusubdivision
         {
             return !(lhs == rhs);
         }
-    };
-    
-    struct Triangle {
-        cl_float4 	p;
-        cl_float4 	n;
-        cl_float4 	c;
-        cl_float2   t;
     };
 };
 };

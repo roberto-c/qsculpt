@@ -60,6 +60,8 @@ public:
     virtual VertexHandle::size_t        numVertices() const;
     virtual EdgeHandle::size_t          addEdge(const EdgeHandle& edge);
     virtual EdgeHandle::size_t          addEdge(VertexHandle::size_t v1, VertexHandle::size_t v2);
+    virtual EdgeHandle*                 edge(EdgeHandle::size_t iid);
+    virtual const EdgeHandle*           edge(EdgeHandle::size_t iid) const;
 	virtual EdgeHandle::size_t 			numEdges() const;
     virtual FaceHandle::size_t          addFace(const std::vector<VertexHandle::size_t>& vertexIndexList);
     virtual void                		replaceFace(size_t index,
@@ -93,12 +95,6 @@ public:
 	EdgeHandle::size_t                  edge(VertexHandle::size_t iidVtxTail,
 									 		VertexHandle::size_t iidVtxHead) const;
 	
-	/**
-	 * Returns the edge
-	 */
-	EdgeHandle *		                edge(EdgeHandle::size_t iidEdge);
-	const EdgeHandle *                	edge(EdgeHandle::size_t iidEdge) const;
-
     //const Object3D& operator=(const Object3D& obj);
 
     void            					addResolutionLevel();

@@ -22,6 +22,7 @@
 #include "PrimitiveFactory.h"
 
 #include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
 #include "GpuSubdivision.h"
@@ -31,10 +32,14 @@ namespace core {
 GpuSubdivision *
 PrimitiveFactory<GpuSubdivision>::createBox() {
     using core::gpusubdivision::Vertex;
+    using core::gpusubdivision::Edge;
+    using core::gpusubdivision::Face;
     using core::utils::convert_to;
+    using core::utils::to_string;
     
     GpuSubdivision * surface = new GpuSubdivision;
     
+    surface->lock();
     //qDebug("Box::initPoints()");
     float hw = 1.0f;
     float hh = 1.0f;
@@ -58,14 +63,14 @@ PrimitiveFactory<GpuSubdivision>::createBox() {
     vertexID[5] = surface->addVertex(Point3( hw, hh, hd));
     vertexID[6] = surface->addVertex(Point3( hw,-hh, hd));
     vertexID[7] = surface->addVertex(Point3(-hw,-hh, hd));
-    static_cast<Vertex*>(surface->vertex(vertexID[0]))->n = convert_to<cl_float4>(Vector3(-hw, hh, hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[1]))->n = convert_to<cl_float4>(Vector3( hw, hh, hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[2]))->n = convert_to<cl_float4>(Vector3( hw,-hh, hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[3]))->n = convert_to<cl_float4>(Vector3(-hw,-hh, hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[0]))->t = convert_to<cl_float2>(Point2(0,0));
-    static_cast<Vertex*>(surface->vertex(vertexID[1]))->t = convert_to<cl_float2>(Point2(1,0));
-    static_cast<Vertex*>(surface->vertex(vertexID[2]))->t = convert_to<cl_float2>(Point2(1,1));
-    static_cast<Vertex*>(surface->vertex(vertexID[3]))->t = convert_to<cl_float2>(Point2(0,1));
+    static_cast<Vertex*>(surface->vertex(vertexID[4]))->n = convert_to<cl_float4>(Vector3(-hw, hh, hd).normalized());
+    static_cast<Vertex*>(surface->vertex(vertexID[5]))->n = convert_to<cl_float4>(Vector3( hw, hh, hd).normalized());
+    static_cast<Vertex*>(surface->vertex(vertexID[6]))->n = convert_to<cl_float4>(Vector3( hw,-hh, hd).normalized());
+    static_cast<Vertex*>(surface->vertex(vertexID[7]))->n = convert_to<cl_float4>(Vector3(-hw,-hh, hd).normalized());
+    static_cast<Vertex*>(surface->vertex(vertexID[4]))->t = convert_to<cl_float2>(Point2(0,0));
+    static_cast<Vertex*>(surface->vertex(vertexID[5]))->t = convert_to<cl_float2>(Point2(1,0));
+    static_cast<Vertex*>(surface->vertex(vertexID[6]))->t = convert_to<cl_float2>(Point2(1,1));
+    static_cast<Vertex*>(surface->vertex(vertexID[7]))->t = convert_to<cl_float2>(Point2(0,1));
 
 //    Iterator<VertexHandle> it = surface->vertexIterator();
 //    while (it.hasNext()) {
@@ -104,6 +109,39 @@ PrimitiveFactory<GpuSubdivision>::createBox() {
     indexList[3] = vertexID[6];
     surface->addFace( indexList );
 
+    int counter = 0;
+    auto vtxIt = surface->constVertexIterator();
+    for (auto & vertex : vtxIt)
+    {
+        TRACE(debug) << "Vertex: " << vertex.iid();
+        if (vertex.type() == (int)VertexHandleType::GPUSUBDIVISION) {
+            Vertex *vtx = static_cast<Vertex*>(&vertex);
+            TRACE(debug) << "  p: " << to_string(vtx->p);
+        }
+    }
+
+    counter = 0;
+    auto faceIt = surface->constFaceIterator();
+    for (auto & face : faceIt)
+    {
+        TRACE(debug) << "Face: " << face.iid();
+        if (face.type() == (int)FaceHandleType::GPUSUBDIVISION) {
+            Face *f = static_cast<Face*>(&face);
+            TRACE(debug) << "  FacexId: " << f->iid();
+            TRACE(debug) << "  EdgeId: " << surface->edge(f->edge)->iid();
+            auto faceVtxIt = f->constVertexIterator(surface);
+            for (auto & vertex : faceVtxIt)
+            {
+                TRACE(debug) << "    Vertex: " << vertex.iid();
+                if (vertex.type() == (int)VertexHandleType::GPUSUBDIVISION) {
+                    Vertex *vtx = static_cast<Vertex*>(&vertex);
+                    TRACE(debug) << "      p: " << to_string(vtx->p);
+                }
+            }
+        }
+    }
+
+    surface->unlock();
     return surface;
 }
 

@@ -36,6 +36,12 @@ struct CLManager::Impl {
     void printPlatformInfo(const cl::Platform & platform);
 
     void printDeviceInfo(const cl::Device & device);
+
+    std::vector<cl::Device> devicesOfType(std::vector<cl::Platform> &platforms,
+        cl_device_type type);
+
+    std::vector<cl::Device> devicesOfType(cl::Platform &platform,
+        cl_device_type type);
 };
 
 CLManager * g_clManager = NULL;
@@ -146,7 +152,7 @@ void CLManager::setDeviceContext(HDC hdc)
  * Method used to initialize OpenCL. This creates a default context and
  * a command queue.
  */
-bool CLManager::initialize()
+bool CLManager::initialize(PlastilinaSubsystem flags)
 {
 	cl_int err = CL_SUCCESS;
 	
@@ -170,7 +176,7 @@ bool CLManager::initialize()
         }
         std::vector<cl_context_properties> prop;
         // If we have a GL context, check which device is being used and use that one.
-        if (d->glCtxHnd) 
+        if (d->glCtxHnd && (flags & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) != PlastilinaSubsystem::NONE)
         {
             d->devices.clear();
 #ifdef __APPLE__
@@ -195,13 +201,23 @@ bool CLManager::initialize()
                 prop.push_back(CL_CONTEXT_PLATFORM);
                 prop.push_back((cl_int)d->devices[0].getInfo<CL_DEVICE_PLATFORM>());
             }
+        } 
+        else
+        {
+            // serch for the first device of the desired kind.
+            d->devices = d->devicesOfType(d->platforms,
+                d->useGpu ? CL_DEVICE_TYPE_GPU : CL_DEVICE_TYPE_CPU);
         }
         prop.push_back(0);
+        if (d->devices.size() == 0) {
+            TRACE(error) << "Failed to find devices";
+            return false;
+        }
 		d->context = cl::Context(d->devices[0], prop.size() ==1 ? NULL : prop.data());
 		d->queue = cl::CommandQueue(d->context, d->devices[0], 0, &err);
 	}
 	catch (cl::Error e) {
-        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what() << "\n";
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
 	}
 	
 	d->initialized = true;
@@ -289,4 +305,43 @@ void CLManager::Impl::printDeviceInfo(const cl::Device & device)
     TRACE(debug) << "CL_DEVICE_MAX_WORK_GROUP_SIZE: (";
     TRACE(debug) << device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
     TRACE(debug) << ")";
+}
+
+std::vector<cl::Device> CLManager::Impl::devicesOfType(
+    std::vector<cl::Platform> &platforms,
+    cl_device_type type)
+{
+    std::vector<cl::Device> deviceList;
+
+    // serch for the first device of the desired kind.
+    for (auto & platform : platforms)
+    {
+        std::vector<cl::Device> list = devicesOfType(platform, type);
+        deviceList.insert(deviceList.end(), list.begin(), list.end());
+    }
+    return deviceList;
+}
+
+std::vector<cl::Device> CLManager::Impl::devicesOfType(
+    cl::Platform &platform,
+    cl_device_type type)
+{
+    std::vector<cl::Device> deviceList;
+
+    try
+    {
+        std::vector<cl::Device> list;
+        platform.getDevices(type, &list);
+        deviceList.insert(deviceList.end(), list.begin(), list.end());
+    }
+    catch (cl::Error &e)
+    {
+        // ignore device not found error, rethrow all others
+        if (e.err() != CL_DEVICE_NOT_FOUND)
+        {
+            throw;
+        }
+    }
+    
+    return deviceList;
 }

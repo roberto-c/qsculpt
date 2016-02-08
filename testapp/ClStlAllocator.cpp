@@ -31,6 +31,7 @@ std::vector<MemoryPool*> g_poolList;
 MemoryPool::MemoryPool(std::size_t n, int alignment) noexcept
 : dataPtr(nullptr)
 , size(n)
+, locked(false)
 {
     TRACE(debug) << "MemoryPool()";
     initialize();
@@ -39,6 +40,7 @@ MemoryPool::MemoryPool(std::size_t n, int alignment) noexcept
 MemoryPool::MemoryPool(const MemoryPool && pool)
 : dataPtr(std::move(pool.dataPtr))
 , size(std::move(pool.size))
+, locked(std::move(pool.locked))
 {
     TRACE(debug) << "MemoryPool(const MemoryPool && pool)";
 }
@@ -66,12 +68,14 @@ MemoryPool::initialize()
 bool
 MemoryPool::lock()
 {
+    locked = true;
     return true;
 }
 
 bool
 MemoryPool::unlock()
 {
+    locked = false;
     return true;
 }
 
@@ -89,30 +93,6 @@ MemoryPoolGpu::MemoryPoolGpu(
     context = ctx;
     buffer = ::cl::Buffer(context, flags|CL_MEM_ALLOC_HOST_PTR, n);
     size = n;
-}
-
-MemoryPoolGpu::MemoryPoolGpu(
-    ::cl::Context & ctx
-    , ::cl::CommandQueue & queue
-    , BufferObject & bufobj
-    , std::size_t n
-    , cl_mem_flags flags ) 
-    : MemoryPool(1)
-    , queue(queue)
-{
-    TRACE(trace) << "MemoryPoolGpu()";
-    context = ctx;
-    if (n == 0)
-    {
-        size = bufobj.getBufferSize();
-    }
-    else
-    {
-        bufobj.setBufferData(nullptr, n);
-        size = n;
-    }
-    
-    buffer = ::cl::BufferGL(context, flags, bufobj.objectID());
 }
 
 MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu & pool)
@@ -142,12 +122,18 @@ MemoryPoolGpu::~MemoryPoolGpu()
     if (dataPtr) {
         unlock();
     }
+    dataPtr = nullptr;
 }
 
 bool
 MemoryPoolGpu::lock()
 {
     TRACE(trace) << "MemoryPoolGpu::lock()";
+    if (locked) {
+        TRACE(debug) << "Already locked";
+        return true;
+    }
+    locked = true;
     dataPtr = static_cast<char*>(queue.enqueueMapBuffer(buffer,
         CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, 0, size));
     
@@ -158,10 +144,100 @@ bool
 MemoryPoolGpu::unlock()
 {
     TRACE(trace) << "MemoryPoolGpu::unlock()";
+    if (!locked) {
+        TRACE(debug) << "Not locked";
+        return true;
+    }
     queue.enqueueUnmapMemObject(buffer, dataPtr);
-    dataPtr = nullptr;
+    //dataPtr = nullptr;
+    locked = false;
     return true;
 }
+
+MemoryPoolGlCl::MemoryPoolGlCl(
+    ::cl::Context & ctx
+    , ::cl::CommandQueue & queue
+    , std::size_t n
+    , cl_mem_flags flags)
+    : MemoryPool(1)
+    , queue(queue)
+{
+    TRACE(trace) << "MemoryPoolGlCl()";
+    context = ctx;
+    gldata.create();
+    gldata.setBufferData(nullptr, n);
+    size = n;
+    buffer = ::cl::BufferGL(context, flags, gldata.objectID());
+}
+
+MemoryPoolGlCl::MemoryPoolGlCl(const MemoryPoolGlCl & pool)
+    : MemoryPool(pool)
+    , context(pool.context)
+    , queue(pool.queue)
+    , buffer(pool.buffer)
+    , gldata(pool.gldata)
+{
+    TRACE(trace) << "MemoryPoolGlCl(const MemoryPoolGlCl &)";
+}
+
+
+MemoryPoolGlCl::MemoryPoolGlCl(const MemoryPoolGlCl && pool)
+    : MemoryPool(std::move(pool))
+    , context(std::move(pool.context))
+    , queue(std::move(pool.queue))
+    , buffer(std::move(pool.buffer))
+    , gldata(std::move(pool.gldata))
+{
+    TRACE(trace) << "MemoryPoolGlCl(const MemoryPoolGlCl &&)";
+}
+
+
+MemoryPoolGlCl::~MemoryPoolGlCl()
+{
+    TRACE(trace) << "~MemoryPoolGlCl()";
+    if (locked) {
+        unlock();
+    }
+    dataPtr = nullptr;
+}
+
+bool
+MemoryPoolGlCl::lock()
+{
+    TRACE(trace) << "MemoryPoolGlCl::lock()";
+    if (locked) {
+        TRACE(debug) << "Already locked";
+        return true;
+    }
+    locked = true;
+    //std::vector<::cl::Memory> list;
+    //list.push_back(buffer);
+    //std::vector<::cl::Event> evtList(1);
+    //queue.enqueueAcquireGLObjects(&list, nullptr, &evtList[0]);
+    //dataPtr = static_cast<char*>(queue.enqueueMapBuffer(buffer,
+    //    CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, 0, size,&evtList));
+    gldata.mapBuffer((GLvoid**)(&dataPtr), &size);
+
+    return dataPtr != nullptr;
+}
+
+bool
+MemoryPoolGlCl::unlock()
+{
+    TRACE(trace) << "MemoryPoolGlCl::unlock()";
+    if (!locked) {
+        TRACE(debug) << "Not locked";
+        return true;
+    }
+    std::vector<::cl::Memory> list;
+    list.push_back(buffer);
+    //queue.enqueueUnmapMemObject(buffer, dataPtr);
+    //queue.enqueueReleaseGLObjects(&list);
+    gldata.unmapBuffer();
+    locked = false;
+    return true;
+}
+
 
 }; // namespace cl
 }; // namspace core

@@ -25,8 +25,9 @@ struct CLRender::Impl
 	cl::Program  program;
     cl::Kernel   krnFilterImg;
 	float 		 time;
+    bool            validState;
 
-	Impl() : time(0) {
+	Impl() : time(0), validState(true) {
 		
 	}
 };
@@ -107,13 +108,20 @@ const std::vector<unsigned char> & CLRender::bufferOutput() const
 void CLRender::setGLTexSrc(
                          gl::Texture2D::shared_ptr tex)
 {
-    d->glTexSrc = tex;
-    CLManager * mgr = CLManager::instance();
-    d->imageSrc = cl::ImageGL(mgr->context(),
-                               0,
-                               tex->target(),
-                               0,
-                               tex->oid());
+    try {
+        d->glTexSrc = tex;
+        CLManager * mgr = CLManager::instance();
+        d->imageSrc = cl::ImageGL(mgr->context(),
+            0,
+            tex->target(),
+            0,
+            tex->oid());
+    }
+    catch (::cl::Error & e)
+    {
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
+        d->validState = false;
+    }
 }
 gl::Texture2D::shared_ptr CLRender::glTexSrc()
 {
@@ -123,13 +131,21 @@ gl::Texture2D::shared_ptr CLRender::glTexSrc()
 void CLRender::setGLTexDest(
                            gl::Texture2D::shared_ptr tex)
 {
-    d->glTexDest = tex;
-    CLManager * mgr = CLManager::instance();
-    d->imageDest = cl::ImageGL(mgr->context(),
-                               0,
-                               tex->target(),
-                               0,
-                               tex->oid());
+    try
+    {
+        d->glTexDest = tex;
+        CLManager * mgr = CLManager::instance();
+        d->imageDest = cl::ImageGL(mgr->context(),
+            0,
+            tex->target(),
+            0,
+            tex->oid());
+    }
+    catch (::cl::Error & e)
+    {
+        TRACE(error) << "OpenCL exception:" << e.err() << " (" << core::cl::errorToString(e.err()) << "): " << e.what();
+        d->validState = false;
+    }
 }
 gl::Texture2D::shared_ptr CLRender::glTexDest()
 {
@@ -147,7 +163,11 @@ void CLRender::swapBuffers()
 
 void CLRender::render(float step)
 {
-	try {
+    if (!d->validState)
+    {
+        return;
+    }
+	try {   
         d->time += step;
 		CLManager * clmgr = CLManager::instance();
         std::vector<cl::Memory> obj;

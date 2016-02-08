@@ -19,7 +19,7 @@
 
 
 struct ResourcesManagerData {
-    std::string path;
+    std::vector<std::string> path;
 };
 
 std::mutex g_resourcesManagerLock;
@@ -28,14 +28,28 @@ ResourcesManagerData g_data;
 void ResourcesManager::setResourcesDirectory(const std::string &path)
 {
     std::lock_guard<std::mutex> lock(g_resourcesManagerLock);
-    g_data.path = path;
+    g_data.path.clear();
+    g_data.path.push_back(path);
+}
+
+void ResourcesManager::addResourcesDirectory(const std::string &path)
+{
+    std::lock_guard<std::mutex> lock(g_resourcesManagerLock);
+    g_data.path.push_back(path);
 }
 
 std::string ResourcesManager::resourcesDirectory()
 {
     std::lock_guard<std::mutex> lock(g_resourcesManagerLock);
+    return g_data.path[0];
+}
+
+std::vector<std::string> ResourcesManager::resourcesDirectories()
+{
+    std::lock_guard<std::mutex> lock(g_resourcesManagerLock);
     return g_data.path;
 }
+
 
 #ifdef __APPLE__
 std::string ResourcesManager::findResourcePath(const std::string name,
@@ -105,27 +119,32 @@ std::string ResourcesManager::findResourcePath(const std::string name,
     using namespace boost::filesystem;
     
     path fname(name + string(".") + type);
-    path p(this->resourcesDirectory());
-    if (is_directory(p))
+    for (auto pathstr : this->resourcesDirectories())
     {
-        TRACE(trace) << "Searching under " << p.string();
-        for (directory_entry& x : directory_iterator(p)) 
+        path p(pathstr);
+        if (is_directory(p))
         {
-            if (x.path().filename().compare(fname) == 0)
+            TRACE(trace) << "Searching under " << p.string();
+            for (directory_entry& x : directory_iterator(p))
             {
-                return x.path().string();
+                if (x.path().filename().compare(fname) == 0)
+                {
+                    TRACE(trace) << "Found: " << x.path().string();
+                    return x.path().string();
+                }
             }
         }
-    }
-    p = p.parent_path().append("share");
-    if (is_directory(p))
-    {
-        TRACE(trace) << "Searching under " << p.string();
-        for (directory_entry& x : directory_iterator(p))
+        p = p.parent_path().append("share");
+        if (is_directory(p))
         {
-            if (x.path().filename().compare(fname) == 0)
+            TRACE(trace) << "Searching under " << p.string();
+            for (directory_entry& x : directory_iterator(p))
             {
-                return x.path().string();
+                if (x.path().filename().compare(fname) == 0)
+                {
+                    TRACE(trace) << "Found: " << x.path().string();
+                    return x.path().string();
+                }
             }
         }
     }

@@ -17,10 +17,11 @@
 #include "PlastilinaCore/ISurface.h"
 #include "PlastilinaCore/Logging.h"
 #include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/ResourcesManager.h>
 #include "GpuSubdivision.h"
 #include "ClStlAllocator.h"
 #include "DocumentModelTest.h"
-
+#include "PrimitiveFactory.h"
 
 using core::GpuSubdivision;
 template<class T> using vector = std::vector<T, core::cl::gpu_allocator<T>>;
@@ -185,72 +186,9 @@ int SubdivisionTest::Impl::surfaceTest()
 
     doc = std::make_shared<Document>();
 
-    //ISurface * surf = new Box();
-    surface = std::make_shared<GpuSubdivision>();
-    float hw = 1.0f;
-    float hh = 1.0f;
-    float hd = 1.0f;
-
+    surface = std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createBox());
+    
     surface->lock();
-    std::vector<size_t> vertexID(8);
-    vertexID[0] = surface->addVertex(Point3(-hw, hh, -hd));
-    vertexID[1] = surface->addVertex(Point3(hw, hh, -hd));
-    vertexID[2] = surface->addVertex(Point3(hw, -hh, -hd));
-    vertexID[3] = surface->addVertex(Point3(-hw, -hh, -hd));
-    static_cast<Vertex*>(surface->vertex(vertexID[0]))->n = convert_to<cl_float4>(Vector3(-hw, hh, -hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[1]))->n = convert_to<cl_float4>(Vector3(hw, hh, -hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[2]))->n = convert_to<cl_float4>(Vector3(hw, -hh, -hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[3]))->n = convert_to<cl_float4>(Vector3(-hw, -hh, -hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[0]))->t = convert_to<cl_float2>(Point2(0, 0));
-    static_cast<Vertex*>(surface->vertex(vertexID[1]))->t = convert_to<cl_float2>(Point2(1, 0));
-    static_cast<Vertex*>(surface->vertex(vertexID[2]))->t = convert_to<cl_float2>(Point2(1, 1));
-    static_cast<Vertex*>(surface->vertex(vertexID[3]))->t = convert_to<cl_float2>(Point2(0, 1));
-
-    vertexID[4] = surface->addVertex(Point3(-hw, hh, hd));
-    vertexID[5] = surface->addVertex(Point3(hw, hh, hd));
-    vertexID[6] = surface->addVertex(Point3(hw, -hh, hd));
-    vertexID[7] = surface->addVertex(Point3(-hw, -hh, hd));
-    static_cast<Vertex*>(surface->vertex(vertexID[4]))->n = convert_to<cl_float4>(Vector3(-hw, hh, hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[5]))->n = convert_to<cl_float4>(Vector3(hw, hh, hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[6]))->n = convert_to<cl_float4>(Vector3(hw, -hh, hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[7]))->n = convert_to<cl_float4>(Vector3(-hw, -hh, hd).normalized());
-    static_cast<Vertex*>(surface->vertex(vertexID[4]))->t = convert_to<cl_float2>(Point2(0, 0));
-    static_cast<Vertex*>(surface->vertex(vertexID[5]))->t = convert_to<cl_float2>(Point2(1, 0));
-    static_cast<Vertex*>(surface->vertex(vertexID[6]))->t = convert_to<cl_float2>(Point2(1, 1));
-    static_cast<Vertex*>(surface->vertex(vertexID[7]))->t = convert_to<cl_float2>(Point2(0, 1));
-
-    std::vector<Vertex::size_t> indexList(4);
-    indexList[0] = vertexID[0];
-    indexList[1] = vertexID[1];
-    indexList[2] = vertexID[2];
-    indexList[3] = vertexID[3];
-    surface->addFace(indexList);
-    indexList[0] = vertexID[4];
-    indexList[1] = vertexID[7];
-    indexList[2] = vertexID[6];
-    indexList[3] = vertexID[5];
-    surface->addFace(indexList);
-    indexList[0] = vertexID[0];
-    indexList[1] = vertexID[3];
-    indexList[2] = vertexID[7];
-    indexList[3] = vertexID[4];
-    surface->addFace(indexList);
-    indexList[0] = vertexID[5];
-    indexList[1] = vertexID[6];
-    indexList[2] = vertexID[2];
-    indexList[3] = vertexID[1];
-    surface->addFace(indexList);
-    indexList[0] = vertexID[0];
-    indexList[1] = vertexID[4];
-    indexList[2] = vertexID[5];
-    indexList[3] = vertexID[1];
-    surface->addFace(indexList);
-    indexList[0] = vertexID[7];
-    indexList[1] = vertexID[3];
-    indexList[2] = vertexID[2];
-    indexList[3] = vertexID[6];
-    surface->addFace(indexList);
-
     int counter=0;
     auto vtxIt = surface->constVertexIterator();
     for (auto & vertex : vtxIt)
@@ -269,7 +207,8 @@ int SubdivisionTest::Impl::surfaceTest()
         TRACE(debug) << "Face: " << face.iid();
         if (face.type() == (int)FaceHandleType::GPUSUBDIVISION) {
             Face *f = static_cast<Face*>(&face);
-            TRACE(debug) << "  FacexId: " << f->vertex;
+            TRACE(debug) << "  FacexId: " << f->iid();
+            TRACE(debug) << "  EdgeId: " << surface->edge(f->edge)->iid();
             auto faceVtxIt = f->constVertexIterator(surface.get());
             for (auto & vertex : faceVtxIt)
             {

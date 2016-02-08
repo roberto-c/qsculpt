@@ -26,7 +26,10 @@
 
 class DLLEXPORT BufferObject
 {
-public:		
+public:
+    BufferObject(const BufferObject& cpy);
+
+    BufferObject(BufferObject&& cpy);
 	/**
 	 *
 	 */
@@ -121,6 +124,25 @@ inline BufferObject::BufferObject(GLenum boTarget)
 	m_bufferSize(0),
 	m_needUpdate(true)
 {
+}
+
+inline BufferObject::BufferObject(const BufferObject& cpy)
+:   m_boTarget(cpy.m_boTarget),
+    m_vboID(cpy.m_vboID),
+    m_bufferSize(cpy.m_bufferSize),
+    m_needUpdate(cpy.m_needUpdate)
+{
+
+}
+
+inline BufferObject::BufferObject(BufferObject&& cpy)
+:   m_boTarget(std::move(cpy.m_boTarget)),
+    m_vboID(std::move(cpy.m_vboID)),
+    m_bufferSize(std::move(cpy.m_bufferSize)),
+    m_needUpdate(std::move(cpy.m_needUpdate))
+
+{
+
 }
 
 /**

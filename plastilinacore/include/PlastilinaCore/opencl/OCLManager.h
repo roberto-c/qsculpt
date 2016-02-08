@@ -30,7 +30,7 @@ public:
 	 * Method used to initialize OpenCL. This creates a default context and
 	 * a command queue.
 	 */
-	bool initialize();
+	bool initialize(PlastilinaSubsystem flags = PlastilinaSubsystem::NONE);
 
     /**
      * Initialize OpenCL context with the use of OpenGL context specified.
