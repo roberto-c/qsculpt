@@ -1,7 +1,7 @@
 #ifndef OBJECTPROPERTIES_H_
 #define OBJECTPROPERTIES_H_
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "ui_TransformWidget.h"
 
 class ISurface;

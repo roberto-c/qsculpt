@@ -20,7 +20,7 @@
 #ifndef QSCULPTAPP_H
 #define QSCULPTAPP_H
 
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <PlastilinaCore/IDocument.h>
 
 #define g_pApp g_pApp

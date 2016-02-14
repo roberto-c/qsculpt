@@ -141,7 +141,7 @@ public:
     virtual void paintGL(GlCanvas *c);
 
 private:
-    class Impl;
+    struct Impl;
     QScopedPointer<Impl> d_;
 };
 

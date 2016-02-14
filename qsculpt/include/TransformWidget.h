@@ -21,7 +21,7 @@
 #define TRANSFORMWIDGET_H
 
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 namespace Ui {
     class TransformWidget;

@@ -22,12 +22,12 @@
 #include <iostream>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
-#include <QtGui/QGridLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QComboBox>
-#include <QtGui/QLabel>
-#include <QtGui/QSpacerItem>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QSpacerItem>
 
 #include <PlastilinaCore/subdivision/Sphere.h>
 #include <PlastilinaCore/subdivision/Box.h>
@@ -45,7 +45,6 @@ struct DocumentView::Impl {
     QComboBox       		*_viewPerspective;
     QComboBox       		*_drawingMode;
     bool            		 _drawVertices;
-    CustomGLContext 		 ctx;
 };
 
 DocumentView::DocumentView(QWidget *_parent)
@@ -64,16 +63,7 @@ void DocumentView::createWidgets()
     QGridLayout* gridLayout = new QGridLayout(this);
     QHBoxLayout* hboxLayout = new QHBoxLayout();
     
-    // Set up gl display format
-    QGLFormat format = _d->ctx.format();
-    format.setProfile(QGLFormat::CoreProfile);
-    format.setVersion(3, 2);
-    format.setSwapInterval(1);
-    format.setDepthBufferSize(32);
-    _d->ctx.setFormat(format);
-    _d->ctx.setUseSoftwareRenderer(false);
-    _d->ctx.create();
-    _d->_display = new GlCanvas(&_d->ctx, this);
+    _d->_display = new GlCanvas(this);
 
     Q_CHECK_PTR(gridLayout);
     Q_CHECK_PTR(_d->_display);
@@ -163,7 +153,7 @@ bool DocumentView::isGridVisible()
 void DocumentView::updateView()
 {
     Q_ASSERT(_d->_display);
-    _d->_display->updateGL();
+    _d->_display->update();
 }
 
 void DocumentView::viewPerspectiveChanged(int index)

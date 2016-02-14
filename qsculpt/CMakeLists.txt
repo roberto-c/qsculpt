@@ -46,10 +46,6 @@ set(QSCULPT_SOURCES
 	./src/TransformWidget.cpp
 )
 
-set(QSCULTPT_SOURCES_OBJCXX
-	./src/CustomGLContext.mm
-)
-
 set(QSCULPT_PRIVATE_HEADERS 
 	./include/command/BrushCommand.h
 	./include/command/BrushProperties.h
@@ -103,6 +99,10 @@ set_property(TARGET QSculpt
 	)
 
 if (APPLE)
+	set(QSCULTPT_SOURCES_OBJCXX
+		./src/CustomGLContext.mm
+	)
+
 	set_property(TARGET QSculpt 
 		PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h
 	)

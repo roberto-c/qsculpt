@@ -20,7 +20,6 @@
 #ifndef COMMANDBASE_H
 #define COMMANDBASE_H
 
-#include <QtOpenGL/QtOpenGL>
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/Camera.h>
 #include "ICommand.h"

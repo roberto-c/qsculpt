@@ -23,6 +23,7 @@
 #include <QtCore/QVector>
 #include <QtCore/QHash>
 #include <QtCore/QMap>
+#include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/Point3D.h>
 #include "command/CommandBase.h"
 #include "DocumentView.h"
@@ -72,7 +73,7 @@ private:
     double              _radius;
     double              _depth;
     BrushAction         _action;
-    std::vector<Vertex::size_t> _vertexSelected;
+    std::vector<VertexHandle::size_t> _vertexSelected;
     BrushProperties*    _propertiesWindow;
     DirtyFaceMap        _previousState;
     bool                _undoCalled;

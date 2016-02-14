@@ -20,7 +20,7 @@
 #ifndef DOCUMENTVIEW_H
 #define DOCUMENTVIEW_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QList>
 #include <QtCore/QPoint>
 #include <PlastilinaCore/Point3D.h>

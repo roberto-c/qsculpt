@@ -121,23 +121,23 @@ void BrushCommand::undo()
     qDebug() << "BrushCommand::undo()";
     if (_object)
     {
-        QHash<int, Point3> hash = _previousState[_object];
-        QHash<int, Point3>::iterator it, end = hash.end();
-        for (it = hash.begin(); it != end; ++it)
-        {
-            Point3 v = _object->vertex(it.key())->position();
-            _object->vertex(it.key())->position() = it.value();
-            it.value() = v;
-        }
-        for (it = hash.begin(); it != end; ++it)
-        {
-            _object->adjustPointNormal(it.key());
-        }
-        _object->setChanged(true);
+        //QHash<int, Point3> hash = _previousState[_object];
+        //QHash<int, Point3>::iterator it, end = hash.end();
+        //for (it = hash.begin(); it != end; ++it)
+        //{
+        //    Point3 v = _object->vertex(it.key())->position().head(3);
+        //    _object->vertex(it.key())->position() = it.value();
+        //    it.value() = v;
+        //}
+        //for (it = hash.begin(); it != end; ++it)
+        //{
+        //    _object->adjustPointNormal(it.key());
+        //}
+        //_object->setChanged(true);
 
-        DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-        if (view)
-            view->updateView();
+        //DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+        //if (view)
+        //    view->updateView();
     }
     _undoCalled = true;
 }
@@ -150,26 +150,26 @@ void BrushCommand::undo()
 void BrushCommand::redo()
 {
     qDebug() << "BrushCommand::redo()";
-    if (_object && _undoCalled)
-    {
-        QHash<int, Point3> hash = _previousState[_object];
-        QHash<int, Point3>::iterator it, end = hash.end();
-        for (it = hash.begin(); it != end; ++it)
-        {
-            Point3 v = _object->vertex(it.key())->position();
-            _object->vertex(it.key())->position() = it.value();
-            it.value() = v;
-        }
-        for (it = hash.begin(); it != end; ++it)
-        {
-            _object->adjustPointNormal(it.key());
-        }
-        _object->setChanged(true);
+    //if (_object && _undoCalled)
+    //{
+    //    QHash<int, Point3> hash = _previousState[_object];
+    //    QHash<int, Point3>::iterator it, end = hash.end();
+    //    for (it = hash.begin(); it != end; ++it)
+    //    {
+    //        Point3 v = _object->vertex(it.key())->position().head(3);
+    //        _object->vertex(it.key())->position() = it.value();
+    //        it.value() = v;
+    //    }
+    //    for (it = hash.begin(); it != end; ++it)
+    //    {
+    //        _object->adjustPointNormal(it.key());
+    //    }
+    //    _object->setChanged(true);
 
-        DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-        if (view)
-            view->updateView();
-    }
+    //    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    //    if (view)
+    //        view->updateView();
+    //}
 }
 
 void BrushCommand::mouseMoveEvent(QMouseEvent* e)
@@ -264,16 +264,17 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 
 void BrushCommand::applyOperation()
 {
+    _object->lock();
     GLdouble winX, winY, winZ;
     Point3 wv;
     if (_vertexSelected.size() > 0)
     {
         //Vector3& n = _object->getNormalAtPoint(_vertexSelected[_vertexSelected.count()/2]);
         Vector3 n;
-        for (int i = 0; i < _vertexSelected.size(); i++)
+        for (auto i = 0; i < _vertexSelected.size(); i++)
         {
 
-            Point3& v = _object->vertex(_vertexSelected[i])->position();
+            Point3 v = _object->vertex(_vertexSelected[i])->position().head(3);
 //            gluProject(v.x(), v.y(), v.z(),
 //                       _modelMatrix, _projMatrix, _viewPort,
 //                       &winX, &winY, &winZ);
@@ -293,6 +294,7 @@ void BrushCommand::applyOperation()
         }
         _object->setChanged(true);
     }
+    _object->unlock();
 }
 
 void BrushCommand::selectObject()
@@ -321,7 +323,7 @@ void BrushCommand::selectObject()
                 if (!_previousState[_object].contains(_vertexSelected[j]))
                 {
                     //_object->getPointList().at(index).color = QColor(255, 0, 0);
-                    _previousState[_object].insert(index, _object->vertex(index)->position());
+                    _previousState[_object].insert(index, _object->vertex(index)->position().head(3));
                 }
             }
         }

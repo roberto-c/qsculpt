@@ -21,7 +21,7 @@
 #include "Stable.h"
 #include <QtGui/QStandardItemModel>
 #include <QtGui/QStandardItem>
-#include <QtGui/QItemSelectionModel>
+#include <QtCore/QItemSelectionModel>
 
 #include <PlastilinaCore/IDocument.h>
 #include "DocumentTreeWidget.h"

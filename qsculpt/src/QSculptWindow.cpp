@@ -20,7 +20,7 @@
 #include "Stable.h"
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QDockWidget>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 

@@ -19,7 +19,6 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "GlView.h"
-#include <QtOpenGL/QtOpenGL>
 #include <iostream>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
@@ -35,6 +34,7 @@
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/opengl/GlslShader.h>
 #include <PlastilinaCore/Camera.h>
@@ -191,16 +191,9 @@ void GlCanvas::Impl::setupShaderCommonParams()
 }
 
 GlCanvas::GlCanvas(DocumentView* _parent)
-: QGLWidget(_parent), _d(new Impl)
+: QOpenGLWidget(_parent), _d(new Impl)
 {
     
-}
-
-
-GlCanvas::GlCanvas(QGLContext * ctx, DocumentView* _parent)
-    : QGLWidget(ctx, _parent), _d(new Impl)
-    
-{
 }
 
 
@@ -243,7 +236,7 @@ void GlCanvas::setPerspectiveView(PerspectiveType type) {
 void GlCanvas::setGridVisible(bool value)
 {
     _d->isGridVisible = value;
-    updateGL();
+    update();
 }
 
 bool GlCanvas::isGridVisible()
@@ -438,7 +431,7 @@ void GlCanvas::mouseMoveEvent ( QMouseEvent * e )
 
     if (needUpdate)
     {
-        updateGL();
+        update();
     }
 }
 
@@ -470,7 +463,7 @@ void GlCanvas::mousePressEvent ( QMouseEvent * e )
     }
     if (needUpdate)
     {
-        updateGL();
+        update();
     }
 }
 
@@ -488,7 +481,7 @@ void GlCanvas::mouseReleaseEvent ( QMouseEvent * e )
         if (cmd)
         {
             cmd->mouseReleaseEvent( e );
-            updateGL();
+            update();
         }
     }
 }
@@ -501,7 +494,7 @@ void GlCanvas::wheelEvent ( QWheelEvent * e )
     _d->zoomFactor += numSteps * 0.01;
 
     resizeGL( width(), height() );
-    updateGL();
+    update();
 }
 
 ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
@@ -585,12 +578,12 @@ PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y,
                 if (d[j] == 0) continue;
 
                 faceIndex = d[j]-1;
-                Face* f = mesh->face(faceIndex);
+                auto f = mesh->face(faceIndex);
                 
-                Iterator<Vertex> vtxIt = f->constVertexIterator();
-                while(vtxIt.hasNext()) {
+                //auto vtxIt = f->constVertexIterator();
+                //while(vtxIt.hasNext()) {
                     //const Vertex& v = vtxIt.next();
-                }
+                //}
 
             }
             
@@ -651,16 +644,16 @@ void GlCanvas::setCursorImage(const QImage& image)
     }
     else
     {
-        // Delete any texture loaded before.
-        deleteTexture(_d->textureId);
-        _d->textureId = 0;
+        //// Delete any texture loaded before.
+        //deleteTexture(_d->textureId);
+        //_d->textureId = 0;
 
-        _d->cursorImage = image;
-        _d->textureId = bindTexture(_d->cursorImage);
-        if (_d->textureId == 0)
-        {
-            qDebug("texture id is not valid");
-        }
+        //_d->cursorImage = image;
+        //_d->textureId = bindTexture(_d->cursorImage);
+        //if (_d->textureId == 0)
+        //{
+        //    qDebug("texture id is not valid");
+        //}
     }
 
 }

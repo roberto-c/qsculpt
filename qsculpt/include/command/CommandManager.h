@@ -25,7 +25,7 @@
 #include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtCore/QStack>
-#include <QtGui/QUndoStack>
+#include <QtWidgets/QUndoStack>
 
 class ICommand;
 class QAction;

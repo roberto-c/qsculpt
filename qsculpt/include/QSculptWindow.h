@@ -22,7 +22,7 @@
 #ifndef QSCULPTWINDOW_H
 #define QSCULPTWINDOW_H
 
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QtCore/QStack>
 
 #include <PlastilinaCore/IDocument.h>

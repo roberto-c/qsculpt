@@ -26,7 +26,7 @@ struct SurfaceViewController::PrivateData
 {
     ISurface*               surface;
     //EditMode                mode;
-    std::vector<Vertex*>    vertices;
+    std::vector<VertexHandle*>    vertices;
 };
 
 SurfaceViewController::SurfaceViewController(ISurface* surface)

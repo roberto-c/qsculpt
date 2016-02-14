@@ -55,7 +55,7 @@ public:
 
 private:
 
-    class Impl;
+    struct Impl;
     QScopedPointer<Impl> _d;
 
 };
@@ -112,7 +112,7 @@ public:
     
 private:
     
-    class Impl;
+    struct Impl;
     QScopedPointer<Impl> d_;
     
 };

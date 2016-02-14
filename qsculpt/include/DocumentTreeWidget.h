@@ -21,9 +21,9 @@
 #ifndef DOCUMENTTREEWIDGET_H_
 #define DOCUMENTTREEWIDGET_H_
 
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QDockWidget>
 #include <QtCore/QModelIndex>
-#include <QtGui/QItemSelectionModel>
+#include <QtCore/QItemSelectionModel>
 #include <PlastilinaCore/IDocument.h>
 
 class DocumentModel;

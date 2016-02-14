@@ -20,7 +20,8 @@
 #include "Stable.h"
 #include "QSculptApp.h"
 #include <stdexcept>
-#include <QtGui/QWidget>
+#include <QtGui/QSurfaceFormat>
+#include <QtWidgets/QWidget>
 #include "QSculptWindow.h"
 #include <PlastilinaCore/IDocument.h>
 
@@ -64,6 +65,13 @@ int main( int argc, char ** argv ) {
     int result = 0;
     
     try {
+        QSurfaceFormat format;
+        format.setDepthBufferSize(24);
+        format.setStencilBufferSize(8);
+        format.setVersion(3, 2);
+        format.setProfile(QSurfaceFormat::CoreProfile);
+        QSurfaceFormat::setDefaultFormat(format);
+
         QSculptApp a( argc, argv );
         
         g_pApp = (QSculptApp*)QSculptApp::instance();
@@ -71,6 +79,7 @@ int main( int argc, char ** argv ) {
         g_pApp->setOrganizationName("QSculpt");
         g_pApp->setOrganizationDomain("qsculpt.com");
         g_pApp->setApplicationName("QSculpt");
+
         g_pApp->getMainWindow()->show();
         
         result = a.exec();

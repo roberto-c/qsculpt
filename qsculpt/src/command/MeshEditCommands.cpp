@@ -188,31 +188,33 @@ struct SmoothSurfaceCommand::Impl {
     {
         Vector3 normal;
         int counter = 0;
-        Iterator<Vertex> it = surf->vertexIterator();
+        auto it = surf->vertexIterator();
         while(it.hasNext()){
             auto vtx = it.next();
             normal.setZero();
-            Iterator<Face> it2 = vtx->faceIterator();
+            auto it2 = surf->faceIterator(); // vtx->faceIterator();
             counter = 0;
             while (it2.hasNext()) {
                 counter++;
                 normal += computeFaceNormal(it2.next());
             }
             normal = normal / counter;
-            vtx->normal() = normal.normalized();
+            //vtx->normal() = normal.normalized();
             
             qDebug() << "Vtx num neighbor: " << counter;
         }
     }
     
-    Vector3 computeFaceNormal(Face::shared_ptr f)
+    Vector3 computeFaceNormal(FaceHandle::shared_ptr face)
     {
-        Iterator<Edge> it = f->edgeIterator();
-        auto e1 = it.next();
-        auto e2 = it.next();
-        Vector3 v1 = e2->pair()->head()->position() - e2->head()->position();
-        Vector3 v2 = e1->head()->position() - e1->pair()->head()->position();
-        return v1.cross(v2).normalized();
+        //auto f = &(face->cast<const core::subdivision::Face>());
+        //auto it = f->edgeIterator();
+        //auto e1 = it.next();
+        //auto e2 = it.next();
+        //Vector3 v1 = e2->pair()->head()->position() - e2->head()->position();
+        //Vector3 v2 = e1->head()->position() - e1->pair()->head()->position();
+        //return v1.cross(v2).normalized();
+        return Vector3();
     }
 };
 
@@ -354,12 +356,12 @@ void AddFaceCommand::redo()
 }
 
 struct TestCommand::Impl {
-    Document            doc;
-    SceneNode::shared_ptr root;
-    ISurface            *surf;
-    Vertex              *vtx;
-    Iterator<Face>      faceIt;
-    Iterator<Vertex>    vtxIt;
+    Document                doc;
+    SceneNode::shared_ptr   root;
+    ISurface                *surf;
+    VertexHandle            *vtx;
+    Iterator<FaceHandle>    faceIt;
+    Iterator<VertexHandle>  vtxIt;
     
     Impl():surf(0),vtx(0){}
     Impl(const Impl& cpy):surf(0),vtx(0){}
@@ -392,7 +394,7 @@ void TestCommand::Impl::setup() {
     vertexID.push_back(surf->addVertex(Point3(0.0f, 0.5f, 0))); // 7
     vertexID.push_back(surf->addVertex(Point3(0.5f, 0.5f, 0))); // 8
     
-    std::vector<Face::size_t> face;
+    std::vector<FaceHandle::size_t> face;
     face.clear();
     face.push_back(vertexID[0]);
     face.push_back(vertexID[1]);
@@ -425,12 +427,12 @@ void TestCommand::Impl::setup() {
     ptr->setParent(root);
     root->add(ptr);
     
-    vtxIt = surf->vertexIterator();
-    vtx = surf->vertex(vertexID[3]);
-    if (vtx) {
-        faceIt = vtx->faceIterator();
-        vtxIt = vtx->vertexIterator();
-    }
+    //vtxIt = surf->vertexIterator();
+    //vtx = surf->vertex(vertexID[3]);
+    //if (vtx) {
+    //    faceIt = vtx->faceIterator();
+    //    vtxIt = vtx->vertexIterator();
+    //}
 
     
     root->transform() *= Eigen::Translation<float,3>(0.5f,0.5f,0);
@@ -502,15 +504,15 @@ void TestCommand::mousePressEvent(QMouseEvent *e)
 //        qDebug() << "No more elements";
 //    }
     
-    if (_d->vtxIt.hasNext()) {
-        auto v = _d->vtxIt.next();
-        v->color() = Vector4(1,0.3f,0, 1);
-        qDebug() << v->iid();
-        
-        _d->surf->setChanged(true);
-    } else {
-        qDebug() << "No more elements";
-    }
+    //if (_d->vtxIt.hasNext()) {
+    //    auto v = _d->vtxIt.next();
+    //    v->color() = Vector4(1,0.3f,0, 1);
+    //    qDebug() << v->iid();
+    //    
+    //    _d->surf->setChanged(true);
+    //} else {
+    //    qDebug() << "No more elements";
+    //}
 }
 
 /**

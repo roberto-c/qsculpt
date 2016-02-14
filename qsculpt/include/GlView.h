@@ -21,14 +21,13 @@
 #define GLDISPLAY_H
 
 #include <PlastilinaCore/opengl/OpenGL.h>
-#include <QtOpenGL/QGLWidget>
+#include <QtWidgets/QOpenGLWidget>
 #include <QtCore/QPoint>
 #include <QtCore/QVector>
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
 #include <PlastilinaCore/SpEnums.h>
 #include <PlastilinaCore/Point3D.h>
-#include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/Scene.h>
@@ -56,7 +55,7 @@ struct HitRecord
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class GlCanvas : public QGLWidget
+class GlCanvas : public QOpenGLWidget
 {
     Q_OBJECT
 public:
@@ -85,14 +84,6 @@ public:
      * @param parent the parent view of the widget.
      */
     GlCanvas(DocumentView* parent = 0);
-    
-    /**
-     * Widget constructor. Initializes default parameters. This widget only can
-     * have a DocumentView class-derived as parent.
-     *
-     * @param parent the parent view of the widget.
-     */
-    GlCanvas(QGLContext * ctx, DocumentView* parent = 0);
 
     /**
      * Default destructor

@@ -55,7 +55,6 @@ set(PLASTILINACORE_SOURCES
 	./src/subdivision/Sphere.cpp
 	./src/subdivision/Subdivision.cpp
 	./src/subdivision/SubdivisionRenderable.cpp
-	./src/Utitlities.cpp
 	./src/Vertex.cpp
 	./src/WireframeRenderer.cpp
 )

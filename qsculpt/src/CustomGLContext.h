@@ -18,8 +18,9 @@ public:
     
     CustomGLContext(const QGLFormat & format);
     
+#ifdef __APPLE__
     void * chooseMacVisual(GDHandle /*handle*/);
-    
+#endif
     void setUseSoftwareRenderer(bool use);
     
     bool useSoftwareRenderer();

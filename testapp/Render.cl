@@ -77,6 +77,7 @@ kernel void filter_img(
     }
     
     c2 = clamp(c2, (float4)(0,0,0,1), (float4)(1,1,1,1));
+    //c2 = (float4)(0, 0, 1.0f, 1.0f);
     write_imagef(dest, p, c2);
 }
 
@@ -103,6 +104,7 @@ kernel void filter2_img(
     c2 *= factor;
     //c2 = clamp(c2, (uint4)(0,0,0,255), (uint4)(255,255,255,255));
     c2 = clamp(c2, (float4)(0,0,0,1), (float4)(1,1,1,1));
+    c2 = (float4)(0, 0, 1.0f, 1.0f);
     write_imagef(dest, p, c2);
 }
 

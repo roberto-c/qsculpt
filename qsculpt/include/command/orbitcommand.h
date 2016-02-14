@@ -30,7 +30,7 @@
  */
 class OrbitCommand : public CommandBase
 {
-    class Impl;
+    struct Impl;
     QScopedPointer<Impl> _d;
     
 public:

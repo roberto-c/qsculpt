@@ -65,11 +65,11 @@ kernel void build_mesh(
         outVertices[faceOutIdx + 1].p = vtx2->p;
         outVertices[faceOutIdx + 1].c = vtx2->c;
         outVertices[faceOutIdx + 1].n = vtx2->n;
-        outVertices[faceOutIdx + 1].t = vtx1->t;
+        outVertices[faceOutIdx + 1].t = vtx2->t;
         outVertices[faceOutIdx + 2].p = vtx3->p;
         outVertices[faceOutIdx + 2].c = vtx3->c;
         outVertices[faceOutIdx + 2].n = vtx3->n;
-        outVertices[faceOutIdx + 2].t = vtx1->t;
+        outVertices[faceOutIdx + 2].t = vtx3->t;
         outVertices += 3;
         vtx2 = vtx3;
         vtx3 = Face_VertexIterator_next(&it);

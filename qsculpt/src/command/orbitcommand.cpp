@@ -35,7 +35,7 @@
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/math/Utils.h>
 #include "Eigen/Geometry"
-
+#include <QtGui/QMouseEvent>
 
 struct OrbitCommand::Impl
 {

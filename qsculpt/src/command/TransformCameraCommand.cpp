@@ -28,6 +28,8 @@
 #include <PlastilinaCore/geometry/Ray.h>
 #include <PlastilinaCore/geometry/Sphere.h>
 #include <PlastilinaCore/math/Utils.h>
+#include <QtGui/QMouseEvent>
+
 #include "Eigen/Geometry"
 #include "command/TransformCameraCommand.h"
 #include "GlView.h"

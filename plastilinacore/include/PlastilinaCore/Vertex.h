@@ -57,6 +57,9 @@ public:
     T cast() const {
         return static_cast<T>(this);
     }
+
+    Vector4 position() const;
+    Vector4 normal() const;
 };
 
 enum VertexFlags {

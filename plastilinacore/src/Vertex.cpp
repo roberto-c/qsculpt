@@ -578,3 +578,30 @@ bool Vertex::EdgeIterator::seek(int pos, IteratorOrigin origin) const
 
 } // namespace subdivision
 } // namespace core
+
+
+Vector4 VertexHandle::position() const
+{
+    switch ((VertexHandleType)this->type())
+    {
+    case VertexHandleType::DEFAULT:
+        auto v = static_cast<const core::subdivision::Vertex*>(this)->position();
+        return Vector4(v.x(), v.y(), v.z(), 1);
+    //case VertexHandleType::GPUSUBDIVISION:
+    //    return static_cast<const core::gpusubdivision::Vertex*>(this)->p;
+    };
+    return Vector4();
+}
+
+Vector4 VertexHandle::normal() const
+{
+    switch ((VertexHandleType)this->type())
+    {
+    case VertexHandleType::DEFAULT:
+        auto v = static_cast<const core::subdivision::Vertex*>(this)->normal();
+        return Vector4(v.x(), v.y(), v.z(), 0);
+        //case VertexHandleType::GPUSUBDIVISION:
+        //    return static_cast<const core::gpusubdivision::Vertex*>(this)->p;
+    };
+    return Vector4();
+}

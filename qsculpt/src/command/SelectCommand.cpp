@@ -162,7 +162,7 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 
         if (_objectsSelected.size() > 0)
         {
-            for (int i = 0; i < _objectsSelected.size(); ++i)
+            for (auto i = 0; i < _objectsSelected.size(); ++i)
             {
                 _objectsSelected[i]->setSelected(!_objectsSelected[i]->isSelected());
             }
@@ -259,15 +259,15 @@ void SelectCommand::selectVertices()
         if(!surface) 
             continue;
         
-        Iterator<Vertex> it = surface->vertexIterator();
+        auto it = surface->vertexIterator();
         while(it.hasNext()) {
             auto v = it.next();
-            view->getCanvas()->worldToScreen(v->position(), p);
+            //view->getCanvas()->worldToScreen(v->position(), p);
             //qDebug() << toString(v->position()) << toString(p);
-            v->removeFlag(VF_Selected);
-            if (box.contains(p)) {
-                v->addFlag(VF_Selected);
-            }
+            //v->removeFlag(VF_Selected);
+            //if (box.contains(p)) {
+            //    v->addFlag(VF_Selected);
+            //}
         }
         surface->setChanged(true);
     }
@@ -275,53 +275,7 @@ void SelectCommand::selectVertices()
 
 void SelectCommand::selectSurface()
 {
-    using namespace geometry;
-    using namespace std;
 
-    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-    assert(view);
-    if (!view->getDocument()) {
-        return;
-    }
-
-    AABB box;
-    box.extend(_startPointWin).extend(_endPointWin);
-
-    Eigen::Affine3f trans;
-    Point3 p;
-    ISurface *surface = NULL;
-    auto ptr = view->getDocument()->scene().lock();
-    if (!ptr) {
-        qDebug() << __FILE__ << " : " << __LINE__ << " Scene destroyed";
-        return;
-    }
-    Iterator<SceneNode> nodeIt = ptr->iterator();
-    while(nodeIt.hasNext())
-    {
-        auto n = nodeIt.next();
-        if (n->nodeType() != NT_Surface)
-            continue;
-        
-        surface = std::static_pointer_cast<SurfaceNode> (n)->surface();
-        if(!surface) 
-            continue;
-        
-        trans = n->transform();
-        surface->setSelected(false);
-        n->setSelected(false);
-        Iterator<Vertex> it = surface->vertexIterator();
-        while(it.hasNext()) {
-            auto v = it.next();
-            Vector3 vp = trans * v->position();
-            view->getCanvas()->worldToScreen(vp, p);
-            if (box.contains(p)) {
-                surface->setSelected(true);
-                n->setSelected(true);
-                qDebug() << "SelectSurface: selected " << n->iid();
-            }
-        }
-        surface->setChanged(true);
-    }
 }
 
 void SelectCommand::selectFaces()
@@ -358,21 +312,21 @@ void SelectCommand::selectFaces()
         
         surface->setSelected(false);
         n->setSelected(false);
-        Iterator<Face> it = surface->faceIterator();
+        auto it = surface->faceIterator();
         while(it.hasNext()) {
             auto f = it.next();
-            f->removeFlag(FF_Selected);
-            Iterator<Vertex> vtxIt = f->vertexIterator();
-            while(vtxIt.hasNext()) {
-                auto v = vtxIt.next();
-                view->getCanvas()->worldToScreen(v->position(), p);
-                //qDebug() << toString(v->position()) << toString(p);
-                if (box.contains(p)) {
-                    f->addFlag(FF_Selected);
-                    surface->setSelected(true);
-                    n->setSelected(true);
-                }
-            }
+            //f->removeFlag(FF_Selected);
+            //auto vtxIt = f->vertexIterator();
+            //while(vtxIt.hasNext()) {
+            //    auto v = vtxIt.next();
+            //    view->getCanvas()->worldToScreen(v->position(), p);
+            //    //qDebug() << toString(v->position()) << toString(p);
+            //    if (box.contains(p)) {
+            //        f->addFlag(FF_Selected);
+            //        surface->setSelected(true);
+            //        n->setSelected(true);
+            //    }
+            //}
         }
         surface->setChanged(true);
     }
@@ -410,17 +364,17 @@ void SelectCommand::unselectAll()
         if(!surface) 
             continue;
         
-        surface->setSelected(false);
-        Iterator<Face> it = surface->faceIterator();
-        while(it.hasNext()) {
-            auto f = it.next();
-            f->removeFlag(FF_Selected);
-            Iterator<Vertex> vtxIt = f->vertexIterator();
-            while(vtxIt.hasNext()) {
-                auto v = vtxIt.next();
-                v->removeFlag(VF_Selected);
-            }
-        }
+        //surface->setSelected(false);
+        //auto it = surface->faceIterator();
+        //while(it.hasNext()) {
+        //    auto f = it.next();
+        //    f->removeFlag(FF_Selected);
+        //    auto vtxIt = f->vertexIterator();
+        //    while(vtxIt.hasNext()) {
+        //        auto v = vtxIt.next();
+        //        v->removeFlag(VF_Selected);
+        //    }
+        //}
         surface->setChanged(true);
     }
 }
