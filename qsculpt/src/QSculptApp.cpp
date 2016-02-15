@@ -20,11 +20,14 @@
 #include "Stable.h"
 #include "QSculptApp.h"
 #include <stdexcept>
+#include <boost/program_options.hpp>
 #include <QtGui/QSurfaceFormat>
 #include <QtWidgets/QWidget>
 #include "QSculptWindow.h"
 #include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/ResourcesManager.h>
 
+namespace po = boost::program_options;
 
 QSculptApp* g_pApp = NULL;
 
@@ -65,6 +68,31 @@ int main( int argc, char ** argv ) {
     int result = 0;
     
     try {
+        using namespace std;
+        po::options_description optionsDesc;
+        po::variables_map   options;
+        vector<string> default_search_dirs = { core::utils::get_app_path() };
+        // Declare the supported options.
+        optionsDesc.add_options()
+            ("help", "produce help message")
+            ("interactive", po::value<bool>()->default_value(true), "True to run interactive test bed. False to run automated tests")
+            ("resourcesdir", po::value<vector<string>>()->default_value(default_search_dirs, core::utils::get_app_path()), "path used to load all resources")
+            ;
+
+        po::store(po::parse_command_line(argc, argv, optionsDesc), options);
+        po::notify(options);
+
+        if (options.count("help")) {
+            std::cout << optionsDesc << "\n";
+            return 1;
+        }
+
+        // Set Resources search directories
+        for (auto path : (options["resourcesdir"].as<std::vector<std::string>>()))
+        {
+            ResourcesManager::addResourcesDirectory(path);
+        }
+
         QSurfaceFormat format;
         format.setDepthBufferSize(24);
         format.setStencilBufferSize(8);

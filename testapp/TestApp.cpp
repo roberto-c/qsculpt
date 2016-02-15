@@ -30,7 +30,9 @@
 
 #include "TestApp.h"
 
-#include "PlastilinaCore/Vertex.h"
+#include "PlastilinaCore/Color.h"
+#include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/Camera.h>
 #include "PlastilinaCore/HEdge.h"
 #include "PlastilinaCore/Face.h"
 #include "PlastilinaCore/Point3D.h"
@@ -38,30 +40,28 @@
 #include "PlastilinaCore/Vector.h"
 #include "PlastilinaCore/Scene.h"
 #include "PlastilinaCore/SceneNode.h"
-#include "PlastilinaCore/subdivision/Sphere.h"
-#include "PlastilinaCore/subdivision/Box.h"
-#include "PlastilinaCore/subdivision/Subdivision.h"
 #include "PlastilinaCore/geometry/Sphere.h"
 #include "PlastilinaCore/geometry/Ray.h"
 #include "PlastilinaCore/FlatRenderer.h"
 #include "PlastilinaCore/SmoothRenderer.h"
-#include <PlastilinaCore/PointRenderer.h>
-#include "PlastilinaCore/Camera.h"
-#include <PlastilinaCore/BOManager.h>
-
-#include <PlastilinaCore/opencl/OCLManager.h>
-#include "PlastilinaCore/opengl/GlslShader.h"
-#include "PlastilinaCore/opengl/GlslProgram.h"
-#include <PlastilinaCore/physics/SimSystem.h>
-#include <PlastilinaCore/physics/Actor.h>
-#include <PlastilinaCore/physics/ForceFunctors.h>
-#include "PlastilinaCore/Color.h"
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/material/PhongMaterial.h>
 #include <PlastilinaCore/material/PointMaterial.h>
+#include <PlastilinaCore/PointRenderer.h>
+#include <PlastilinaCore/opencl/OCLManager.h>
+#include "PlastilinaCore/opengl/GlslShader.h"
+#include "PlastilinaCore/opengl/GlslProgram.h"
+#include <PlastilinaCore/opengl/Texture.h>
+#include <PlastilinaCore/physics/SimSystem.h>
+#include <PlastilinaCore/physics/Actor.h>
+#include <PlastilinaCore/physics/ForceFunctors.h>
 #include <PlastilinaCore/pointcloud/PointCloud.h>
 #include <PlastilinaCore/ResourcesManager.h>
-#include <PlastilinaCore/opengl/Texture.h>
+#include "PlastilinaCore/subdivision/Sphere.h"
+#include "PlastilinaCore/subdivision/Box.h"
+#include "PlastilinaCore/subdivision/Subdivision.h"
+#include <PlastilinaCore/Utilities.h>
+#include "PlastilinaCore/Vertex.h"
 
 #include "GpuSubdivision.h"
 #include "Subdivision.h"
@@ -73,35 +73,6 @@
 #include "SubdivisionTest.h"
 
 namespace po = boost::program_options;
-
-std::string get_app_path() {
-    std::vector<char> exepath;
-    uint32_t size = 0;
-#if defined(__APPLE__)
-    _NSGetExecutablePath(NULL, &size);
-    if (size > 0) {
-        exepath.resize(size + 1);
-        if (_NSGetExecutablePath(exepath.data(), &size) != 0)
-            exepath[0]='\0';
-    } else {
-        exepath.push_back('\0');
-    }
-#elif defined(_WIN32)
-    exepath.resize(MAX_PATH);
-    size = GetModuleFileNameA(nullptr, exepath.data(), exepath.size());
-    exepath.resize(size + 1);
-#endif
-    std::string p(exepath.data());
-    boost::filesystem::path path(p);
-    
-    if (boost::filesystem::is_regular_file(path)) {
-        return path.parent_path().string();
-    } else if (boost::filesystem::is_directory(path)) {
-        return path.string();
-    }
-    
-    return std::string();
-}
 
 struct TestApp::Impl {
     po::options_description optionsDesc;
@@ -189,6 +160,7 @@ TestApp::~TestApp() {
 void TestApp::init(int argc, char** argv) 
 {
     using namespace std;
+    using namespace core::utils;
     vector<string> default_search_dirs = { get_app_path() };
     // Declare the supported options.
     d->optionsDesc.add_options()

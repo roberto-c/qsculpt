@@ -243,23 +243,23 @@ const Eigen::Matrix4f& Camera::projection()
 
 void Camera::setPerspectiveMatrix(float left, float right,
                                   float bottom, float top,
-                                  float near, float far)
+                                  float near_plane, float far_plane)
 {
     float dLR = right - left;
     float dBT = top - bottom;
-    float dNF = far - near;
+    float dNF = far_plane - near_plane;
 
     assert (dLR != 0 && dBT != 0 && dNF != 0);
 
     float A = (right + left) / dLR;
     float B = (top + bottom) / dBT;
-    float C = - (far + near) / dNF;
-    float D = - (2 * far * near) / dNF;
+    float C = - (far_plane + near_plane) / dNF;
+    float D = - (2 * far_plane * near_plane) / dNF;
 
     _projMat.setZero();
-    _projMat(0, 0) =  ( 2.0f * near) / dLR;
+    _projMat(0, 0) =  ( 2.0f * near_plane) / dLR;
     _projMat(0, 2) = A;
-    _projMat(1, 1) =  ( 2.0f * near) / dBT;
+    _projMat(1, 1) =  ( 2.0f * near_plane) / dBT;
     _projMat(1, 2) = B;
     _projMat(2, 2) = C;
     _projMat(2, 3) = D;
@@ -269,17 +269,17 @@ void Camera::setPerspectiveMatrix(float left, float right,
 
 void Camera::setOrthoMatrix(float left, float right,
                                   float bottom, float top,
-                                  float near, float far)
+                                  float near_plane, float far_plane)
 {
     float dLR = right - left;
     float dBT = top - bottom;
-    float dNF = far - near;
+    float dNF = far_plane - near_plane;
 
     assert (dLR != 0 && dBT != 0 && dNF != 0);
 
     float tx = - (right + left) / dLR;
     float ty = - (top + bottom) / dBT;
-    float tz = - (far + near) / dNF;
+    float tz = - (far_plane + near_plane) / dNF;
 
     _projMat.setIdentity();
     _projMat(0, 0) =  2.0f / dLR;
