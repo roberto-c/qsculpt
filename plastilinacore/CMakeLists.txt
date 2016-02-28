@@ -161,6 +161,8 @@ set(RESOURCES
 	./shaders/Phong.fs
 	./shaders/Point.vs
 	./shaders/Point.fs
+	./shaders/Subdivision.cl
+	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivisionPrimitives.h
 )
 
 # Library target

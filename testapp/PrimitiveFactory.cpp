@@ -24,8 +24,8 @@
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
+#include <PlastilinaCore/subdivision/GpuSubdivision.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
-#include "GpuSubdivision.h"
 
 namespace core {
 

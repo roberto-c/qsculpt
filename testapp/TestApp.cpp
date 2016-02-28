@@ -49,6 +49,7 @@
 #include <PlastilinaCore/material/PointMaterial.h>
 #include <PlastilinaCore/PointRenderer.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/opencl/ClStlAllocator.h>
 #include "PlastilinaCore/opengl/GlslShader.h"
 #include "PlastilinaCore/opengl/GlslProgram.h"
 #include <PlastilinaCore/opengl/Texture.h>
@@ -60,14 +61,13 @@
 #include "PlastilinaCore/subdivision/Sphere.h"
 #include "PlastilinaCore/subdivision/Box.h"
 #include "PlastilinaCore/subdivision/Subdivision.h"
+#include "PlastilinaCore/subdivision/GpuSubdivision.h"
 #include <PlastilinaCore/Utilities.h>
 #include "PlastilinaCore/Vertex.h"
 
-#include "GpuSubdivision.h"
 #include "Subdivision.h"
 #include "ParticleSystem.h"
 #include "CLRender.h"
-#include "ClStlAllocator.h"
 #include "TestMaterial.h"
 #include "PrimitiveFactory.h"
 #include "SubdivisionTest.h"

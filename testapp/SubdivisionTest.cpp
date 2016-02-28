@@ -18,8 +18,8 @@
 #include "PlastilinaCore/Logging.h"
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/ResourcesManager.h>
-#include "GpuSubdivision.h"
-#include "ClStlAllocator.h"
+#include <PlastilinaCore/subdivision/GpuSubdivision.h>
+#include <PlastilinaCore/opencl/ClStlAllocator.h>
 #include "DocumentModelTest.h"
 #include "PrimitiveFactory.h"
 

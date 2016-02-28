@@ -22,7 +22,7 @@
 #define __PLASTILINACORE_PRIMITIVEFACTORY_H__
 
 #include <memory>
-#include "GpuSubdivision.h"
+#include <PlastilinaCore/subdivision/GpuSubdivision.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 
 namespace core {

@@ -1,7 +1,6 @@
 
 set(TESTAPP_SOURCES 
 	./CLRender.cpp
-    ./ClStlAllocator.cpp
 	./DocumentModelTest.cpp
 	./IteratorTest.cpp
 	./ParticleSystem.cpp
@@ -33,7 +32,6 @@ set(RESOURCES
 	./TestMaterial.vs
 	./ParticleSystem.cl
 	./Render.cl
-	./Subdivision.cl
 	../images/Texture01.png
 )
 
