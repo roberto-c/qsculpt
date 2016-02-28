@@ -119,6 +119,16 @@ public:
     Eigen::Affine3f parentTransform() const;
     
     /**
+     * Bounding box
+     */
+    geometry::AABB boundingBox() const;
+
+    /**
+     *
+     */
+    geometry::AABB& boundingBox();
+
+    /**
      * Map world coordinates to local coordinates.
      *
      * It chains the parent node transformation and this node transformation
@@ -223,6 +233,11 @@ public:
 protected:
     SceneNode(const std::string & name, NodeType nodetype);
     
+    /**
+     * Us
+     */
+    void updateParentBBox();
+
 private:
     // disabled copy semantics for now
     SceneNode(const SceneNode &);

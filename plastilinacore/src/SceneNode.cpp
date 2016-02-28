@@ -29,14 +29,15 @@ static std::atomic_int NEXTID;
 
 struct SceneNode::Impl {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    uint32_t                                iid;
+    uint32_t                            iid;
     NodeType							nodeType;
     bool                                isSelected;
-    SceneNode::weak_ptr                  parent;
-    std::vector<SceneNode::shared_ptr>   children;
+    SceneNode::weak_ptr                 parent;
+    std::vector<SceneNode::shared_ptr>  children;
     Eigen::Affine3f                     transform;
     std::string                         name;
     Eigen::IOFormat 					octaveFmt;
+    geometry::AABB                      bbox;
     
     Impl(const std::string & name, NodeType nodeType = NT_Normal) :
      iid(0), nodeType(nodeType), isSelected(false),name(name),
@@ -335,6 +336,14 @@ SceneNode::SceneNode(const std::string & name, NodeType nodeType)
     _d->transform = Eigen::Affine3f::Identity();
 }
 
+void SceneNode::updateParentBBox()
+{
+    auto parentnode = this->parent().lock();
+    if (parentnode) {
+        parentnode->boundingBox().extend(this->boundingBox());
+    }
+}
+
 SceneNode::~SceneNode()
 {
     TRACEFUNCTION(("Name : " + name()));
@@ -524,6 +533,16 @@ Eigen::Affine3f SceneNode::parentTransform() const
     return trans;
 }
 
+geometry::AABB SceneNode::boundingBox() const
+{
+    return _d->bbox;
+}
+
+geometry::AABB & SceneNode::boundingBox()
+{
+    return _d->bbox;
+}
+
 Point3 SceneNode::worldToLocal(Point3 p) const
 {
 //    return transform().inverse() * parentTransform().inverse() * p;
@@ -581,7 +600,11 @@ SurfaceNode::SurfaceNode(ISurface *surface,
 : SceneNode(name, NT_Surface),
   surface_(surface)
 {
-    
+    if (surface)
+    {
+        boundingBox().extend(surface->boundingBox());
+        updateParentBBox();
+    }
 }
 
 SurfaceNode::~SurfaceNode()
@@ -601,6 +624,8 @@ ISurface* SurfaceNode::surface()
 void SurfaceNode::setSurface(ISurface *surface)
 {
     surface_ = surface;
+    boundingBox().extend(surface->boundingBox());
+    updateParentBBox();
 }
 
 std::shared_ptr<Material> SurfaceNode::material() const

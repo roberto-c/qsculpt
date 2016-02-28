@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "stable.h"
-#include "ClStlAllocator.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/opencl/ClStlAllocator.h>
 #include <PlastilinaCore/Logging.h>
 
 namespace core

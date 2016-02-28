@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "stable.h"
+#include <PlastilinaCore/Stable.h>
 
 #include <atomic>
 #include <PlastilinaCore/opencl/OpenCL.h>
@@ -25,8 +25,8 @@
 #include <Eigen/Core>
 #include <map>
 #include <unordered_map>
-#include "GpuSubdivision.h"
-#include "GpuSubdivision_private.h"
+#include <PlastilinaCore/subdivision/GpuSubdivision.h>
+#include <PlastilinaCore/subdivision/GpuSubdivision_private.h>
 
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Color.h>
@@ -42,7 +42,7 @@
 #include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/subdivision/Box.h>
-#include "GpuSubdivisionRenderable.h"
+#include <PlastilinaCore/subdivision/GpuSubdivisionRenderable.h>
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))

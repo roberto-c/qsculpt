@@ -17,9 +17,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "stable.h"
-#include "GpuSubdivisionRenderable.h"
-#include "GpuSubdivision_private.h"
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/subdivision/GpuSubdivisionRenderable.h>
+#include <PlastilinaCore/subdivision/GpuSubdivision_private.h>
 
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/BOManager.h>

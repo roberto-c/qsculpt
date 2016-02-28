@@ -107,6 +107,7 @@ void
 Scene::Impl::renderRecursive(RenderState & state, 
     const SceneNode::const_shared_ptr & root) const
 {
+    // TODO: Use renderable ndoes instead of only suarface nodes
 	Iterator<SceneNode> it = root->constIterator();
 	while (it.hasNext()) {
 		auto n = it.next();

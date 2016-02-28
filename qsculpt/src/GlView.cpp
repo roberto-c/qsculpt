@@ -689,7 +689,10 @@ void GlCanvas::screenToWorld(const Point3& winCoords,
 
 Point3 GlCanvas::screenToWorld(const Point3& p) const
 {
-    return getViewCamera()->eyeToWorld(p);
+    auto cam = getViewCamera();
+    Camera c(*cam);
+    c.setViewport(_d->viewport[0], _d->viewport[1], _d->viewport[2], _d->viewport[3]);
+    return c.eyeToWorld(p);
 }
 
 void GlCanvas::worldToScreen(double wx, double wy, double wz,

@@ -143,18 +143,21 @@ void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 
 void SelectCommand::mousePressEvent(QMouseEvent* e)
 {
-    qDebug() << "Presseing mouse";
+    TRACE(trace) << "SelectCommand::mousePressEvent";
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-
+    
     unselectAll();
 
     // Get the config options
     _selectionType = (SelectionType)_configContainer->getInt(SELECT_TYPE);
-
+    TRACE(trace) << "selectionType:" << _selectionType;
+    TRACE(trace) << "boxSelection:" << _boxSelection;
     if (_boxSelection) 
     {
         _startPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 0.0f);
         view->getCanvas()->screenToWorld(_startPointWin, _startPoint);
+        TRACE(trace) << "ScreenPointWin:" << core::utils::to_string(_startPointWin)
+            << "ScreenPontWorld:" << core::utils::to_string(_startPoint);
     } 
     else 
     {
@@ -176,11 +179,14 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 
 void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 {
+    TRACE(trace) << "SelectCommand::mouseReleaseEvent";
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     if (_boxSelection) 
     {
         _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
         view->getCanvas()->screenToWorld(_endPointWin, _endPoint);
+        TRACE(trace) << "endPointWin:" << core::utils::to_string(_endPointWin)
+            << "endPointWorld:" << core::utils::to_string(_endPoint);
         _drawBox = false;
         select();
         emit executed();

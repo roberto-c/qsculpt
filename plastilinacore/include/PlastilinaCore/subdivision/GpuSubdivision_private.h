@@ -8,8 +8,8 @@
 */
 #pragma once
 
-#include "GpuSubdivision.h"
-#include "ClStlAllocator.h"
+#include <PlastilinaCore/subdivision/GpuSubdivision.h>
+#include <PlastilinaCore/opencl/ClStlAllocator.h>
 #include <PlastilinaCore/BufferObject.h>
 
 #include <mutex>

@@ -14,6 +14,9 @@
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/Logging.h>
 
+#undef TRACEFUNCTION
+#define TRACEFUNCTION()
+
 struct DocumentModel::Impl
 {
     IDocument::shared_ptr doc;

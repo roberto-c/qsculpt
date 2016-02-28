@@ -42,6 +42,7 @@ TO convert_to(const FROM & d) {
     return v;
 }
 
+std::string to_string(Eigen::Vector2f & v);
 std::string to_string(Eigen::Vector3f & v);
 std::string to_string(Eigen::Vector4f & v);
 

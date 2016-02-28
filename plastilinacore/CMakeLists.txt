@@ -23,6 +23,7 @@ set(PLASTILINACORE_SOURCES
 	./src/Material.cpp
 	./src/Mesh.cpp
 	./src/Octree.cpp
+	./src/opencl/ClStlAllocator.cpp
 	./src/opencl/CLUtils.cpp
 	./src/opencl/OCLManager.cpp
 	./src/opengl/GlException.cpp
@@ -55,6 +56,8 @@ set(PLASTILINACORE_SOURCES
 	./src/subdivision/Sphere.cpp
 	./src/subdivision/Subdivision.cpp
 	./src/subdivision/SubdivisionRenderable.cpp
+	./src/subdivision/GpuSubdivision.cpp
+	./src/subdivision/GpuSubdivisionRenderable.cpp
 	./src/Utilities.cpp
 	./src/Vertex.cpp
 	./src/WireframeRenderer.cpp
@@ -104,6 +107,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/Mesh.h
 	${PLASTILINACORE_HEADERS_ROOT}/Octree.h
 	${PLASTILINACORE_HEADERS_ROOT}/OctreeNode.h
+	${PLASTILINACORE_HEADERS_ROOT}/opencl/ClStlAllocator.h
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/CLUtils.h
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/OCLManager.h
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/OpenCL.h
@@ -140,6 +144,10 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/Sphere.h
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/Subdivision.h
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/SubdivisionRenderable.h
+	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivision.h
+	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivision_private.h
+	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivisionPrimitives.h
+	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivisionRenderable.h
 	${PLASTILINACORE_HEADERS_ROOT}/Utilities.h
 	${PLASTILINACORE_HEADERS_ROOT}/Vector.h
 	${PLASTILINACORE_HEADERS_ROOT}/Vertex.h

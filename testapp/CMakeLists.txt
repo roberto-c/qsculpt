@@ -3,8 +3,6 @@ set(TESTAPP_SOURCES
 	./CLRender.cpp
     ./ClStlAllocator.cpp
 	./DocumentModelTest.cpp
-	./GpuSubdivision.cpp
-	./GpuSubdivisionRenderable.cpp
 	./IteratorTest.cpp
 	./ParticleSystem.cpp
 	./PhongMaterial.cpp
@@ -18,12 +16,7 @@ set(TESTAPP_SOURCES
 
 set(TESTAPP_PRIVATE_HEADERS 
 	./CLRender.h
-	./ClStlAllocator.h
 	./DocumentModelTest.h
-	./GpuSubdivision.h
-	./GpuSubdivision_private.h
-	./GpuSubdivisionPrimitives.h
-	./GpuSubdivisionRenderable.h
 	./ParticleSystem.h
 	./PhongMaterial.h
 	./PrimitiveFactory.h
