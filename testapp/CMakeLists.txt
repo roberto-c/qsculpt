@@ -7,7 +7,6 @@ set(TESTAPP_SOURCES
 	./ParticleSystem.cpp
 	./PhongMaterial.cpp
 	./PrimitiveFactory.cpp
-	./Subdivision.cpp
 	./SubdivisionTest.cpp
 	./test.cpp
 	./TestApp.cpp
@@ -23,7 +22,6 @@ set(TESTAPP_PRIVATE_HEADERS
 	./PrimitiveFactory.h
 	./SceneNodeTest.h
 	./stable.h
-	./Subdivision.h
 	./SubdivisionTest.h
 	./TestApp.h
 	./TestMaterial.h

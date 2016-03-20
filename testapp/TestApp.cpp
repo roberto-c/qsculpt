@@ -8,6 +8,7 @@
 #include "stable.h"
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Logging.h>
+#include <PlastilinaCore/ResourcesManager.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_image.h>
@@ -29,19 +30,6 @@
 
 
 #include "TestApp.h"
-
-#include "PlastilinaCore/Color.h"
-#include <PlastilinaCore/BOManager.h>
-#include <PlastilinaCore/Camera.h>
-#include "PlastilinaCore/HEdge.h"
-#include "PlastilinaCore/Face.h"
-#include "PlastilinaCore/Point3D.h"
-#include "PlastilinaCore/Octree.h"
-#include "PlastilinaCore/Vector.h"
-#include <PlastilinaCore/ResourcesManager.h>
-#include <PlastilinaCore/Utilities.h>
-#include "PlastilinaCore/Vertex.h"
-
 #include "BaseTest.h"
 #include "CameraTest.h"
 #include "SubdivisionTest.h"
