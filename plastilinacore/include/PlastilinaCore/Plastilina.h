@@ -149,14 +149,10 @@ public:
 	static bool initialize(PlastilinaSubsystem subsystem);
 	
 	static bool shutdown();
-	
-	static void setResourcesFolder(const std::string & path);
     
     static void setCurrentContext(std::shared_ptr<core::Context> & ctx);
     
     static core::Context & currentContext();
-    
-	static std::string resourcesFolder();
 };
 
 #endif /* qsculpt_Plastilina_h */

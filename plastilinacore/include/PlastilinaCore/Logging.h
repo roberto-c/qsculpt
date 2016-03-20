@@ -11,9 +11,15 @@
 
 #include <string>
 #include <iostream>
+#include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/attributes/named_scope.hpp>
 
 #define TRACE BOOST_LOG_TRIVIAL
+
+//#define TRACE(lvl) \
+//BOOST_LOG_TRIVIAL(lvl) << "(" << __FILE__ << ", " << __LINE__ << ") "
 
 #if (defined(DEBUG) || defined(_DEBUG)) && !defined(PLASTILINA_TRACE_DISABLE)
 #	ifdef _MSC_VER

@@ -27,6 +27,7 @@
 #ifdef __cplusplus
 
 #include <PlastilinaCore/Plastilina.h>
+#include <PlastilinaCore/Logging.h>
 
 #endif /* defined __cplusplus */
 

@@ -1,5 +1,6 @@
 
 set(TESTAPP_SOURCES 
+	./BaseTest.cpp
 	./CLRender.cpp
 	./DocumentModelTest.cpp
 	./IteratorTest.cpp
@@ -14,6 +15,7 @@ set(TESTAPP_SOURCES
 )
 
 set(TESTAPP_PRIVATE_HEADERS 
+	./CameraTest.h
 	./CLRender.h
 	./DocumentModelTest.h
 	./ParticleSystem.h
@@ -25,6 +27,7 @@ set(TESTAPP_PRIVATE_HEADERS
 	./SubdivisionTest.h
 	./TestApp.h
 	./TestMaterial.h
+	./BaseTest.h
 )
 
 set(RESOURCES

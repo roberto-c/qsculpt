@@ -148,21 +148,21 @@ Vertex::Vertex()
     : VertexHandle(VertexHandleType::GPUSUBDIVISION)
     , device::Vertex()
 {
-    TRACE(debug) << "Vertex()";
+    TRACE(trace) << "Vertex()";
 }
 
 Vertex::Vertex(const Vertex& cpy)
     : VertexHandle(cpy)
     , device::Vertex(cpy)
 {
-    TRACE(debug) << "Vertex(const Vertex& cpy)";
+    TRACE(trace) << "Vertex(const Vertex& cpy)";
 }
 
 Vertex::Vertex(Vertex&& cpy)
     : VertexHandle(cpy)
     , device::Vertex(cpy)
 {
-    TRACE(debug) << "Vertex(Vertex&& cpy)";
+    TRACE(trace) << "Vertex(Vertex&& cpy)";
 }
 
 }
@@ -192,13 +192,6 @@ GpuSubdivision::Impl::~Impl()
 {
     BOManager::getInstance()->destroyAllMeshBO(_surface);
 }
-    
-bool 				GpuSubdivision::Impl::oclInitialized;
-::cl::Program  		GpuSubdivision::Impl::program;
-::cl::Kernel		GpuSubdivision::Impl::krnInit;
-::cl::Kernel 		GpuSubdivision::Impl::krnSubdivideEdges;
-::cl::Kernel		GpuSubdivision::Impl::krnSubdivideAddFaces;
-::cl::Kernel		GpuSubdivision::Impl::krnSubdivideAdjustPos;
 
 // Iterator classes declarations
 class GpuSubdivision::VertexIterator : public IIterator<VertexHandle>
@@ -744,7 +737,7 @@ EdgeHandle::size_t GpuSubdivision::edge(VertexHandle::size_t iidVtxTail, VertexH
     auto it = _d->_vertexToEdge.find(vtx);
     if (it == _d->_vertexToEdge.end())
     {
-        TRACE(error) << "Edge not found";
+        //TRACE(error) << "Edge not found";
         return 0;
     }
     return (*it).second;
@@ -894,7 +887,6 @@ void GpuSubdivision::addResolutionLevel()
 {
     //TODO: Implement addResolutionLevel
     //NOT_IMPLEMENTED
-    _d->subdivide(this);
     //	_d->subdivide(this);
 }
 
@@ -1239,48 +1231,6 @@ GpuSubdivision::printMemoryInfo() const
     + (sizeEdge * nEdge)
     + (sizeFace * nFace)
     + sizeof(*_d->_vertices);
-}
-
-
-
-
-int
-GpuSubdivision::Impl::initialize_ocl(void)
-{
-    cl_int err = CL_SUCCESS;
-    
-    try {
-        CLManager * oclManager = CLManager::instance();
-        
-        ResourcesManager mgr;
-        std::string path = mgr.findResourcePath("Subdivision", "cl");
-        std::string kernelSource = core::cl::loadFromFile(path);
-        ::cl::Program::Sources source(1,
-                                    std::make_pair(kernelSource.c_str(),kernelSource.length()));
-        program = ::cl::Program(oclManager->context(), source);
-        program.build(oclManager->devices());
-        
-        krnInit = ::cl::Kernel(program,"surface_init",&err);
-        krnSubdivideEdges = ::cl::Kernel(program, "subdivide_edges_midpoint", &err);
-        std::cout << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnSubdivideEdges.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL) << std::endl;
-        krnSubdivideAddFaces = ::cl::Kernel(program, "subdivide_add_faces", &err);
-        krnSubdivideAdjustPos = ::cl::Kernel(program,"subdivide_vertices_adjust_pos", &err);
-        std::cout << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnSubdivideAdjustPos.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL) << std::endl;
-    }
-    catch (::cl::Error err) {
-        TRACE(error) << "ERROR: " << err.what() << "(" << err.err() << ")";
-    }
-    
-    return err;
-}
-
-void
-GpuSubdivision::Impl::subdivide(GpuSubdivision * s)
-{
-    if (!oclInitialized) {
-        initialize_ocl();
-        oclInitialized = true;
-    }
 }
 
 void

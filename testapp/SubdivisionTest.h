@@ -9,9 +9,11 @@
 #ifndef qsculpt_SubdivisionTest_h
 #define qsculpt_SubdivisionTest_h
 
+#include "BaseTest.h"
 #include "PlastilinaCore/Document.h"
 
-class SubdivisionTest {
+class SubdivisionTest : public BaseTest 
+{
     struct Impl;
     std::unique_ptr<Impl> d_;
     
@@ -21,7 +23,11 @@ public:
     
     virtual ~SubdivisionTest();
     
-    int run();
+    virtual void setup();
+
+    virtual void run();
+
+    virtual void shutdown();
 };
 
 #endif

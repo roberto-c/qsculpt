@@ -25,7 +25,7 @@ struct CLManager::Impl {
 #endif
 	
 	Impl() 
-        : useGpu(false)
+        : useGpu(true)
         , initialized(false)
         , glCtxHnd(0)
 #ifdef _WIN32
@@ -48,10 +48,24 @@ CLManager * g_clManager = NULL;
 
 CLManager* CLManager::instance()
 {
-	if (!g_clManager) {
-		g_clManager = new CLManager();
-	}
+    assert(g_clManager && "CLManager not initialized");
 	return g_clManager;
+}
+
+bool CLManager::startup(PlastilinaSubsystem flags)
+{
+    if (!g_clManager) {
+        g_clManager = new CLManager();
+    }
+    assert(g_clManager && "CLManager not initialized");
+    return true;
+}
+
+bool CLManager::shutdown()
+{
+    assert(g_clManager && "CLManager not initialized");
+    g_clManager->destroy();
+    return true;
 }
 
 std::vector<cl::Device> CLManager::devicesForGLContext()

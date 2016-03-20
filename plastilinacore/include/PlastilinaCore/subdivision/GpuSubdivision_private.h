@@ -72,20 +72,10 @@ namespace core {
         int             _currentResolutionLevel;
         bool            _hasChanged;
         GpuSubdivisionRenderable*   _renderable;
-        static bool 				oclInitialized;
-        static ::cl::Program  		program;
-        static ::cl::Kernel			krnInit;
-        static ::cl::Kernel 		krnSubdivideEdges;
-        static ::cl::Kernel			krnSubdivideAddFaces;
-        static ::cl::Kernel			krnSubdivideAdjustPos;
 
         Impl(GpuSubdivision * surface);
 
         ~Impl();
-
-        void 		subdivide(GpuSubdivision * surf);
-
-        static int 	initialize_ocl(void);
 
         virtual void render(RenderState & state) const;
 

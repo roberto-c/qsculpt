@@ -22,6 +22,8 @@
 #include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/ResourcesManager.h>
+#include <PlastilinaCore/Utilities.h>
 
 #ifdef __APPLE__
 	#include <CoreFoundation/CoreFoundation.h>
@@ -70,6 +72,9 @@ intptr_t get_gl_context() {
 
 bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
 {
+    // Setup default search directories
+    ResourcesManager::setResourcesDirectory(core::utils::get_app_path());
+    ResourcesManager::addResourcesDirectory(".");
     if ((subsystem & PlastilinaSubsystem::OPENGL) != PlastilinaSubsystem::NONE) {
         glewExperimental = TRUE;
         GLenum glewerror = glewInit();
@@ -88,6 +93,7 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
         g_engineState.openglInitialized = true;
     }
 	if ( (subsystem & PlastilinaSubsystem::OPENCL) != PlastilinaSubsystem::NONE) {
+        CLManager::startup(subsystem);
         if ((subsystem & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) != PlastilinaSubsystem::NONE) {
             intptr_t glCtx = get_gl_context();
             CLManager::instance()->setOpenGLContext(glCtx);
@@ -105,16 +111,6 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
 bool PlastilinaEngine::shutdown()
 {
 	return true;
-}
-
-void PlastilinaEngine::setResourcesFolder(const std::string & path)
-{
-	g_engineState.resourcesPath = path;
-}
-
-std::string PlastilinaEngine::resourcesFolder()
-{
-	return g_engineState.resourcesPath;
 }
 
 void PlastilinaEngine::setCurrentContext(std::shared_ptr<core::Context> & ctx)

@@ -106,10 +106,10 @@ bool GpuSubdivisionRenderable::Impl::initializeOcl()
         ::cl::Program::Sources source(1,
             std::make_pair(kernelSource.c_str(), kernelSource.length()));
         program = ::cl::Program(oclManager->context(), source);
-        program.build("-I C:/Users/Roberto/Documents/workspace/qsculpt/testapp");
+        program.build("-I . -I ../share -I ../../share");
 
         krnGenerateMesh = ::cl::Kernel(program, "build_mesh", &err);
-        std::cout << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnGenerateMesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL) << std::endl;
+        TRACE(trace) << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnGenerateMesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL);
     }
     catch (::cl::Error err) {
         TRACE(error) << "ERROR: " << err.what() << "(" << err.err() << ")";

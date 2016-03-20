@@ -11,20 +11,53 @@
 
 #include <PlastilinaCore/opencl/OpenCL.h>
 
+/**
+ Class to initialize and manage all OpenCL resources.
+
+ It is used to create a OpenCL context, setup attributes, specify shareing with
+ OpenGL, etc.
+
+ There is only one manager and it is usually intialized by the library subsystem
+ intialization routine.
+ */
 class DLLEXPORT CLManager {
 	
 public:
+    /**
+     Returns the instance yo the OpenCL Manager.
+     */
 	static CLManager*	instance();
+    static bool         startup(PlastilinaSubsystem flags = PlastilinaSubsystem::NONE);
+    static bool         shutdown();
 
     ~CLManager();
 
+    /**
+     Set to true to ask for an GPU device. 
+     
+     This method should be called before initializing any OpenCL context
+     (before calling any of the intialze methods.
+
+     @TODO Remove function and replace a createContext method
+    */
 	void setUseGPU(bool useGPU);
     
+    /**
+     Set the OpenGL context to use to share resources with.
+     */
     void setOpenGLContext(intptr_t hnd);
 
 #ifdef _WIN32
     void setDeviceContext(HDC hdc);
 #endif 
+
+    /**
+     Create context using specified device. All future operations that ask for
+     current context, will use the one created by the most recent call to any
+     of the cretexContext* methods or the lasr call to setCurrentContext.
+     */
+    // cl::Context createContext(cl_device_type);
+    // cl::Context createContextWithGLContext(void* oglCtx, void* deviceCtx);
 
 	/**
 	 * Method used to initialize OpenCL. This creates a default context and
