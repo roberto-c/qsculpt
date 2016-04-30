@@ -26,8 +26,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
-//#include <omp.h>
-
 
 #include "TestApp.h"
 #include "BaseTest.h"
@@ -38,6 +36,7 @@ using namespace std;
 namespace po = boost::program_options;
 
 struct TestApp::Impl {
+    TestApp*            app;
     po::options_description optionsDesc;
     po::variables_map   options;
     bool                running;
@@ -45,18 +44,23 @@ struct TestApp::Impl {
     SDL_Surface*        surfDisplay;
     SDL_Window*         mainwindow; /* Our window handle */
     SDL_GLContext       maincontext; /* Our opengl context handle */
+    uint32_t            testEventType;
     
     string              appName;
 
     vector<unique_ptr<BaseTest>> testList;
+    vector<unique_ptr<BaseTest>>::iterator currentTest;
 
 	Impl()
-	: optionsDesc("Allowed options"),
-    running(false),
-	initialized(false),
-	surfDisplay(NULL),
-	mainwindow(NULL),
-	maincontext(NULL)
+        : app(nullptr)
+        , optionsDesc("Allowed options")
+        , running(false)
+	    , initialized(false)
+	    , surfDisplay(nullptr)
+	    , mainwindow(nullptr)
+	    , maincontext(nullptr)
+        , testEventType(-1)
+        , currentTest(testList.end())
 	{}
 	
     void display();
@@ -76,12 +80,15 @@ struct TestApp::Impl {
     void initialize();
 
     void mainLoop();
+
+    void testEventHandler(const BaseTest * test, TestEvent evt, void* userData);
 };
 
 
 TestApp::TestApp(int argc, char** argv) 
 : d(new TestApp::Impl())
 {        
+    d->app = this;
     init(argc, argv);
 }
 
@@ -107,6 +114,28 @@ void TestApp::init(int argc, char** argv)
 
     d->testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
     d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
+
+    // install test callsback
+    for (auto & test : d->testList)
+    {
+        test->setNotifyCallback([](const BaseTest * test, TestEvent evt, void * userData)->void
+            {
+                assert(test && "Test cannot be null");
+                assert(userData && "Expected to have userData set");
+                //TRACE(trace) << "Test Name: " << test->name() << "Event: " << to_string(evt);
+                TestApp * app = static_cast<TestApp*>(userData);
+
+                SDL_Event myEvent;
+                SDL_memset(&myEvent, 0, sizeof(SDL_Event));
+                myEvent.type = app->d->testEventType;
+                myEvent.user.code = static_cast<uint32_t>(evt);
+                myEvent.user.data1 = (void*)(test);
+                myEvent.user.data2 = userData;
+                SDL_PushEvent(&myEvent);
+            }
+            , (void*)this);
+    }
+    d->currentTest = d->testList.begin();
 }
 
 int TestApp::run() 
@@ -124,26 +153,8 @@ int TestApp::run()
                 );
     }
 	
-    // Set Resources search directories
-    for (auto path : (d->options["resourcesdir"].as<std::vector<std::string>>()))
-    {
-        ResourcesManager::addResourcesDirectory(path);
-    }
-
-    //if (d->options.count("interactive") && d->options["interactive"].as<bool>()) 
-    //{
-    //    // initialize gui
-    //    d->initialize();
-    //    d->mainLoop();
-    //}
     d->initialize();
-    for (auto & test : d->testList)
-    {
-        TRACE(info) << "Test: " << test->name();
-        test->setup();
-        test->run();
-        test->shutdown();
-    }
+    d->mainLoop();
     
     return 0;
 }
@@ -178,7 +189,12 @@ void TestApp::Impl::dispatchEvent(SDL_Event * event)
             //event->button
             break;
         }
-
+    }
+    if (event->type != -1 && event->type == testEventType)
+    {
+        testEventHandler(static_cast<BaseTest*>(event->user.data1)
+            , static_cast<TestEvent>(event->user.code)
+            , event->user.data2);
     }
 }
 
@@ -203,6 +219,15 @@ void TestApp::Impl::loop()
 void TestApp::Impl::keyboard(int key, int x, int y)
 {
     TRACE(debug)  << "Key: " << (int)key ;
+    if (app->d->currentTest != app->d->testList.end())
+    {
+        auto test = (*(app->d->currentTest)).get();
+        auto uitest = dynamic_cast<BaseUITest*>(test);
+        if (uitest)
+        {
+            uitest->keyboard(key, x, y);
+        }
+    }
     switch (key) {
         case SDLK_ESCAPE:
             SDL_Event event;
@@ -226,11 +251,18 @@ void TestApp::Impl::keyboard(int key, int x, int y)
             break;
         case SDLK_e:
             break;
-		case SDLK_SPACE: {
+		case SDLK_SPACE:
+            // post event to start testing
+            SDL_Event myEvent;
+            SDL_memset(&myEvent, 0, sizeof(SDL_Event));
+            myEvent.type = testEventType;
+            myEvent.user.code = static_cast<uint32_t>(TestEvent::TE_SHUTDOWN_POST);
+            myEvent.user.data1 = (void*)(nullptr);
+            myEvent.user.data2 = (void*)(this->app);
+            SDL_PushEvent(&myEvent);
 			break;
         case SDLK_p:
             break;
-		}
 			
         default:
             break;
@@ -243,6 +275,7 @@ void TestApp::Impl::initialize()
 
     /* Initialize SDL's Video subsystem */
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        TRACE(error) << "Failed to intialize SDL";
         return;// false;
     }
     
@@ -263,13 +296,13 @@ void TestApp::Impl::initialize()
                                   1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!mainwindow) {
         /* Die if creation failed */
-        TRACE(debug) << "Unable to create window" ;
+        TRACE(error) << "Unable to create window" ;
         return;
     }
     /* Create our opengl context and attach it to our window */
     maincontext = SDL_GL_CreateContext(mainwindow);
 	if (!maincontext) {
-		TRACE(debug) << "ERROR: Unable to create OpenGL context" <<  std::endl;
+		TRACE(error) << "ERROR: Unable to create OpenGL context";
 		return;
 	}
 
@@ -280,28 +313,50 @@ void TestApp::Impl::initialize()
         | PlastilinaSubsystem::OPENCL
     	| PlastilinaSubsystem::ENABLE_CL_GL_SHARING;
 	if (!PlastilinaEngine::initialize(flags)) {
+        TRACE(error) << "ERROR: Unable to initialize PlastilinaEngine";
 		return;
 	}
-		
+    // Set Resources search directories
+    for (auto path : (options["resourcesdir"].as<std::vector<std::string>>()))
+    {
+        ResourcesManager::addResourcesDirectory(path);
+    }
+
+
 	reshape(1280,720);
     
+    testEventType = SDL_RegisterEvents(1);
+
     initialized = true;
 }
 
 void TestApp::Impl::reshape(int w, int h)
 {
-#define DEFAULT_HEIGHT (4.0f)
-
-    // setup viewport, projection etc. for OpenGL:
-    glViewport( 0, 0, ( GLint ) w, ( GLint ) h );
-
+    SDL_GL_MakeCurrent(mainwindow, maincontext);
+    if (app->d->currentTest != app->d->testList.end())
+    {
+        auto test = (*(app->d->currentTest)).get();
+        auto uitest = dynamic_cast<BaseUITest*>(test);
+        if (uitest)
+        {
+            uitest->resize(w, h);
+        }
+    }
 	SDL_GL_SwapWindow(mainwindow);
 }
 
 void TestApp::Impl::display()
 {
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    
+    SDL_GL_MakeCurrent(mainwindow, maincontext);
+    if (app->d->currentTest != app->d->testList.end())
+    {
+        auto test = (*(app->d->currentTest)).get();
+        auto uitest = dynamic_cast<BaseUITest*>(test);
+        if (uitest)
+        {
+            uitest->display();
+        }
+    }
 	SDL_GL_SwapWindow(mainwindow);
 }
 
@@ -319,4 +374,60 @@ void TestApp::Impl::mainLoop()
     }
 
     onQuit();
+}
+
+void TestApp::Impl::testEventHandler(const BaseTest * test, TestEvent evt, void * userData)
+{
+    assert(userData && "Expected to have userData set");
+    //TRACE(trace) << ">> Test Name: " << std::string(test ? test->name() : "nullptr") << "Event: " << to_string(evt);
+    TestApp * app = static_cast<TestApp*>(userData);
+    bool isUiTest = false;
+    if (app->d->currentTest != app->d->testList.end())
+    {
+        auto test = (*(app->d->currentTest)).get();
+        auto uitest = dynamic_cast<BaseUITest*>(test);
+        isUiTest = uitest != nullptr;
+    }
+    //TRACE(trace) << "Test Type: " << std::string(isUiTest ? "UiTest" : "BaseTest");
+    if (test == nullptr && evt == TestEvent::TE_SHUTDOWN_POST)
+    {
+        app->d->currentTest = app->d->testList.begin();
+        if (app->d->currentTest != app->d->testList.end())
+        {
+            SDL_GL_MakeCurrent(mainwindow, maincontext);
+            (*(app->d->currentTest))->setup();
+        }
+        //TRACE(trace) << "<< Test Name: " << std::string(test ? test->name() : "nullptr") << "Event: " << to_string(evt);
+        return;
+    }
+    switch (evt)
+    {
+        case TestEvent::TE_SHUTDOWN_POST:
+        {
+            ++app->d->currentTest;
+            if (app->d->currentTest == app->d->testList.end())
+                break;
+            (*(app->d->currentTest))->setup();
+            break;
+        }
+        case TestEvent::TE_SETUP_POST:
+        {
+            (*(app->d->currentTest))->run();
+            break;
+        }
+        case TestEvent::TE_RUN_POST:
+        {
+            if (!isUiTest)
+            {
+                (*(app->d->currentTest))->shutdown();
+            }
+            break;
+        }
+        case TestEvent::TE_RUN_FRAME_POST:
+            break;
+        case TestEvent::TE_RUN_TEST_END:
+            (*(app->d->currentTest))->shutdown();
+            break;
+    }
+    //TRACE(trace) << "<< Test Name: " << std::string(test ? test->name() : "nullptr") << "Event: " << to_string(evt);
 }

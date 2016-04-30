@@ -14,28 +14,44 @@
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_image.h>
 
+#include <PlastilinaCore/Camera.h>
 #include "PlastilinaCore/ISurface.h"
 #include "PlastilinaCore/Logging.h"
+#include <PlastilinaCore/material/PhongMaterial.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/ResourcesManager.h>
+#include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/subdivision/GpuSubdivision.h>
+#include <PlastilinaCore/subdivision/GpuSubdivisionRenderable.h>
+#include <PLastilinaCore/subdivision/Subdivision.h>
+#include <PlastilinaCore/subdivision/SubdivisionRenderable.h>
 #include <PlastilinaCore/opencl/ClStlAllocator.h>
 #include "DocumentModelTest.h"
 #include "PrimitiveFactory.h"
 
+using namespace std;
 using core::GpuSubdivision;
 template<class T> using gpu_vector = std::vector<T, core::cl::gpu_allocator<T>>;
-template<class T> using vector = std::vector<T>;
 
 struct SubdivisionTest::Impl
 {
-    Document::shared_ptr doc;
-    ISurface::shared_ptr surface;
+    SubdivisionTest         *test;
+    Scene::shared_ptr       scene;
+    shared_ptr<PhongMaterial>    material;
+    ISurface::shared_ptr    surface;
+    Camera::shared_ptr      camera;
+    
+    bool                    runUi;
+
+    Impl()
+        : test(nullptr)
+        , scene(nullptr)
+        , surface(nullptr)
+        , runUi(false)
+    {}
     
     int setup();
-    
-    int test();
-    
+        
     int cleanup();
 
     int vectorPrimitivesTest();
@@ -45,26 +61,46 @@ struct SubdivisionTest::Impl
 
 int SubdivisionTest::Impl::setup() {
     TRACEFUNCTION("");
-
-    return 0;
-}
-
-int SubdivisionTest::Impl::test() {
-    TRACEFUNCTION("");
-    vectorPrimitivesTest();
-    surfaceTest();
-
+    surface = std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createBox());
+    //surface = std::shared_ptr<Subdivision>(core::PrimitiveFactory<Subdivision>::createBox());
+    scene = std::make_shared<Scene>();
+    auto surfacenode = std::make_shared<SurfaceNode>(surface.get());
+    material = make_shared<PhongMaterial>();
+    auto camnode = make_shared<CameraNode>();
+    camera = make_shared<Camera>();
+    if (material && surfacenode && scene && camera && camnode)
+    {
+        float aspect_ratio = float(1280) / float(720);
+        camnode->setCamera(camera);
+        camera->setViewport(0, 0, 1280, 720);
+        camera->transform().translate(Vector3(0, 0, -6));
+        camera->setOrthoMatrix(-10, 10, -10 / aspect_ratio, 10 / aspect_ratio, -1000, 1000);
+        scene->add(surfacenode);
+        scene->add(camnode);
+        material->load();
+        material->setAmbient(Color(0.2f, 0.2f, 0.2f, 1.0f));
+        material->setDiffuse(Color(0.2f, 0.2f, 0.8f, 1.0f));
+        material->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
+        material->setExponent(200);
+        surfacenode->setMaterial(material);
+        
+    }
     return 0;
 }
 
 int SubdivisionTest::Impl::cleanup() {
     TRACEFUNCTION("");
+    material->unload();
+    material = nullptr;
+    surface = nullptr;
+    scene = nullptr;
     return 0;
 }
 
 int SubdivisionTest::Impl::vectorPrimitivesTest()
 {
     TRACE(info) << "vectorPrimitiveTest";
+
     using core::gpusubdivision::Vertex;
     using core::gpusubdivision::Edge;
     using core::gpusubdivision::Face;
@@ -150,10 +186,6 @@ int SubdivisionTest::Impl::surfaceTest()
     using core::utils::to_string;
 
     int ret = 1;
-
-    doc = std::make_shared<Document>();
-
-    surface = std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createBox());
     
     surface->lock();
     int counter=0;
@@ -194,26 +226,85 @@ int SubdivisionTest::Impl::surfaceTest()
 }
 
 SubdivisionTest::SubdivisionTest()
-    : BaseTest("SubdivisionTest")
+    : BaseUITest("SubdivisionTest")
     , d_(new Impl())
 {
+    d_->test = this;
 }
 
 SubdivisionTest::~SubdivisionTest()
 {
 }
 
-void SubdivisionTest::setup()
+void SubdivisionTest::doSetup()
 {
     d_->setup();
 }
 
-void SubdivisionTest::run() {
-    int err = d_->test();
+void SubdivisionTest::doRun() {
+    if (!d_->runUi) 
+    {
+        d_->vectorPrimitivesTest();
+        d_->surfaceTest();
+        d_->runUi = true;
+    }
 }
 
-void SubdivisionTest::shutdown()
+void SubdivisionTest::doShutdown()
 {
     d_->cleanup();
 }
 
+void SubdivisionTest::resize(int w, int h)
+{
+    if (d_ && d_->camera)
+    {
+        float aspect_ratio = float(w) / float(h);
+        d_->camera->setViewport(0, 0, w, h);
+        d_->camera->setOrthoMatrix(-10, 10, -10*aspect_ratio, 10*aspect_ratio, -1000, 1000);
+    }
+}
+
+void SubdivisionTest::doRenderFrame()
+{
+    if (d_->runUi && d_->scene)
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        d_->scene->render();
+    }
+}
+
+void SubdivisionTest::keyboard(int key, int x, int y)
+{
+    switch (key) {
+    case SDLK_ESCAPE:
+        notify(TestEvent::TE_RUN_TEST_END);
+        break;
+    case SDLK_w:
+    case SDLK_UP:
+        if (d_->camera) {
+            d_->camera->transform().translate(Vector3(0, 0.25f, 0));
+        }
+        break;
+    case SDLK_s:
+    case SDLK_DOWN:
+        if (d_->camera) {
+            d_->camera->transform().translate(Vector3(0,-0.25f, 0));
+        }
+        break;
+    case SDLK_a:
+    case SDLK_LEFT:
+        if (d_->camera) {
+            d_->camera->transform().translate(Vector3(0.25f, 0, 0));
+        }
+        break;
+    case SDLK_d:
+    case SDLK_RIGHT:
+        if (d_->camera) {
+            d_->camera->transform().translate(Vector3(-0.25f, 0, 0));
+        }
+        break;
+    default:
+        break;
+    }
+}

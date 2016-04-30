@@ -158,7 +158,7 @@ void PhongMaterial::setup(const std::shared_ptr<const SceneNode> & doc)
         d->lights = getAllLights(doc);
         d->camera = getCamera(doc);
         
-        auto p = d->camera->camera()->getPosition();
+        auto p = d->camera->camera()->transform().translation();
         camPos = Eigen::Vector4f(p[0],p[1],p[2],1.0f);
         
         if (d->lights.size() > 0) {

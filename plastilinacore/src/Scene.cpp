@@ -122,18 +122,18 @@ Scene::Impl::renderRecursive(RenderState & state,
 
 Scene::Scene() : SceneNode(), _d(new Impl())
 {
-	TRACEFUNCTION("");
+	//TRACEFUNCTION("");
 }
 
 Scene::Scene(const std::string& name): SceneNode(name.c_str()), _d(new Impl())
 {
-	TRACEFUNCTION(("Name: " + name));
+	//TRACEFUNCTION(("Name: " + name));
 }
 
 
 Scene::~Scene()
 {
-	TRACEFUNCTION("Name: " + name());
+	//TRACEFUNCTION("Name: " + name());
 }
 
 UpAxis Scene::upAxis() const
@@ -182,8 +182,8 @@ void Scene::render() const
         state.renderMode = RenderMode::RM_Smooth;
 		render(state);
     } catch(core::GlException & e) {
-        std::cerr   << "GLException: " << e.what() << std::endl
-        << e.error() << ": " << e.errorString() << std::endl;
+        TRACE(error) << "GLException: " << e.what() << " "
+            << e.error() << ": " << e.errorString() << std::endl;
     }
 }
 
@@ -240,9 +240,6 @@ void Scene::Impl::importScene(const aiScene * scene, SceneNode::shared_ptr & out
         SceneNode::shared_ptr outNode = std::static_pointer_cast<SceneNode>(outScene);
         outNode->add(camNode);
         camNode->setCamera(camPtr);
-        camPtr->setPosition(Point3(0,0,-6));
-        camPtr->setOrientationVector(Point3(0,1,0));
-        camPtr->setTargetPoint(-Point3(0,0,0));
         float yfov = 45;
         yfov = (45) / 1.77f;
         camPtr->setPerspectiveMatrix(yfov,
@@ -348,9 +345,6 @@ void Scene::Impl::processCamera(const aiScene * scene,
                                                                   camera->mName.C_Str());
     outNode->add(camNode);
     camNode->setCamera(camPtr);
-    camPtr->setPosition(Point3(&camera->mPosition.x));
-    camPtr->setOrientationVector(Point3(&camera->mUp.x));
-    camPtr->setTargetPoint(Point3(&camera->mLookAt.x));
     float yfov = camera->mHorizontalFOV * 180 / float(M_PI);
     yfov = (camera->mHorizontalFOV * 2.f * 180 / float(M_PI)) / camera->mAspect;
     camPtr->setPerspectiveMatrix(yfov,
@@ -381,10 +375,10 @@ void Scene::Impl::processMaterial(const aiScene * scene,
             }
         }
     } catch(core::GlException & e) {
-        std::cerr   << "GLException: " << e.what() << std::endl
+        TRACE(error) << "GLException: " << e.what() << std::endl
         << e.error() << ": " << e.errorString() << std::endl;
     } catch (std::exception & e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+        TRACE(error) << "Exception: " << e.what() << std::endl;
     }
     
 }
@@ -416,5 +410,29 @@ Scene::getCamera() const
     SceneNode::const_shared_ptr node = std::dynamic_pointer_cast<const SceneNode>(this->shared_from_this());
     getCameraRecursive(node, res);
     
+    return res;
+}
+
+static void
+getAllLightsRecursive(const SceneNode::const_shared_ptr & scene,
+    std::vector<LightNode::shared_ptr> & container)
+{
+    auto it = scene->constIterator();
+    while (it.hasNext()) {
+        SceneNode::shared_ptr child = it.next();
+        LightNode::shared_ptr light = std::dynamic_pointer_cast<LightNode>(child);
+        if (light) {
+            container.push_back(light);
+        }
+        getAllLightsRecursive(child, container);
+    }
+}
+
+std::vector<LightNode::shared_ptr> Scene::getAllLights(const std::shared_ptr<const SceneNode>& doc) const
+{
+    std::vector<LightNode::shared_ptr> res;
+
+    getAllLightsRecursive(doc, res);
+
     return res;
 }

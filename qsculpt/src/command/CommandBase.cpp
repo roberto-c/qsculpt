@@ -125,7 +125,7 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
     {
         _panViewMode = e->modifiers() & Qt::ControlModifier ? true : false;
         _rotateViewMode = !_panViewMode;
-        _rotationRadius = (_currentCamera->getPosition() - _currentCamera->getTargetPoint()).norm();
+        _rotationRadius = 2.0f; // (_currentCamera->getPosition() - _currentCamera->getTargetPoint()).norm();
     }
     else
     {
@@ -153,8 +153,7 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
     if (_panViewMode)
     {
         Point3 newPos = _currentPoint - currPoint;
-        _currentCamera->setPosition(newPos + _currentCamera->getPosition());
-        _currentCamera->setTargetPoint(newPos + _currentCamera->getTargetPoint());
+        _currentCamera->transform().translate(newPos);
         //qDebug(qPrintable(m_currentCamera->getPosition().toString()));
     }
     else if (_rotateViewMode)
@@ -164,8 +163,8 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
 
         longitude = newPos.x() / 500.0f; // m_currentCamera->getDistanceFromTarget();
         colatitude = newPos.y() / 500.0f; //m_currentCamera->getDistanceFromTarget();
-        _currentCamera->setLongitude(longitude + _currentCamera->getLongitude());
-        _currentCamera->setColatitude(colatitude + _currentCamera->getColatitude());
+        //_currentCamera->setLongitude(longitude + _currentCamera->getLongitude());
+        //_currentCamera->setColatitude(colatitude + _currentCamera->getColatitude());
 
         //qDebug("Longitude: %f Latitude: %f", m_currentCamera->getLongitude(), m_currentCamera->getColatitude());
     }

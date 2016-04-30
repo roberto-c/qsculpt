@@ -207,9 +207,9 @@ void TransformCameraCommand::mousePressEvent(QMouseEvent* e)
                                view->getCanvas()->height());
         float aspect = view->getCanvas()->width() / view->getCanvas()->height();
         _d->camera.setOrthoMatrix(-aspect, aspect, -1, 1, -1, 1);
-        _d->camera.setTargetPoint( Point3( 0, 0, 0) );
-        _d->camera.setOrientationVector(Point3( 0, 1, 0) );
-        _d->camera.setPosition( Point3( 0, 0, 1));
+        //_d->camera.setTargetPoint( Point3( 0, 0, 0) );
+        //_d->camera.setOrientationVector(Point3( 0, 1, 0) );
+        //_d->camera.setPosition( Point3( 0, 0, 1));
         
         _d->draw = true;
         _d->initial.x() = view->getCanvas()->width() / 2;

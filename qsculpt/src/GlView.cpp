@@ -123,51 +123,42 @@ struct GlCanvas::Impl {
         selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
         
         auto camera = std::make_shared<Camera>();
-        camera->setTargetPoint( Point3( 0, 0, 0) );
-        camera->setOrientationVector(Point3( 0, 1, 0) );
-        camera->setPosition( Point3( 0, 0, 1));
+        camera->transform().translate(Vector3(0, 0, -6));
         cameraList[Front] = camera;
         
         camera = std::make_shared<Camera>();
-        camera->setTargetPoint( Point3( 0, 0, 0) );
-        camera->setOrientationVector( Point3( 0, 1, 0) );
-        camera->setPosition( Point3( 0, 0, -1));
+        camera->transform().rotate(Eigen::AngleAxisf(float(M_PI), Vector3(0,1,0)));
+        camera->transform().translate(Vector3(0, 0, 6));
         cameraList[Back] = camera;
         
         camera = std::make_shared<Camera>();
-        camera->setTargetPoint( Point3( 0, 0, 0) );
-        camera->setOrientationVector( Point3( 0, 0, -1) );
-        camera->setPosition( Point3( 0, 1, 0) );
+        camera->transform().rotate(Eigen::AngleAxisf(float(M_PI_2), Vector3(1, 0, 0)));
+        camera->transform().translate(Vector3(0, 6, 0));
         cameraList[Top] = camera;
         
         camera = std::make_shared<Camera>();
-        camera->setTargetPoint( Point3( 0, 0, 0) );
-        camera->setOrientationVector( Point3( 0, 0, 1) );
-        camera->setPosition( Point3( 0, -1, 0) );
+        camera->transform().rotate(Eigen::AngleAxisf(float(-M_PI_2), Vector3(1, 0, 0)));
+        camera->transform().translate(Vector3(0, -6, 0)); 
         cameraList[Bottom] = camera;
         
         camera = std::make_shared<Camera>();
-        camera->setTargetPoint( Point3( 0, 0, 0) );
-        camera->setOrientationVector( Point3( 0, 1, 0) );
-        camera->setPosition( Point3(-1, 0, 0) );
+        camera->transform().rotate(Eigen::AngleAxisf(float(-M_PI_2), Vector3(0, 1, 0)));
+        camera->transform().translate(Vector3(-6, 0, 0));
         cameraList[Left] = camera;
         
         camera = std::make_shared<Camera>();
-        camera->setTargetPoint( Point3( 0, 0, 0) );
-        camera->setOrientationVector( Point3( 0, 1, 0) );
-        camera->setPosition( Point3( 1, 0, 0) );
+        camera->transform().rotate(Eigen::AngleAxisf(float(M_PI_2), Vector3(0, 1, 0)));
+        camera->transform().translate(Vector3( 6, 0, 0));
         cameraList[Right] = camera;
         
         camera = std::make_shared<Camera>();
-        camera->setTargetPoint( Point3( 0, 0, 0) );
-        camera->setOrientationVector( Point3( 0, 0, 1) );
-        camera->setPosition( Point3( 0.75, 0.75, 0.75) );
+        camera->transform().translate(Vector3(-6, 6, 0));
+        camera->transform().rotate(Eigen::AngleAxisf(float(-M_PI_2), Vector3(1, 1, 0).normalized()));
         cameraList[Perspective] = camera;
         
         camera = std::make_shared<Camera>();
-        camera->setTargetPoint( Point3( 0, 0, 0) );
-        camera->setOrientationVector( Point3( 0, 0, 1) );
-        camera->setPosition( Point3( 0.75, 0.75, 0.75) );
+        camera->transform().translate(Vector3(-6, 6, 0));
+        camera->transform().rotate(Eigen::AngleAxisf(float(-M_PI_2), Vector3(1, 1, 0).normalized()));
         cameraList[CameraView] = camera;
     }
     
@@ -692,7 +683,7 @@ Point3 GlCanvas::screenToWorld(const Point3& p) const
     auto cam = getViewCamera();
     Camera c(*cam);
     c.setViewport(_d->viewport[0], _d->viewport[1], _d->viewport[2], _d->viewport[3]);
-    return c.eyeToWorld(p);
+    return c.screenToWorld(p);
 }
 
 void GlCanvas::worldToScreen(double wx, double wy, double wz,

@@ -86,6 +86,7 @@ private:
     Point3          _startPointWin;
     Point3          _endPointWin;
     SelectionType   _selectionType;
+    Scene::shared_ptr  _rectangle;
 
     void select();
     void selectSurface();

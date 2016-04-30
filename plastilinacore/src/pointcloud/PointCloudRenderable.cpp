@@ -87,7 +87,7 @@ void PointCloudRenderable::renderObject(RenderState & state) const
         if (matId != -1) prog->setUniform(matId, camera->modelView());
         matId = prog->uniformLocation("glProjectionMatrix");
         if (matId != -1) prog->setUniform(matId, camera->projection());
-		auto p = cameraNode->localToWorld(camera->getPosition());
+		auto p = cameraNode->localToWorld(camera->transform().translation());
 		Eigen::Vector4f camPos = Eigen::Vector4f(p[0],p[1],p[2],1.0f);
 		matId = prog->uniformLocation("eyePosition");
 		if (matId != -1) prog->setUniform(matId, camPos);

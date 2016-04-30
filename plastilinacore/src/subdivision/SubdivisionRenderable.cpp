@@ -49,12 +49,12 @@ struct SmoothVtxStruct
 
 SubdivisionRenderable::SubdivisionRenderable(const Subdivision * surface)
 {
-	std::cerr << "SmoothRenderer constructor" << std::endl;
+	TRACE(trace) << "SmoothRenderer constructor" << std::endl;
 }
 
 SubdivisionRenderable::~SubdivisionRenderable()
 {
-	std::cerr << "SmoothRenderer destructor" << std::endl;
+	TRACE(trace) << "SmoothRenderer destructor" << std::endl;
 	BOManager::getInstance()->destroyPool(BO_POOL_NAME);
 }
 
@@ -69,7 +69,7 @@ void SubdivisionRenderable::renderObject(RenderState & state) const
 	}
 	auto snode = std::dynamic_pointer_cast<const SurfaceNode>(node);
 	if (!snode) {
-		std::cerr << __func__ << ": Node is not a SurfaceNode.\n";
+		TRACE(trace) << __func__ << ": Node is not a SurfaceNode.\n";
 		return;
 	}
 	
@@ -106,7 +106,7 @@ void SubdivisionRenderable::renderObject(RenderState & state) const
 	
 	obj = snode->surface();
 	mat = snode->material();
-	//std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
+	//TRACE(trace) << "Render as selected = " << mesh->getShowBoundingBox();
 	if (obj == NULL || mat == NULL)
 		return;
 	
@@ -228,7 +228,7 @@ VAO* SubdivisionRenderable::getVAO(ISurface* mesh) const
 
 void SubdivisionRenderable::fillVertexBufferPoints(ISurface* mesh, VertexBuffer* vbo) const
 {
-    //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
+    //TRACE(trace) << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
     if (mesh == NULL || vbo->objectID() == 0)
         return;
     
@@ -261,13 +261,13 @@ void SubdivisionRenderable::fillVertexBufferPoints(ISurface* mesh, VertexBuffer*
     vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
     THROW_IF_GLERROR(__func__);
     
-    //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
+    //TRACE(trace) << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }
 
 
 void SubdivisionRenderable::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) const
 {
-    //std::cerr << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
+    //TRACE(trace) << "FlatRenderer::fillVertexBuffer Start time:" << QDateTime::currentDateTime();
     if (mesh == NULL || vbo->objectID() == 0)
         return;
     
@@ -296,7 +296,7 @@ void SubdivisionRenderable::fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo) 
     vbo->setBufferData((GLvoid*)vtxData.data(), dataSize);
     THROW_IF_GLERROR(__func__);
     
-    //std::cerr << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
+    //TRACE(trace) << "FlatRenderer::fillVertexBuffer End time:" << QDateTime::currentDateTime();
 }
 
 bool SubdivisionRenderable::processPolygon(const Face & f,
@@ -305,7 +305,7 @@ bool SubdivisionRenderable::processPolygon(const Face & f,
 {
     size_t nVtx = f.numVertices();
     if (nVtx < 3) {
-        std::cerr << "Incomplete polygon. A polygon should have at least 3 vertices" << std::endl;
+        TRACE(error) << "Incomplete polygon. A polygon should have at least 3 vertices" << std::endl;
         return false;
     }
     //GLfloat * color = f.flags() && FF_Selected ? g_selectedColor : g_normalColor;

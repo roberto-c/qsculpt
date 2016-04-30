@@ -25,6 +25,8 @@ struct PhongMaterial::Impl
     
     VertexShader    vtxShader;
     FragmentShader  fragShader;
+
+    gl::Texture2D::shared_ptr           diffuseTex;
     
     CameraNode::shared_ptr              camera;
     std::vector<LightNode::shared_ptr>  lights;
@@ -57,8 +59,8 @@ void PhongMaterial::load()
 		std::string path = mgr.findResourcePath("Phong", "vs", "shaders");
         d->vtxShader.loadFromFile(path);
         if (!d->vtxShader.compile()){
-            std::cerr << "vtxShader: Compilation failed" << std::endl;
-            std::cerr << d->vtxShader.infoLog() << std::endl;
+            TRACE(error) << "vtxShader: Compilation failed";
+            TRACE(error) << d->vtxShader.infoLog();
             throw core::GlException("Failed to compile vertex shader", glGetError());
         }
     }
@@ -66,8 +68,8 @@ void PhongMaterial::load()
 		std::string path = mgr.findResourcePath("Phong", "fs", "shaders");
         d->fragShader.loadFromFile(path);
         if (!d->fragShader.compile()){
-            std::cerr << "fragShader: Compilation failed" << std::endl;
-            std::cerr << d->fragShader.infoLog() << std::endl;
+            TRACE(error) << "fragShader: Compilation failed";
+            TRACE(error) << d->fragShader.infoLog();
             throw core::GlException("Failed to compile fragment shader", glGetError());
         }
     }
@@ -80,11 +82,11 @@ void PhongMaterial::load()
     shaderProgram()->bindAttributeLocation(2, "glColor");
     
     if (!shaderProgram()->link()) {
-        std::cerr << "Link failed: \n" << shaderProgram()->buildLog() << std::endl;
+        TRACE(error) << "Link failed: \n" << shaderProgram()->buildLog();
     }
     
     GLint n = shaderProgram()->fragDataLocation("glFragColor");
-    std::cerr << "FragLocation: " << n << std::endl;
+    TRACE(trace) << "FragLocation: " << n;
     
     std::string name;
     GLenum type = 0;
@@ -92,8 +94,8 @@ void PhongMaterial::load()
     GLint actAtt = shaderProgram()->activeAttributes();
     for (int i = 0; i < actAtt; ++i) {
         shaderProgram()->activeAttrib(i, &name, &type, &size);
-        std::cerr << "Attribute[" << i << "] = " << name.c_str()
-            << " ("<< std::hex << type << std::dec << "[" << size <<"])\n";
+        TRACE(trace) << "Attribute[" << i << "] = " << name.c_str()
+            << " ("<< std::hex << type << std::dec << "[" << size <<"])";
     }
     
     // Default material values
@@ -110,60 +112,6 @@ void PhongMaterial::unload()
     
 }
 
-
-void
-getAllLightsRecursive(const std::shared_ptr<const SceneNode> & scene,
-                      std::vector<LightNode::shared_ptr> & container)
-{
-    auto it = scene->constIterator();
-    while(it.hasNext()) {
-        SceneNode::shared_ptr child = it.next();
-        LightNode::shared_ptr light = std::dynamic_pointer_cast<LightNode>(child);
-        if (light) {
-            container.push_back(light);
-        }
-        getAllLightsRecursive(child, container);
-    }
-}
-
-std::vector<LightNode::shared_ptr>
-getAllLights(const std::shared_ptr<const SceneNode> & doc)
-{
-    std::vector<LightNode::shared_ptr> res;
-    
-    getAllLightsRecursive(doc, res);
-    
-    return res;
-}
-
-void
-getCameraRecursive(const std::shared_ptr<const SceneNode> & scene,
-                   CameraNode::shared_ptr & container)
-{
-    if (container) return;
-    
-    auto it = scene->constIterator();
-    while(it.hasNext()) {
-        SceneNode::shared_ptr child = it.next();
-        CameraNode::shared_ptr cam = std::dynamic_pointer_cast<CameraNode>(child);
-        if (cam) {
-            container = cam;
-        } else {
-            getCameraRecursive(child, container);
-        }
-    }
-}
-
-CameraNode::shared_ptr
-getCamera(const std::shared_ptr<const SceneNode> & doc)
-{
-    CameraNode::shared_ptr res;
-    
-    getCameraRecursive(doc, res);
-    
-    return res;
-}
-
 void PhongMaterial::setup(const std::shared_ptr<SceneNode> & doc)
 {
     setup(std::dynamic_pointer_cast<const SceneNode>(doc));
@@ -173,13 +121,6 @@ void PhongMaterial::setup(const std::shared_ptr<const SceneNode> & doc)
 {
     Eigen::Vector4f camPos(0,0,0,1);
     Eigen::Vector4f lightPos(4,0,0,1);
-    
-    if (doc) {
-        d->lights = getAllLights(doc);
-        if (d->lights.size() > 0) {
-            
-        }
-    }
     
     GLint diff = shaderProgram()->uniformLocation("diffuseColor");
     GLint spec = shaderProgram()->uniformLocation("specularColor");
@@ -238,3 +179,12 @@ void PhongMaterial::setAmbient(const Color & c)
     d->ambient = c;
 }
 
+gl::Texture2D::shared_ptr PhongMaterial::diffuseTexture()
+{
+    return d->diffuseTex;
+}
+
+void PhongMaterial::setDiffuseTexture(gl::Texture2D::shared_ptr & text)
+{
+    d->diffuseTex = text;
+}

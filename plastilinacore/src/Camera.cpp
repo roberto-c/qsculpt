@@ -28,25 +28,13 @@
 #define WINDOW_FAR  (1.0f)
 
 Camera::Camera()
-:  	CameraNode(),
-    m_position(0.f,0.f,0.f),
-    m_target(0.f,0.f,-1.f),
-    m_orientation(0.f,1.f,0.f),
-    m_colatitude(0.0),
-    m_longitude(0.0)
+:  	CameraNode()
 {
 }
 
-Camera::Camera(const Camera & orig) :
-_projMat(orig._projMat),
-_viewMat(orig._viewMat),
-_viewportMat(orig._viewportMat),
-m_position(orig.m_position),
-m_target(orig.m_target),
-m_orientation(orig.m_orientation),
-m_colatitude(orig.m_colatitude),
-m_longitude(orig.m_longitude),
-m_distanceFromTarget(orig.m_distanceFromTarget)
+Camera::Camera(const Camera & orig) 
+    : _projMat(orig._projMat)
+    , _viewportMat(orig._viewportMat)
 {
     
 }
@@ -59,15 +47,6 @@ Camera & Camera::operator=(const Camera & rhs)
     
     _projMat = rhs._projMat;
     _viewportMat = rhs._viewportMat;
-    _viewMat = rhs._viewMat;
-    m_position = rhs.m_position;
-    m_target = rhs.m_target;
-    m_orientation = rhs.m_orientation;
-    m_colatitude = rhs.m_colatitude;
-    m_longitude = rhs.m_longitude;
-    m_distanceFromTarget = rhs.m_distanceFromTarget;
-    
-    updateViewMatrix();
     
     return *this;
 }
@@ -76,159 +55,21 @@ Camera::~Camera()
 {
 }
 
-
-void Camera::setPosition(const Point3& p)
-{
-    m_position = p;
-
-    Point3 v = m_position - m_target;
-    m_distanceFromTarget = v.norm();
-    m_colatitude = acos(v.z()/m_distanceFromTarget);
-    m_longitude = acos(v.x()/(m_distanceFromTarget * sin(m_colatitude)));
-
-    updateViewMatrix();
-}
-
-Point3 Camera::getPosition()
-{
-    return m_position;
-}
-
-void Camera::setTargetPoint(const Point3 & target)
-{
-    m_target = target;
-
-    Point3 v = m_position - m_target;
-    m_distanceFromTarget = v.norm();
-    m_colatitude = acos(v.z()/m_distanceFromTarget);
-    m_longitude = acos(v.x()/(m_distanceFromTarget * sin(m_colatitude)));
-
-    updateViewMatrix();
-}
-
-Point3 Camera::getTargetPoint()
-{
-    return m_target;
-}
-
-void Camera::setOrientationVector(const Point3& v)
-{
-    m_orientation = v;
-
-    updateViewMatrix();
-}
-
-Point3 Camera::getOrientationVector()
-{
-    return m_orientation;
-}
-
-void Camera::setLongitude(float longitude)
-{
-    m_longitude = longitude;
-
-    float x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-    float y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-    float z = m_distanceFromTarget * cos(m_colatitude);
-
-    m_position = m_target + Point3(x, y, z);
-
-    updateViewMatrix();
-}
-
-double Camera::getLongitude()
-{
-    return m_longitude;
-}
-
-void Camera::setColatitude(float colatitude)
-{
-    m_colatitude = colatitude;
-
-    float x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-    float y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-    float z = m_distanceFromTarget * cos(m_colatitude);
-
-    m_position = m_target + Point3(x, y, z);
-
-    updateViewMatrix();
-}
-
-double Camera::getColatitude()
-{
-    return m_colatitude;
-}
-
-double Camera::getDistanceFromTarget()
-{
-    return m_distanceFromTarget;
-}
-
-void Camera::setDistanceFromTarget(float distance)
-{
-    m_distanceFromTarget = distance;
-
-    float x = m_distanceFromTarget * cos(m_longitude) * sin(m_colatitude);
-    float y = m_distanceFromTarget * sin(m_longitude) * sin(m_colatitude);
-    float z = m_distanceFromTarget * cos(m_colatitude);
-
-    m_position = m_target + Point3(x, y, z);
-
-    updateViewMatrix();
-}
-
 std::string Camera::toString() const
 {
     std::string str;
-    
-    str ="Camera Position: " + ::toString(m_position) + "Camera Target: " + ::toString(m_target)
-         + "Camera Orientation: " + ::toString(m_orientation);
     
     return str;
 }
 
 void Camera::setModelView(const Eigen::Matrix4f &m)
 {
-    _viewMat = m;
+    transform().matrix() = m;
 }
 
 const Eigen::Matrix4f& Camera::modelView()
 {
-    updateViewMatrix();
-    return _viewMat;
-}
-
-void Camera::updateViewMatrix()
-{
-    auto tp = parentTransform() * transform();
-    Vector3 target =   tp * m_target;
-    Vector3 position = tp * m_position;
-    Vector3 orientation = (tp.rotation() * m_orientation).normalized();
-    Vector3 w =  - (target - position).normalized();
-    Vector3 u = orientation.cross(w).normalized();
-    Vector3 v =  w.cross(u);
-
-    _viewMat.setIdentity();
-    _viewMat(0, 0) = u.x();
-    _viewMat(0, 1) = u.y();
-    _viewMat(0, 2) = u.z();
-    _viewMat(0, 3) = 0; //position.x();
-
-    _viewMat(1, 0) = v.x();
-    _viewMat(1, 1) = v.y();
-    _viewMat(1, 2) = v.z();
-    _viewMat(1, 3) = 0; //position.y();
-    
-    _viewMat(2, 0) = w.x();
-    _viewMat(2, 1) = w.y();
-    _viewMat(2, 2) = w.z();
-    _viewMat(2, 3) = 0; //position.z();
-
-    _viewMat = _viewMat.inverse().eval();
-    _viewMat(0, 3) = -position.x();
-    _viewMat(1, 3) = -position.y();
-    _viewMat(2, 3) = -position.z();
-    _viewMat = tp.inverse().matrix();
+    return transform().matrix();
 }
 
 void Camera::setProjectionMatrix(const Eigen::Matrix4f &m)
@@ -304,6 +145,7 @@ void Camera::setPerspectiveMatrix(float fovy, float aspect, float zNear, float z
 
 void Camera::setViewport(const Eigen::Matrix4f &m)
 {
+    _viewport = Vector4(m(0,0) - m(0,3), m(1, 1) - m(1, 3), m(0,0)*2, m(1,1) * 2);
     _viewportMat = m;
 }
 
@@ -311,6 +153,7 @@ void Camera::setViewport(const Eigen::Matrix4f &m)
 void Camera::setViewport(int x, int y, int w, int h)
 {
     float n = WINDOW_NEAR, f = WINDOW_FAR;
+    _viewport = Vector4(x, y, w, h);
     _viewportMat.setZero();
     _viewportMat(0, 0) = w/2.f;
     _viewportMat(1, 1) = h/2.f;
@@ -329,34 +172,114 @@ Vector3 Camera::eyeToWorld(const Vector3& p) const
 {
     Eigen::Vector4f o, p4(p.x(), p.y(), p.z(), 1.0f);
     p4.w() = 1.0f;
-    o = _viewMat.inverse() * _projMat.inverse() * _viewportMat.inverse() * p4;
-
-    return Vector3(o.data());
+    //o = p4 * _viewMat.inverse() * _projMat.inverse();
+    auto m = transform().matrix();
+    p4 = m.inverse() * p4;
+    return Vector3(p4.data());
 }
 
 Vector3 Camera::eyeToWorld(float x, float y, float z, float w) const
 {
     Eigen::Vector4f o, p4(x, y, z, w);
     p4.w() = w;
-    o = _viewMat.inverse() * _projMat.inverse() * _viewportMat.inverse() * p4;
-    
-    return Vector3(o.data());
+    //o = p4 * _viewMat.inverse() * _projMat.inverse();
+    auto m = transform().matrix();
+    p4 = m.inverse() * p4;
+    return Vector3(p4.data());
 }
 
 Vector3 Camera::worldToEye(const Vector3 &p) const
 {
     Eigen::Vector4f o, p4(p.x(), p.y(), p.z(), 1.0f);
     p4.w() = 1.0f;
-    o = _viewportMat * _projMat * _viewMat * p4;
-    Vector3 t(o.data());
-    return t;
+    p4 = transform().inverse().matrix() * p4;
+    return Vector3(p4.data());
 }
 
 Vector3 Camera::worldToEye(float x, float y, float z, float w) const
 {
     Eigen::Vector4f o, p4(x, y, z, w);
     p4.w() = w;
-    o = _viewportMat * _projMat * _viewMat * p4;
+    p4 = transform().inverse().matrix() * p4;
+    return Vector3(p4.data());
+}
+
+Vector3 Camera::screenToWorld(const Vector3& p) const
+{
+    Eigen::Vector4f o, p4(p.x(), p.y(), p.z(), 1.0f);
+    p4.w() = 1.0f;
+    //o = p4 * _viewMat.inverse() * _projMat.inverse() * _viewportMat.inverse();
+    auto m = _projMat * transform().matrix();
+    p4[0] = (p[0] - _viewport[0] - _viewport[2] / 2.0f) * 2.0f / _viewport[2];
+    p4[1] = (p[1] - _viewport[1] - _viewport[3] / 2.0f) * 2.0f / _viewport[3];
+    p4[2] = (p[2] - 0.5f) * 2.0f;
+    p4[3] = 1.0f;
+    p4 = m.inverse() * p4;
+    return Vector3(p4.data());
+}
+
+Vector3 Camera::screenToWorld(float x, float y, float z, float w) const
+{
+    Eigen::Vector4f o, p4(x, y, z, w);
+    p4.w() = w;
+    //o = p4 * _viewMat.inverse() * _projMat.inverse() * _viewportMat.inverse();
+    auto m = _projMat * transform().matrix();
+    o = m.inverse() * p4;
+
+    return Vector3(o.data());
+}
+
+Vector3 Camera::worldToScreen(const Vector3 &p) const
+{
+    Eigen::Vector4f o, p4(p.x(), p.y(), p.z(), 1.0f);
+    p4.w() = 1.0f;
+    o = _viewportMat * _projMat * transform().matrix() * p4;
     Vector3 t(o.data());
     return t;
 }
+
+Vector3 Camera::worldToScreen(float x, float y, float z, float w) const
+{
+    Eigen::Vector4f o, p4(x, y, z, w);
+    p4.w() = w;
+    o = _viewportMat * _projMat * transform().matrix() * p4;
+    Vector3 t(o.data());
+    return t;
+}
+
+Vector3 Camera::eyeToClip(const Vector3& p) const
+{
+    Eigen::Vector4f o, p4(p.x(), p.y(), p.z(), 1.0f);
+    p4.w() = 1.0f;
+    //o = p4 * _viewMat.inverse() * _projMat.inverse();
+    auto m = _projMat * transform().matrix();
+    p4 = m.inverse() * p4;
+    return Vector3(p4.data());
+}
+
+Vector3 Camera::eyeToClip(float x, float y, float z, float w) const
+{
+    Eigen::Vector4f o, p4(x, y, z, w);
+    p4.w() = w;
+    //o = p4 * _viewMat.inverse() * _projMat.inverse();
+    auto m = _projMat * transform().matrix();
+    p4 = m.inverse() * p4;
+    return Vector3(p4.data());
+}
+
+Vector3 Camera::clipToEye(const Vector3 &p) const
+{
+    Eigen::Vector4f o, p4(p.x(), p.y(), p.z(), 1.0f);
+    p4.w() = 1.0f;
+    p4 = _projMat * transform().matrix() * p4;
+    return Vector3(p4.data());
+}
+
+Vector3 Camera::clipToEye(float x, float y, float z, float w) const
+{
+    Eigen::Vector4f o, p4(x, y, z, w);
+    p4.w() = w;
+    p4 = _projMat * transform().matrix() * p4;
+    return Vector3(p4.data());
+}
+

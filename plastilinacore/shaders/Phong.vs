@@ -1,5 +1,7 @@
 #version 330 core
 
+#define USE_DIFF_TEXTURE
+
 /* Inputs */
 in vec4 glVertex;
 in vec4 glNormal;
@@ -12,11 +14,15 @@ uniform mat4 glProjectionMatrix;
 uniform mat4 glModelViewMatrix;
 uniform mat4 objectTransform;
 
-
 /* Outputs -> fragment program */
 out vec3 lightVector, eyeVector, normal;
 out vec4 color;
 out vec4 gl_Position;
+
+#ifdef USE_DIFF_TEXTURE
+in vec2	glTexCoord;
+smooth out vec2 texCoord;
+#endif
 
 vec4 ftransform() {
     return glProjectionMatrix * glModelViewMatrix * objectTransform * glVertex;
@@ -47,5 +53,8 @@ void main() {
 	eyeVector = (eyePosition - worldSpacePos).xyz;
     
     color = glColor;
+#ifdef USE_DIFF_TEXTURE
+	texCoord = glTexCoord;
+#endif
 }
 

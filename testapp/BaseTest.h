@@ -1,38 +1,75 @@
 #pragma once
 
 #include <string>
+#include <functional>
+
+enum class TestEvent {
+    TE_UNKNOWN,
+    TE_SETUP_PRE,
+    TE_SETUP_POST,
+    TE_RUN_PRE,
+    TE_RUN_POST,
+    TE_SHUTDOWN_PRE,
+    TE_SHUTDOWN_POST,
+    TE_RUN_FRAME_PRE,
+    TE_RUN_FRAME_POST,
+    TE_RUN_TEST_END
+};
+
+std::string to_string(TestEvent evt);
 
 class BaseTest
 {
 public:
+    typedef std::function<void(const BaseTest*, TestEvent, void*)> FNCALLBACK;
+
     BaseTest();
 
     BaseTest(const std::string & name);
 
     virtual ~BaseTest() {}
 
-    virtual void setup() = 0;
+    void setup();
 
-    virtual void run() = 0;
-
-    virtual void shutdown() = 0;
+    void run();
+    
+    void shutdown();
 
     std::string name() const;
 
+    void notify(TestEvent evt) const;
+
+    void setNotifyCallback(FNCALLBACK callback, void* userData);
+
+protected:
+    virtual void doSetup() = 0;
+
+    virtual void doRun() = 0;
+
+    virtual void doShutdown() = 0;
+
 private:
-    std::string     _name;
+    std::string         _name;
+    FNCALLBACK          _callback;
+    void*               _userData;
 };
 
-class BaseWindowTest : public BaseTest
+class BaseUITest : public BaseTest
 {
 public:
-    BaseWindowTest();
+    BaseUITest();
 
-    BaseWindowTest(const std::string name);
+    BaseUITest(const std::string name);
 
-    virtual ~BaseWindowTest() {}
+    virtual ~BaseUITest() {}
 
     virtual void resize(int w, int h) = 0;
 
-    virtual void display() = 0;
+            void display();
+
+    virtual void keyboard(int key, int x, int y) = 0;
+
+protected:
+    virtual void doRenderFrame() = 0;
+
 };

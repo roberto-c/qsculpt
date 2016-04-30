@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
+#include <stdlib.h>
 #include <PlastilinaCore/opencl/ClStlAllocator.h>
 #include <PlastilinaCore/Logging.h>
 
@@ -34,7 +35,7 @@ MemoryPool::MemoryPool(std::size_t n, int alignment) noexcept
 , locked(false)
 {
     TRACE(debug) << "MemoryPool()";
-    initialize();
+    initialize(alignment);
 }
 
 MemoryPool::MemoryPool(const MemoryPool && pool)
@@ -48,19 +49,21 @@ MemoryPool::MemoryPool(const MemoryPool && pool)
 MemoryPool::~MemoryPool()
 {
     TRACE(debug) << "~MemoryPool()";
-    delete dataPtr;
+    delete [] dataPtr;
     dataPtr = nullptr;
 }
 
 bool
-MemoryPool::initialize()
+MemoryPool::initialize(int alignment)
 {
     if (dataPtr)
     {
         // already initialized
         return true;
     }
-    dataPtr = new char[size];
+    size_t sizeElements = size % alignof(std::max_align_t) == 0 ? size / alignof(std::max_align_t) : (size / alignof(std::max_align_t)) + 1;
+    size = sizeElements * alignof(std::max_align_t);
+    dataPtr = (char*)(new std::max_align_t[sizeElements]);
     if (!dataPtr) return false;
     return true;
 }
@@ -85,13 +88,13 @@ MemoryPoolGpu::MemoryPoolGpu(
     , ::cl::CommandQueue & queue
     , std::size_t n
     , cl_mem_flags flags)
-    : MemoryPool(1)
+    : MemoryPool(n)
     , queue(queue)
 {
     TRACE(debug) << "MemoryPoolGpu()";
     
     context = ctx;
-    buffer = ::cl::Buffer(context, flags|CL_MEM_ALLOC_HOST_PTR, n);
+    buffer = ::cl::Buffer(context, flags| CL_MEM_USE_HOST_PTR, n, dataPtr);
     size = n;
 }
 
@@ -122,7 +125,6 @@ MemoryPoolGpu::~MemoryPoolGpu()
     if (dataPtr) {
         unlock();
     }
-    dataPtr = nullptr;
 }
 
 bool
@@ -130,13 +132,13 @@ MemoryPoolGpu::lock()
 {
     TRACE(trace) << "MemoryPoolGpu::lock()";
     if (locked) {
-        TRACE(debug) << "Already locked";
+        TRACE(warning) << "MemoryPoolGpu::lock(): Already locked";
         return true;
     }
     locked = true;
-    dataPtr = static_cast<char*>(queue.enqueueMapBuffer(buffer,
+    char* dataPtr2 = static_cast<char*>(queue.enqueueMapBuffer(buffer,
         CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, 0, size));
-    
+    assert(dataPtr2 == dataPtr);
     return dataPtr != nullptr;
 }
 
@@ -145,11 +147,10 @@ MemoryPoolGpu::unlock()
 {
     TRACE(trace) << "MemoryPoolGpu::unlock()";
     if (!locked) {
-        TRACE(debug) << "Not locked";
+        TRACE(warning) << "MemoryPoolGpu::unlock(): Not locked";
         return true;
     }
     queue.enqueueUnmapMemObject(buffer, dataPtr);
-    //dataPtr = nullptr;
     locked = false;
     return true;
 }
@@ -159,13 +160,13 @@ MemoryPoolGlCl::MemoryPoolGlCl(
     , ::cl::CommandQueue & queue
     , std::size_t n
     , cl_mem_flags flags)
-    : MemoryPool(1)
+    : MemoryPool(n)
     , queue(queue)
 {
     TRACE(trace) << "MemoryPoolGlCl()";
     context = ctx;
     gldata.create();
-    gldata.setBufferData(nullptr, n);
+    gldata.setBufferData(dataPtr, n);
     size = n;
     buffer = ::cl::BufferGL(context, flags, gldata.objectID());
 }
@@ -198,7 +199,6 @@ MemoryPoolGlCl::~MemoryPoolGlCl()
     if (locked) {
         unlock();
     }
-    dataPtr = nullptr;
 }
 
 bool
@@ -210,14 +210,13 @@ MemoryPoolGlCl::lock()
         return true;
     }
     locked = true;
-    //std::vector<::cl::Memory> list;
-    //list.push_back(buffer);
-    //std::vector<::cl::Event> evtList(1);
-    //queue.enqueueAcquireGLObjects(&list, nullptr, &evtList[0]);
-    //dataPtr = static_cast<char*>(queue.enqueueMapBuffer(buffer,
-    //    CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, 0, size,&evtList));
-    gldata.mapBuffer((GLvoid**)(&dataPtr), &size);
-
+    std::vector<::cl::Memory> list;
+    list.push_back(buffer);
+    std::vector<::cl::Event> evtList(1);
+    queue.enqueueAcquireGLObjects(&list, nullptr, &evtList[0]);
+    queue.enqueueReadBuffer(buffer, CL_TRUE, 0, size, dataPtr, &evtList);
+    queue.enqueueReleaseGLObjects(&list);
+    queue.flush();
     return dataPtr != nullptr;
 }
 
@@ -231,9 +230,11 @@ MemoryPoolGlCl::unlock()
     }
     std::vector<::cl::Memory> list;
     list.push_back(buffer);
-    //queue.enqueueUnmapMemObject(buffer, dataPtr);
-    //queue.enqueueReleaseGLObjects(&list);
-    gldata.unmapBuffer();
+    std::vector<::cl::Event> evtList(1);
+    queue.enqueueAcquireGLObjects(&list, nullptr, &evtList[0]);
+    queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, size, dataPtr);
+    queue.enqueueReleaseGLObjects(&list);
+    queue.flush();
     locked = false;
     return true;
 }

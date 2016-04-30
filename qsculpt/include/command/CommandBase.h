@@ -77,7 +77,7 @@ protected:
     double              _modelMatrix[16];
     double              _projMatrix[16];
     GLint               _viewPort[4];
-    bool                _rotationRadius;
+    float               _rotationRadius;
 private:
     Camera*             _currentCamera;
     Camera*             _intialCameraState;

@@ -13,6 +13,8 @@
 
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/opengl/Texture.h>
+#include <PlastilinaCore/opengl/Sampler.h>
 
 class DLLEXPORT PhongMaterial : public Material
 {
@@ -68,7 +70,18 @@ public:
      * Sets the diffuse color used for shading color computation.
      */
     void setAmbient(const Color & c);
-    
+
+    /**
+    * Returns the texture used for diffuse color.
+    */
+    gl::Texture2D::shared_ptr diffuseTexture();
+
+    /**
+     * Sets the texture to use for diffuse color.
+     * if set to null, the material will use the regular diffuse color.
+     */
+    void setDiffuseTexture(gl::Texture2D::shared_ptr & text);
+
 private:
     struct Impl;
     std::unique_ptr<Impl> d;

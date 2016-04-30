@@ -22,7 +22,7 @@ protected:
     std::size_t     size;
     bool            locked;
     
-    virtual bool initialize();
+    virtual bool initialize(int alignment);
     
 public:
     MemoryPool(std::size_t n = 0, int alignment=0) noexcept;

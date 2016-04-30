@@ -14,8 +14,12 @@ struct GlslProgram::Impl
 {
     GLuint 	progId_;
 	GLint	maxNameSize;
+    bool    compiled;
 	
-	Impl(GLuint progId):progId_(progId){}
+	Impl(GLuint progId)
+        : progId_(progId)
+        , compiled(false)
+    {}
 };
 
 GlslProgram * GlslProgram::currentProgram()
@@ -30,6 +34,9 @@ GlslProgram * GlslProgram::currentProgram()
 GlslProgram::GlslProgram() : d(new Impl(0))
 {
     d->progId_ = glCreateProgram();
+    if (d->progId_ == 0) {
+        throw core::GlException("Failed to create program", 0);
+    }
 }
 
 GlslProgram::GlslProgram(GLuint pid) : d(new Impl(0))
@@ -56,17 +63,20 @@ void GlslProgram::setProgramID(GLuint pid)
 
 bool GlslProgram::GlslProgram::link()
 {
+    assert(d->progId_);
     glLinkProgram(d->progId_);
     
     GLint status;
     glGetProgramiv(d->progId_, GL_LINK_STATUS, &status);
     
 	glGetProgramiv(d->progId_, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &d->maxNameSize);
-    return status == GL_TRUE;
+    d->compiled = (status == GL_TRUE);
+    return d->compiled;
 }
-    
+
 std::string GlslProgram::buildLog()
 {
+    assert(d->progId_);
     GLint val;
     glGetProgramiv(d->progId_, GL_INFO_LOG_LENGTH, &val);
     
@@ -93,30 +103,35 @@ std::string GlslProgram::buildLog()
     
 void GlslProgram::attachShader(VertexShader * shader)
 {
+    assert(d->progId_);
     glAttachShader(d->progId_, shader->shaderId());
     THROW_IF_GLERROR(__func__);
 }
    
 void GlslProgram::attachShader(FragmentShader * shader)
 {
+    assert(d->progId_);
     glAttachShader(d->progId_, shader->shaderId());
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::useProgram()
 {
+    assert(d->progId_);
     glUseProgram(d->progId_);
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::releaseProgram()
 {
+    assert(d->progId_);
     glUseProgram(0);
     THROW_IF_GLERROR(__func__);
 }
 
 GLint GlslProgram::activeAttributes()
 {
+    assert(d->progId_);
     GLint res = 0;
     glGetProgramiv(d->progId_, GL_ACTIVE_ATTRIBUTES, &res);
     THROW_IF_GLERROR(__func__);
@@ -125,12 +140,14 @@ GLint GlslProgram::activeAttributes()
 
 void GlslProgram::bindAttributeLocation(GLuint index, const std::string &name)
 {
+    assert(d->progId_);
     glBindAttribLocation(d->progId_, index, name.c_str());
     THROW_IF_GLERROR(__func__);
 }
 
 GLint GlslProgram::attributeLocation(const std::string & name)
 {
+    assert(d->progId_);
     GLint loc = glGetAttribLocation(d->progId_, name.c_str());
     THROW_IF_GLERROR(__func__);
     return loc;
@@ -141,6 +158,7 @@ void GlslProgram::activeAttrib(GLint index,
                                GLenum * type,
                                GLint * size)
 {
+    assert(d->progId_);
     if (!name && !type) {
         return;
     }
@@ -157,6 +175,7 @@ void GlslProgram::activeAttrib(GLint index,
 
 GLint GlslProgram::fragDataLocation(const std::string & name)
 {
+    assert(d->progId_);
     GLint loc = glGetFragDataLocation(d->progId_, name.c_str());
     THROW_IF_GLERROR(__func__);
     return loc;
@@ -164,12 +183,14 @@ GLint GlslProgram::fragDataLocation(const std::string & name)
 
 void GlslProgram::bindFragDataLocation(GLuint colorNumber, const std::string & name)
 {
+    assert(d->progId_);
     glBindFragDataLocation(d->progId_, colorNumber, name.c_str());
     THROW_IF_GLERROR(__func__);
 }
 
 GLint GlslProgram::uniformLocation(const std::string &name)
 {
+    assert(d->progId_);
     GLint loc = glGetUniformLocation(d->progId_, name.c_str());
     THROW_IF_GLERROR(__func__);
     return loc;
@@ -177,59 +198,69 @@ GLint GlslProgram::uniformLocation(const std::string &name)
 
 void GlslProgram::setUniform(GLint index, int value)
 {
+    assert(d->progId_);
     glUniform1iv(index, 1, &value);
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector2i & value)
 {
+    assert(d->progId_);
     glUniform2iv(index, 1, value.data());
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector3i & value)
 {
+    assert(d->progId_);
     glUniform3iv(index, 1, value.data());
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector4i & value)
 {
+    assert(d->progId_);
     glUniform4iv(index, 1, value.data());
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, float value)
 {
+    assert(d->progId_);
     glUniform1fv(index, 1, &value);
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector2f & value)
 {
+    assert(d->progId_);
     glUniform2fv(index, 1, value.data());
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector3f & value)
 {
+    assert(d->progId_);
     glUniform3fv(index, 1, value.data());
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Vector4f & value)
 {
+    assert(d->progId_);
     glUniform4fv(index, 1, value.data());
     THROW_IF_GLERROR(__func__);
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Matrix4f & val)
 {
+    assert(d->progId_);
     glUniformMatrix4fv(index, 1, GL_FALSE, val.data());
 }
 
 void GlslProgram::setUniform(GLint index, const Eigen::Affine3f & val)
 {
+    assert(d->progId_);
     glUniformMatrix4fv(index, 1, GL_FALSE, val.data());
 }
 

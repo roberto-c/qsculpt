@@ -151,34 +151,27 @@ void GpuSubdivisionRenderable::Impl::renderObject(
         Camera * camera = cameraNode->camera().get();
 		GLint matId = prog->uniformLocation("glModelViewMatrix");
         Eigen::Affine3f t(camera->modelView());
-//        std::cout << "ModelView: " << std::endl << t.matrix() << std::endl;
         if (matId != -1) prog->setUniform(matId, t);
         
         matId = prog->uniformLocation("objectTransform");
         auto ntrans = node->transform()*node->parentTransform();
-//        std::cout << "Object Trans: " << std::endl << ntrans.matrix() << std::endl;
         if (matId != -1) prog->setUniform(matId, ntrans);
         
         matId = prog->uniformLocation("glProjectionMatrix");
-//        std::cout << "Projection: " << std::endl << camera->projection() << std::endl;
         if (matId != -1) prog->setUniform(matId, camera->projection());
         
         Eigen::Vector3f p = t.translation();
 		Eigen::Vector4f camPos = Eigen::Vector4f(p[0],p[1],p[2],1.0f);
 		matId = prog->uniformLocation("eyePosition");
-//        std::cout << "Eye position: " << std::endl << camPos << std::endl;
 		if (matId != -1) prog->setUniform(matId, camPos);
 	}
 	
 	
 	obj = static_cast<GpuSubdivision*>(snode->surface());
 	mat = snode->material();
-	//std::cerr << "Render as selected = " << mesh->getShowBoundingBox();
 	if (obj == NULL || mat == NULL)
 		return;
 	
-	//VertexBuffer* vbo= getVBO(obj);
-    //VertexBuffer* vbo = this->surface->_d->_dataBuffer.get();
     BufferObject *bo = core::cl::get_glbuffer_backing_store(*(this->surface->_d->_triangleOutput));
     VertexBuffer* vbo = static_cast<VertexBuffer*>(bo);
 	if (vbo == NULL || vbo->objectID() == 0)
@@ -300,7 +293,6 @@ GpuSubdivisionRenderable::Impl::build_mesh(const core::GpuSubdivision & surface)
     try {
         CLManager * clmgr = CLManager::instance();
 
-        //surface._d->_triangleOutput
         std::vector<::cl::Memory> list;
         ::cl::Memory mem (core::cl::get_mem_backing_store(*(surface._d->_triangleOutput)));
         list.push_back(mem);

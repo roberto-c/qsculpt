@@ -48,30 +48,6 @@ public:
     
     Camera & operator=(const Camera & orig);
 
-    void setPosition(const Point3& p);
-
-    Point3 getPosition();
-    
-    void setTargetPoint(const Point3 & target);
-    
-    Point3 getTargetPoint();
-
-    void setOrientationVector(const Point3& v);
-
-    Point3 getOrientationVector();
-
-    void setLongitude(float longitude);
-
-    double getLongitude();
-
-    void setColatitude(float colatitude);
-
-    double getColatitude();
-
-    void setDistanceFromTarget(float distance);
-
-    double getDistanceFromTarget();
-
     /**
      * Set the transformation matrix to use for the camera or eye
      * transformation.
@@ -182,7 +158,56 @@ public:
      */
     Vector3 worldToEye(float x, float y, float z, float w = 1.f) const;
 
-    
+    /**
+    * Maps a point from screen space to world space.
+    *
+    * This method is similar in purpose to gluUnproject function call.
+    */
+    Vector3 screenToWorld(const Vector3& p) const;
+
+    /**
+    * Overload to accept a vector by components
+    */
+    Vector3 screenToWorld(float x, float y, float z, float w = 1.f) const;
+
+    /**
+    * Maps a point from world space to screen space.
+    *
+    * This method is similar in purpose to gluProject function call.
+    */
+    Vector3 worldToScreen(const Vector3& p) const;
+
+    /**
+    * Overload to accept a vector by components
+    */
+    Vector3 worldToScreen(float x, float y, float z, float w = 1.f) const;
+
+
+    /**
+    * Maps a point from eye space to clip space.
+    *
+    */
+    Vector3 eyeToClip(const Vector3& p) const;
+
+    /**
+    * Maps a point from eye space to clip space.
+    *
+    */
+    Vector3 eyeToClip(float x, float y, float z, float w = 1.f) const;
+
+    /**
+    * Maps a point from clip space to eye space.
+    *
+    * This method is similar in purpose to gluProject function call.
+    */
+    Vector3 clipToEye(const Vector3& p) const;
+
+    /**
+    * Overload to accept a vector by components
+    */
+    Vector3 clipToEye(float x, float y, float z, float w = 1.f) const;
+
+
     /**
      * Create a string representation of the object. 
      *
@@ -190,21 +215,11 @@ public:
      */
     std::string toString() const;
 
-private:
-    void updateViewMatrix();
-    
+private:    
     Eigen::Matrix4f     _projMat;
-    Eigen::Matrix4f     _viewMat;
     Eigen::Matrix4f     _viewportMat;
+    Eigen::Vector4f     _viewport;
     
-    Point3 m_position;
-    Point3 m_target;
-    Point3 m_orientation;
-
-    float m_colatitude;
-    float m_longitude;
-    float m_distanceFromTarget;
-
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

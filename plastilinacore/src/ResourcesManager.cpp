@@ -35,7 +35,7 @@ void ResourcesManager::setResourcesDirectory(const std::string &path)
 void ResourcesManager::addResourcesDirectory(const std::string &path)
 {
     std::lock_guard<std::mutex> lock(g_resourcesManagerLock);
-    g_data.path.push_back(path);
+    g_data.path.insert(g_data.path.cbegin(), path);
 }
 
 std::string ResourcesManager::resourcesDirectory()

@@ -43,11 +43,11 @@ struct SceneNode::Impl {
      iid(0), nodeType(nodeType), isSelected(false),name(name),
         octaveFmt(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]")
     {
-        TRACEFUNCTION("");
+        //TRACEFUNCTION("");
     }
     
     ~Impl() {
-        TRACEFUNCTION("");
+        //TRACEFUNCTION("");
     }
     
     void dump(int indent = 0) const {
@@ -55,10 +55,10 @@ struct SceneNode::Impl {
         for (int i = 0; i < indent; ++i) {
             p += "    ";
         }
-        std::cout << p << "+--- Name:" << name << " (" << iid << ")" << std::endl;
-        std::cout << p << "   | NodeType:" << nodeType << std::endl;
-        std::cout << p << "   | T: \n" << transform.matrix().format(octaveFmt) << std::endl;
-        std::cout << p << "   | Children (" << children.size() << "): " << std::endl;
+        TRACE(trace) << p << "+--- Name:" << name << " (" << iid << ")" << std::endl;
+        TRACE(trace) << p << "   | NodeType:" << nodeType << std::endl;
+        TRACE(trace) << p << "   | T: \n" << transform.matrix().format(octaveFmt) << std::endl;
+        TRACE(trace) << p << "   | Children (" << children.size() << "): " << std::endl;
         for(auto e : children) {
             e->_d->dump(indent+1);
         }
@@ -260,7 +260,7 @@ bool SceneNode::SceneNodeTreeIterator::hasNext() const
     }
 //    bool res = _nextIndex >= 0 && ((_parent && _parent->count() > _nextIndex) || _levelStack.size() > 0);
     bool res = _nextIndex >= 0 && ((_parent && _parent->count() > _nextIndex));
-    std::cerr << "NextIndex: " << _nextIndex << " ParentCount: " << ((_parent) ? _parent->count() : -1 ) << "\n";
+    //TRACE(trace) << "NextIndex: " << _nextIndex << " ParentCount: " << ((_parent) ? _parent->count() : -1 ) << "\n";
     return res;
 }
 
@@ -290,7 +290,7 @@ SceneNode::SceneNodeTreeIterator::const_shared_ptr SceneNode::SceneNodeTreeItera
             break;
         }
     }
-    std::cerr << "RetType:" << ret->nodeType() << " NextIndex: " << _nextIndex << " ParentCount: " << ((_parent) ? _parent->count() : -1 ) << "\n";
+    //TRACE(trace) << "RetType:" << ret->nodeType() << " NextIndex: " << _nextIndex << " ParentCount: " << ((_parent) ? _parent->count() : -1 ) << "\n";
     return  ret;
 }
 
@@ -320,7 +320,7 @@ SceneNode::SceneNode(const std::string& name)
 : enable_shared_from_this(),
   _d(new Impl(name))
 {
-    TRACEFUNCTION(("Name : " + name));
+    //TRACEFUNCTION(("Name : " + name));
     _d->iid = NEXTID.fetch_add(1);
     
     _d->transform = Eigen::Affine3f::Identity();
@@ -330,7 +330,7 @@ SceneNode::SceneNode(const std::string & name, NodeType nodeType)
 : enable_shared_from_this(),
   _d(new Impl(name, nodeType))
 {
-    TRACEFUNCTION(("Name : " + name));
+    //TRACEFUNCTION(("Name : " + name));
     _d->iid = NEXTID.fetch_add(1);
     
     _d->transform = Eigen::Affine3f::Identity();
@@ -346,7 +346,7 @@ void SceneNode::updateParentBBox()
 
 SceneNode::~SceneNode()
 {
-    TRACEFUNCTION(("Name : " + name()));
+    //TRACEFUNCTION(("Name : " + name()));
 }
 
 uint32_t SceneNode::iid() const { 
@@ -510,7 +510,7 @@ Eigen::Affine3f SceneNode::transform() const
 
 Eigen::Affine3f& SceneNode::transform() 
 { 
-    assert(_d);
+    assert(_d != nullptr);
     return _d->transform; 
 }
 

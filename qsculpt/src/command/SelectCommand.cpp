@@ -28,6 +28,7 @@
 #include <PlastilinaCore/geometry/Aabb.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/Quad.h>
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
 #include "DocumentView.h"
@@ -158,6 +159,13 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
         view->getCanvas()->screenToWorld(_startPointWin, _startPoint);
         TRACE(trace) << "ScreenPointWin:" << core::utils::to_string(_startPointWin)
             << "ScreenPontWorld:" << core::utils::to_string(_startPoint);
+        if (!_rectangle) 
+        {
+            _rectangle = std::make_shared<Scene>();
+            auto surfnode = std::make_shared<SurfaceNode>();
+            surfnode->setSurface(new Quad());
+            _rectangle->add(surfnode);
+        }
     } 
     else 
     {
@@ -181,6 +189,18 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
 {
     TRACE(trace) << "SelectCommand::mouseReleaseEvent";
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    if (_rectangle)
+    {
+        auto item = _rectangle->item(0).lock();
+        if (item) {
+            auto surf = std::dynamic_pointer_cast<SurfaceNode>(item);
+            if (surf) {
+                delete surf->surface();
+                surf->setSurface(nullptr);
+            }
+        }
+        _rectangle = nullptr;
+    }
     if (_boxSelection) 
     {
         _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
@@ -212,6 +232,10 @@ void SelectCommand::paintGL(GlCanvas *c)
         c->drawRect(_startPointWin, _endPointWin);
         c->disable(GL_BLEND);
         c->enable(GL_DEPTH_TEST);
+
+        if (_rectangle) {
+            c->drawScene(_rectangle);
+        }
     }
 }
 

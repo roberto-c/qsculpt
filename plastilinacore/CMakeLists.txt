@@ -20,6 +20,7 @@ set(PLASTILINACORE_SOURCES
 	./src/IIntegrator.cpp
 	./src/material/PhongMaterial.cpp
 	./src/material/PointMaterial.cpp
+	./src/material/WireFrameMaterial.cpp
 	./src/Material.cpp
 	./src/Mesh.cpp
 	./src/Octree.cpp
@@ -102,6 +103,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/Logging.h
 	${PLASTILINACORE_HEADERS_ROOT}/material/PhongMaterial.h
 	${PLASTILINACORE_HEADERS_ROOT}/material/PointMaterial.h
+	${PLASTILINACORE_HEADERS_ROOT}/material/WireFrameMaterial.h
 	${PLASTILINACORE_HEADERS_ROOT}/Material.h
 	${PLASTILINACORE_HEADERS_ROOT}/math/Utils.h
 	${PLASTILINACORE_HEADERS_ROOT}/Mesh.h
@@ -161,6 +163,8 @@ set(RESOURCES
 	./shaders/Phong.fs
 	./shaders/Point.vs
 	./shaders/Point.fs
+	./shaders/WireFrame.vs
+	./shaders/WireFrame.fs
 	./shaders/Subdivision.cl
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivisionPrimitives.h
 )

@@ -119,6 +119,13 @@ public:
      */
     void setUpAxis(UpAxis axis);
     
+    /**
+    * Returns a list of all lights starting at the node specified.
+    * If node is null, then look in all the document.
+    */
+    std::vector<LightNode::shared_ptr>
+        getAllLights(const std::shared_ptr<const SceneNode> & doc = nullptr) const;
+
 private:
     class SceneNodeIterator;
     struct Impl;
