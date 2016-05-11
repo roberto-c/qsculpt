@@ -84,3 +84,12 @@ kernel void build_mesh(
 	printf("Face[%d]: NumVertices: %d\n", Face_iid(face), face_vtx_counter);
     return;
 }
+
+kernel void subdivide(
+    global struct Vertex * vertices, uint vertex_size,
+    global struct Edge * edges, uint edge_size,
+    global struct Face * faces, uint face_size,
+    global struct GLVertexData * outVertices, uint out_vertex_size
+    )
+{ 
+}

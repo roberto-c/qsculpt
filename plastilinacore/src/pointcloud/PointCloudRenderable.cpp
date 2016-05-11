@@ -176,10 +176,7 @@ void PointCloudRenderable::renderObject(RenderState & state) const
 		default:
 			break;
 	}
-    
-    
-    vao->release();
-	
+    vao->unbind();
 }
 
 VertexBuffer* PointCloudRenderable::getVBO(ISurface* mesh) const

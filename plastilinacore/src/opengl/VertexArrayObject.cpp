@@ -10,10 +10,10 @@
 #include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 
-namespace core {
-namespace opengl {
+namespace gl {
 
     VertexArrayObject::VertexArrayObject()
+        : vao_(0)
     {
         glGenVertexArrays(1, &vao_);
         THROW_IF_GLERROR("VertexArrayObject");
@@ -22,9 +22,10 @@ namespace opengl {
     VertexArrayObject::~VertexArrayObject()
     {
         glDeleteVertexArrays(1, &vao_);
+        LOG_IF_GLERROR("Failed to destroy VAO");
         vao_ = 0;
     }
-    
+
     GLuint VertexArrayObject::objectID() const
     {
         return vao_;
@@ -36,9 +37,8 @@ namespace opengl {
         THROW_IF_GLERROR("VertexArrayObject::bind");
     }
     
-    void VertexArrayObject::release() const
+    void VertexArrayObject::unbind() const
     {
         glBindVertexArray(0);
     }
-}
 }

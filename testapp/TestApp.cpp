@@ -31,6 +31,7 @@
 #include "BaseTest.h"
 #include "CameraTest.h"
 #include "SubdivisionTest.h"
+#include "CanvasTest.h"
 
 using namespace std;
 namespace po = boost::program_options;
@@ -68,6 +69,8 @@ struct TestApp::Impl {
     void reshape(int w, int h);
 
     void keyboard(int key, int x, int y);
+
+    void mouseClick(uint8_t button, uint8_t state, int x, int y);
 
     bool quitRequested();
 
@@ -112,9 +115,9 @@ void TestApp::init(int argc, char** argv)
     po::store(po::parse_command_line(argc, argv, d->optionsDesc), d->options);
     po::notify(d->options);
 
-    d->testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
-    d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
-
+    //d->testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
+    //d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
+    d->testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
     // install test callsback
     for (auto & test : d->testList)
     {
@@ -186,7 +189,7 @@ void TestApp::Impl::dispatchEvent(SDL_Event * event)
         }
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEBUTTONDOWN: {
-            //event->button
+            mouseClick(event->button.button, event->button.state, event->button.x, event->button.y);
             break;
         }
     }
@@ -267,6 +270,10 @@ void TestApp::Impl::keyboard(int key, int x, int y)
         default:
             break;
     }
+}
+
+void TestApp::Impl::mouseClick(uint8_t button, uint8_t state, int x, int y)
+{
 }
 
 void TestApp::Impl::initialize()

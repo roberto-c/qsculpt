@@ -9,7 +9,6 @@ uniform vec4 diffuseColor;
 uniform vec4 specularColor;
 uniform vec4 ambientColor;
 uniform float exponent;
-/* Uniform Inputs */
 uniform vec4 lightPosition;
 uniform vec4 eyePosition;
 
@@ -33,14 +32,14 @@ void main() {
 	float nDotL = dot(nNormal, nLightVector);
 	vec4 diffColor = diffuseColor;
 #ifdef USE_DIFF_TEXTURE
-    vec4 diffColor = texture(textureSampler, texCoord);
+    diffColor = texture(textureSampler, texCoord);
 #endif
 	if (nDotL > 0.0) {
 		vec3 reflected = reflect(-nLightVector, nNormal);
 		float specular = pow(max(dot(reflected, nEyeVector), 0.0), exponent);
         colorValue += diffColor * nDotL + specularColor * specular;
 	}
-    //colorValue = diffColor;
+    colorValue = diffColor;
 	colorValue.a = 1.0;
 	glFragColor = colorValue;
 }

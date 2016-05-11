@@ -18,29 +18,36 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #pragma once
-#ifndef PlastilinaCore_opengl_Object_h
-#define PlastilinaCore_opengl_Object_h
 
-namespace gl {
-template<typename T>
-class Object {
-protected:
-	GLuint oglname_;
-	
+class Color;
+
+namespace gl { class Texture2D; }
+namespace core
+{
+
+class Canvas
+{
 public:
-	Object() : oglname_(0) {
-		T::create(1,&oglname_);
-	}
-	
-	virtual ~Object() {
-		T::destroy(1, &oglname_);
-	}
+    enum CanvasBackEnd {
+        Unknown,
+        OpenGL,
+        OpenCL
+    };
+    static std::unique_ptr<Canvas> factory(CanvasBackEnd backend, int w, int h);
 
-    GLuint oid() const
-    {
-        return oglname_;
-    }
-};
+    Canvas(int w = 1280, int h=720);
+    virtual ~Canvas();
+
+    virtual void setPenColor(const Color & c) = 0;
+    virtual void setFillColor(const Color & c) = 0;
+
+    virtual void begin() = 0;
+    virtual void end() = 0;
+    virtual void drawRectangle(float x, float y, float w, float h) = 0;
+
+    virtual std::shared_ptr<gl::Texture2D> colorTexture() = 0;
+    virtual std::shared_ptr<gl::Texture2D> depthTexture() = 0;
 };
 
-#endif
+
+};

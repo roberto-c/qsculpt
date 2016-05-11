@@ -19,6 +19,7 @@
 #include "PlastilinaCore/Logging.h"
 #include <PlastilinaCore/material/PhongMaterial.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/opengl/Texture.h>
 #include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/subdivision/GpuSubdivision.h>
@@ -40,13 +41,17 @@ struct SubdivisionTest::Impl
     shared_ptr<PhongMaterial>    material;
     ISurface::shared_ptr    surface;
     Camera::shared_ptr      camera;
-    
+    SDL_Surface*            texture;
+    gl::Texture2D::shared_ptr glTexture1;
+    gl::Texture2D::shared_ptr glTexture2;
+
     bool                    runUi;
 
     Impl()
         : test(nullptr)
         , scene(nullptr)
         , surface(nullptr)
+        , texture(nullptr)
         , runUi(false)
     {}
     
@@ -61,20 +66,63 @@ struct SubdivisionTest::Impl
 
 int SubdivisionTest::Impl::setup() {
     TRACEFUNCTION("");
-    surface = std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createBox());
+    ResourcesManager rscMgr;
+
+    surface = std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createQuad(1280, 720));
     //surface = std::shared_ptr<Subdivision>(core::PrimitiveFactory<Subdivision>::createBox());
     scene = std::make_shared<Scene>();
     auto surfacenode = std::make_shared<SurfaceNode>(surface.get());
     material = make_shared<PhongMaterial>();
     auto camnode = make_shared<CameraNode>();
     camera = make_shared<Camera>();
+    
+    std::string texturePath = rscMgr.findResourcePath("Texture_1280x720", "png");
+    texture = IMG_Load(texturePath.c_str());
+    if (!texture) {
+        TRACE(debug) << "Failed to load texture";
+        TRACE(debug) << "SDL Error: " << SDL_GetError();
+        throw std::runtime_error("Failed to load asset: Texture01.png");
+    }
+    else {
+        TRACE(debug) << "Texture loaded";
+        TRACE(debug) << "TextureFormat: " << SDL_GetPixelFormatName(texture->format->format);
+        TRACE(debug) << "Size " << texture->w << "x" << texture->h;
+        TRACE(debug) << "Bytes Per Pixel: " << int(texture->format->BytesPerPixel);
+
+        gl::TextureManager::instance()->setActiveTexture(GL_TEXTURE0);
+        glTexture1 = std::make_shared<gl::Texture2D>();
+        glTexture1->bind();
+        glTexture1->setParameter(GL_TEXTURE_BASE_LEVEL, 0);
+        glTexture1->setParameter(GL_TEXTURE_MAX_LEVEL, 0);
+        glTexture1->texImage2D(0,
+            GL_RGBA8,
+            texture->w,
+            texture->h,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            texture->pixels);
+        glTexture2 = std::make_shared<gl::Texture2D>();
+        glTexture2->bind();
+        glTexture2->setParameter(GL_TEXTURE_BASE_LEVEL, 0);
+        glTexture2->setParameter(GL_TEXTURE_MAX_LEVEL, 0);
+        glTexture2->texImage2D(0,
+            GL_RGBA8,
+            texture->w,
+            texture->h,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            texture->pixels);
+    }
     if (material && surfacenode && scene && camera && camnode)
     {
         float aspect_ratio = float(1280) / float(720);
         camnode->setCamera(camera);
         camera->setViewport(0, 0, 1280, 720);
         camera->transform().translate(Vector3(0, 0, -6));
-        camera->setOrthoMatrix(-10, 10, -10 / aspect_ratio, 10 / aspect_ratio, -1000, 1000);
+        //camera->setOrthoMatrix(-10, 10, -10 / aspect_ratio, 10 / aspect_ratio, -1000, 1000);
+        camera->setOrthoMatrix(0, 1280, 0, 720, -1000, 1000);
         scene->add(surfacenode);
         scene->add(camnode);
         material->load();
@@ -82,6 +130,7 @@ int SubdivisionTest::Impl::setup() {
         material->setDiffuse(Color(0.2f, 0.2f, 0.8f, 1.0f));
         material->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
         material->setExponent(200);
+        material->setDiffuseTexture(glTexture1);
         surfacenode->setMaterial(material);
         
     }
@@ -91,6 +140,8 @@ int SubdivisionTest::Impl::setup() {
 int SubdivisionTest::Impl::cleanup() {
     TRACEFUNCTION("");
     material->unload();
+    SDL_FreeSurface(texture);
+    glTexture1 = nullptr;
     material = nullptr;
     surface = nullptr;
     scene = nullptr;

@@ -159,7 +159,7 @@ void PickingFacesRenderer::renderObject(std::shared_ptr<SceneNode> & node)
     GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
     
-    vao->release();
+    vao->unbind();
 }
 
 VAO* PickingFacesRenderer::getVAO(ISurface* mesh)

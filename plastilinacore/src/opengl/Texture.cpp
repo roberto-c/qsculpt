@@ -131,13 +131,17 @@ template class Texture<GL_TEXTURE_2D>;
 Texture2D::Texture2D()
 : Texture<GL_TEXTURE_2D>(1,1,1,0)
 {
-	
+    bind();
+    setParameter(GL_TEXTURE_BASE_LEVEL, 0);
+    setParameter(GL_TEXTURE_MAX_LEVEL, 0);
 }
 	
 Texture2D::Texture2D(GLuint width, GLuint height, GLenum flags)
 : Texture<GL_TEXTURE_2D>(width,height,1,flags)
 {
-	
+    bind();
+    setParameter(GL_TEXTURE_BASE_LEVEL, 0);
+    setParameter(GL_TEXTURE_MAX_LEVEL, 0);
 }
 	
 Texture2D::~Texture2D()
@@ -163,6 +167,29 @@ void Texture2D::texImage2D(
     d->border = border;
     d->format = format;
     d->level = level;
+}
+
+void Texture2D::copyImageSubDataTo(GLint srcLevel
+    , GLint srcX
+    , GLint srcY
+    , Texture2D dst
+    , GLint dstLevel
+    , GLint dstX
+    , GLint dstY
+    , GLsizei srcWidth
+    , GLsizei srcHeight)
+{
+    if (glewIsExtensionSupported("GL_ARB_copy_image"))
+    {
+        glCopyImageSubData(this->oid(), Texture2D::Target, srcLevel, srcX, srcY, 0,
+            dst.oid(), dst.target(), dstLevel, dstX, dstY, 0,
+            srcWidth, srcHeight, 0);
+        THROW_IF_GLERROR("Failed to upload texture data");
+    }
+    else
+    {
+        NOT_IMPLEMENTED;
+    }
 }
 	
 } /* End gl namespace */

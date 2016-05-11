@@ -76,7 +76,7 @@ public:
     void setParameter(GLenum pname, GLint value);
 
     void setParameter(GLenum pname, GLfloat value);
-    
+
 protected:
 	enum {
 		Target = TextureTarget
@@ -113,6 +113,18 @@ public:
 					GLenum format,
 					GLenum type,
 					const void *data);
+
+    void copyImageSubDataTo(
+        GLint srcLevel,
+        GLint srcX,
+        GLint srcY,
+        Texture2D dst,
+        GLint dstLevel,
+        GLint dstX,
+        GLint dstY,
+        GLsizei srcWidth,
+        GLsizei srcHeight);
+                
 };
 }; /* End namespace gl*/
 

@@ -184,7 +184,7 @@ void FlatRenderer::Impl::renderObject(std::shared_ptr<SceneNode> & node)
     mat->shaderProgram()->useProgram();
     GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
-    vao->release();
+    vao->unbind();
 }
 
 VertexBuffer* FlatRenderer::Impl::getVBO(ISurface* mesh)

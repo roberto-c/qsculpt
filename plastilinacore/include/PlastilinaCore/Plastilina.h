@@ -29,6 +29,8 @@
 #include <functional>
 #include <string>
 
+#include <PlastilinaCore/Logging.h>
+
 #define EIGEN_DONT_ALIGN_STATICALLY
 #define EIGEN_DONT_VECTORIZE
 #define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
@@ -101,7 +103,12 @@ namespace Eigen {
         }\
     }
 
-
+#define LOG_IF_GLERROR(msg) { \
+        GLenum error = glGetError(); \
+        if (error != GL_NO_ERROR) { \
+            TRACE(error) << "glGetError: " << error << ": " << msg; \
+        }\
+    }
 
 template <typename T>
 inline void hash_combine(std::size_t & seed, const T & v)

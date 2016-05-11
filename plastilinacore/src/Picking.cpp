@@ -162,7 +162,7 @@ void PickingObjectRenderer::renderVbo(std::shared_ptr<SceneNode> & node)
     GLsizei numVertices = vbo->getBufferSize() / sizeof(VertexStruct);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
     
-    vao->release();
+    vao->unbind();
 }
 
 VAO* PickingObjectRenderer::getVAO(ISurface* mesh)

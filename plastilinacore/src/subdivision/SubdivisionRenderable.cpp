@@ -200,8 +200,7 @@ void SubdivisionRenderable::renderObject(RenderState & state) const
 	}
     
     
-    vao->release();
-	
+    vao->unbind();
 }
 
 VertexBuffer* SubdivisionRenderable::getVBO(ISurface* mesh) const

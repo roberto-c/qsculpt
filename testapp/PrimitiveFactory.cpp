@@ -109,41 +109,51 @@ PrimitiveFactory<GpuSubdivision>::createBox() {
     indexList[3] = vertexID[6];
     surface->addFace( indexList );
 
-    int counter = 0;
-    auto vtxIt = surface->constVertexIterator();
-    for (auto & vertex : vtxIt)
-    {
-        TRACE(debug) << "Vertex: " << vertex.iid();
-        if (vertex.type() == (int)VertexHandleType::GPUSUBDIVISION) {
-            Vertex *vtx = static_cast<Vertex*>(&vertex);
-            TRACE(debug) << "  p: " << to_string(vtx->p);
-        }
-    }
+    surface->unlock();
+    return surface;
+}
 
-    counter = 0;
-    auto faceIt = surface->constFaceIterator();
-    for (auto & face : faceIt)
-    {
-        TRACE(debug) << "Face: " << face.iid();
-        if (face.type() == (int)FaceHandleType::GPUSUBDIVISION) {
-            Face *f = static_cast<Face*>(&face);
-            TRACE(debug) << "  FacexId: " << f->iid();
-            TRACE(debug) << "  EdgeId: " << surface->edge(f->edge)->iid();
-            auto faceVtxIt = f->constVertexIterator(surface);
-            for (auto & vertex : faceVtxIt)
-            {
-                TRACE(debug) << "    Vertex: " << vertex.iid();
-                if (vertex.type() == (int)VertexHandleType::GPUSUBDIVISION) {
-                    Vertex *vtx = static_cast<Vertex*>(&vertex);
-                    TRACE(debug) << "      p: " << to_string(vtx->p);
-                }
-            }
-        }
-    }
+GpuSubdivision *
+PrimitiveFactory<GpuSubdivision>::createQuad(float w, float h) {
+    using core::gpusubdivision::Vertex;
+    using core::gpusubdivision::Edge;
+    using core::gpusubdivision::Face;
+    using core::utils::convert_to;
+    using core::utils::to_string;
+
+    GpuSubdivision * surface = new GpuSubdivision;
+
+    surface->lock();
+    //qDebug("Box::initPoints()");
+    float hw = w;
+    float hh = h;
+    float hd = 0.0f;
+
+    std::vector<size_t> vertexID(8);
+    vertexID[0] = surface->addVertex(Point3( 0, hh, -hd));
+    vertexID[1] = surface->addVertex(Point3(hw, hh, -hd));
+    vertexID[2] = surface->addVertex(Point3(hw,  0, -hd));
+    vertexID[3] = surface->addVertex(Point3( 0,  0, -hd));
+    static_cast<Vertex*>(surface->vertex(vertexID[0]))->n = convert_to<cl_float4>(Vector3(-hw, hh, -hd).normalized());
+    static_cast<Vertex*>(surface->vertex(vertexID[1]))->n = convert_to<cl_float4>(Vector3(hw, hh, -hd).normalized());
+    static_cast<Vertex*>(surface->vertex(vertexID[2]))->n = convert_to<cl_float4>(Vector3(hw, -hh, -hd).normalized());
+    static_cast<Vertex*>(surface->vertex(vertexID[3]))->n = convert_to<cl_float4>(Vector3(-hw, -hh, -hd).normalized());
+    static_cast<Vertex*>(surface->vertex(vertexID[0]))->t = convert_to<cl_float2>(Point2(0, 0));
+    static_cast<Vertex*>(surface->vertex(vertexID[1]))->t = convert_to<cl_float2>(Point2(1, 0));
+    static_cast<Vertex*>(surface->vertex(vertexID[2]))->t = convert_to<cl_float2>(Point2(1, 1));
+    static_cast<Vertex*>(surface->vertex(vertexID[3]))->t = convert_to<cl_float2>(Point2(0, 1));
+
+    std::vector<Vertex::size_t> indexList(4);
+    indexList[0] = vertexID[0];
+    indexList[1] = vertexID[1];
+    indexList[2] = vertexID[2];
+    indexList[3] = vertexID[3];
+    surface->addFace(indexList);
 
     surface->unlock();
     return surface;
 }
+
 
 Subdivision *
 PrimitiveFactory<Subdivision>::createBox() {
@@ -223,5 +233,42 @@ PrimitiveFactory<Subdivision>::createBox() {
     return surface;
 }
 
-    
+Subdivision *
+PrimitiveFactory<Subdivision>::createQuad(float w, float h) {
+    using core::subdivision::Vertex;
+
+    Subdivision * surface = new Subdivision;
+
+    float hw = w;
+    float hh = h;
+    float hd = 0.0f;
+
+    std::vector<size_t> vertexID(4);
+    vertexID[0] = surface->addVertex(Point3( 0, hh, hd));
+    vertexID[1] = surface->addVertex(Point3(hw, hh, hd));
+    vertexID[2] = surface->addVertex(Point3(hw,  0, hd));
+    vertexID[3] = surface->addVertex(Point3( 0,  0, hd));
+    static_cast<Vertex*>(surface->vertex(vertexID[0]))->normal() = Vector3(-hw, hh, -hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[1]))->normal() = Vector3(hw, hh, -hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[2]))->normal() = Vector3(hw, -hh, -hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[3]))->normal() = Vector3(-hw, -hh, -hd).normalized();
+    static_cast<Vertex*>(surface->vertex(vertexID[0]))->texcoords() = Point2(0, 0);
+    static_cast<Vertex*>(surface->vertex(vertexID[1]))->texcoords() = Point2(1, 0);
+    static_cast<Vertex*>(surface->vertex(vertexID[2]))->texcoords() = Point2(1, 1);
+    static_cast<Vertex*>(surface->vertex(vertexID[3]))->texcoords() = Point2(0, 1);
+
+    Iterator<VertexHandle> it = surface->vertexIterator();
+    while (it.hasNext()) {
+        static_cast<Vertex*>(it.next())->addFlag(VF_Crease);
+    }
+
+    std::vector<Vertex::size_t> indexList(4);
+    indexList[0] = vertexID[0];
+    indexList[1] = vertexID[1];
+    indexList[2] = vertexID[2];
+    indexList[3] = vertexID[3];
+    surface->addFace(indexList);
+    return surface;
+}
+
 }; /* namespace core */

@@ -13,8 +13,7 @@
 
 #include <PlastilinaCore/opengl/OpenGL.h>
 
-namespace core {
-namespace opengl {
+namespace gl {
     class DLLEXPORT VertexArrayObject {
         GLuint vao_;
         
@@ -25,12 +24,17 @@ namespace opengl {
          * The OpenGL name or ID is generated at time of constructions.
          */
         VertexArrayObject();
+        VertexArrayObject(const VertexArrayObject& cpy) = delete;
+        VertexArrayObject(VertexArrayObject&& cpy) = delete;
         
         /**
          * Frees all resources from this VAO
          */
         ~VertexArrayObject();
         
+        VertexArrayObject& operator=(const VertexArrayObject& other) = delete;
+        VertexArrayObject& operator=(VertexArrayObject&& other) = delete;
+
         /**
          * Returns the OpenGL name for this VAO.
          *
@@ -47,11 +51,10 @@ namespace opengl {
          * Unbind or release the vertex array object from the current OpenGL 
          * state.
          */
-        void release() const;
+        void unbind() const;
     };
 }
-}
 
-typedef core::opengl::VertexArrayObject VAO;
+typedef gl::VertexArrayObject VAO;
 
 #endif /* defined(__PlastilinaCore__VertexArrayObject__) */

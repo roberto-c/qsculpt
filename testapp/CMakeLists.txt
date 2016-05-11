@@ -1,11 +1,11 @@
 
 set(TESTAPP_SOURCES 
 	./BaseTest.cpp
+	./CanvasTest.cpp
 	./CLRender.cpp
 	./DocumentModelTest.cpp
 	./IteratorTest.cpp
 	./ParticleSystem.cpp
-	./PhongMaterial.cpp
 	./PrimitiveFactory.cpp
 	./SubdivisionTest.cpp
 	./test.cpp
@@ -15,10 +15,10 @@ set(TESTAPP_SOURCES
 
 set(TESTAPP_PRIVATE_HEADERS 
 	./CameraTest.h
+	./CanvasTest.h
 	./CLRender.h
 	./DocumentModelTest.h
 	./ParticleSystem.h
-	./PhongMaterial.h
 	./PrimitiveFactory.h
 	./SceneNodeTest.h
 	./stable.h

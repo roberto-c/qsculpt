@@ -40,6 +40,8 @@ namespace core {
          * @return TSurface a constructed ISurface box
          */
         static TSurface * createBox();
+
+        static TSurface * createQuad(float w = 1.0f, float h = 1.0f);
     };
     
     template<> class PrimitiveFactory<GpuSubdivision>;
@@ -52,12 +54,14 @@ namespace core {
     class PrimitiveFactory<GpuSubdivision> {
     public:
         static GpuSubdivision * createBox();
+        static GpuSubdivision * createQuad(float w = 1.0f, float h = 1.0f);
     };
     
     template<>
     class PrimitiveFactory<Subdivision> {
     public:
         static Subdivision * createBox();
+        static Subdivision * createQuad(float w = 1.0f, float h = 1.0f);
     };
 
 };

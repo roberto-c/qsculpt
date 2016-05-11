@@ -160,8 +160,7 @@ void SmoothRenderer::Impl::renderObject(std::shared_ptr<SceneNode> & node)
     GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
     
-    vao->release();
-
+    vao->unbind();
 }
 
 VertexBuffer* SmoothRenderer::Impl::getVBO(ISurface* mesh)

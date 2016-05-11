@@ -258,7 +258,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(
 	}
     
     
-    vao->release();
+    vao->unbind();
 }
 
 VertexBuffer*

@@ -18,29 +18,31 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #pragma once
-#ifndef PlastilinaCore_opengl_Object_h
-#define PlastilinaCore_opengl_Object_h
 
-namespace gl {
-template<typename T>
-class Object {
-protected:
-	GLuint oglname_;
-	
+#include "BaseTest.h"
+#include "PlastilinaCore/Document.h"
+
+class CanvasTest : public BaseUITest
+{
+    struct Impl;
+    std::unique_ptr<Impl> d_;
+
 public:
-	Object() : oglname_(0) {
-		T::create(1,&oglname_);
-	}
-	
-	virtual ~Object() {
-		T::destroy(1, &oglname_);
-	}
 
-    GLuint oid() const
-    {
-        return oglname_;
-    }
-};
-};
+    CanvasTest();
 
-#endif
+    virtual ~CanvasTest();
+
+    virtual void resize(int w, int h);
+
+    virtual void keyboard(int key, int x, int y);
+
+protected:
+    virtual void doSetup();
+
+    virtual void doRun();
+
+    virtual void doShutdown();
+
+    virtual void doRenderFrame();
+};

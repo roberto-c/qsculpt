@@ -10,6 +10,7 @@ set(PLASTILINACORE_SOURCES
 	./src/BOManager.cpp
 	./src/BufferObject.cpp
 	./src/Camera.cpp
+	./src/Canvas.cpp
 	./src/Context.cpp
 	./src/Document.cpp
 	./src/Face.cpp
@@ -27,6 +28,7 @@ set(PLASTILINACORE_SOURCES
 	./src/opencl/ClStlAllocator.cpp
 	./src/opencl/CLUtils.cpp
 	./src/opencl/OCLManager.cpp
+	./src/opengl/FrameBufferObject.cpp
 	./src/opengl/GlException.cpp
 	./src/opengl/GlslProgram.cpp
 	./src/opengl/GlslShader.cpp
@@ -64,6 +66,23 @@ set(PLASTILINACORE_SOURCES
 	./src/WireframeRenderer.cpp
 )
 
+source_group(opengl FILES
+	./src/opengl/FrameBufferObject.cpp
+    ./src/opengl/GlException.cpp
+	./src/opengl/GlslProgram.cpp
+	./src/opengl/GlslShader.cpp
+	./src/opengl/Sampler.cpp
+	./src/opengl/Texture.cpp
+	./src/opengl/VertexArrayObject.cpp
+	)
+
+source_group(opencl FILES
+    ./src/opencl/ClStlAllocator.cpp
+	./src/opencl/CLUtils.cpp
+	./src/opencl/OCLManager.cpp
+	)
+
+
 if (APPLE)
 	set(PLASTILINACORE_SOURCES_OBJCXX ./src/Context_mac.mm)
 	set_source_files_properties(${PLASTILINACORE_SOURCES_OBJCXX} PROPERTIES 
@@ -80,6 +99,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/BOManager.h 
 	${PLASTILINACORE_HEADERS_ROOT}/BufferObject.h
 	${PLASTILINACORE_HEADERS_ROOT}/Camera.h
+	${PLASTILINACORE_HEADERS_ROOT}/Canvas.h
 	${PLASTILINACORE_HEADERS_ROOT}/Color.h
 	${PLASTILINACORE_HEADERS_ROOT}/Context.h
 	${PLASTILINACORE_HEADERS_ROOT}/Context_private.h
@@ -87,7 +107,6 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/Document.h
 	${PLASTILINACORE_HEADERS_ROOT}/Face.h
 	${PLASTILINACORE_HEADERS_ROOT}/FlatRenderer.h
-	${PLASTILINACORE_HEADERS_ROOT}/FrameBufferObject.h
 	${PLASTILINACORE_HEADERS_ROOT}/geometry/Aabb.h
 	${PLASTILINACORE_HEADERS_ROOT}/geometry/Plane.h
 	${PLASTILINACORE_HEADERS_ROOT}/geometry/Ray.h
@@ -113,6 +132,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/CLUtils.h
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/OCLManager.h
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/OpenCL.h
+	${PLASTILINACORE_HEADERS_ROOT}/opengl/FrameBufferObject.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlException.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlslProgram.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlslShader.h
@@ -159,6 +179,8 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 # Resources embedded in the framework. 
 # Texturex, shader sources, 3D meshes, etc.
 set(RESOURCES
+	./shaders/Canvas.vs
+	./shaders/Canvas.fs
 	./shaders/Phong.vs
 	./shaders/Phong.fs
 	./shaders/Point.vs
@@ -167,6 +189,18 @@ set(RESOURCES
 	./shaders/WireFrame.fs
 	./shaders/Subdivision.cl
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivisionPrimitives.h
+)
+
+source_group(Resources FILES
+	./shaders/Canvas.vs
+	./shaders/Canvas.fs
+	./shaders/Phong.vs
+	./shaders/Phong.fs
+	./shaders/Point.vs
+	./shaders/Point.fs
+	./shaders/WireFrame.vs
+	./shaders/WireFrame.fs
+	./shaders/Subdivision.cl
 )
 
 # Library target

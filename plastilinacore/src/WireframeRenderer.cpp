@@ -150,9 +150,7 @@ void RendererPrivate::renderObject(std::shared_ptr<SceneNode> & node)
     GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
     glDrawArrays(GL_LINES, 0, numVertices);
     
-    vao->release();
-        
-    //std::cerr << "Mesh rendered";
+    vao->unbind();
 }
 
 VAO* RendererPrivate::getVAO(ISurface* mesh)

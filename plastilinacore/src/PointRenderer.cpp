@@ -153,8 +153,7 @@ void PointRenderer::Impl::renderObject(std::shared_ptr<SceneNode> & node)
     if (mat) mat->shaderProgram()->useProgram();
     GLsizei nVertices = static_cast<GLsizei>(obj->numVertices());
     glDrawArrays(GL_POINTS, 0, nVertices);
-    vao->release();
-
+    vao->unbind();
 }
 
 VertexBuffer* PointRenderer::Impl::getVBO(const ISurface* mesh)

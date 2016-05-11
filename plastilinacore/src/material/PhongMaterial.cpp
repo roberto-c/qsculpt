@@ -83,6 +83,7 @@ void PhongMaterial::load()
     
     if (!shaderProgram()->link()) {
         TRACE(error) << "Link failed: \n" << shaderProgram()->buildLog();
+        throw core::GlException("Failed to link shader", glGetError());
     }
     
     GLint n = shaderProgram()->fragDataLocation("glFragColor");
@@ -127,13 +128,20 @@ void PhongMaterial::setup(const std::shared_ptr<const SceneNode> & doc)
     GLint amb = shaderProgram()->uniformLocation("ambientColor");
     GLint exp = shaderProgram()->uniformLocation("exponent");
     GLint lightPosId = shaderProgram()->uniformLocation("lightPosition");
+    GLint textureSamplerId = shaderProgram()->uniformLocation("textureSampler");
     
     if (diff != -1) shaderProgram()->setUniform(diff, d->diffuse.data());
     if (spec != -1) shaderProgram()->setUniform(spec, d->specular.data());
     if (amb != -1) shaderProgram()->setUniform(amb, d->ambient.data());
     if (exp != -1) shaderProgram()->setUniform(exp, d->exponent);
     if (lightPosId != -1) shaderProgram()->setUniform(lightPosId, lightPos);
-    
+    if (textureSamplerId != -1) shaderProgram()->setUniform(textureSamplerId, 0);
+
+    if (d->diffuseTex) {
+        gl::TextureManager::instance()->setActiveTexture(GL_TEXTURE0);
+        d->diffuseTex->bind();
+    }
+
     THROW_IF_GLERROR("Failed to set params");
 }
 
