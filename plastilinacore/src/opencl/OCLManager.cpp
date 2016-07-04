@@ -204,13 +204,18 @@ bool CLManager::initialize(PlastilinaSubsystem flags)
             prop.push_back(cl_int(d->hdc));
 #endif
             auto glClDevices = devicesForGLContext();
+            cl_device_type devType = d->useGpu ? CL_DEVICE_TYPE_GPU : CL_DEVICE_TYPE_CPU;
             TRACE(debug) << "Devices that can be shared with OpenGL:";
             for (auto & device : glClDevices)
             {
                 d->printDeviceInfo(device);
-                d->devices.push_back(device);
+                if (device.getInfo<CL_DEVICE_TYPE>() == devType)
+                {
+                    d->devices.push_back(device);
+                    break;
+                }
             }
-            if (!glClDevices.empty())
+            if (!d->devices.empty())
             {
                 prop.push_back(CL_CONTEXT_PLATFORM);
                 prop.push_back((cl_int)d->devices[0].getInfo<CL_DEVICE_PLATFORM>());

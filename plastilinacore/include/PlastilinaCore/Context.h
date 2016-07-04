@@ -25,7 +25,8 @@ namespace core {
         CTX_ATR_GL_DEPTH_SIZE,
         CTX_ATR_GL_STENCIL_SIZE,
         CTX_ATR_GL_ACCUM_SIZE,
-        CTX_ATR_CL_SHARE_GL
+        CTX_ATR_CL_SHARE_GL,
+        CTX_ATR_VK_DOUBLE_BUFFER
     };
 
     class DLLEXPORT Context {

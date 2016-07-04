@@ -11,6 +11,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 enable_testing()
 
 project (QSculpt)
+
+find_package(VULKAN)
+
 add_subdirectory(plastilinacore)
 add_subdirectory(testapp)
 add_subdirectory(qsculpt)

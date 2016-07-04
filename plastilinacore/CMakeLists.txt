@@ -64,24 +64,37 @@ set(PLASTILINACORE_SOURCES
 	./src/Utilities.cpp
 	./src/Vertex.cpp
 	./src/WireframeRenderer.cpp
+	./src/vulkan/Context.cpp
 )
 
-source_group(opengl FILES
-	./src/opengl/FrameBufferObject.cpp
-    ./src/opengl/GlException.cpp
-	./src/opengl/GlslProgram.cpp
-	./src/opengl/GlslShader.cpp
-	./src/opengl/Sampler.cpp
-	./src/opengl/Texture.cpp
-	./src/opengl/VertexArrayObject.cpp
+source_group(core REGULAR_EXPRESSION
+	".*"
 	)
 
-source_group(opencl FILES
-    ./src/opencl/ClStlAllocator.cpp
-	./src/opencl/CLUtils.cpp
-	./src/opencl/OCLManager.cpp
+source_group(physics REGULAR_EXPRESSION
+	".*\\physics\\.*"
 	)
 
+
+source_group(material REGULAR_EXPRESSION
+	".*\\material\\.*"
+	)
+
+source_group(subdivision REGULAR_EXPRESSION
+	".*\\subdivision\\.*"
+	)
+
+source_group(opengl  REGULAR_EXPRESSION
+	".*\\opengl\\.*"
+	)
+
+source_group(opencl REGULAR_EXPRESSION
+	".*\\opencl\\.*"
+	)
+
+source_group(vulkan  REGULAR_EXPRESSION
+	".*\\vulkan\\.*"
+	)
 
 if (APPLE)
 	set(PLASTILINACORE_SOURCES_OBJCXX ./src/Context_mac.mm)
@@ -173,12 +186,14 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/Utilities.h
 	${PLASTILINACORE_HEADERS_ROOT}/Vector.h
 	${PLASTILINACORE_HEADERS_ROOT}/Vertex.h
+	${PLASTILINACORE_HEADERS_ROOT}/vulkan/Context.h
 	${PLASTILINACORE_HEADERS_ROOT}/WireframeRenderer.h
 )
 
 # Resources embedded in the framework. 
 # Texturex, shader sources, 3D meshes, etc.
 set(RESOURCES
+    ./shaders/Canvas.cl
 	./shaders/Canvas.vs
 	./shaders/Canvas.fs
 	./shaders/Phong.vs
@@ -192,6 +207,7 @@ set(RESOURCES
 )
 
 source_group(Resources FILES
+    ./shaders/Canvas.cl
 	./shaders/Canvas.vs
 	./shaders/Canvas.fs
 	./shaders/Phong.vs
@@ -229,6 +245,7 @@ target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
+target_link_libraries(PlastilinaCore ${VULKAN_LIBRARIES})
 
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
@@ -255,6 +272,7 @@ include_directories(include
 	${OPENGL_INCLUDE_DIRS}
 	${OpenCL_INCLUDE_DIRS}
 	${ASSIMP_INCLUDE_DIRS}
+	${VULKAN_INCLUDE_DIRS}
 	)
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
