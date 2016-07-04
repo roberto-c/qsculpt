@@ -18,6 +18,7 @@
 #endif
 
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <exception>
 #include <stdexcept>
@@ -71,6 +72,8 @@ struct TestApp::Impl {
     void keyboard(int key, int x, int y);
 
     void mouseClick(uint8_t button, uint8_t state, int x, int y);
+
+    void mouseMotion(uint8_t state, int x, int y);
 
     bool quitRequested();
 
@@ -138,7 +141,7 @@ void TestApp::init(int argc, char** argv)
             }
             , (void*)this);
     }
-    d->currentTest = d->testList.begin();
+    d->currentTest = d->testList.end();
 }
 
 int TestApp::run() 
@@ -192,6 +195,10 @@ void TestApp::Impl::dispatchEvent(SDL_Event * event)
             mouseClick(event->button.button, event->button.state, event->button.x, event->button.y);
             break;
         }
+        case SDL_MOUSEMOTION:
+            mouseMotion(event->motion.state, event->motion.x, event->motion.y);
+            break;
+
     }
     if (event->type != -1 && event->type == testEventType)
     {
@@ -208,6 +215,7 @@ bool TestApp::Impl::quitRequested()
 
 void TestApp::Impl::onQuit()
 {
+    std::cout << std::endl;
     /* Delete our opengl context, destroy our window, and shutdown SDL */
     SDL_GL_DeleteContext(maincontext);
     SDL_DestroyWindow(mainwindow);
@@ -274,6 +282,28 @@ void TestApp::Impl::keyboard(int key, int x, int y)
 
 void TestApp::Impl::mouseClick(uint8_t button, uint8_t state, int x, int y)
 {
+    if (app->d->currentTest != app->d->testList.end())
+    {
+        auto test = (*(app->d->currentTest)).get();
+        auto uitest = dynamic_cast<BaseUITest*>(test);
+        if (uitest)
+        {
+            uitest->mouseClick(button, state, x, y);
+        }
+    }
+}
+
+void TestApp::Impl::mouseMotion(uint8_t state, int x, int y)
+{
+    if (app->d->currentTest != app->d->testList.end())
+    {
+        auto test = (*(app->d->currentTest)).get();
+        auto uitest = dynamic_cast<BaseUITest*>(test);
+        if (uitest)
+        {
+            uitest->mouseMove(state, x, y);
+        }
+    }
 }
 
 void TestApp::Impl::initialize()
@@ -334,6 +364,15 @@ void TestApp::Impl::initialize()
     
     testEventType = SDL_RegisterEvents(1);
 
+    // post event to start testing
+    SDL_Event myEvent;
+    SDL_memset(&myEvent, 0, sizeof(SDL_Event));
+    myEvent.type = testEventType;
+    myEvent.user.code = static_cast<uint32_t>(TestEvent::TE_SHUTDOWN_POST);
+    myEvent.user.data1 = (void*)(nullptr);
+    myEvent.user.data2 = (void*)(this->app);
+    SDL_PushEvent(&myEvent);
+
     initialized = true;
 }
 
@@ -354,6 +393,11 @@ void TestApp::Impl::reshape(int w, int h)
 
 void TestApp::Impl::display()
 {
+    static double updatelapse = 0;
+    static uint32_t frameCtr = 0;
+    frameCtr++;
+    uint64_t t1 = SDL_GetPerformanceCounter();
+
     SDL_GL_MakeCurrent(mainwindow, maincontext);
     if (app->d->currentTest != app->d->testList.end())
     {
@@ -365,6 +409,16 @@ void TestApp::Impl::display()
         }
     }
 	SDL_GL_SwapWindow(mainwindow);
+    uint64_t t2 = SDL_GetPerformanceCounter();
+    double tdelta = double(t2 - t1) / double(SDL_GetPerformanceFrequency());
+    updatelapse += tdelta;
+    if (updatelapse > 0.1)
+    {
+        double fps = frameCtr / updatelapse;
+        updatelapse = 0;
+        frameCtr = 0;
+        std::cout << std::unitbuf << std::fixed << std::setw(10) << std::setprecision(1) << "\b\b\b\b\b\b\b\b\b\b" << fps;
+    } 
 }
 
 void TestApp::Impl::mainLoop()
@@ -403,6 +457,9 @@ void TestApp::Impl::testEventHandler(const BaseTest * test, TestEvent evt, void 
         {
             SDL_GL_MakeCurrent(mainwindow, maincontext);
             (*(app->d->currentTest))->setup();
+            auto test = (*(app->d->currentTest)).get();
+            auto uitest = dynamic_cast<BaseUITest*>(test);
+            isUiTest = uitest != nullptr;
         }
         //TRACE(trace) << "<< Test Name: " << std::string(test ? test->name() : "nullptr") << "Event: " << to_string(evt);
         return;

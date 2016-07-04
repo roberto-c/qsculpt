@@ -31,7 +31,9 @@ public:
     enum CanvasBackEnd {
         Unknown,
         OpenGL,
-        OpenCL
+        OpenCL,
+        GlTexture,
+        ClTexture
     };
     static std::unique_ptr<Canvas> factory(CanvasBackEnd backend, int w, int h);
 
@@ -44,6 +46,9 @@ public:
     virtual void begin() = 0;
     virtual void end() = 0;
     virtual void drawRectangle(float x, float y, float w, float h) = 0;
+    virtual void drawEllipse(float x, float y, float w, float h) = 0;
+
+    virtual void applyFilter() = 0;
 
     virtual std::shared_ptr<gl::Texture2D> colorTexture() = 0;
     virtual std::shared_ptr<gl::Texture2D> depthTexture() = 0;

@@ -69,6 +69,10 @@ public:
 
     virtual void keyboard(int key, int x, int y) = 0;
 
+    virtual void mouseClick(uint32_t button, uint32_t state, int x, int y) = 0;
+
+    virtual void mouseMove(uint32_t state, int x, int y) = 0;
+
 protected:
     virtual void doRenderFrame() = 0;
 

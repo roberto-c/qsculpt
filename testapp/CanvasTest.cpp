@@ -49,13 +49,15 @@ struct CanvasTest::Impl
     ISurface::shared_ptr        surface;
     Camera::shared_ptr          camera;
     unique_ptr<core::Canvas>    canvas;
-
+    int                         x, y;
     bool                    runUi;
+    bool                        drawPoint;
 
     Impl()
         : test(nullptr)
         , scene(nullptr)
         , runUi(false)
+        , drawPoint(false)
     {}
 
     int setup();
@@ -67,6 +69,8 @@ int CanvasTest::Impl::setup() {
     TRACEFUNCTION("");
     ResourcesManager rscMgr;
 
+    x = 0;
+    y = 0;
     surface = std::shared_ptr<Subdivision>(core::PrimitiveFactory<Subdivision>::createQuad(1280, 720));
     scene = std::make_shared<Scene>();
     auto surfacenode = std::make_shared<SurfaceNode>(surface.get());
@@ -74,7 +78,7 @@ int CanvasTest::Impl::setup() {
     auto camnode = make_shared<CameraNode>();
     camera = make_shared<Camera>();
 
-    canvas = std::unique_ptr<core::Canvas>(core::Canvas::factory(core::Canvas::OpenGL, 1280, 720));
+    canvas = std::unique_ptr<core::Canvas>(core::Canvas::factory(core::Canvas::ClTexture, 1280, 720));
 
     if (material && surfacenode && scene && camera && camnode && canvas)
     {
@@ -110,7 +114,7 @@ int CanvasTest::Impl::cleanup() {
 }
 
 CanvasTest::CanvasTest()
-    : BaseUITest("SubdivisionTest")
+    : BaseUITest("CanvasTest")
     , d_(new Impl())
 {
     d_->test = this;
@@ -163,10 +167,13 @@ void CanvasTest::doRenderFrame()
     if (d_->runUi && d_->scene && d_->canvas)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        d_->canvas->setPenColor(Color(0.3f, 0.4f, 0.6f, 1.0f));
-        d_->canvas->begin();
-        d_->canvas->drawRectangle(0, 0, 100, 100);
-        d_->canvas->end();
+        if (d_->drawPoint)
+        {
+            d_->canvas->begin();
+            d_->canvas->drawEllipse(d_->x, d_->y, 50, 50);
+            d_->canvas->end();
+        }
+        d_->canvas->applyFilter();
         d_->scene->render();
     }
 }
@@ -178,24 +185,32 @@ void CanvasTest::keyboard(int key, int x, int y)
         notify(TestEvent::TE_RUN_TEST_END);
         break;
     case SDLK_w:
+        d_->y-=4;
+        break;
     case SDLK_UP:
         if (d_->camera) {
             d_->camera->transform().translate(Vector3(0, 0.25f, 0));
         }
         break;
     case SDLK_s:
+        d_->y+=4;
+        break;
     case SDLK_DOWN:
         if (d_->camera) {
             d_->camera->transform().translate(Vector3(0, -0.25f, 0));
         }
         break;
     case SDLK_a:
+        d_->x-=4;
+        break;
     case SDLK_LEFT:
         if (d_->camera) {
             d_->camera->transform().translate(Vector3(0.25f, 0, 0));
         }
         break;
     case SDLK_d:
+        d_->x+=4;
+        break;
     case SDLK_RIGHT:
         if (d_->camera) {
             d_->camera->transform().translate(Vector3(-0.25f, 0, 0));
@@ -203,5 +218,29 @@ void CanvasTest::keyboard(int key, int x, int y)
         break;
     default:
         break;
+    }
+    if (d_->x < 0) d_->x = 0;
+    if (d_->y < 0) d_->y = 0;
+}
+
+void CanvasTest::mouseClick(uint32_t button, uint32_t state, int x, int y)
+{
+    d_->drawPoint = false;
+    if ((button & SDL_BUTTON_LEFT) && (state & SDL_BUTTON_LMASK))
+    {
+        d_->drawPoint = true;
+        d_->x = x;
+        d_->y = y;
+    }
+    
+    d_->canvas->setPenColor(Color(0.9f, 0.3f, 0.2f, 1.0f));
+    d_->canvas->setFillColor(Color(0.8f, 0.7f, 0.3f, 1.0f));
+}
+
+void CanvasTest::mouseMove(uint32_t state, int x, int y)
+{
+    if (state & SDL_BUTTON_LMASK) {
+        d_->x = x;
+        d_->y = y;
     }
 }
