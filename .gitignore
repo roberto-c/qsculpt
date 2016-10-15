@@ -2,3 +2,7 @@ build
 xcode
 /projects
 /output
+/external/src/NV_VKCPP
+/external/src/NV_VKCPP-build
+/external/tmp
+/external/src/NV_VKCPP-stamp
