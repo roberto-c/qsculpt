@@ -17,43 +17,39 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#pragma once
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/Version.h>
+#include <PlastilinaCore/vulkan/Vulkan.h>
 
-#include <memory>
+vk::Instance gVkInstance;
 
-namespace core {
-    typedef intptr_t CtxAttribute;
-    typedef std::vector<CtxAttribute> CtxAttributeList;
-    
-    enum {
-        CTX_ATR_NULL = 0,
-        CTX_ATR_GL_NSVIEW,
-        CTX_ATR_GL_QTWIDGET,
-        CTX_ATR_GL_DOUBLE_BUFFER,
-        CTX_ATR_GL_COLOR_SIZE,
-        CTX_ATR_CL_ALPHA_SIZE,
-        CTX_ATR_GL_DEPTH_SIZE,
-        CTX_ATR_GL_STENCIL_SIZE,
-        CTX_ATR_GL_ACCUM_SIZE,
-        CTX_ATR_CL_SHARE_GL,
-        CTX_ATR_VK_DOUBLE_BUFFER,
-        CTX_ATR_BACKEND_GL,
-        CTX_ATR_BACKEND_VK
-    };
+union vkVersion
+{
+    uint32_t raw;
+    struct {
+        uint32_t patch : 12;
+        uint32_t minor : 10;
+        uint32_t major : 10;
+    } fields;
+};
 
-    class DLLEXPORT Context {
-        struct Impl;
-        std::unique_ptr<Impl> d;
-        
-    public:
-        Context(const CtxAttributeList & oclctx) ;
-        
-        Context(core::Context & oclctx) ;
-        
-        ~Context() ;
-        
-        CtxAttribute attribute(CtxAttribute attribute);
-        
-        void setAttribute(CtxAttribute attributeName, CtxAttribute value);
-    };
+vk::Instance vulkan::getVkAppInstance()
+{
+    if (gVkInstance)
+    {
+        return gVkInstance;
+    }
+    vk::InstanceCreateInfo createInfo;
+    vk::ApplicationInfo appInfo;
+    createInfo.pApplicationInfo = &appInfo;
+    vkVersion version;
+    version.fields.major = 1;
+    version.fields.minor = 0;
+    version.fields.patch = 16;
+    appInfo.apiVersion = version.raw;
+    appInfo.applicationVersion = 0x01000000;
+    appInfo.engineVersion = ENGINE_VERSION;
+    appInfo.pApplicationName = u8"Unknown App";
+    gVkInstance = vk::createInstance(createInfo);
+    return gVkInstance;
 }

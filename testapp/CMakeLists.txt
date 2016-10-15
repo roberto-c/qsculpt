@@ -29,6 +29,7 @@ set(TESTAPP_PRIVATE_HEADERS
 )
 
 set(RESOURCES
+	./config.cfg
 	./TestMaterial.fs
 	./TestMaterial.vs
 	./ParticleSystem.cl

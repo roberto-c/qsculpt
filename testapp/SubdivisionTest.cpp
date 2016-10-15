@@ -68,7 +68,8 @@ int SubdivisionTest::Impl::setup() {
     TRACEFUNCTION("");
     ResourcesManager rscMgr;
 
-    surface = std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createQuad(1280, 720));
+    //surface = std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createQuad(1280, 720));
+    surface = std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createQuad(2, 2));
     //surface = std::shared_ptr<Subdivision>(core::PrimitiveFactory<Subdivision>::createBox());
     scene = std::make_shared<Scene>();
     auto surfacenode = std::make_shared<SurfaceNode>(surface.get());
@@ -120,9 +121,10 @@ int SubdivisionTest::Impl::setup() {
         float aspect_ratio = float(1280) / float(720);
         camnode->setCamera(camera);
         camera->setViewport(0, 0, 1280, 720);
-        camera->transform().translate(Vector3(0, 0, -6));
-        //camera->setOrthoMatrix(-10, 10, -10 / aspect_ratio, 10 / aspect_ratio, -1000, 1000);
-        camera->setOrthoMatrix(0, 1280, 0, 720, -1000, 1000);
+        camera->transform().translate(Vector3(0, 2, -6)).rotate(Eigen::Quaternionf(M_PI_4, 0, 0, 1));
+        camera->setOrthoMatrix(-10, 10, -10 / aspect_ratio, 10 / aspect_ratio, -1000, 1000);
+        camera->setPerspectiveMatrix(45, aspect_ratio, 1, 10);
+        //camera->setOrthoMatrix(0, 1280, 0, 720, -1000, 1000);
         scene->add(surfacenode);
         scene->add(camnode);
         material->load();
@@ -311,7 +313,7 @@ void SubdivisionTest::resize(int w, int h)
     if (d_ && d_->camera)
     {
         float aspect_ratio = float(w) / float(h);
-        d_->camera->setViewport(0, 0, w, h);
+        d_->camera->setViewport(0, 0, w/2, h);
         d_->camera->setOrthoMatrix(-10, 10, -10*aspect_ratio, 10*aspect_ratio, -1000, 1000);
     }
 }
@@ -321,6 +323,15 @@ void SubdivisionTest::doRenderFrame()
     if (d_->runUi && d_->scene)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        int w = 1280, h = 720;
+        float aspect_ratio = float(w/2) / float(h);
+        d_->camera->setViewport(0, 0, w/2, h);
+        glViewport(0, 0, w / 2, h);
+        //d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio, 10 * aspect_ratio, -1000, 1000);
+        d_->scene->render();
+        d_->camera->setViewport(w / 2, 0, w / 2, h);
+        glViewport(w / 2, 0, w / 2, h);
+        //d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio, 10 * aspect_ratio, -1000, 1000);
         d_->scene->render();
     }
 }
@@ -358,4 +369,12 @@ void SubdivisionTest::keyboard(int key, int x, int y)
     default:
         break;
     }
+}
+
+void SubdivisionTest::mouseClick(uint32_t button, uint32_t state, int x, int y)
+{
+}
+
+void SubdivisionTest::mouseMove(uint32_t state, int x, int y)
+{
 }

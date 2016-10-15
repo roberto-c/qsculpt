@@ -81,7 +81,7 @@ namespace Eigen {
 #include "PEngineTypes.h"
 
 #include "opengl/GlException.h"
-
+#include "Variant.h"
 
 #define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
 
@@ -129,25 +129,56 @@ namespace std
             return seed;
         }
     };
-}
-
-enum class PlastilinaSubsystem {
-    NONE					= 0,
-	OPENGL  				= 0x0001,
-	OPENCL 					= 0x0002,
-    ENABLE_CL_GL_SHARING 	= 0x0004
 };
 
-inline PlastilinaSubsystem operator|(PlastilinaSubsystem lhs, PlastilinaSubsystem rhs) {
-    return PlastilinaSubsystem(int(lhs) | int(rhs));
+#define DECLARE_ENUM_FLAGS_BEGIN(name) enum class name : unsigned int {
+#define DECLARE_ENUM_FLAGS_END(name) };                      \
+inline name operator~(name lhs) {                            \
+    using T = std::underlying_type<name>::type;              \
+    return name(~static_cast<T>(lhs));                       \
+}                                                            \
+inline name operator|(name lhs, name rhs) {                  \
+    using T = std::underlying_type<name>::type;              \
+    return name(static_cast<T>(lhs) | static_cast<T>(rhs));  \
+}                                                            \
+inline name operator&(name lhs, name rhs) {                  \
+    using T = std::underlying_type<name>::type;              \
+    return name(static_cast<T>(lhs) & static_cast<T>(rhs));  \
+}                                                            \
+inline name operator^(name lhs, name rhs) {                  \
+    using T = std::underlying_type<name>::type;              \
+    return name(static_cast<T>(lhs) ^ static_cast<T>(rhs));  \
 }
 
-inline PlastilinaSubsystem operator&(PlastilinaSubsystem lhs, PlastilinaSubsystem rhs) {
-    return PlastilinaSubsystem(int(lhs) & int(rhs));
-}
+//enum class PlastilinaSubsystem {
+DECLARE_ENUM_FLAGS_BEGIN(PlastilinaSubsystem)
+NONE = 0,
+OPENGL = 0x0001,
+OPENCL = 0x0002,
+ENABLE_CL_GL_SHARING = 0x0004,
+VULKAN = 0x0008
+DECLARE_ENUM_FLAGS_END(PlastilinaSubsystem)
+//};
+
+DECLARE_ENUM_FLAGS_BEGIN(PlastilinaFeatureBitFlag) 
+    NONE = 0,
+    OPENGL = 0x0001,
+    OPENCL = 0x0002,
+    ENABLE_CL_GL_SHARING = 0x0004,
+    VULKAN = 0x0008
+DECLARE_ENUM_FLAGS_END(PlastilinaFeatureBitFlag)
+
 
 namespace core {
 class Context;
+
+DECLARE_ENUM_FLAGS_BEGIN(ApiSupported)
+NONE = 0,
+OPENGL = 0x0001,
+OPENCL = 0x0002,
+VULKAN = 0x0004
+DECLARE_ENUM_FLAGS_END(ApiSupported)
+
 };
 
 class DLLEXPORT PlastilinaEngine
@@ -155,11 +186,19 @@ class DLLEXPORT PlastilinaEngine
 public:
 	static bool initialize(PlastilinaSubsystem subsystem);
 	
+    static bool initializeFromConfigFile(const std::string & filepath);
+
 	static bool shutdown();
     
     static void setCurrentContext(std::shared_ptr<core::Context> & ctx);
     
     static core::Context & currentContext();
+
+    static bool supportsFeature(PlastilinaFeatureBitFlag flags);
+
 };
+
+
+#define ENGINE_NAME u8"PlastilinaCore"
 
 #endif /* qsculpt_Plastilina_h */

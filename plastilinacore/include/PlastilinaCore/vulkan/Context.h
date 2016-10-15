@@ -19,17 +19,33 @@
 ***************************************************************************/
 #pragma once
 
+#include <vector>
+#include <vulkan/vk_cpp.hpp>
+
 namespace vulkan
 {
     class Context
     {
     public:
-        Context();
+        enum class VkCtxFlags : uint32_t {
+            None = 0,
+            EnableValidation = 1,
+            EnableDebug = 2,
+
+        };
+
+        Context(VkCtxFlags flags = VkCtxFlags::None);
+
+        ~Context();
 
         uint32_t windowHandle();
 
         void setWindowHandle(uint32_t handle);
 
+        std::vector<vk::Device> deviceList() const;
 
+    private:
+        struct Impl;
+        std::unique_ptr<Impl> d;
     };
 };

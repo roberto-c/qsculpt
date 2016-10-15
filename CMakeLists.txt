@@ -1,6 +1,8 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required(VERSION 3.4)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+include(ExternalProject)
+
 #link to qtmain policy on windows
 cmake_policy(SET CMP0020 NEW)
 
@@ -12,6 +14,11 @@ enable_testing()
 
 project (QSculpt)
 
+ExternalProject_Add(NV_VKCPP 
+	PREFIX "${CMAKE_SOURCE_DIR}/external"
+	GIT_REPOSITORY "https://github.com/nvpro-pipeline/vkcpp.git"
+    INSTALL_COMMAND ""
+)
 find_package(VULKAN)
 
 add_subdirectory(plastilinacore)

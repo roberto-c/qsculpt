@@ -22,6 +22,8 @@
 #include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/Context_private.h>
 
+#include <PlastilinaCore/vulkan/Vulkan.h>
+
 namespace core {
     void Context::Impl::createGlCtx(const CtxAttributeList & attributes)
     {
@@ -70,6 +72,21 @@ namespace core {
         
     }
     
+    void Context::Impl::createVkCtx(const CtxAttributeList & attributes)
+    {
+        std::vector<int> atrList;
+
+        auto it = attributes.begin();
+        for (; it != attributes.end(); ++it) {
+            CtxAttribute name = *it;
+            CtxAttribute value = CTX_ATR_NULL;
+            switch (name) {
+            case CTX_ATR_BACKEND_VK:
+                break;
+            }
+        }
+    }
+
     bool Context::Impl::attribute(CtxAttribute name,
                                   CtxAttribute * value)
     {
@@ -95,7 +112,6 @@ namespace core {
                 
             default:
                 return false;
-                break;
         }
         return true;
     }

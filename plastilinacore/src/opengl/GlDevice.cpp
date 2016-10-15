@@ -17,43 +17,88 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#pragma once
+#include <PlastilinaCore/Stable.h>
 
-#include <memory>
+#include <PlastilinaCore/opengl/GlDevice.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 
-namespace core {
-    typedef intptr_t CtxAttribute;
-    typedef std::vector<CtxAttribute> CtxAttributeList;
+#include <string>
+
+namespace gl
+{
+GlDevice::GlDevice(std::string vendor,
+        std::string name,
+        std::string driverString)
+    : vendor_(vendor)
+    , name_(name)
+    , driverString_(driverString)
+{
     
-    enum {
-        CTX_ATR_NULL = 0,
-        CTX_ATR_GL_NSVIEW,
-        CTX_ATR_GL_QTWIDGET,
-        CTX_ATR_GL_DOUBLE_BUFFER,
-        CTX_ATR_GL_COLOR_SIZE,
-        CTX_ATR_CL_ALPHA_SIZE,
-        CTX_ATR_GL_DEPTH_SIZE,
-        CTX_ATR_GL_STENCIL_SIZE,
-        CTX_ATR_GL_ACCUM_SIZE,
-        CTX_ATR_CL_SHARE_GL,
-        CTX_ATR_VK_DOUBLE_BUFFER,
-        CTX_ATR_BACKEND_GL,
-        CTX_ATR_BACKEND_VK
-    };
-
-    class DLLEXPORT Context {
-        struct Impl;
-        std::unique_ptr<Impl> d;
-        
-    public:
-        Context(const CtxAttributeList & oclctx) ;
-        
-        Context(core::Context & oclctx) ;
-        
-        ~Context() ;
-        
-        CtxAttribute attribute(CtxAttribute attribute);
-        
-        void setAttribute(CtxAttribute attributeName, CtxAttribute value);
-    };
 }
+
+GlDevice::~GlDevice()
+{
+
+}
+
+core::ApiSupported GlDevice::api() const
+{
+    return core::ApiSupported::OPENGL;
+}
+
+std::string GlDevice::vendor() const
+{
+    return vendor_;
+}
+
+std::string GlDevice::name() const
+{
+    return name_;
+}
+
+std::string GlDevice::driverString() const
+{
+    return driverString_;
+}
+
+core::Variant GlDevice::attribute(const std::string & name) const
+{
+    return "";
+}
+
+GlPlatform::GlPlatform()
+{
+}
+
+GlPlatform::~GlPlatform()
+{
+}
+
+core::DeviceList GlPlatform::deviceList(DeviceFilter filter) const
+{
+    using namespace std;
+
+    auto vendorStr = glGetString(GL_VENDOR);
+    auto rendererStr = glGetString(GL_RENDERER);
+    unique_ptr<core::IDevice> device = make_unique<GlDevice>(
+        string((const char*)vendorStr),
+        string((const char*)rendererStr));
+    auto list = core::DeviceList();
+    list.push_back(std::move(device));
+    return list;
+}
+
+bool GlPlatform::isSupported() const
+{
+    try
+    {
+        return true;
+    }
+    catch (...)
+    {
+
+    }
+    return false;
+}
+
+};

@@ -18,6 +18,7 @@ set(PLASTILINACORE_SOURCES
 	./src/geometry/Ray.cpp
 	./src/geometry/Sphere.cpp
 	./src/HEdge.cpp
+	./src/IDevice.cpp
 	./src/IIntegrator.cpp
 	./src/material/PhongMaterial.cpp
 	./src/material/PointMaterial.cpp
@@ -29,6 +30,7 @@ set(PLASTILINACORE_SOURCES
 	./src/opencl/CLUtils.cpp
 	./src/opencl/OCLManager.cpp
 	./src/opengl/FrameBufferObject.cpp
+	./src/opengl/GlDevice.cpp
 	./src/opengl/GlException.cpp
 	./src/opengl/GlslProgram.cpp
 	./src/opengl/GlslShader.cpp
@@ -42,6 +44,7 @@ set(PLASTILINACORE_SOURCES
 	./src/PickingFacesRenderer.cpp
 	./src/Plane.cpp
 	./src/Plastilina.cpp
+	./src/PlastilinaOptions.cpp
 	./src/pointcloud/PointCloud.cpp
 	./src/pointcloud/PointCloudRenderable.cpp
 	./src/PointRenderer.cpp
@@ -65,6 +68,9 @@ set(PLASTILINACORE_SOURCES
 	./src/Vertex.cpp
 	./src/WireframeRenderer.cpp
 	./src/vulkan/Context.cpp
+	./src/vulkan/VkDevice.cpp
+	./src/vulkan/VkUtils.cpp
+	./src/vulkan/Vulkan.cpp
 )
 
 source_group(core REGULAR_EXPRESSION
@@ -126,7 +132,9 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/geometry/Sphere.h
 	${PLASTILINACORE_HEADERS_ROOT}/HEdge.h
 	${PLASTILINACORE_HEADERS_ROOT}/ICollection.h
+	${PLASTILINACORE_HEADERS_ROOT}/IDevice.h
 	${PLASTILINACORE_HEADERS_ROOT}/IDocument.h
+	${PLASTILINACORE_HEADERS_ROOT}/IGraphicsBackend.h
 	${PLASTILINACORE_HEADERS_ROOT}/IIntegrator.h
 	${PLASTILINACORE_HEADERS_ROOT}/IIterator.h
 	${PLASTILINACORE_HEADERS_ROOT}/InstanceID.h
@@ -146,6 +154,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/OCLManager.h
 	${PLASTILINACORE_HEADERS_ROOT}/opencl/OpenCL.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/FrameBufferObject.h
+	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlDevice.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlException.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlslProgram.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/GlslShader.h
@@ -184,9 +193,14 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivisionPrimitives.h
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/GpuSubdivisionRenderable.h
 	${PLASTILINACORE_HEADERS_ROOT}/Utilities.h
+	${PLASTILINACORE_HEADERS_ROOT}/Variant.h
 	${PLASTILINACORE_HEADERS_ROOT}/Vector.h
+	${PLASTILINACORE_HEADERS_ROOT}/Version.h
 	${PLASTILINACORE_HEADERS_ROOT}/Vertex.h
 	${PLASTILINACORE_HEADERS_ROOT}/vulkan/Context.h
+	${PLASTILINACORE_HEADERS_ROOT}/vulkan/VkDevice.h
+	${PLASTILINACORE_HEADERS_ROOT}/vulkan/VkUtils.h
+	${PLASTILINACORE_HEADERS_ROOT}/vulkan/Vulkan.h
 	${PLASTILINACORE_HEADERS_ROOT}/WireframeRenderer.h
 )
 
@@ -250,7 +264,7 @@ target_link_libraries(PlastilinaCore ${VULKAN_LIBRARIES})
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost REQUIRED COMPONENTS filesystem system log date_time thread)
+find_package(Boost REQUIRED COMPONENTS filesystem system log date_time thread program_options)
 target_link_libraries(PlastilinaCore ${Boost_LIBRARIES})
 
 #find_package(Subversion)
@@ -266,6 +280,14 @@ find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 	DOC "Include directory Eigen"
 )
 
+get_target_property(NV_VKCPP_SRCDIR NV_VKCPP SOURCE_DIR)
+Message("NVCPP SOURCE_DIR ${NV_VKCPP_SRCDIR}")
+find_path(NVVKCPP_INCLUDE_DIRS vulkan/vk_cpp.hpp
+	PATH ${NV_VKCPP_SRCDIR}/external/src/nv_vkcpp/ ${NV_VKCPP_SRCDIR}/external/src/nv_vkcpp/vulkan
+	DOC "Include directory for Vulkan CPP wrapper"
+)
+Message("NVCPP ${NVVKCPP_INCLUDE_DIRS}")		
+
 include_directories(include 
 	${EIGEN_INCLUDE_DIRS} 
 	../thirdparty/OpenCL
@@ -273,6 +295,7 @@ include_directories(include
 	${OpenCL_INCLUDE_DIRS}
 	${ASSIMP_INCLUDE_DIRS}
 	${VULKAN_INCLUDE_DIRS}
+    ${NVVKCPP_INCLUDE_DIRS}
 	)
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)

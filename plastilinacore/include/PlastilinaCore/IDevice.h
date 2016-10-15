@@ -19,41 +19,50 @@
 ***************************************************************************/
 #pragma once
 
-#include <memory>
+#include <string>
+#include <functional>
+#include <PlastilinaCore/Variant.h>
 
-namespace core {
-    typedef intptr_t CtxAttribute;
-    typedef std::vector<CtxAttribute> CtxAttributeList;
-    
-    enum {
-        CTX_ATR_NULL = 0,
-        CTX_ATR_GL_NSVIEW,
-        CTX_ATR_GL_QTWIDGET,
-        CTX_ATR_GL_DOUBLE_BUFFER,
-        CTX_ATR_GL_COLOR_SIZE,
-        CTX_ATR_CL_ALPHA_SIZE,
-        CTX_ATR_GL_DEPTH_SIZE,
-        CTX_ATR_GL_STENCIL_SIZE,
-        CTX_ATR_GL_ACCUM_SIZE,
-        CTX_ATR_CL_SHARE_GL,
-        CTX_ATR_VK_DOUBLE_BUFFER,
-        CTX_ATR_BACKEND_GL,
-        CTX_ATR_BACKEND_VK
-    };
-
-    class DLLEXPORT Context {
-        struct Impl;
-        std::unique_ptr<Impl> d;
-        
+namespace core
+{
+    enum class ApiSupported : unsigned int;
+    /**
+    * Abstract class to identify 
+    */
+    class IDevice
+    {
     public:
-        Context(const CtxAttributeList & oclctx) ;
-        
-        Context(core::Context & oclctx) ;
-        
-        ~Context() ;
-        
-        CtxAttribute attribute(CtxAttribute attribute);
-        
-        void setAttribute(CtxAttribute attributeName, CtxAttribute value);
+        IDevice() {};
+
+        virtual ~IDevice() {};
+
+        virtual ApiSupported api() const = 0;
+
+        virtual std::string vendor() const = 0;
+
+        virtual std::string name() const = 0;
+
+        virtual std::string driverString() const = 0;
+
+        virtual Variant attribute(const std::string & name) const = 0;
+
     };
-}
+
+    typedef std::vector<std::unique_ptr<IDevice>> DeviceList;
+
+    class IPlatform
+    {
+    public:
+        typedef std::function<bool(const IDevice*)> DeviceFilter;
+
+        virtual ~IPlatform() {};
+
+        virtual bool isSupported() const = 0;
+
+        virtual core::DeviceList deviceList(DeviceFilter filter = DeviceFilter()) const = 0;
+    };
+
+    typedef std::vector<std::unique_ptr<IPlatform>> PlatformList;
+
+    core::PlatformList getPlatformList();
+};

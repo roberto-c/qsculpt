@@ -28,6 +28,7 @@ namespace core {
         if (d) {
 	        d->createGlCtx(attributes);
             d->createClCtx(attributes);
+            d->createVkCtx(attributes);
         }
     }
     

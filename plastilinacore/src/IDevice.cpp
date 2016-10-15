@@ -19,41 +19,32 @@
 ***************************************************************************/
 #pragma once
 
-#include <memory>
+#include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/IDevice.h>
 
-namespace core {
-    typedef intptr_t CtxAttribute;
-    typedef std::vector<CtxAttribute> CtxAttributeList;
-    
-    enum {
-        CTX_ATR_NULL = 0,
-        CTX_ATR_GL_NSVIEW,
-        CTX_ATR_GL_QTWIDGET,
-        CTX_ATR_GL_DOUBLE_BUFFER,
-        CTX_ATR_GL_COLOR_SIZE,
-        CTX_ATR_CL_ALPHA_SIZE,
-        CTX_ATR_GL_DEPTH_SIZE,
-        CTX_ATR_GL_STENCIL_SIZE,
-        CTX_ATR_GL_ACCUM_SIZE,
-        CTX_ATR_CL_SHARE_GL,
-        CTX_ATR_VK_DOUBLE_BUFFER,
-        CTX_ATR_BACKEND_GL,
-        CTX_ATR_BACKEND_VK
-    };
+#include <PlastilinaCore/opengl/GlDevice.h>
+#include <PlastilinaCore/vulkan/Vulkan.h>
+#include <PlastilinaCore/vulkan/VkDevice.h>
 
-    class DLLEXPORT Context {
-        struct Impl;
-        std::unique_ptr<Impl> d;
-        
-    public:
-        Context(const CtxAttributeList & oclctx) ;
-        
-        Context(core::Context & oclctx) ;
-        
-        ~Context() ;
-        
-        CtxAttribute attribute(CtxAttribute attribute);
-        
-        void setAttribute(CtxAttribute attributeName, CtxAttribute value);
-    };
+namespace core
+{
+
+core::PlatformList getPlatformList()
+{
+    using namespace std;
+
+    auto list = core::PlatformList();
+ 
+    unique_ptr<IPlatform> platform = make_unique<gl::GlPlatform>();
+    if (platform->isSupported()) {
+        list.push_back(move(platform));
+    }
+    platform = make_unique<vulkan::VkPlatform>();
+    if (platform->isSupported()) {
+        list.push_back(move(platform));
+    }
+ 
+    return list;
 }
+
+};

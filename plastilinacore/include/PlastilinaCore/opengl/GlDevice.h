@@ -19,41 +19,52 @@
 ***************************************************************************/
 #pragma once
 
-#include <memory>
+#include <PlastilinaCore/IDevice.h>
 
-namespace core {
-    typedef intptr_t CtxAttribute;
-    typedef std::vector<CtxAttribute> CtxAttributeList;
-    
-    enum {
-        CTX_ATR_NULL = 0,
-        CTX_ATR_GL_NSVIEW,
-        CTX_ATR_GL_QTWIDGET,
-        CTX_ATR_GL_DOUBLE_BUFFER,
-        CTX_ATR_GL_COLOR_SIZE,
-        CTX_ATR_CL_ALPHA_SIZE,
-        CTX_ATR_GL_DEPTH_SIZE,
-        CTX_ATR_GL_STENCIL_SIZE,
-        CTX_ATR_GL_ACCUM_SIZE,
-        CTX_ATR_CL_SHARE_GL,
-        CTX_ATR_VK_DOUBLE_BUFFER,
-        CTX_ATR_BACKEND_GL,
-        CTX_ATR_BACKEND_VK
-    };
-
-    class DLLEXPORT Context {
-        struct Impl;
-        std::unique_ptr<Impl> d;
-        
+namespace gl
+{
+  
+    /**
+    * Abstract class to identify
+    */
+    class GlDevice : public core::IDevice
+    {
     public:
-        Context(const CtxAttributeList & oclctx) ;
-        
-        Context(core::Context & oclctx) ;
-        
-        ~Context() ;
-        
-        CtxAttribute attribute(CtxAttribute attribute);
-        
-        void setAttribute(CtxAttribute attributeName, CtxAttribute value);
+        GlDevice(std::string vendor="Unknown",
+            std::string name = "Unknown",
+            std::string driverString = "Unknown");
+
+        virtual ~GlDevice();
+
+        virtual core::ApiSupported api() const;
+
+        virtual std::string vendor() const;
+
+        virtual std::string name() const;
+
+        virtual std::string driverString() const;
+
+        virtual core::Variant attribute(const std::string & name) const;
+
+    private:
+        std::string     vendor_;
+        std::string     name_;
+        std::string     driverString_;
     };
-}
+
+    typedef std::vector<std::unique_ptr<GlDevice>> GlDeviceList;
+
+    class GlPlatform : public core::IPlatform
+    {
+    public:
+        GlPlatform();
+
+        virtual ~GlPlatform();
+
+        // Inherited via IPlatform
+        virtual core::DeviceList deviceList(DeviceFilter filter = DeviceFilter()) const override;
+
+        // Inherited via IPlatform
+        virtual bool isSupported() const override;
+    };
+};

@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
 #include "stable.h"
+
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/ResourcesManager.h>
@@ -113,14 +114,18 @@ void TestApp::init(int argc, char** argv)
         ("interactive", po::value<bool>()->default_value(true), "True to run interactive test bed. False to run automated tests")
         ("resourcesdir", po::value<vector<string>>()->default_value(default_search_dirs, get_app_path()), "path used to load all resources")
         ("verbosity", po::value<boost::log::trivial::severity_level>()->default_value(boost::log::trivial::info), "verbosity level to print")
+        ("testid", po::value<int>()->default_value(-1), "test to execute")
         ;
 
     po::store(po::parse_command_line(argc, argv, d->optionsDesc), d->options);
     po::notify(d->options);
 
-    //d->testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
-    //d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
-    d->testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
+    auto testid = d->options["testid"].as<int>();
+
+    if (testid == -1 || testid == 0) d->testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
+    if (testid == -1 || testid == 1) d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
+    if (testid == -1 || testid == 2) d->testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
+
     // install test callsback
     for (auto & test : d->testList)
     {
@@ -339,7 +344,7 @@ void TestApp::Impl::initialize()
     /* Create our opengl context and attach it to our window */
     maincontext = SDL_GL_CreateContext(mainwindow);
 	if (!maincontext) {
-		TRACE(error) << "ERROR: Unable to create OpenGL context";
+		TRACE(error) << "Unable to create OpenGL context";
 		return;
 	}
 
@@ -350,9 +355,16 @@ void TestApp::Impl::initialize()
         | PlastilinaSubsystem::OPENCL
     	| PlastilinaSubsystem::ENABLE_CL_GL_SHARING;
 	if (!PlastilinaEngine::initialize(flags)) {
-        TRACE(error) << "ERROR: Unable to initialize PlastilinaEngine";
+        TRACE(error) << "Unable to initialize PlastilinaEngine";
 		return;
 	}
+
+    std::string configFile = core::utils::get_app_path() + "\\config.cfg";
+    if (!PlastilinaEngine::initializeFromConfigFile(configFile))
+    {
+        TRACE(error) << "Failed to initilize with config file. Using defaults.";
+    }
+
     // Set Resources search directories
     for (auto path : (options["resourcesdir"].as<std::vector<std::string>>()))
     {
