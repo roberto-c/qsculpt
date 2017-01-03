@@ -14,12 +14,12 @@ enable_testing()
 
 project (QSculpt)
 
-ExternalProject_Add(NV_VKCPP 
-	PREFIX "${CMAKE_SOURCE_DIR}/external"
-	GIT_REPOSITORY "https://github.com/nvpro-pipeline/vkcpp.git"
-    INSTALL_COMMAND ""
-)
 find_package(VULKAN)
+if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    set( ENV{BOOST_LIBRARYDIR} "$ENV{BOOST_ROOT}/lib64" )
+else()
+    set( ENV{BOOST_LIBRARYDIR} "$ENV{BOOST_ROOT}/lib" )
+endif() 
 
 add_subdirectory(plastilinacore)
 add_subdirectory(testapp)

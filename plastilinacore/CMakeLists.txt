@@ -255,11 +255,15 @@ find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(ASSIMP REQUIRED)
+find_package(SDL2)
 target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
 target_link_libraries(PlastilinaCore ${VULKAN_LIBRARIES})
+if (SDL2_FOUND)
+	target_link_libraries(PlastilinaCore ${SDL2_LIBRARIES})
+endif()
 
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
@@ -280,14 +284,6 @@ find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 	DOC "Include directory Eigen"
 )
 
-get_target_property(NV_VKCPP_SRCDIR NV_VKCPP SOURCE_DIR)
-Message("NVCPP SOURCE_DIR ${NV_VKCPP_SRCDIR}")
-find_path(NVVKCPP_INCLUDE_DIRS vulkan/vk_cpp.hpp
-	PATH ${NV_VKCPP_SRCDIR}/external/src/nv_vkcpp/ ${NV_VKCPP_SRCDIR}/external/src/nv_vkcpp/vulkan
-	DOC "Include directory for Vulkan CPP wrapper"
-)
-Message("NVCPP ${NVVKCPP_INCLUDE_DIRS}")		
-
 include_directories(include 
 	${EIGEN_INCLUDE_DIRS} 
 	../thirdparty/OpenCL
@@ -295,7 +291,7 @@ include_directories(include
 	${OpenCL_INCLUDE_DIRS}
 	${ASSIMP_INCLUDE_DIRS}
 	${VULKAN_INCLUDE_DIRS}
-    ${NVVKCPP_INCLUDE_DIRS}
+	${Boost_INCLUDE_DIRS}
 	)
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)

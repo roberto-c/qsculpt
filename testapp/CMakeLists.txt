@@ -84,6 +84,15 @@ include_directories(include
 	${OpenCL_INCLUDE_DIRS}
 	)
 
+if (APPLE)	
+	find_library(FOUNDATION_LIBRARIES CoreFoundation )
+	find_library(COCOA_LIBRARIES Cocoa )
+	target_link_libraries(PTestApp ${FOUNDATION_LIBRARIES})
+	target_link_libraries(PTestApp ${COCOA_LIBRARIES})
+elseif(WIN32)
+	target_link_libraries(PTestApp winmm.lib version.lib imm32.lib)
+endif(APPLE)
+
 target_link_libraries(PTestApp ${OPENGL_LIBRARIES}
 	${OpenCL_LIBRARIES}
 	${SDL2_LIBRARIES}
@@ -92,13 +101,6 @@ target_link_libraries(PTestApp ${OPENGL_LIBRARIES}
 	PlastilinaCore
 )
 
-if (APPLE)	
-	find_library(FOUNDATION_LIBRARIES CoreFoundation )
-	find_library(COCOA_LIBRARIES Cocoa )
-	target_link_libraries(PTestApp ${FOUNDATION_LIBRARIES})
-	target_link_libraries(PTestApp ${COCOA_LIBRARIES})
-	
-endif(APPLE)
 
 install(TARGETS PTestApp
         RUNTIME DESTINATION bin
