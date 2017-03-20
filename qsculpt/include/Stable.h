@@ -25,10 +25,11 @@
 #define _USE_MATH_DEFINES
 
 #if defined __cplusplus
-#include <QtCore/QtGlobal>
-#include <QtCore/QDebug>
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Logging.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
+#include <QtCore/QtGlobal>
+#include <QtCore/QDebug>
 #endif /* defined __cplusplus */
 
 #endif /* STABLE_H_ */

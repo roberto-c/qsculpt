@@ -21,6 +21,8 @@ else()
     set( ENV{BOOST_LIBRARYDIR} "$ENV{BOOST_ROOT}/lib" )
 endif() 
 
+option(Vulkan_ENABLED "True if Vulkan support should be enabled." ON)
+
 add_subdirectory(plastilinacore)
 add_subdirectory(testapp)
 add_subdirectory(qsculpt)

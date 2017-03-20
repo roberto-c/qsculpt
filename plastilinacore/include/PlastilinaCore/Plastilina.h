@@ -29,6 +29,7 @@
 #include <functional>
 #include <string>
 
+#include <PlastilinaCore/Config.h>
 #include <PlastilinaCore/Logging.h>
 
 #define EIGEN_DONT_ALIGN_STATICALLY
@@ -46,12 +47,8 @@
 #include <OpenGL/gl3.h>
 #include <OpenGL/gl3ext.h>
 #include <OpenGL/OpenGL.h>
-//#include <OpenGL/OpenGL.h>
-//#include <OpenGL/glu.h>
 #else
-//#include <GL/gl3.h>
 #include <GL/glew.h>
-//#include <gl/glu.h>
 #endif /* __APPLE__ */
 
 
@@ -181,11 +178,17 @@ DECLARE_ENUM_FLAGS_END(ApiSupported)
 
 };
 
+typedef std::map<std::string, core::Variant> AttributeMap;
+
 class DLLEXPORT PlastilinaEngine
 {
 public:
 	static bool initialize(PlastilinaSubsystem subsystem);
+
+    static bool initializeWithAttributes(AttributeMap attr);
 	
+    static bool initializeFromCommandLine(int argc, const char** athv);
+
     static bool initializeFromConfigFile(const std::string & filepath);
 
 	static bool shutdown();

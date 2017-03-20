@@ -91,7 +91,7 @@ void GpuSubdivisionRenderable::render(
     
 bool GpuSubdivisionRenderable::Impl::initializeOcl()
 {
-    cl_int err = CL_SUCCESS;
+    cl_int err = CL_INVALID_OPERATION;
 
     if (GpuSubdivisionRenderable::Impl::oclInitialized)
     {
@@ -108,8 +108,10 @@ bool GpuSubdivisionRenderable::Impl::initializeOcl()
         program = ::cl::Program(oclManager->context(), source);
         program.build("-I . -I ../share -I ../../share");
 
-        krnGenerateMesh = ::cl::Kernel(program, "build_mesh", &err);
+        krnGenerateMesh = ::cl::Kernel(program, "build_mesh");
         TRACE(trace) << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: " << krnGenerateMesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL);
+        GpuSubdivisionRenderable::Impl::oclInitialized = true;
+        return true;
     }
     catch (::cl::Error err) {
         TRACE(error) << "ERROR: " << err.what() << "(" << err.err() << ")";
@@ -120,8 +122,12 @@ bool GpuSubdivisionRenderable::Impl::initializeOcl()
             TRACE(error) << "Build log: " << buildlog << std::endl;
         }
     }
-    GpuSubdivisionRenderable::Impl::oclInitialized = true;
-    return err == CL_SUCCESS;
+    catch (const std::runtime_error & e)
+    {
+        TRACE(error) << "ERROR: " << e.what();
+    }
+    
+    return false;
 }
 
 void GpuSubdivisionRenderable::Impl::renderObject(

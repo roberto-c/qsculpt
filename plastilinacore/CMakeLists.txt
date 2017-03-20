@@ -51,7 +51,7 @@ set(PLASTILINACORE_SOURCES
 	./src/Quad.cpp
 	./src/QuadTree.cpp
 	./src/RendererFactory.cpp
-    ./src/RenderState.cpp
+	./src/RenderState.cpp
 	./src/ResourcesManager.cpp
 	./src/Scene.cpp
 	./src/SceneNode.cpp
@@ -177,7 +177,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/Quad.h
 	${PLASTILINACORE_HEADERS_ROOT}/Quadtree.h
 	${PLASTILINACORE_HEADERS_ROOT}/RendererFactory.h
-    ${PLASTILINACORE_HEADERS_ROOT}/RenderState.h
+	${PLASTILINACORE_HEADERS_ROOT}/RenderState.h
 	${PLASTILINACORE_HEADERS_ROOT}/ResourcesManager.h
 	${PLASTILINACORE_HEADERS_ROOT}/Scene.h
 	${PLASTILINACORE_HEADERS_ROOT}/SceneNode.h
@@ -207,7 +207,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 # Resources embedded in the framework. 
 # Texturex, shader sources, 3D meshes, etc.
 set(RESOURCES
-    ./shaders/Canvas.cl
+	./shaders/Canvas.cl
 	./shaders/Canvas.vs
 	./shaders/Canvas.fs
 	./shaders/Phong.vs
@@ -221,7 +221,7 @@ set(RESOURCES
 )
 
 source_group(Resources FILES
-    ./shaders/Canvas.cl
+	./shaders/Canvas.cl
 	./shaders/Canvas.vs
 	./shaders/Canvas.fs
 	./shaders/Phong.vs
@@ -260,7 +260,7 @@ target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
-target_link_libraries(PlastilinaCore ${VULKAN_LIBRARIES})
+target_link_libraries(PlastilinaCore ${Vulkan_LIBRARIES})
 if (SDL2_FOUND)
 	target_link_libraries(PlastilinaCore ${SDL2_LIBRARIES})
 endif()
@@ -284,14 +284,20 @@ find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 	DOC "Include directory Eigen"
 )
 
-include_directories(include 
-	${EIGEN_INCLUDE_DIRS} 
-	../thirdparty/OpenCL
-	${OPENGL_INCLUDE_DIRS}
-	${OpenCL_INCLUDE_DIRS}
-	${ASSIMP_INCLUDE_DIRS}
-	${VULKAN_INCLUDE_DIRS}
-	${Boost_INCLUDE_DIRS}
+
+configure_file(config.h.in ./include/PlastilinaCore/Config.h)
+
+target_include_directories(PlastilinaCore
+	PUBLIC
+		${CMAKE_CURRENT_BINARY_DIR}/include
+		include 
+		${EIGEN_INCLUDE_DIRS} 
+		../thirdparty/OpenCL
+		${OPENGL_INCLUDE_DIRS}
+		${OpenCL_INCLUDE_DIRS}
+		${ASSIMP_INCLUDE_DIRS}
+		${Vulkan_INCLUDE_DIRS}
+		${Boost_INCLUDE_DIRS}
 	)
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)

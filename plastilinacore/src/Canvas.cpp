@@ -381,7 +381,6 @@ void CanvasCL::setup(int w, int h)
     depth->setParameter(GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     depth->texImage2D(0, GL_DEPTH_COMPONENT, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
-    ResourcesManager mgr;
     cl_int err = CL_SUCCESS;
 
     if (CanvasCL::oclInitialized)

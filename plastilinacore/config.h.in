@@ -1,0 +1,9 @@
+#pragma once
+
+#cmakedefine Vulkan_ENABLED
+#cmakedefine Vulkan_FOUND
+
+#if defined(Vulkan_ENABLED) && defined(Vulkan_FOUND)
+    #define HAS_VULKAN
+#endif
+

@@ -23,7 +23,7 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif // _WIN32
 
-#include <vulkan/vk_cpp.hpp>
+#include <vulkan/vulkan.hpp>
 
 #include <PlastilinaCore/vulkan/Context.h>
 

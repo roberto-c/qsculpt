@@ -154,6 +154,16 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
 	return true;
 }
 
+bool PlastilinaEngine::initializeWithAttributes(AttributeMap attr)
+{
+    return false;
+}
+
+bool PlastilinaEngine::initializeFromCommandLine(int argc, const char ** athv)
+{
+    return false;
+}
+
 bool PlastilinaEngine::initializeFromConfigFile(const std::string & filepath)
 {
     try

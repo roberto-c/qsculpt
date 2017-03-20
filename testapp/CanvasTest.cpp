@@ -67,7 +67,6 @@ struct CanvasTest::Impl
 
 int CanvasTest::Impl::setup() {
     TRACEFUNCTION("");
-    ResourcesManager rscMgr;
 
     x = 0;
     y = 0;
@@ -136,7 +135,7 @@ void CanvasTest::doSetup()
     }
     catch (std::exception & e)
     {
-        TRACE(error) << "Failed";
+        TRACE(error) << "Failed" << e.what();
     }
 }
 

@@ -2,6 +2,7 @@
 Language:        Cpp
 BasedOnStyle: LLVM
 IndentWidth: 4
+PointerAlignment: Left
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
 AlignEscapedNewlinesLeft: false

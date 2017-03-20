@@ -13,6 +13,7 @@
 
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/opengl/Texture.h>
 #include <PlastilinaCore/opengl/Sampler.h>
 

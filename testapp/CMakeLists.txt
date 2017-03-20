@@ -76,12 +76,14 @@ find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
 	DOC "Include directory Eigen"
 )
 
-include_directories(include 
-	${EIGEN_INCLUDE_DIRS} 
-	../thirdparty/OpenCL
-	${CMAKE_SOURCE_DIR}/plastilinacore/include
-	${Boost_INCLUDE_DIRS}
-	${OpenCL_INCLUDE_DIRS}
+target_include_directories(PTestApp 
+	PUBLIC 
+		include 
+		${EIGEN_INCLUDE_DIRS} 
+		../thirdparty/OpenCL
+		${CMAKE_SOURCE_DIR}/plastilinacore/include
+		${Boost_INCLUDE_DIRS}
+		${OpenCL_INCLUDE_DIRS}
 	)
 
 if (APPLE)	

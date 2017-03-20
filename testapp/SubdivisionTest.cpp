@@ -19,6 +19,7 @@
 #include "PlastilinaCore/Logging.h"
 #include <PlastilinaCore/material/PhongMaterial.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/opengl/Texture.h>
 #include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/Scene.h>
