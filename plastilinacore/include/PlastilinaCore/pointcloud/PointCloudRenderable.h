@@ -16,33 +16,34 @@ class VertexBuffer;
 
 class PointCloudRenderable : public IRenderable
 {
-public:
+  public:
     PointCloudRenderable();
     virtual ~PointCloudRenderable();
-    
-    virtual void render(RenderState & state) const;
-    
-private:
-	/**
-	 * Draw the mesh using OpenGL VBOs.
-	 * The VBOs are re-build when the mesh has been changed since the last draw.
-	 */
-	void renderObject(RenderState & state) const;
-	
-	/**
-	 *
-	 */
-	VertexBuffer* getVBO(ISurface* mesh) const;
-	
+
+    virtual void render(RenderState& state) const;
+
+  private:
     /**
-	 *
-	 */
-	VAO* getVAO(ISurface* mesh) const;
-    
-	/**
-	 *
-	 */
-	void fillVertexBufferPoints(ISurface* mesh, VertexBuffer* vbo) const;
+     * Draw the mesh using OpenGL VBOs.
+     * The VBOs are re-build when the mesh has been changed since the last
+     * draw.
+     */
+    void renderObject(RenderState& state) const;
+
+    /**
+     *
+     */
+    VertexBuffer* getVBO(ISurface* mesh) const;
+
+    /**
+     *
+     */
+    VAO* getVAO(ISurface* mesh) const;
+
+    /**
+     *
+     */
+    void fillVertexBufferPoints(ISurface* mesh, VertexBuffer* vbo) const;
 };
 
 #endif

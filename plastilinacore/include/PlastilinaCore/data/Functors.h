@@ -25,18 +25,22 @@
 
 using utils::getReference;
 
-namespace data {
-    template<typename T>
-    struct ImplicitConvToPoint {
-        Vector3 operator()(const T & data) {
-            T d = getReference(data);
-            return static_cast<Vector3>(*d);
-        };
-        
-        Vector3 * operator()(const T * data) {
-            return static_cast<Vector3*>(data);
-        };
+namespace data
+{
+template <typename T>
+struct ImplicitConvToPoint
+{
+    Vector3 operator()(const T& data)
+    {
+        T d = getReference(data);
+        return static_cast<Vector3>(*d);
     };
+
+    Vector3* operator()(const T* data)
+    {
+        return static_cast<Vector3*>(data);
+    };
+};
 };
 
 #endif

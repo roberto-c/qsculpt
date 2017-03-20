@@ -29,52 +29,54 @@ class ISurface;
  * Holds all the document data.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ */
 class DLLEXPORT Document : public IDocument
 {
-public:
-    typedef std::shared_ptr<Document>   shared_ptr;
-    typedef std::shared_ptr<const Document>   const_shared_ptr;
-    typedef std::weak_ptr<Document>     weak_ptr;
-    typedef std::weak_ptr<const Document>  const_weak_ptr;
-    typedef std::unique_ptr<Document>   ptr;
-    
+  public:
+    typedef std::shared_ptr<Document>       shared_ptr;
+    typedef std::shared_ptr<const Document> const_shared_ptr;
+    typedef std::weak_ptr<Document>         weak_ptr;
+    typedef std::weak_ptr<const Document>   const_weak_ptr;
+    typedef std::unique_ptr<Document>       ptr;
+
     Document();
 
     virtual ~Document();
 
-// IDocument interface
+    // IDocument interface
     virtual void loadFile(const std::string& fileName);
     virtual void saveFile(const std::string& fileName);
     virtual void selectObject(int iid);
     virtual std::vector<SceneNode::weak_ptr> getSelectedObjects() const;
-    virtual Scene::weak_ptr scene();
-    virtual Scene::weak_ptr scene() const;
-    virtual Iterator<SceneNode> sceneIterator();
-    virtual Iterator<SceneNode> constSceneIterator() const;
-    Iterator<ISurface> surfaceIterator();
-    
-    virtual SceneNode::shared_ptr   findItem(uint32_t iid);
-        
-    virtual SceneNode::shared_ptr   index (int row,
-                                           const SceneNode::shared_ptr & parent = SceneNode::shared_ptr() ) const;
-    
-    virtual SceneNode::shared_ptr   parent ( const SceneNode::shared_ptr & index ) const;
-    
-    virtual size_t	
-    childrenCount ( const SceneNode::shared_ptr & parent = SceneNode::shared_ptr() ) const;
-    
-    virtual void addItem(const SceneNode::shared_ptr & node, 
-                         const SceneNode::shared_ptr & parent = SceneNode::shared_ptr());
+    virtual Scene::weak_ptr                  scene();
+    virtual Scene::weak_ptr                  scene() const;
+    virtual Iterator<SceneNode>              sceneIterator();
+    virtual Iterator<SceneNode>              constSceneIterator() const;
+    Iterator<ISurface>                       surfaceIterator();
 
-    CameraNode::shared_ptr          getCamera() const;
+    virtual SceneNode::shared_ptr findItem(uint32_t iid);
 
-// End IDocument interface
-    
-private:
+    virtual SceneNode::shared_ptr index(
+        int                          row,
+        const SceneNode::shared_ptr& parent = SceneNode::shared_ptr()) const;
+
+    virtual SceneNode::shared_ptr
+    parent(const SceneNode::shared_ptr& index) const;
+
+    virtual size_t childrenCount(
+        const SceneNode::shared_ptr& parent = SceneNode::shared_ptr()) const;
+
+    virtual void
+    addItem(const SceneNode::shared_ptr& node,
+            const SceneNode::shared_ptr& parent = SceneNode::shared_ptr());
+
+    CameraNode::shared_ptr getCamera() const;
+
+    // End IDocument interface
+
+  private:
     struct Impl;
-    std::unique_ptr<Impl>        _d;
+    std::unique_ptr<Impl> _d;
 };
 
 #endif
-

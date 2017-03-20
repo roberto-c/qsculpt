@@ -28,21 +28,19 @@ class ISurface;
 
 class PickingFacesRenderer
 {
-public:	
-	PickingFacesRenderer();
-	virtual ~PickingFacesRenderer();
+  public:
+    PickingFacesRenderer();
+    virtual ~PickingFacesRenderer();
 
-	
-	virtual void renderObject(std::shared_ptr<SceneNode> & node);
-	
-private:
-	VAO* getVAO(ISurface* mesh);
-	VertexBuffer* getVBO(ISurface* mesh);
-	VertexBuffer* getFlatVBO(ISurface* mesh);
-	
-	void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
-	void fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
+    virtual void renderObject(std::shared_ptr<SceneNode>& node);
+
+  private:
+    VAO* getVAO(ISurface* mesh);
+    VertexBuffer* getVBO(ISurface* mesh);
+    VertexBuffer* getFlatVBO(ISurface* mesh);
+
+    void fillVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
+    void fillFlatVertexBuffer(ISurface* mesh, VertexBuffer* vbo);
 };
 
 #endif
-

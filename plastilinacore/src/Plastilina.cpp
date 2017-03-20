@@ -18,83 +18,87 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/IDevice.h>
-#include <PlastilinaCore/opengl/OpenGL.h>
-#include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/Utilities.h>
-#include <PlastilinaCore/vulkan/Vulkan.h>
+#include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/vulkan/VkUtils.h>
+#include <PlastilinaCore/vulkan/Vulkan.h>
 
 #include <boost/program_options.hpp>
 
 // forward declarations
-void Plastilina_intializeOptions(const std::string & filepath);
+void Plastilina_intializeOptions(const std::string& filepath);
 
 #ifdef __APPLE__
-	#include <CoreFoundation/CoreFoundation.h>
+#include <CoreFoundation/CoreFoundation.h>
 #endif
 
 namespace po = boost::program_options;
 
-struct PlastilinaEngineState {
+struct PlastilinaEngineState
+{
     po::options_description optionsDesc;
-    po::variables_map   options;
+    po::variables_map       options;
 
-    std::shared_ptr<core::Context>	defaultctx;
-    std::shared_ptr<core::Context>	currentctx;
-	bool openclInitialized;
-	bool openglInitialized;
-	std::string resourcesPath;
-	
-	PlastilinaEngineState()
-	: openclInitialized(false),
-	  openglInitialized(false)
-	{
+    std::shared_ptr<core::Context> defaultctx;
+    std::shared_ptr<core::Context> currentctx;
+    bool                           openclInitialized;
+    bool                           openglInitialized;
+    std::string                    resourcesPath;
+
+    PlastilinaEngineState()
+        : openclInitialized(false)
+        , openglInitialized(false)
+    {
         config_setup();
-	}
+    }
 
     void config_setup()
     {
         using namespace std;
         using namespace core::utils;
-        vector<string> default_search_dirs = { get_app_path() };
+        vector<string> default_search_dirs = {get_app_path()};
 
-        optionsDesc.add_options()
-            ("resourcesdir", po::value<vector<string>>()->default_value(default_search_dirs, get_app_path()), "path used to load all resources")
-            ("verbosity", po::value<boost::log::trivial::severity_level>()->default_value(boost::log::trivial::info), "verbosity level to print")
-            ;
-
+        optionsDesc.add_options()("resourcesdir",
+                                  po::value<vector<string>>()->default_value(
+                                      default_search_dirs, get_app_path()),
+                                  "path used to load all resources")(
+            "verbosity",
+            po::value<boost::log::trivial::severity_level>()->default_value(
+                boost::log::trivial::info),
+            "verbosity level to print");
     }
 };
 
 PlastilinaEngineState g_engineState;
 
 #ifdef __APPLE__
-intptr_t get_gl_context() {
+intptr_t get_gl_context()
+{
     // Get current CGL Context and CGL Share group
-    CGLContextObj kCGLContext = CGLGetCurrentContext();
+    CGLContextObj    kCGLContext    = CGLGetCurrentContext();
     CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
-	return (intptr_t)kCGLShareGroup;
+    return (intptr_t)kCGLShareGroup;
 }
 #elif defined(_WIN32)
-intptr_t get_gl_context() {
+intptr_t get_gl_context()
+{
     // Get current CGL Context and CGL Share group
     return (intptr_t)wglGetCurrentContext();
 }
-HDC get_device_context()
-{
-    return wglGetCurrentDC();
-}
+HDC get_device_context() { return wglGetCurrentDC(); }
 #else
-intptr_t get_gl_context() {
-    std::cout << "Unknow system. Don't know how to get the window handle" << std::endl;
-	return NULL;
+intptr_t get_gl_context()
+{
+    std::cout << "Unknow system. Don't know how to get the window handle"
+              << std::endl;
+    return NULL;
 }
 #endif
-
 
 bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
 {
@@ -113,7 +117,9 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
         }
     }
 
-    if ((subsystem & PlastilinaSubsystem::OPENGL) != PlastilinaSubsystem::NONE) {
+    if ((subsystem & PlastilinaSubsystem::OPENGL) !=
+        PlastilinaSubsystem::NONE)
+    {
         glewExperimental = TRUE;
         GLenum glewerror = glewInit();
         if (glewerror != GLEW_OK)
@@ -124,34 +130,44 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
         glewerror = glGetError();
         if (glewerror != GL_NO_ERROR)
         {
-            TRACE(debug) << "GLEW initialization succeded, but there is GL error code, ignoring...";
+            TRACE(debug) << "GLEW initialization succeded, but there is GL "
+                            "error code, ignoring...";
             while (glGetError() != GL_NO_ERROR)
                 ;
         }
         g_engineState.openglInitialized = true;
-    } 
-    else if ((subsystem & PlastilinaSubsystem::VULKAN) != PlastilinaSubsystem::NONE) 
+    }
+    else if ((subsystem & PlastilinaSubsystem::VULKAN) !=
+             PlastilinaSubsystem::NONE)
     {
-        if (!vulkan::isVulkanSupported()) 
+        if (!vulkan::isVulkanSupported())
         {
-            TRACE(error) << "Vulkan is not supported! Install new drivers or use another rendering API.";
+            TRACE(error) << "Vulkan is not supported! Install new drivers or "
+                            "use another rendering API.";
         }
     }
-	if ( (subsystem & PlastilinaSubsystem::OPENCL) != PlastilinaSubsystem::NONE) {
+    if ((subsystem & PlastilinaSubsystem::OPENCL) !=
+        PlastilinaSubsystem::NONE)
+    {
         CLManager::startup(subsystem);
-        if ( ((subsystem & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) != PlastilinaSubsystem::NONE)
-            && ((subsystem & PlastilinaSubsystem::OPENGL) != PlastilinaSubsystem::NONE) ) {
+        if (((subsystem & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) !=
+             PlastilinaSubsystem::NONE) &&
+            ((subsystem & PlastilinaSubsystem::OPENGL) !=
+             PlastilinaSubsystem::NONE))
+        {
             intptr_t glCtx = get_gl_context();
             CLManager::instance()->setOpenGLContext(glCtx);
             CLManager::instance()->setDeviceContext(get_device_context());
         }
-        
-		g_engineState.openclInitialized = CLManager::instance()->initialize(subsystem);
-		if (!g_engineState.openclInitialized) {
-			std::cerr << "Failed to initialize OpenCL" << std::endl;
-		}
-	}
-	return true;
+
+        g_engineState.openclInitialized =
+            CLManager::instance()->initialize(subsystem);
+        if (!g_engineState.openclInitialized)
+        {
+            std::cerr << "Failed to initialize OpenCL" << std::endl;
+        }
+    }
+    return true;
 }
 
 bool PlastilinaEngine::initializeWithAttributes(AttributeMap attr)
@@ -159,46 +175,46 @@ bool PlastilinaEngine::initializeWithAttributes(AttributeMap attr)
     return false;
 }
 
-bool PlastilinaEngine::initializeFromCommandLine(int argc, const char ** athv)
+bool PlastilinaEngine::initializeFromCommandLine(int argc, const char** athv)
 {
     return false;
 }
 
-bool PlastilinaEngine::initializeFromConfigFile(const std::string & filepath)
+bool PlastilinaEngine::initializeFromConfigFile(const std::string& filepath)
 {
     try
     {
         Plastilina_intializeOptions(filepath);
-        //if (g_engineState.options.count("verbosity") > 0) {
-        //    TRACE(info) << "verbosity: " << g_engineState.options["verbosity"].as<boost::log::trivial::severity_level>();
+        // if (g_engineState.options.count("verbosity") > 0) {
+        //    TRACE(info) << "verbosity: " <<
+        //    g_engineState.options["verbosity"].as<boost::log::trivial::severity_level>();
         //}
-        for (auto it : g_engineState.options) {
-            TRACE(info) << "Name: " << it.first ;
+        for (auto it : g_engineState.options)
+        {
+            TRACE(info) << "Name: " << it.first;
         }
 
         return true;
     }
-    catch (std::exception & e)
+    catch (std::exception& e)
     {
         TRACE(error) << "Failed to read config file. " << e.what();
     }
-    
+
     return false;
 }
 
-bool PlastilinaEngine::shutdown()
-{
-	return true;
-}
+bool PlastilinaEngine::shutdown() { return true; }
 
-void PlastilinaEngine::setCurrentContext(std::shared_ptr<core::Context> & ctx)
+void PlastilinaEngine::setCurrentContext(std::shared_ptr<core::Context>& ctx)
 {
     g_engineState.currentctx = ctx;
 }
 
-core::Context & PlastilinaEngine::currentContext()
+core::Context& PlastilinaEngine::currentContext()
 {
-    if (!g_engineState.currentctx) {
+    if (!g_engineState.currentctx)
+    {
         throw std::runtime_error("No current context set");
     }
     return *g_engineState.currentctx;

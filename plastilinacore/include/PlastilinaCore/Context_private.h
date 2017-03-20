@@ -8,30 +8,33 @@
 #pragma once
 
 #include <PlastilinaCore/Context.h>
-#include <PlastilinaCore/vulkan/Context.h>
 #include <PlastilinaCore/opencl/OpenCL.h>
+#include <PlastilinaCore/vulkan/Context.h>
 
 OBJC_CLASS(NSView);
 OBJC_CLASS(NSOpenGLContext);
 
-namespace vulkan {
-    class Context;
+namespace vulkan
+{
+class Context;
 };
 
-namespace core {
-    struct Context::Impl {
-        cl::Context oclctx;
-        std::unique_ptr<vulkan::Context> vkCtx;
+namespace core
+{
+struct Context::Impl
+{
+    cl::Context                      oclctx;
+    std::unique_ptr<vulkan::Context> vkCtx;
 
 #if defined(__APPLE__)
-        
-        NSOpenGLContext * glctx;
-        NSView			* view;
+
+    NSOpenGLContext* glctx;
+    NSView*          view;
 #endif
-        void createGlCtx(const CtxAttributeList & attributes);
-        void createClCtx(const CtxAttributeList & attributes);
-        void createVkCtx(const CtxAttributeList & attributes);
-        bool attribute(CtxAttribute attribute, CtxAttribute * outValue);
-        bool setAttribute(CtxAttribute name, CtxAttribute value);
-    };
+    void createGlCtx(const CtxAttributeList& attributes);
+    void createClCtx(const CtxAttributeList& attributes);
+    void createVkCtx(const CtxAttributeList& attributes);
+    bool attribute(CtxAttribute attribute, CtxAttribute* outValue);
+    bool setAttribute(CtxAttribute name, CtxAttribute value);
+};
 }

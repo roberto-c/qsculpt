@@ -18,33 +18,37 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/physics/Actor.h>
 #include <PlastilinaCore/physics/ForceFunctors.h>
 #include <PlastilinaCore/physics/SimSystem.h>
-#include <PlastilinaCore/physics/Actor.h>
 
-namespace physics {
+namespace physics
+{
 
-    Eigen::Vector3f Rejection::operator()(SimSystem * s, Actor * a) {
-        Eigen::Vector3f r(0,0,0);
-        for(auto e : s->actors()) {
-            if (a == e.get()) continue;
-            
-            if (e->type == ActorType::Sphere && a->type == ActorType::Sphere) {
-                auto sphere1 = std::static_pointer_cast<physics::Sphere>(e);
-                auto sphere2 = static_cast<physics::Sphere*>(a);
-                Eigen::Vector3f f = (sphere1->x - sphere2->x);
-                if (f.norm() < sphere2->radius + sphere1->radius) {
-                    Eigen::Vector3f n = f.normalized();
-                    Eigen::Vector3f v = sphere1->v + sphere2->v;
-                    float l = a->v.norm();
-                    f = 2 * (n.dot(v.normalized()))*n - v.normalized();
-                    f *= -(l*0.8f);
-                    r = f;
-                }
+Eigen::Vector3f Rejection::operator()(SimSystem* s, Actor* a)
+{
+    Eigen::Vector3f r(0, 0, 0);
+    for (auto e : s->actors())
+    {
+        if (a == e.get())
+            continue;
+
+        if (e->type == ActorType::Sphere && a->type == ActorType::Sphere)
+        {
+            auto sphere1      = std::static_pointer_cast<physics::Sphere>(e);
+            auto sphere2      = static_cast<physics::Sphere*>(a);
+            Eigen::Vector3f f = (sphere1->x - sphere2->x);
+            if (f.norm() < sphere2->radius + sphere1->radius)
+            {
+                Eigen::Vector3f n = f.normalized();
+                Eigen::Vector3f v = sphere1->v + sphere2->v;
+                float           l = a->v.norm();
+                f = 2 * (n.dot(v.normalized())) * n - v.normalized();
+                f *= -(l * 0.8f);
+                r = f;
             }
         }
-        return r;
     }
-
+    return r;
 }
-
+}

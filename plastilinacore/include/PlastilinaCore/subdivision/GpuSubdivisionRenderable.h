@@ -26,19 +26,20 @@
 class VertexBuffer;
 struct SmoothVtxStruct;
 
-namespace core {
+namespace core
+{
 class GpuSubdivision;
 
 class GpuSubdivisionRenderable : public IRenderable
 {
-public:
-    GpuSubdivisionRenderable(const core::GpuSubdivision * surface);
-    
+  public:
+    GpuSubdivisionRenderable(const core::GpuSubdivision* surface);
+
     virtual ~GpuSubdivisionRenderable();
-    
-    virtual void render( RenderState & state) const;
-    
-private:
+
+    virtual void render(RenderState& state) const;
+
+  private:
     struct Impl;
     std::unique_ptr<Impl> _d;
 };

@@ -20,21 +20,22 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-
-#include <string>
-#include <PlastilinaCore/IIterator.h>
 #include <PlastilinaCore/ICollection.h>
+#include <PlastilinaCore/IIterator.h>
 #include <PlastilinaCore/SceneNode.h>
+#include <string>
 
 class ISurface;
 class SceneNode;
 
-namespace geometry {
-    class Ray;
-    class AABB;
+namespace geometry
+{
+class Ray;
+class AABB;
 };
 
-enum class UpAxis {
+enum class UpAxis
+{
     Z_POS_UP,
     Y_POS_UP,
     X_POS_Up,
@@ -47,21 +48,22 @@ enum class UpAxis {
  * Contains all the scene data. All 3D objects reference data from the scene.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
-class DLLEXPORT Scene : public SceneNode {
-public:
-    typedef std::shared_ptr<Scene>          shared_ptr;
-    typedef std::shared_ptr<const Scene>    const_shared_ptr;
-    typedef std::weak_ptr<Scene>            weak_ptr;
-    typedef std::unique_ptr<Scene>          ptr;
-    typedef std::unique_ptr<const Scene>    const_ptr;
-    
+ */
+class DLLEXPORT Scene : public SceneNode
+{
+  public:
+    typedef std::shared_ptr<Scene>       shared_ptr;
+    typedef std::shared_ptr<const Scene> const_shared_ptr;
+    typedef std::weak_ptr<Scene>         weak_ptr;
+    typedef std::unique_ptr<Scene>       ptr;
+    typedef std::unique_ptr<const Scene> const_ptr;
+
     Scene();
-    
+
     Scene(const std::string& name);
 
     virtual ~Scene();
-    
+
     /**
      *
      */
@@ -71,69 +73,67 @@ public:
      * Returns the node with the specified instance ID. NULL if not found.
      */
     SceneNode::shared_ptr findByIID(uint32_t iid) const;
-    
-	/**
-	 *
-	 */
-	CameraNode::shared_ptr createCamera();
-	
+
+    /**
+     *
+     */
+    CameraNode::shared_ptr createCamera();
+
     /**
      * Get first camera node.
      */
     CameraNode::shared_ptr getCamera() const;
 
-    
     /**
      * Returns a list of nodes that intersects a given ray.
      */
-    bool intersects(const geometry::Ray &ray, 
-                    data::ICollection<SceneNode::weak_ptr> *col);
-    
+    bool intersects(const geometry::Ray&                    ray,
+                    data::ICollection<SceneNode::weak_ptr>* col);
+
     /**
      * Returns a list of nodes that are intersected or contained by an Axis
      * Aligned Bounding Box (AABB)
      */
-    bool intersects(const geometry::AABB &box,
-                    data::ICollection<SceneNode::weak_ptr> *col);
-	
-	/**
-	 * Render all scene
-	 */
-	virtual void render() const;
-    
-    virtual void render(RenderState & state) const;
-    
-    void loadFromFile(const std::string & filename);
-    
+    bool intersects(const geometry::AABB&                   box,
+                    data::ICollection<SceneNode::weak_ptr>* col);
+
+    /**
+     * Render all scene
+     */
+    virtual void render() const;
+
+    virtual void render(RenderState& state) const;
+
+    void loadFromFile(const std::string& filename);
+
     /**
      * Definition of where is "up" is the world.
      *
      * @returns @enum UpAxis
      */
     UpAxis upAxis() const;
-    
+
     /**
      * Set where is "up" is the world.
      *
      * @param axis axis that points up.
      */
     void setUpAxis(UpAxis axis);
-    
-    /**
-    * Returns a list of all lights starting at the node specified.
-    * If node is null, then look in all the document.
-    */
-    std::vector<LightNode::shared_ptr>
-        getAllLights(const std::shared_ptr<const SceneNode> & doc = nullptr) const;
 
-private:
+    /**
+     * Returns a list of all lights starting at the node specified.
+     * If node is null, then look in all the document.
+     */
+    std::vector<LightNode::shared_ptr>
+    getAllLights(const std::shared_ptr<const SceneNode>& doc = nullptr) const;
+
+  private:
     class SceneNodeIterator;
     struct Impl;
-    
+
     std::unique_ptr<Impl> _d;
-    
+
     friend class SceneNodeIterator;
 };
 
 #endif
-

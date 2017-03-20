@@ -20,101 +20,100 @@
 #ifndef QUADTREE_H
 #define QUADTREE_H
 
-#include <vector>
-#include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/ICollection.h>
+#include <PlastilinaCore/Point3D.h>
+#include <vector>
 
 namespace data
 {
-    template< typename T >
-    class QuadTree : public ICollection<T>
-    {
-    public:
-        QuadTree() ;
+template <typename T>
+class QuadTree : public ICollection<T>
+{
+  public:
+    QuadTree();
 
-        QuadTree(const QuadTree<T>& cpy) ;
+    QuadTree(const QuadTree<T>& cpy);
 
-        ~QuadTree() ;
+    ~QuadTree();
 
-        /**
-         * Add a new element to the collection.
-         *
-         * @param element element to add to the collection.
-         */
-        void add(T *element);
+    /**
+     * Add a new element to the collection.
+     *
+     * @param element element to add to the collection.
+     */
+    void add(T* element);
 
-        /**
-         * Removes a new element from the collection.
-         *
-         * @param element element to remove from the collection.
-         */
-        void remove(T *element);
+    /**
+     * Removes a new element from the collection.
+     *
+     * @param element element to remove from the collection.
+     */
+    void remove(T* element);
 
-        /**
-         * Find the closest element to the point p.
-         *
-         * This function find the closest primitive to the point p that is whitin
-         * a maxDistance radius. By default the radius is -1, meaning that we don't
-         * care the minimum distance.
-         *
-         * @param p query point to which we want to find the closest point to that
-         * @param maxDistance look for the closest points within this radius. If
-         * maxDistance is negative, just look for the closest point, no matter at what
-         * distance it is.
-         */
-        T* findClosest(const Point3& p, float maxDistance = 0);
+    /**
+     * Find the closest element to the point p.
+     *
+     * This function find the closest primitive to the point p that is whitin
+     * a maxDistance radius. By default the radius is -1, meaning that we
+     * don't care the minimum distance.
+     *
+     * @param p query point to which we want to find the closest point to that
+     * @param maxDistance look for the closest points within this radius. If
+     * maxDistance is negative, just look for the closest point, no matter at
+     * what distance it is.
+     */
+    T* findClosest(const Point3& p, float maxDistance = 0);
 
-        /**
-         * Overload method @see findClosest
-         */
-        const T* findClosest(const Point3& p, float maxDistance = 0) const;
+    /**
+     * Overload method @see findClosest
+     */
+    const T* findClosest(const Point3& p, float maxDistance = 0) const;
 
-        /**
-         * Find an element that a given ray intersects it.
-         *
-         * It returns the first element found that intersect the ray. This does
-         * not mean that it is the closest element with respect the ray.
-         *
-         * @param ray Ray to use for intersection test against every element.
-         * @param bag A ICollection object to insert the element found.
-         */
-        T* findFirstIntersect(const Ray& ray);
+    /**
+     * Find an element that a given ray intersects it.
+     *
+     * It returns the first element found that intersect the ray. This does
+     * not mean that it is the closest element with respect the ray.
+     *
+     * @param ray Ray to use for intersection test against every element.
+     * @param bag A ICollection object to insert the element found.
+     */
+    T* findFirstIntersect(const Ray& ray);
 
-        /**
-         * Find all the elements that intersects a given ray.
-         *
-         * This method returns all element which pass through a given ray. Each
-         * element found is inserted in the collection bag. If no bag is passed
-         * (bag = NULL), then it just return if an intersections has occured.
-         *
-         * @param ray Ray to use for intersection test against every element.
-         * @param bag A ICollection object to insert the element found.
-         *
-         * @returns a boolean value stating if an intersection acurred.
-         */
-        bool findIntersect(const Ray& ray, ICollection<T*> bag = NULL);
+    /**
+     * Find all the elements that intersects a given ray.
+     *
+     * This method returns all element which pass through a given ray. Each
+     * element found is inserted in the collection bag. If no bag is passed
+     * (bag = NULL), then it just return if an intersections has occured.
+     *
+     * @param ray Ray to use for intersection test against every element.
+     * @param bag A ICollection object to insert the element found.
+     *
+     * @returns a boolean value stating if an intersection acurred.
+     */
+    bool findIntersect(const Ray& ray, ICollection<T*> bag = NULL);
 
-        /**
-         *
-         */
-        T* findIntersect(const AABB& box, ICollection<T*> bag = NULL);
+    /**
+     *
+     */
+    T* findIntersect(const AABB& box, ICollection<T*> bag = NULL);
 
-        Iterator<T> iterator();
+    Iterator<T> iterator();
 
-        std::vector<T *> toStdVector();
+    std::vector<T*> toStdVector();
 
-        std::set<T *> toStdSet();
+    std::set<T*> toStdSet();
 
-    private:
-        template< typename D >
-        class QuadTreeNode;
+  private:
+    template <typename D>
+    class QuadTreeNode;
 
-        // Do not allow copying semantincs
-        QuadTree& operator=(const QuadTree<T>&);
+    // Do not allow copying semantincs
+    QuadTree& operator=(const QuadTree<T>&);
 
-        QuadTreeNode<T>*    _rootNode;
-        std::vector<T>      _data;
-    };
+    QuadTreeNode<T>* _rootNode;
+    std::vector<T>   _data;
+};
 }
 #endif
-

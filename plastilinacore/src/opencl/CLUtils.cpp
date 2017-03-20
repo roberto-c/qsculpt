@@ -8,8 +8,8 @@
 #include <PlastilinaCore/Stable.h>
 
 #include <fstream>
-#include <string>
 #include <sstream>
+#include <string>
 
 #include <PlastilinaCore/opencl/CLUtils.h>
 
@@ -17,17 +17,19 @@ namespace core
 {
 namespace cl
 {
-std::string loadFromFile(const std::string &filename)
+std::string loadFromFile(const std::string& filename)
 {
-    std::string	source;
+    std::string   source;
     std::ifstream file(filename);
 
-    if (!file.good()) {
+    if (!file.good())
+    {
         throw std::runtime_error(std::string("file not found: ") + filename);
     }
 
     std::string line;
-    while (file.good()) {
+    while (file.good())
+    {
         getline(file, line);
         line.append("\n");
         source.append(line);
@@ -37,8 +39,12 @@ std::string loadFromFile(const std::string &filename)
 
 const char* errorToString(cl_int errorcode)
 {
-#define CLERRSTR(X) case X: return #X; break
-    switch (errorcode) {
+#define CLERRSTR(X)                                                          \
+    case X:                                                                  \
+        return #X;                                                           \
+        break
+    switch (errorcode)
+    {
         CLERRSTR(CL_SUCCESS);
         CLERRSTR(CL_DEVICE_NOT_FOUND);
         CLERRSTR(CL_DEVICE_NOT_AVAILABLE);
@@ -109,32 +115,31 @@ const char* errorToString(cl_int errorcode)
 }; // namespace cl
 }; // namespace core
 
-
 namespace core
 {
 namespace utils
 {
 
-template<>
-void convert_to<cl_float4, Eigen::Vector3f>(const Eigen::Vector3f & d,
-                                            cl_float4 & to)
+template <>
+void convert_to<cl_float4, Eigen::Vector3f>(const Eigen::Vector3f& d,
+                                            cl_float4& to)
 {
     to.s[0] = d[0];
     to.s[1] = d[1];
     to.s[2] = d[2];
     to.s[3] = 0.0f;
 }
-template<>
-void convert_to<cl_float2, Eigen::Vector2f>(const Eigen::Vector2f & d,
-                                            cl_float2 & to)
+template <>
+void convert_to<cl_float2, Eigen::Vector2f>(const Eigen::Vector2f& d,
+                                            cl_float2& to)
 {
     to.s[0] = d[0];
     to.s[1] = d[1];
 }
 
-template<>
-void convert_to<cl_float4, Eigen::Vector4f>(const Eigen::Vector4f & d,
-                                            cl_float4 & to)
+template <>
+void convert_to<cl_float4, Eigen::Vector4f>(const Eigen::Vector4f& d,
+                                            cl_float4& to)
 {
     to.s[0] = d[0];
     to.s[1] = d[1];
@@ -142,10 +147,9 @@ void convert_to<cl_float4, Eigen::Vector4f>(const Eigen::Vector4f & d,
     to.s[3] = d[3];
 }
 
-template<>
-void convert_to<Eigen::Vector4f, cl_float4>(
-    const cl_float4 & from,
-    Eigen::Vector4f & to)
+template <>
+void convert_to<Eigen::Vector4f, cl_float4>(const cl_float4& from,
+                                            Eigen::Vector4f& to)
 {
     to[0] = from.s[0];
     to[1] = from.s[1];
@@ -153,24 +157,23 @@ void convert_to<Eigen::Vector4f, cl_float4>(
     to[3] = from.s[3];
 }
 
-template<>
-void convert_to<Eigen::Vector3f, cl_float4>(
-    const cl_float4 & from,
-    Eigen::Vector3f & to)
+template <>
+void convert_to<Eigen::Vector3f, cl_float4>(const cl_float4& from,
+                                            Eigen::Vector3f& to)
 {
     to[0] = from.s[0];
     to[1] = from.s[1];
     to[2] = from.s[2];
 }
 
-std::string to_string(const cl_float2 & v)
+std::string to_string(const cl_float2& v)
 {
     std::stringstream strout;
     strout << "(" << v.x << "," << v.y << ")";
     return strout.str();
 }
 
-std::string to_string(const cl_float4 & v)
+std::string to_string(const cl_float4& v)
 {
     std::stringstream strout;
     strout << "(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";

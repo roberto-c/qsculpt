@@ -10,18 +10,19 @@
 #ifndef FACE_H_
 #define FACE_H_
 
-#include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/IIterator.h>
+#include <PlastilinaCore/Vertex.h>
 
 class ISurface;
 class EdgeHandle;
 
-enum FaceFlags {
+enum FaceFlags
+{
     FF_None     = 0,
-    FF_Selected = 0x00000001,   /*< Face is selected */
-    FF_Deleted  = 0x00000002,  /*< Face is marked as deleted */
-    FF_User1    = 0x00100000,  /*< Flag to be used by the user */
-    FF_User2    = 0x00200000,  /*< Flag to be used by the user */
+    FF_Selected = 0x00000001, /*< Face is selected */
+    FF_Deleted  = 0x00000002, /*< Face is marked as deleted */
+    FF_User1    = 0x00100000, /*< Flag to be used by the user */
+    FF_User2    = 0x00200000, /*< Flag to be used by the user */
     FF_All      = 0xFFFFFFFF
 };
 
@@ -30,37 +31,38 @@ enum class FaceHandleType
     NULLTYPE = 0,
     DEFAULT,
     GPUSUBDIVISION,
-    
+
     MAX = 255
 };
 
-class FaceHandle {
-public:
-    typedef FaceHandle* 		shared_ptr;
-    typedef const FaceHandle*   const_shared_ptr;
-    typedef FaceHandle* 		weak_ptr;
-    typedef FaceHandle* 		ptr;
-    typedef const FaceHandle*   const_ptr;
-    typedef uint32_t 			size_t;
-    size_t _id;
-    
+class FaceHandle
+{
+  public:
+    typedef FaceHandle*       shared_ptr;
+    typedef const FaceHandle* const_shared_ptr;
+    typedef FaceHandle*       weak_ptr;
+    typedef FaceHandle*       ptr;
+    typedef const FaceHandle* const_ptr;
+    typedef uint32_t          size_t;
+    size_t                    _id;
+
     FaceHandle(FaceHandleType type = FaceHandleType::NULLTYPE)
-    : _id( 0 | ((int)type << 24) )
-    {}
-    
-    FaceHandle(const FaceHandle&) = default;
-    
-    FaceHandle(FaceHandle&&) = default;
-    
-    uint8_t type() const { return _id >> 24; }
-    size_t 	iid() const { return _id & 0xFFFFFF; }
-    
-    void    setIid(size_t iid) {
-        _id = (_id & 0xFF000000) | (iid & 0xFFFFFF);
+        : _id(0 | ((int)type << 24))
+    {
     }
-    
-    template<typename T>
-    T & cast() const {
+
+    FaceHandle(const FaceHandle&) = default;
+
+    FaceHandle(FaceHandle&&) = default;
+
+    uint8_t type() const { return _id >> 24; }
+    size_t  iid() const { return _id & 0xFFFFFF; }
+
+    void setIid(size_t iid) { _id = (_id & 0xFF000000) | (iid & 0xFFFFFF); }
+
+    template <typename T>
+    T& cast() const
+    {
         return static_cast<T>(*this);
     }
 };
@@ -69,7 +71,7 @@ namespace core
 {
 namespace subdivision
 {
-    class Edge;
+class Edge;
 
 /**
  * Face class. This class contains references to points that should
@@ -83,28 +85,29 @@ namespace subdivision
  * default constructor makes a non valid triangle.
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class Face : public FaceHandle {
-public:
-    typedef Face* 		shared_ptr;
+class Face : public FaceHandle
+{
+  public:
+    typedef Face*       shared_ptr;
     typedef const Face* const_shared_ptr;
-    typedef Face* 		weak_ptr;
-    typedef Face* 		ptr;
-    
-    typedef uint32_t 	size_t;
-    
-private:
-    ISurface*           _surface;
-    Edge*               _he;
-    Vertex::weak_ptr    _vertex;
-    FaceFlags           _flags;
-    mutable size_t      _nVertices;
-    void*               _userData;
-    
-public:
+    typedef Face*       weak_ptr;
+    typedef Face*       ptr;
+
+    typedef uint32_t size_t;
+
+  private:
+    ISurface*        _surface;
+    Edge*            _he;
+    Vertex::weak_ptr _vertex;
+    FaceFlags        _flags;
+    mutable size_t   _nVertices;
+    void*            _userData;
+
+  public:
     /**
      * Default constructor. Initiliazes all point to index 0.
      */
-    Face(ISurface *surface = NULL);
+    Face(ISurface* surface = NULL);
 
     /**
      * Construct a new triangle. The triangle is composed by the passed
@@ -114,7 +117,7 @@ public:
      * @param p2 second point that form the triangle.
      * @param p3 third point that form the triangle.
      */
-    Face(ISurface *surface, const std::vector<int>& vertexIndexList);
+    Face(ISurface* surface, const std::vector<int>& vertexIndexList);
 
     ~Face();
 
@@ -127,16 +130,16 @@ public:
      * Set / get attribute flags to the face.
      *
      * @param flag possible values
-     *              FF_None     
-     *              FF_Selected 
-     *              FF_Deleted  
-     *              FF_All      
+     *              FF_None
+     *              FF_Selected
+     *              FF_Deleted
+     *              FF_All
      */
     void addFlag(FaceFlags flag) { _flags = (FaceFlags)(_flags | flag); }
     void removeFlag(FaceFlags flag) { _flags = (FaceFlags)(_flags & ~flag); }
-    FaceFlags flags() const { return _flags; }
-    void setFlags(FaceFlags flags) {_flags = flags; }
-    bool isFlagSet(FaceFlags flag) { return (_flags & flag) != 0;}
+    FaceFlags                 flags() const { return _flags; }
+    void setFlags(FaceFlags flags) { _flags = flags; }
+    bool isFlagSet(FaceFlags flag) { return (_flags & flag) != 0; }
 
     /**
      * Checks if the triangle data is valid. Triangle is valid only if
@@ -157,8 +160,8 @@ public:
      *
      * It can be used as staring poont for vertex iteration.
      */
-    const Vertex* vertex() const { return _vertex ;}
-    
+    const Vertex* vertex() const { return _vertex; }
+
     /**
      * Adds all the vertices contained in the array.
      */
@@ -174,7 +177,7 @@ public:
      * Returns the number of vertices in this face.
      */
     size_t numVertices() const;
-    
+
     /**
      * Sets the first point index reference.
      *
@@ -186,27 +189,23 @@ public:
 
     bool hasEdge(const Edge& /*e*/) const;
 
-    bool hasEdge(size_t /*v1*/, size_t /*v2*/) const ;
+    bool hasEdge(size_t /*v1*/, size_t /*v2*/) const;
 
     /**
      * Allows to attach a pointer to a user defined structure or data
      */
-    void setUserData(void * data) {
-        _userData = data;
-    }
-    
+    void setUserData(void* data) { _userData = data; }
+
     /**
      * Returns a pointer to the user data.
      *
      * The user is responsible to cast the pointer to the correct type
      */
-    void * userData() const {
-        return _userData;
-    }
-    
+    void* userData() const { return _userData; }
+
     bool operator==(const Face& t) const;
 
-    operator Point3() const ;
+    operator Point3() const;
     operator Point3();
 
     /**
@@ -233,9 +232,8 @@ public:
      */
     Iterator<EdgeHandle> constEdgeIterator() const;
 
-    
-protected:
-    ISurface * surface() { return _surface; }
+  protected:
+    ISurface* surface() { return _surface; }
     void subdivide(int level);
 
     /* Inner classes */

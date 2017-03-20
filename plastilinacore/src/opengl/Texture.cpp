@@ -33,14 +33,14 @@ void TextureManager::setActiveTexture(GLenum textureUnit)
 template <int TextureTarget>
 struct Texture<TextureTarget>::Impl
 {
-    GLuint name;
-    GLsizei width, height, depth;
-    GLenum format;
-    GLenum target;
-    GLint level;
-    GLint internalFormat;
-    GLint border;
-    GLenum type;
+    GLuint               name;
+    GLsizei              width, height, depth;
+    GLenum               format;
+    GLenum               target;
+    GLint                level;
+    GLint                internalFormat;
+    GLint                border;
+    GLenum               type;
     std::vector<GLubyte> data;
 
     Impl()
@@ -98,7 +98,7 @@ Texture<TextureTarget>::~Texture()
  * get the target to which this framebuffer is going to be bound.
  */
 template <int TextureTarget>
-GLenum Texture<TextureTarget>::target() const
+GLenum        Texture<TextureTarget>::target() const
 {
     return TextureTarget;
 }
@@ -107,7 +107,7 @@ GLenum Texture<TextureTarget>::target() const
  * Return the name id of the OpenGL object.
  */
 template <int TextureTarget>
-GLuint Texture<TextureTarget>::oid() const
+GLuint        Texture<TextureTarget>::oid() const
 {
     return d->name;
 }
@@ -116,7 +116,7 @@ GLuint Texture<TextureTarget>::oid() const
  * Bind the framebuffer object using the target
  */
 template <int TextureTarget>
-void Texture<TextureTarget>::bind()
+void          Texture<TextureTarget>::bind()
 {
     glBindTexture(TextureTarget, d->name);
     THROW_IF_GLERROR("Failed to bind texture");
@@ -126,7 +126,7 @@ void Texture<TextureTarget>::bind()
  * Unbind the framebuffer
  */
 template <int TextureTarget>
-void Texture<TextureTarget>::unbind()
+void          Texture<TextureTarget>::unbind()
 {
     glBindTexture(TextureTarget, 0);
     THROW_IF_GLERROR("Failed to unbind texture");
@@ -186,17 +186,17 @@ Texture2D::~Texture2D() {}
 
 void Texture2D::texImage2D(GLint level, GLint internalformat, GLsizei width,
                            GLsizei height, GLint border, GLenum format,
-                           GLenum type, const void *data)
+                           GLenum type, const void* data)
 {
     glTexImage2D(Texture2D::Target, level, internalformat, width, height,
                  border, format, type, data);
     THROW_IF_GLERROR("Failed to upload texture data");
-    d->width = width;
+    d->width  = width;
     d->height = height;
-    d->depth = 1;
+    d->depth  = 1;
     d->border = border;
     d->format = format;
-    d->level = level;
+    d->level  = level;
 }
 
 void Texture2D::copyImageSubDataTo(GLint srcLevel, GLint srcX, GLint srcY,

@@ -17,6 +17,8 @@ UseTab: Never
 ContinuationIndentWidth: 4
 SortIncludes:    true
 IncludeCategories:
+  - Regex:           '^<.*/Stable\.h\>'
+    Priority:        1 
   - Regex:           '^\"Stable\.h\"'
     Priority:        1 
   - Regex:           '^<.*\.h>'

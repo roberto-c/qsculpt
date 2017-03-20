@@ -18,16 +18,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Document.h>
+#include <PlastilinaCore/Plastilina.h>
 
 #include <PlastilinaCore/ISurface.h>
-#include <PlastilinaCore/subdivision/Box.h>
-#include <PlastilinaCore/subdivision/Sphere.h>
 #include <PlastilinaCore/Mesh.h>
 #include <PlastilinaCore/Quad.h>
-#include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/subdivision/Box.h>
+#include <PlastilinaCore/subdivision/Sphere.h>
 
 #define PLASTILINA_TRACE_DISABLE = 1
 #include <PlastilinaCore/Logging.h>
@@ -36,20 +36,20 @@ static std::atomic_int NEXT_ID(0);
 
 class SurfaceIterator : public IIterator<ISurface>
 {
-public:
+  public:
     typedef std::shared_ptr<ISurface>       shared_ptr;
     typedef std::shared_ptr<const ISurface> const_shared_ptr;
     typedef std::weak_ptr<ISurface>         weak_ptr;
     typedef std::unique_ptr<ISurface>       ptr;
     typedef std::unique_ptr<const ISurface> const_ptr;
-    
-private:
+
+  private:
     Document::shared_ptr _doc;
 
-public:
-    SurfaceIterator(Document::weak_ptr surface) ;
-    
-    ~SurfaceIterator() ;
+  public:
+    SurfaceIterator(Document::weak_ptr surface);
+
+    ~SurfaceIterator();
 
     /**
      * Function to copy iterators of the same type.
@@ -100,62 +100,62 @@ public:
 
 class SceneIterator : public IIterator<SceneNode>
 {
-public:
-    typedef std::shared_ptr<SceneNode>          shared_ptr;
-    typedef std::shared_ptr<const SceneNode>    const_shared_ptr;
-    typedef std::weak_ptr<SceneNode>            weak_ptr;
-    typedef std::weak_ptr<const SceneNode>      const_weak_ptr;
-    typedef std::unique_ptr<SceneNode>          ptr;
-    typedef std::unique_ptr<const SceneNode>    const_ptr;
-    
-private:
-    Document::const_shared_ptr  _doc;
-    Scene::shared_ptr            _scene;
-    mutable size_t               _current;
-    
-public:
-    SceneIterator(const Document::const_weak_ptr & doc) ;
-    
-    ~SceneIterator() ;
-    
+  public:
+    typedef std::shared_ptr<SceneNode>       shared_ptr;
+    typedef std::shared_ptr<const SceneNode> const_shared_ptr;
+    typedef std::weak_ptr<SceneNode>         weak_ptr;
+    typedef std::weak_ptr<const SceneNode>   const_weak_ptr;
+    typedef std::unique_ptr<SceneNode>       ptr;
+    typedef std::unique_ptr<const SceneNode> const_ptr;
+
+  private:
+    Document::const_shared_ptr _doc;
+    Scene::shared_ptr          _scene;
+    mutable size_t             _current;
+
+  public:
+    SceneIterator(const Document::const_weak_ptr& doc);
+
+    ~SceneIterator();
+
     /**
      * Function to copy iterators of the same type.
      */
     virtual IIterator<SceneNode>* clone() const;
-    
+
     /**
      * Return true if the iterator has more elements (i.e. it is not at the
      * end)
      */
     virtual bool hasNext() const;
-    
+
     /**
      * Returns true if the iterator is not at the beginning of the iteration
      */
     virtual bool hasPrevious() const;
-    
+
     /**
      * Returns the next element and advance the iterator by one.
      */
     virtual shared_ptr next();
-    
+
     /**
      * Returns the next element and advance the iterator by one.
      */
     virtual const_shared_ptr next() const;
-    
+
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
     virtual shared_ptr previous();
-    
+
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
      */
     virtual const_shared_ptr previous() const;
-    
+
     /**
      * Set the current position to pos relative to origin.
      *
@@ -165,21 +165,24 @@ public:
     virtual bool seek(int pos, IteratorOrigin origin) const;
 };
 
+struct Document::Impl
+{
+    Scene::shared_ptr scene;
 
-struct Document::Impl {
-    Scene::shared_ptr       scene;
-    
-    Impl() :scene(std::make_shared<Scene>()) 
+    Impl()
+        : scene(std::make_shared<Scene>())
     {
     }
-    
-    void getSelectedNodesRecursive(const SceneNode::shared_ptr & node,
-                                   std::vector<SceneNode::weak_ptr> & list) 
+
+    void getSelectedNodesRecursive(const SceneNode::shared_ptr&      node,
+                                   std::vector<SceneNode::weak_ptr>& list)
     {
         Iterator<SceneNode> it = node->constIterator();
-        while (it.hasNext()) {
+        while (it.hasNext())
+        {
             auto n = it.next();
-            if (n->isSelected()) {
+            if (n->isSelected())
+            {
                 list.push_back(n);
             }
             getSelectedNodesRecursive(n, list);
@@ -187,31 +190,25 @@ struct Document::Impl {
     }
 };
 
-Document::Document() : _d(new Impl)
+Document::Document()
+    : _d(new Impl)
 {
 }
 
-
-Document::~Document() 
-{    
-}
+Document::~Document() {}
 
 void Document::loadFile(const std::string& fileName)
 {
     _d->scene->loadFromFile(fileName);
 }
 
-void Document::saveFile(const std::string& fileName)
-{
-    NOT_IMPLEMENTED;
-}
-
-
+void Document::saveFile(const std::string& fileName) { NOT_IMPLEMENTED; }
 
 void Document::selectObject(int iid)
 {
     auto node = findItem(iid);
-    if (node) {
+    if (node)
+    {
         node->setSelected(true);
     }
 }
@@ -225,145 +222,162 @@ std::vector<SceneNode::weak_ptr> Document::getSelectedObjects() const
     return selectedObjectList;
 }
 
-Scene::weak_ptr Document::scene()
-{
-    return _d->scene;
-}
+Scene::weak_ptr Document::scene() { return _d->scene; }
 
-Scene::weak_ptr Document::scene() const
-{
-    return _d->scene;
-}
+Scene::weak_ptr Document::scene() const { return _d->scene; }
 
-
-SceneNode::shared_ptr Document::index (int row, 
-                               const SceneNode::shared_ptr & parent ) const
+SceneNode::shared_ptr
+Document::index(int row, const SceneNode::shared_ptr& parent) const
 {
     TRACEFUNCTION("");
-//    std::cerr << "Arg1: " << row << " Arg2:" << column << " Arg3:" << parent;
+    //    std::cerr << "Arg1: " << row << " Arg2:" << column << " Arg3:" <<
+    //    parent;
     assert(_d && _d->scene);
-    
+
     SceneNode::shared_ptr p = parent;
-    if (p) {
+    if (p)
+    {
         p = p->item(row).lock();
-    } else {
+    }
+    else
+    {
         p = _d->scene->item(row).lock();
     }
     return p;
 }
 
-SceneNode::shared_ptr Document::parent ( const SceneNode::shared_ptr & index ) const
+SceneNode::shared_ptr
+Document::parent(const SceneNode::shared_ptr& index) const
 {
     TRACEFUNCTION("");
-//    std::cerr << "Arg1: " << index;
+    //    std::cerr << "Arg1: " << index;
     assert(_d && _d->scene);
-    
+
     SceneNode::shared_ptr ret;
-    if (!index) {
-//        std::cerr << ret;
+    if (!index)
+    {
+        //        std::cerr << ret;
         return ret;
     }
-    
+
     SceneNode::shared_ptr ptr = index;
     SceneNode::shared_ptr parent, grandparent;
-    size_t row = -1;
-    
+    size_t                row = -1;
+
     // we need to obtaing the position of parent below its parent (i.e. the
     // grand parent of index)
-    if (ptr) {
+    if (ptr)
+    {
         parent = ptr->parent().lock();
-        if (parent) {
+        if (parent)
+        {
             grandparent = parent->parent().lock();
-            if (grandparent) {
+            if (grandparent)
+            {
                 size_t n = 0;
-                if (grandparent->itemIndex(parent, &n)) {
+                if (grandparent->itemIndex(parent, &n))
+                {
                     row = n;
                 }
             }
         }
-    } 
-    if (parent && row > -1) {
+    }
+    if (parent && row > -1)
+    {
         ret = parent;
     }
-//    std::cerr << ret;
+    //    std::cerr << ret;
     return ret;
 }
 
-size_t Document::childrenCount ( const SceneNode::shared_ptr & parent ) const
+size_t Document::childrenCount(const SceneNode::shared_ptr& parent) const
 {
     TRACEFUNCTION("");
-//    std::cerr << "Arg1: " << parent;
-    
+    //    std::cerr << "Arg1: " << parent;
+
     assert(_d && _d->scene);
-    size_t ret = 0;
+    size_t                ret = 0;
     SceneNode::shared_ptr p;
-    if (parent) {
+    if (parent)
+    {
         p = parent;
-    } else {
+    }
+    else
+    {
         p = _d->scene;
     }
-    if (p) {
+    if (p)
+    {
         ret = p->count();
     }
-//    std::cerr << ret;
+    //    std::cerr << ret;
     return ret;
 }
 
-SceneNode::shared_ptr Document::findItem(uint32_t iid) 
+SceneNode::shared_ptr Document::findItem(uint32_t iid)
 {
     TRACEFUNCTION("");
-    //std::cerr << "Arg1: " << iid;
+    // std::cerr << "Arg1: " << iid;
     SceneNode::shared_ptr p;
     return _d->scene->findByIID(iid);
 }
 
-void Document::addItem(const SceneNode::shared_ptr & node, 
-                     const SceneNode::shared_ptr & parent)
+void Document::addItem(const SceneNode::shared_ptr& node,
+                       const SceneNode::shared_ptr& parent)
 {
     TRACEFUNCTION("");
-//    std::cerr << "Arg1: " << node->iid() << " Arg2:" << parent;
+    //    std::cerr << "Arg1: " << node->iid() << " Arg2:" << parent;
     assert(_d && _d->scene);
-    
+
     SceneNode::shared_ptr p;
-    if (parent) {
+    if (parent)
+    {
         p = parent;
     }
-    
-    if (!p) {
+
+    if (!p)
+    {
         p = _d->scene;
     }
-    if (p) {
+    if (p)
+    {
         p->add(node);
-    } else {
+    }
+    else
+    {
         std::cerr << "failed to add node.";
     }
 }
 
-static void
-getCameraRecursive(const SceneNode::shared_ptr & scene,
-                   CameraNode::shared_ptr & container)
+static void getCameraRecursive(const SceneNode::shared_ptr& scene,
+                               CameraNode::shared_ptr&      container)
 {
-    if (container) return;
-    
+    if (container)
+        return;
+
     auto it = scene->iterator();
-    while(it.hasNext()) {
-        SceneNode::shared_ptr child = it.next();
-        CameraNode::shared_ptr cam = std::dynamic_pointer_cast<CameraNode>(child);
-        if (cam) {
+    while (it.hasNext())
+    {
+        SceneNode::shared_ptr  child = it.next();
+        CameraNode::shared_ptr cam =
+            std::dynamic_pointer_cast<CameraNode>(child);
+        if (cam)
+        {
             container = cam;
-        } else {
+        }
+        else
+        {
             getCameraRecursive(child, container);
         }
     }
 }
 
-CameraNode::shared_ptr
-Document::getCamera() const
+CameraNode::shared_ptr Document::getCamera() const
 {
     CameraNode::shared_ptr res;
-    
+
     getCameraRecursive(_d->scene, res);
-    
+
     return res;
 }
 
@@ -385,49 +399,30 @@ Iterator<ISurface> Document::surfaceIterator()
     return Iterator<ISurface>(new SurfaceIterator(ptr));
 }
 
-
 /// Iterator definition
 SurfaceIterator::SurfaceIterator(Document::weak_ptr doc)
-    :	_doc(doc)
+    : _doc(doc)
 {
     assert(!doc.expired());
 }
 
-SurfaceIterator::~SurfaceIterator()
-{
-}
-
+SurfaceIterator::~SurfaceIterator() {}
 
 IIterator<ISurface>* SurfaceIterator::clone() const
 {
-    SurfaceIterator *it = new SurfaceIterator(_doc);
+    SurfaceIterator* it = new SurfaceIterator(_doc);
     return it;
 }
 
-bool SurfaceIterator::hasNext() const
-{
-    NOT_IMPLEMENTED;
-}
+bool SurfaceIterator::hasNext() const { NOT_IMPLEMENTED; }
 
-bool SurfaceIterator::hasPrevious() const
-{
-    NOT_IMPLEMENTED;
-}
+bool SurfaceIterator::hasPrevious() const { NOT_IMPLEMENTED; }
 
-ISurface::shared_ptr SurfaceIterator::next()
-{
-    NOT_IMPLEMENTED;
-}
+ISurface::shared_ptr SurfaceIterator::next() { NOT_IMPLEMENTED; }
 
-ISurface::const_shared_ptr SurfaceIterator::next() const
-{
-    NOT_IMPLEMENTED;
-}
+ISurface::const_shared_ptr SurfaceIterator::next() const { NOT_IMPLEMENTED; }
 
-ISurface::shared_ptr SurfaceIterator::previous()
-{
-    NOT_IMPLEMENTED;
-}
+ISurface::shared_ptr SurfaceIterator::previous() { NOT_IMPLEMENTED; }
 
 ISurface::const_shared_ptr SurfaceIterator::previous() const
 {
@@ -439,10 +434,9 @@ bool SurfaceIterator::seek(int /*pos*/, IteratorOrigin /*origin*/) const
     NOT_IMPLEMENTED;
 }
 
-
-SceneIterator::SceneIterator(const Document::const_weak_ptr & doc)
-:	_doc(doc),
-    _current(0)
+SceneIterator::SceneIterator(const Document::const_weak_ptr& doc)
+    : _doc(doc)
+    , _current(0)
 {
     assert(!doc.expired());
     _scene = _doc->scene().lock();
@@ -456,20 +450,13 @@ SceneIterator::~SceneIterator()
 
 IIterator<SceneNode>* SceneIterator::clone() const
 {
-    SceneIterator *it = new SceneIterator(_doc);
+    SceneIterator* it = new SceneIterator(_doc);
     return it;
 }
 
-bool SceneIterator::hasNext() const
-{
+bool SceneIterator::hasNext() const { return _current < _scene->count(); }
 
-    return _current < _scene->count();
-}
-
-bool SceneIterator::hasPrevious() const
-{
-    NOT_IMPLEMENTED;
-}
+bool SceneIterator::hasPrevious() const { NOT_IMPLEMENTED; }
 
 SceneNode::shared_ptr SceneIterator::next()
 {
@@ -485,10 +472,7 @@ SceneNode::const_shared_ptr SceneIterator::next() const
     return n.lock();
 }
 
-SceneNode::shared_ptr SceneIterator::previous()
-{
-    NOT_IMPLEMENTED;
-}
+SceneNode::shared_ptr SceneIterator::previous() { NOT_IMPLEMENTED; }
 
 SceneNode::const_shared_ptr SceneIterator::previous() const
 {

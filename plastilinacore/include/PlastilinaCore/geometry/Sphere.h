@@ -22,40 +22,41 @@
 
 #include <PlastilinaCore/Point3D.h>
 
-namespace geometry {
-    class Sphere {
-        static const Point3 DEFAULT_CENTER;
-        static const float DEFAULT_RADIUS;
-        
-        Point3 _origin;
-        float  _r;
-        
-    public:
-        Sphere(const Point3 & origin = DEFAULT_CENTER, 
-               float r = DEFAULT_RADIUS);
-        
-        /**
-         * Returns the origin og the sphere.
-         */
-        Point3 center() const;
-        
-        /**
-         * Set the origin of the sphere.
-         */
-        void setCenter(const Point3 & val);
-        
-        /**
-         * Returns the radius of the sphere.
-         */
-        float radius() const;
-        
-        /**
-         * Set the sphere's radius.
-         *
-         * @param val new radius of the sphere.
-         */
-        void setRadius(float val);
-    };
+namespace geometry
+{
+class Sphere
+{
+    static const Point3 DEFAULT_CENTER;
+    static const float  DEFAULT_RADIUS;
+
+    Point3 _origin;
+    float  _r;
+
+  public:
+    Sphere(const Point3& origin = DEFAULT_CENTER, float r = DEFAULT_RADIUS);
+
+    /**
+     * Returns the origin og the sphere.
+     */
+    Point3 center() const;
+
+    /**
+     * Set the origin of the sphere.
+     */
+    void setCenter(const Point3& val);
+
+    /**
+     * Returns the radius of the sphere.
+     */
+    float radius() const;
+
+    /**
+     * Set the sphere's radius.
+     *
+     * @param val new radius of the sphere.
+     */
+    void setRadius(float val);
+};
 };
 
 #endif

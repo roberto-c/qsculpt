@@ -13,8 +13,6 @@ namespace core
 {
 
 typedef unsigned int IID;
-
 };
-
 
 #endif

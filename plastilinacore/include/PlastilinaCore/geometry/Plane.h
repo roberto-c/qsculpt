@@ -21,25 +21,27 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include <Eigen/Geometry>
 #include <PlastilinaCore/Point3D.h>
+#include <Eigen/Geometry>
 
 namespace geometry
 {
-    class Ray;
-    /**
-     * Class that represent a 3d plane.
-     */
-    class Plane : public Eigen::Hyperplane<float, 3>
-    {
-        static float DEFAULT_TOL;
-        static Point3 DEFAULT_POSITION;
-        static Vector3 DEFAULT_ORIENTATION;
+class Ray;
+/**
+ * Class that represent a 3d plane.
+ */
+class Plane : public Eigen::Hyperplane<float, 3>
+{
+    static float   DEFAULT_TOL;
+    static Point3  DEFAULT_POSITION;
+    static Vector3 DEFAULT_ORIENTATION;
 
-    public:
-        Plane(const Point3 &center = DEFAULT_POSITION, const Vector3 &normal = DEFAULT_ORIENTATION);
+  public:
+    Plane(const Point3&  center = DEFAULT_POSITION,
+          const Vector3& normal = DEFAULT_ORIENTATION);
 
-        float intersect(const Ray& ray, Point3 *p = NULL, float ep = DEFAULT_TOL) const;
-    };
+    float intersect(const Ray& ray, Point3* p = NULL,
+                    float ep = DEFAULT_TOL) const;
+};
 };
 #endif // PLANE_H

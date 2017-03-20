@@ -19,5 +19,3 @@
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/Octree.h>
-
-

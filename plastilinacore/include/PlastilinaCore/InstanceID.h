@@ -21,13 +21,14 @@
 #ifndef INSTANCEID_H_
 #define INSTANCEID_H_
 
-class InstanceId {
+class InstanceId
+{
     uint32_t _iid;
-    
-public:
+
+  public:
     uint32_t iid() const { return iid; };
-    
-protected:
+
+  protected:
     void setIid(uint32_t iid) { _iid = iid; };
 };
 

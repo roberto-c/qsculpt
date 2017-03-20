@@ -25,25 +25,22 @@
 
 struct BOManager::Impl
 {
-    IdBufferObjectMap   m_boMap;
-    IdVaoMap            m_vaoMap;
-	BOPool              m_vboPool;
-	BOPool              m_iboPool;
-    BOPool              m_vaoPool;
-	BOMeshMap           m_boMeshMap;
+    IdBufferObjectMap m_boMap;
+    IdVaoMap          m_vaoMap;
+    BOPool            m_vboPool;
+    BOPool            m_iboPool;
+    BOPool            m_vaoPool;
+    BOMeshMap         m_boMeshMap;
 };
 
 BOManager* BOManager::m_instance = NULL;
 
 BOManager::BOManager()
-: d(new Impl)
+    : d(new Impl)
 {
 }
 
-BOManager::~BOManager()
-{
-    delete d;
-}
+BOManager::~BOManager() { delete d; }
 
 BOManager* BOManager::getInstance()
 {
@@ -61,12 +58,13 @@ void BOManager::invalidateBO(ISurface* mesh)
         if (mesh == (*it).second)
         {
             d->m_boMap[(*it).first]->setNeedUpdate(true);
-            //std::cerr << " update BOs";
+            // std::cerr << " update BOs";
         }
     }
 }
 
-VertexBuffer* BOManager::createVBO(const std::string& poolName, const ISurface* mesh)
+VertexBuffer* BOManager::createVBO(const std::string& poolName,
+                                   const ISurface*    mesh)
 {
     assert(mesh);
     VertexBuffer* bo = new VertexBuffer;
@@ -80,14 +78,15 @@ VertexBuffer* BOManager::createVBO(const std::string& poolName, const ISurface* 
         else
         {
             d->m_boMeshMap[bo->objectID()] = mesh;
-            d->m_vboPool[poolName][mesh]= bo->objectID();
-            d->m_boMap[bo->objectID()] = bo;
+            d->m_vboPool[poolName][mesh]   = bo->objectID();
+            d->m_boMap[bo->objectID()]     = bo;
         }
     }
     return bo;
 }
 
-IndexBuffer* BOManager::createIBO(const std::string& poolName, const ISurface* mesh)
+IndexBuffer* BOManager::createIBO(const std::string& poolName,
+                                  const ISurface*    mesh)
 {
     assert(mesh);
     IndexBuffer* bo = new IndexBuffer;
@@ -101,8 +100,8 @@ IndexBuffer* BOManager::createIBO(const std::string& poolName, const ISurface* m
         else
         {
             d->m_boMeshMap[bo->objectID()] = mesh;
-            d->m_iboPool[poolName][mesh]= bo->objectID();
-            d->m_boMap[bo->objectID()] = bo;
+            d->m_iboPool[poolName][mesh]   = bo->objectID();
+            d->m_boMap[bo->objectID()]     = bo;
         }
     }
     return bo;
@@ -115,8 +114,8 @@ VAO* BOManager::createVAO(const std::string& poolName, const ISurface* mesh)
     if (bo)
     {
         d->m_boMeshMap[bo->objectID()] = mesh;
-        d->m_vaoPool[poolName][mesh]= bo->objectID();
-        d->m_vaoMap[bo->objectID()] = bo;
+        d->m_vaoPool[poolName][mesh]   = bo->objectID();
+        d->m_vaoMap[bo->objectID()]    = bo;
     }
     return bo;
 }
@@ -160,7 +159,6 @@ void BOManager::destroyBO(const std::string& poolName, VAO* bo)
     }
 }
 
-
 void BOManager::destroyAllMeshBO(const ISurface* mesh)
 {
     assert(mesh);
@@ -185,7 +183,7 @@ void BOManager::destroyPool(const std::string& poolName)
     if (d->m_vboPool.find(poolName) != d->m_vboPool.end())
     {
         MeshBOMap::iterator itEnd = d->m_vboPool[poolName].end();
-        for (auto it = d->m_vboPool[poolName].begin();  it != itEnd; ++it)
+        for (auto it = d->m_vboPool[poolName].begin(); it != itEnd; ++it)
         {
             boId.push_back((*it).second);
         }
@@ -202,12 +200,13 @@ void BOManager::destroyPool(const std::string& poolName)
     for (unsigned int i = 0; i < boId.size(); ++i)
     {
         auto bo = d->m_boMap.find(boId[i]);
-        if (bo != d->m_boMap.end()) {
+        if (bo != d->m_boMap.end())
+        {
             destroyBO(poolName, (*bo).second);
         }
     }
     boId.clear();
-    
+
     if (d->m_vaoPool.find(poolName) != d->m_vaoPool.end())
     {
         MeshBOMap::iterator itEnd = d->m_vaoPool[poolName].end();
@@ -219,7 +218,8 @@ void BOManager::destroyPool(const std::string& poolName)
     for (unsigned int i = 0; i < boId.size(); ++i)
     {
         auto bo = d->m_vaoMap.find(boId[i]);
-        if (bo != d->m_vaoMap.end()) {
+        if (bo != d->m_vaoMap.end())
+        {
             destroyBO(poolName, (*bo).second);
         }
     }
@@ -247,25 +247,28 @@ ISurface* BOManager::getMesh(const VAO* bo)
     return NULL;
 }
 
-
-VertexBuffer* BOManager::getVBO(const std::string& poolName, const ISurface* mesh)
+VertexBuffer* BOManager::getVBO(const std::string& poolName,
+                                const ISurface*    mesh)
 {
     assert(mesh);
-    if (d->m_vboPool.find(poolName) != d->m_vboPool.end()
-        && d->m_vboPool[poolName].find(mesh) != d->m_vboPool[poolName].end())
+    if (d->m_vboPool.find(poolName) != d->m_vboPool.end() &&
+        d->m_vboPool[poolName].find(mesh) != d->m_vboPool[poolName].end())
     {
-        return reinterpret_cast<VertexBuffer*>(d->m_boMap[d->m_vboPool[poolName].at(mesh)]);
+        return reinterpret_cast<VertexBuffer*>(
+            d->m_boMap[d->m_vboPool[poolName].at(mesh)]);
     }
     return NULL;
 }
 
-IndexBuffer* BOManager::getIBO(const std::string& poolName, const ISurface* mesh)
+IndexBuffer* BOManager::getIBO(const std::string& poolName,
+                               const ISurface*    mesh)
 {
     assert(mesh);
-    if (d->m_iboPool.find(poolName) != d->m_iboPool.end()
-        && d->m_iboPool[poolName].find(mesh) != d->m_iboPool[poolName].end())
-        {
-        return reinterpret_cast<IndexBuffer*>(d->m_boMap[d->m_iboPool[poolName].at(mesh)]);
+    if (d->m_iboPool.find(poolName) != d->m_iboPool.end() &&
+        d->m_iboPool[poolName].find(mesh) != d->m_iboPool[poolName].end())
+    {
+        return reinterpret_cast<IndexBuffer*>(
+            d->m_boMap[d->m_iboPool[poolName].at(mesh)]);
     }
     return NULL;
 }
@@ -274,7 +277,8 @@ VAO* BOManager::getVAO(const std::string& poolName, const ISurface* mesh)
 {
     assert(mesh);
     auto pool = d->m_vaoPool.find(poolName);
-    if (pool == d->m_vaoPool.end()) {
+    if (pool == d->m_vaoPool.end())
+    {
         return NULL;
     }
     if (pool->second.find(mesh) != pool->second.end())

@@ -29,25 +29,24 @@
  */
 class Quad : public Subdivision
 {
-public:
+  public:
     Quad();
-    
+
     virtual ~Quad();
-    
-protected:
+
+  protected:
     /**
      * Initializes the points vector.
      */
     virtual void initPoints();
-    
+
     /**
      * Initialized the triangles used on the object.
      */
     virtual void initTriangles();
-    
-private:
+
+  private:
     Point3 m_vertex[4];
-    
 };
 
 #endif // QUAD_H

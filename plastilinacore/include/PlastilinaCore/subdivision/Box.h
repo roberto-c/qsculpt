@@ -26,37 +26,37 @@
  * Draw a 3D box.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ */
 class Box : public Subdivision
 {
-public:
+  public:
     Box();
 
     virtual ~Box();
-    
-protected:
+
+  protected:
     /**
      * Initializes the points vector.
      */
     virtual void initPoints();
-    
-private:
-    Point3 m_vertex[8];
 
+  private:
+    Point3 m_vertex[8];
 };
 
-class Plane : public Subdivision {
-public:
+class Plane : public Subdivision
+{
+  public:
     Plane();
-    
+
     /**
      * Create a plane composed of MxN faces.
      */
     Plane(int m, int n);
-    
+
     virtual ~Plane();
-    
-protected:
+
+  protected:
     virtual void initPoints();
     void initPoints(int m, int n);
 };

@@ -21,70 +21,68 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include <Eigen/Geometry>
 #include <PlastilinaCore/Point3D.h>
-
-
+#include <Eigen/Geometry>
 
 namespace geometry
 {
-    class AABB;
-    class Plane;
-    class Sphere;
+class AABB;
+class Plane;
+class Sphere;
 
-    class Ray : public Eigen::ParametrizedLine<float, 3>
-    {
-        static float      DEFAULT_EPSILON;
-        static Point3     DEFAULT_ORIGIN;
-        static Vector3    DEFAULT_DIR;
+class Ray : public Eigen::ParametrizedLine<float, 3>
+{
+    static float   DEFAULT_EPSILON;
+    static Point3  DEFAULT_ORIGIN;
+    static Vector3 DEFAULT_DIR;
 
-    public:
-        /**
-         * Empty constructor. Origin is (0, 0, 0) and direction is (1, 0, 0)
-         */
-        Ray(const Point3& o = DEFAULT_ORIGIN, const Vector3& d = DEFAULT_DIR);
+  public:
+    /**
+     * Empty constructor. Origin is (0, 0, 0) and direction is (1, 0, 0)
+     */
+    Ray(const Point3& o = DEFAULT_ORIGIN, const Vector3& d = DEFAULT_DIR);
 
-        /**
-         * Check if the ray intersects another ray and stores the intersection
-         * point in p.
-         *
-         * @param ray ray to test intersection with.
-         * @param p an output paramter to store the point where the intersection
-         * happened. If null, not output is given.
-         * @param ep is the tolerance value to use to say if there is an
-         * intersection or not.
-         *
-         * @return a float value stating the time t in which the intersection
-         * ocurs
-         */
-        float intersect(const Ray& ray, Point3 *p = NULL, 
-                        float ep = DEFAULT_EPSILON) const;
+    /**
+     * Check if the ray intersects another ray and stores the intersection
+     * point in p.
+     *
+     * @param ray ray to test intersection with.
+     * @param p an output paramter to store the point where the intersection
+     * happened. If null, not output is given.
+     * @param ep is the tolerance value to use to say if there is an
+     * intersection or not.
+     *
+     * @return a float value stating the time t in which the intersection
+     * ocurs
+     */
+    float intersect(const Ray& ray, Point3* p = NULL,
+                    float ep = DEFAULT_EPSILON) const;
 
-        /**
-         *
-         */
-        float intersect(const Plane& plane, Point3 *p = NULL, 
-                        float ep = DEFAULT_EPSILON) const;
-        
-        /**
-         * Check if a point lies in a ray.
-         *
-         * @param point point to test for.
-         * @param p point where the intersection is. For this overload, it is 
-         * the same as point
-         */
-        float intersect(const Point3& point, Point3 *p = NULL, 
-                        float ep = DEFAULT_EPSILON) const;
-        
-        /**
-         * Check if a ray intersects an sphere and stores the intersection point
-         * in p.
-         *
-         * @param sphere
-         */
-        float intersect(const Sphere& sphere, Point3 *p = NULL,
-                        float ep = DEFAULT_EPSILON) const;
-    };
+    /**
+     *
+     */
+    float intersect(const Plane& plane, Point3* p = NULL,
+                    float ep = DEFAULT_EPSILON) const;
+
+    /**
+     * Check if a point lies in a ray.
+     *
+     * @param point point to test for.
+     * @param p point where the intersection is. For this overload, it is
+     * the same as point
+     */
+    float intersect(const Point3& point, Point3* p = NULL,
+                    float ep = DEFAULT_EPSILON) const;
+
+    /**
+     * Check if a ray intersects an sphere and stores the intersection point
+     * in p.
+     *
+     * @param sphere
+     */
+    float intersect(const Sphere& sphere, Point3* p = NULL,
+                    float ep = DEFAULT_EPSILON) const;
+};
 };
 
 #endif // RAY_H

@@ -21,8 +21,8 @@
 #ifndef MATERIAL_H_
 #define MATERIAL_H_
 
-#include <memory>
 #include <Eigen/Geometry>
+#include <memory>
 
 class GlslProgram;
 class LightNode;
@@ -37,16 +37,16 @@ class IDocument;
  */
 class DLLEXPORT Material
 {
-public:
+  public:
     Material();
-    
+
     virtual ~Material();
-    
+
     /**
      * Returns the instance ID of the material object.
      */
-    int iid() const ;
-    
+    int iid() const;
+
     /**
      * Setup all data to render an object using this material.
      *
@@ -56,38 +56,37 @@ public:
      * This function should be called just once, at the initialization of the
      * material.
      */
-    virtual void load()=0;
-    
+    virtual void load() = 0;
+
     /**
      * Releases all data and resources used by this material.
      */
     virtual void unload() = 0;
-    
-    
+
     /**
      * Sets up material with variables and properties needed
      *
      * This function must be implemented by subclasses to bind all necesary
      * resources, like shaders, textures, lighting parameters, etc.
      */
-    virtual void setup(const std::shared_ptr<SceneNode> & doc) = 0;
-	
-	virtual void setup(const std::shared_ptr<const SceneNode> & doc) = 0;
-    
+    virtual void setup(const std::shared_ptr<SceneNode>& doc) = 0;
+
+    virtual void setup(const std::shared_ptr<const SceneNode>& doc) = 0;
+
     /**
      * Gets the shader program used for implementing the material.
      */
-    GlslProgram * shaderProgram() const;
-    
-private:
+    GlslProgram* shaderProgram() const;
+
+  private:
     struct Impl;
     std::unique_ptr<Impl> d_;
 };
 
-
-enum MaterialPropertyType {
+enum MaterialPropertyType
+{
     Void = 0,
-    Int = 1,
+    Int  = 1,
     Int16,
     Int32,
     Int64,
@@ -108,54 +107,53 @@ enum MaterialPropertyType {
     Texture1D,
     Texture2D,
     Texture3D
-    };
-
-struct DLLEXPORT MaterialProperty {
-    MaterialPropertyType type;
-    bool pointer;
-    bool input;
-    bool ouput;
-    bool uniform;
-    bool varying;
 };
 
+struct DLLEXPORT MaterialProperty
+{
+    MaterialPropertyType type;
+    bool                 pointer;
+    bool                 input;
+    bool                 ouput;
+    bool                 uniform;
+    bool                 varying;
+};
 
 class DLLEXPORT MaterialNode
 {
-public:
+  public:
     /**
      *
      */
     MaterialNode();
-    
+
     virtual ~MaterialNode();
-    
-    bool connect(const std::string & name, 
-                 MaterialNode * node2, 
-                 const std::string & inputName);
-    
-protected:
-    bool registerProperty(const std::string & name, MaterialProperty type);
+
+    bool connect(const std::string& name, MaterialNode* node2,
+                 const std::string& inputName);
+
+  protected:
+    bool registerProperty(const std::string& name, MaterialProperty type);
 };
 
 class DLLEXPORT CookTorrance : public Material
 {
     struct Impl;
     std::unique_ptr<Impl> d;
-    
-public:
+
+  public:
     CookTorrance();
     ~CookTorrance();
-    
+
     virtual void load();
     virtual void unload();
-    virtual void setup(const std::shared_ptr<SceneNode> & doc);
-	virtual void setup(const std::shared_ptr<const SceneNode> & doc);
-    
-    void setColor(const Eigen::Vector4f & c);
+    virtual void setup(const std::shared_ptr<SceneNode>& doc);
+    virtual void setup(const std::shared_ptr<const SceneNode>& doc);
+
+    void setColor(const Eigen::Vector4f& c);
     Eigen::Vector4f color();
-    
-    void setLight(std::shared_ptr<LightNode> & p);
+
+    void setLight(std::shared_ptr<LightNode>& p);
     std::shared_ptr<LightNode> light();
 };
 

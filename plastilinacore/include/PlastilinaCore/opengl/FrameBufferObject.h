@@ -13,70 +13,62 @@
 
 namespace gl
 {
-    class Texture2D;
-    class RenderBuffer;
+class Texture2D;
+class RenderBuffer;
 
-    class FrameBufferObject : public gl::Object<gl::FrameBufferObject>
-    {
-    public:
-        FrameBufferObject();
+class FrameBufferObject : public gl::Object<gl::FrameBufferObject>
+{
+  public:
+    FrameBufferObject();
 
-        virtual ~FrameBufferObject();
+    virtual ~FrameBufferObject();
 
-        /**
-         * Bind the framebuffer object using the target
-         */
-        void bind();
+    /**
+     * Bind the framebuffer object using the target
+     */
+    void bind();
 
-        /**
-         * Unbind the framebuffer
-         */
-        void unbind();
+    /**
+     * Unbind the framebuffer
+     */
+    void unbind();
 
-        void framebufferTexture(
-            GLenum attachment,
-            Texture2D & texture,
-            GLint level);
+    void framebufferTexture(GLenum attachment, Texture2D& texture,
+                            GLint level);
 
-        void framebufferRenderbuffer(
-            GLenum attachment,
-            GLenum renderbuffertarget,
-            RenderBuffer & renderbuffer);
+    void framebufferRenderbuffer(GLenum attachment, GLenum renderbuffertarget,
+                                 RenderBuffer& renderbuffer);
 
-        bool isComplete() const;
+    bool isComplete() const;
 
-        static void create(uint32_t n, GLuint * name);
-        static void destroy(uint32_t n, GLuint * name);
-    };
+    static void create(uint32_t n, GLuint* name);
+    static void destroy(uint32_t n, GLuint* name);
+};
 
-    class RenderBuffer : public gl::Object<gl::RenderBuffer>
-    {
-    public:
-        RenderBuffer();
+class RenderBuffer : public gl::Object<gl::RenderBuffer>
+{
+  public:
+    RenderBuffer();
 
-        virtual ~RenderBuffer();
+    virtual ~RenderBuffer();
 
-        /**
-        * Bind the framebuffer object using the target
-        */
-        void bind();
+    /**
+     * Bind the framebuffer object using the target
+     */
+    void bind();
 
-        /**
-        * Unbind the framebuffer
-        */
-        void unbind();
+    /**
+     * Unbind the framebuffer
+     */
+    void unbind();
 
-        void storage(GLenum internalformat,
-            GLsizei width,
-            GLsizei height);
+    void storage(GLenum internalformat, GLsizei width, GLsizei height);
 
-        void storageMultisample(GLsizei samples,
-            GLenum internalformat,
-            GLsizei width,
-            GLsizei height);
+    void storageMultisample(GLsizei samples, GLenum internalformat,
+                            GLsizei width, GLsizei height);
 
-        static void create(uint32_t n, GLuint * name);
-        static void destroy(uint32_t n, GLuint * name);
-    };
+    static void create(uint32_t n, GLuint* name);
+    static void destroy(uint32_t n, GLuint* name);
+};
 };
 #endif

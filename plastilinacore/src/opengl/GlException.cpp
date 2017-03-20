@@ -6,20 +6,20 @@
 //  Copyright (c) 2012 plastilinaware. All rights reserved.
 //
 #include <PlastilinaCore/Stable.h>
-#include <iostream>
 #include <PlastilinaCore/opengl/GlException.h>
+#include <iostream>
 
-//namespace core {
-//    
-//    GlException::GlException(const char* what, GLenum error) throw() 
+// namespace core {
+//
+//    GlException::GlException(const char* what, GLenum error) throw()
 //        : std::exception(), what_(what), error_(error)
 //            {}
-//            
+//
 //    GlException::~GlException() throw() {
 //        what_ = NULL;
 //        error_ = 0;
 //    }
-//            
+//
 //    const char* GlException::what() const throw() {
 //        return what_;
 //    }

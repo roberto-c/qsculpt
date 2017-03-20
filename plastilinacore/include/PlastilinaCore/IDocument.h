@@ -26,57 +26,57 @@
 class ISurface;
 class SceneNode;
 
-
 /**
  * Interface that should implement every kind of document.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
  */
-class DLLEXPORT IDocument :public std::enable_shared_from_this<IDocument>
+class DLLEXPORT IDocument : public std::enable_shared_from_this<IDocument>
 {
 
+  public:
+    typedef std::shared_ptr<IDocument>       shared_ptr;
+    typedef std::shared_ptr<const IDocument> const_shared_ptr;
+    typedef std::weak_ptr<IDocument>         weak_ptr;
+    typedef std::weak_ptr<const IDocument>   const_weak_ptr;
+    typedef std::unique_ptr<IDocument>       ptr;
+    typedef std::unique_ptr<const IDocument> const_ptr;
 
-public:
-    typedef std::shared_ptr<IDocument>          shared_ptr;
-    typedef std::shared_ptr<const IDocument>    const_shared_ptr;
-    typedef std::weak_ptr<IDocument>            weak_ptr;
-    typedef std::weak_ptr<const IDocument>      const_weak_ptr;
-    typedef std::unique_ptr<IDocument>          ptr;
-    typedef std::unique_ptr<const IDocument>    const_ptr;
-    
-    enum ObjectType {
+    enum ObjectType
+    {
         Mesh,
         Box,
         Sphere,
         Group
     };
-    
-    enum ChangeType {
+
+    enum ChangeType
+    {
         AddObject,
         RemoveObject,
         ObjectChanged
     };
-    
+
     /**
      * IDocument default constructor.
      */
-    IDocument(){}
+    IDocument() {}
 
     /**
      * Default virtual destructor.
      */
-    virtual ~IDocument(){}
-    
+    virtual ~IDocument() {}
+
     /**
      * Load file
      */
     virtual void loadFile(const std::string& fileName) = 0;
-    
+
     /**
      * Save file
      */
     virtual void saveFile(const std::string& fileName) = 0;
-    
+
     /**
      * This method searches for a node item with an IID of iid.
      *
@@ -85,17 +85,17 @@ public:
      * @param iid instance id of the item to find
      */
     virtual SceneNode::shared_ptr findItem(uint32_t iid) = 0;
-    
+
     /**
-     * 
+     *
      */
     virtual void selectObject(int iid) = 0;
-    
+
     /**
-     * 
+     *
      */
     virtual std::vector<SceneNode::weak_ptr> getSelectedObjects() const = 0;
-    
+
     virtual CameraNode::shared_ptr getCamera() const = 0;
     /**
      * Returns an iterator to the scene nodes.
@@ -103,28 +103,27 @@ public:
      * This iterators only iterates over the direct children of the document.
      */
     virtual Iterator<SceneNode> sceneIterator() = 0;
-    
+
     /**
      * Returns an iterator to the scene nodes.
      *
      * This iterators only iterates over the direct children of the document.
      */
     virtual Iterator<SceneNode> constSceneIterator() const = 0;
-    
+
     /**
      * Get the scene object of the document. The scene object
      * is a container with all the objects or actors in the scene.
      */
     virtual Scene::weak_ptr scene() = 0;
-    
+
     /**
      * Get the scene object of the document. The scene object
      * is a container with all the objects or actors in the scene.
      */
     virtual Scene::weak_ptr scene() const = 0;
-    
+
     void changed(IDocument::ChangeType type, ISurface* object);
 };
 
 #endif
-

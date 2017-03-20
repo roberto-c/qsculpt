@@ -11,25 +11,25 @@
 
 #include <iostream>
 
-#include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Color.h>
+#include <PlastilinaCore/Material.h>
 
 class DLLEXPORT PointMaterial : public Material
 {
-public:
+  public:
     PointMaterial();
-    
+
     virtual ~PointMaterial();
-    
+
     virtual void load();
-    
+
     virtual void unload();
-    
-    virtual void setup(const std::shared_ptr<SceneNode> & doc);
-	
-	virtual void setup(const std::shared_ptr<const SceneNode> & doc);
-    
-private:
+
+    virtual void setup(const std::shared_ptr<SceneNode>& doc);
+
+    virtual void setup(const std::shared_ptr<const SceneNode>& doc);
+
+  private:
     struct Impl;
     std::unique_ptr<Impl> d;
 };

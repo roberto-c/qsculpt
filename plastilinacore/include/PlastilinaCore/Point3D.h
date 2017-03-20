@@ -32,29 +32,28 @@ typedef Eigen::Vector4f Vector4;
 
 typedef std::vector<int> PointIndexList;
 
-//Q_DECLARE_METATYPE(Point3)
+// Q_DECLARE_METATYPE(Point3)
 
 inline std::string toString(const Vector3& v)
 {
-	std::ostringstream str;
-//    str << v;
-	str << "(" << v[0] << "," << v[1] << "," << v[2] << ")";
-    
-	return str.str();
+    std::ostringstream str;
+    //    str << v;
+    str << "(" << v[0] << "," << v[1] << "," << v[2] << ")";
+
+    return str.str();
 }
 
 inline std::string toString(const Vector4& v)
 {
     std::ostringstream str;
-	str << "(" << v[0] << "," << v[1] << "," << v[2] << "," << v[3] << ")";
+    str << "(" << v[0] << "," << v[1] << "," << v[2] << "," << v[3] << ")";
     // str << v;
-//	std::string str;
-//	str += "(" + std::string::number(v[0]) + "," + 
-//	std::string::number(v[1]) + "," +
-//	std::string::number(v[2]) + "," +
-//    std::string::number(v[3]) + ")";
-	return str.str();
+    //	std::string str;
+    //	str += "(" + std::string::number(v[0]) + "," +
+    //	std::string::number(v[1]) + "," +
+    //	std::string::number(v[2]) + "," +
+    //    std::string::number(v[3]) + ")";
+    return str.str();
 }
 
 #endif
-

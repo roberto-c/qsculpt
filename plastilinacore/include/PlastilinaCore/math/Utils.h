@@ -8,13 +8,13 @@
 #ifndef MATH_UTILS_H
 #define MATH_UTILS_H
 
-namespace math {
-    template<typename T>
-    T clamp(T Value, T Min, T Max)
-    {
-        return (Value < Min)? Min : (Value > Max)? Max : Value;
-    }
+namespace math
+{
+template <typename T>
+T clamp(T Value, T Min, T Max)
+{
+    return (Value < Min) ? Min : (Value > Max) ? Max : Value;
+}
 };
-
 
 #endif

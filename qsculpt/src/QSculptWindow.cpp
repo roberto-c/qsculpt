@@ -18,92 +18,96 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
 #include <QtWidgets/QDockWidget>
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
 
 #include <PlastilinaCore/Document.h>
-#include <PlastilinaCore/SceneNode.h>
-#include <PlastilinaCore/subdivision/Box.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Material/PhongMaterial.h>
-#include "QSculptWindow.h"
-#include "DocumentView.h"
-#include "MoveCommand.h"
-#include "TransformWidget.h"
-#include "SelectCommand.h"
+#include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/subdivision/Box.h>
 #include "BrushCommand.h"
-#include "SubdivideCommand.h"
-#include "orbitcommand.h"
 #include "Console.h"
 #include "ConsoleWindow.h"
-#include "IConfigContainer.h"
-#include "DocumentTreeWidget.h"
-#include "MeshEditCommands.h"
-#include "ui_MainWindow.h"
 #include "DocumentModel.h"
+#include "DocumentTreeWidget.h"
+#include "DocumentView.h"
+#include "IConfigContainer.h"
+#include "MeshEditCommands.h"
+#include "MoveCommand.h"
+#include "QSculptWindow.h"
+#include "SelectCommand.h"
+#include "SubdivideCommand.h"
+#include "TransformWidget.h"
+#include "orbitcommand.h"
+#include "ui_MainWindow.h"
 
-struct QSculptWindow::Impl : public Ui::MainWindow {
-    DocumentView*               documentView;
-    CommandManager              commandManager;
-    QString                     curFile;
-    IDocument::shared_ptr       document;
-    ICommand*                   currentCommand;
-    
-    QActionGroup*               toolActionGroup;
-    QDockWidget*                dockCommandOptions;
-    QToolBar*                   toolsToolbar;
-    Console*                    console;
-    DocumentTreeWidget*         docTree;
+struct QSculptWindow::Impl : public Ui::MainWindow
+{
+    DocumentView *documentView;
+    CommandManager commandManager;
+    QString curFile;
+    IDocument::shared_ptr document;
+    ICommand *currentCommand;
+
+    QActionGroup *toolActionGroup;
+    QDockWidget *dockCommandOptions;
+    QToolBar *toolsToolbar;
+    Console *console;
+    DocumentTreeWidget *docTree;
     std::shared_ptr<DocumentModel> docModel;
 };
 
 QSculptWindow::QSculptWindow()
-    : QMainWindow(), d_(new Impl)
+    : QMainWindow()
+    , d_(new Impl)
 {
     createWidgets();
 
     readSettings();
 }
 
-QSculptWindow::~QSculptWindow()
-{
-}
+QSculptWindow::~QSculptWindow() {}
 
 void QSculptWindow::createWidgets()
 {
     d_->setupUi(this);
     d_->documentView = new DocumentView(this);
-    
 
     setCentralWidget(d_->documentView);
 
     d_->dockCommandOptions = new QDockWidget("Options", NULL);
     Q_CHECK_PTR(d_->dockCommandOptions);
-    d_->dockCommandOptions->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    d_->dockCommandOptions->setAllowedAreas(Qt::LeftDockWidgetArea |
+                                            Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, d_->dockCommandOptions);
 
     d_->m_viewFullscreen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
-    connect(d_->m_showGrid, SIGNAL(toggled(bool)), d_->documentView, SLOT(setGridVisible(bool)));
-    connect(d_->m_showNormals, SIGNAL(toggled(bool)), d_->documentView, SLOT(setNormalsVisible(bool)));
-    connect(d_->m_viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(viewFullscreen(bool)));
-    //connect(d_->document.get(), SIGNAL(changed(IDocument::ChangeType, ISurface*)),
+    connect(d_->m_showGrid, SIGNAL(toggled(bool)), d_->documentView,
+            SLOT(setGridVisible(bool)));
+    connect(d_->m_showNormals, SIGNAL(toggled(bool)), d_->documentView,
+            SLOT(setNormalsVisible(bool)));
+    connect(d_->m_viewFullscreen, SIGNAL(toggled(bool)), this,
+            SLOT(viewFullscreen(bool)));
+    // connect(d_->document.get(), SIGNAL(changed(IDocument::ChangeType,
+    // ISurface*)),
     //        this, SLOT(documentChanged(IDocument::ChangeType)));
 
     d_->console = Console::instance();
-    
+
     d_->docTree = new DocumentTreeWidget(this);
     d_->docTree->setDocument(d_->docModel);
 
     QAction *action = NULL;
-    ICommand* cmd = NULL;
+    ICommand *cmd = NULL;
 
-    //action = new QAction("AddSurface", this);
+    // action = new QAction("AddSurface", this);
     cmd = new AddSurfaceCommand;
     d_->commandManager.registerCommand("AddBox", d_->m_addBox, cmd);
-    
+
     action = d_->commandManager.createUndoAction(this);
     Q_CHECK_PTR(action);
     action->setShortcut(QKeySequence::Undo);
@@ -117,7 +121,6 @@ void QSculptWindow::createWidgets()
     Q_CHECK_PTR(d_->toolActionGroup);
     d_->toolsToolbar = addToolBar("Tools");
 
-    
     action = new QAction("Select", this);
     cmd = new SelectCommand;
     Q_CHECK_PTR(action);
@@ -162,31 +165,31 @@ void QSculptWindow::createWidgets()
     d_->toolsToolbar->addAction(action);
     d_->commandManager.registerCommand("Orbit", action, cmd);
 
-	action = new QAction("Move", this);
-	cmd = new TransformCommand;
+    action = new QAction("Move", this);
+    cmd = new TransformCommand;
     cmd->getConfig().setInt(CONF_ACTION, TransformCommand::Move);
-	Q_CHECK_PTR(action);
-	Q_CHECK_PTR(cmd);
-	action->setToolTip("Move an object.");
+    Q_CHECK_PTR(action);
+    Q_CHECK_PTR(cmd);
+    action->setToolTip("Move an object.");
     action->setCheckable(true);
-	//action->setEnabled(false);
-	d_->menuTools->addAction(action);
-	d_->toolActionGroup->addAction(action);
-	d_->toolsToolbar->addAction(action);
-	d_->commandManager.registerCommand("Move", action, cmd);
-    
+    // action->setEnabled(false);
+    d_->menuTools->addAction(action);
+    d_->toolActionGroup->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("Move", action, cmd);
+
     action = new QAction("Rotate", this);
-	cmd = new TransformCommand;
+    cmd = new TransformCommand;
     cmd->getConfig().setInt(CONF_ACTION, TransformCommand::Rotate);
-	Q_CHECK_PTR(action);
-	Q_CHECK_PTR(cmd);
-	action->setToolTip("Rotate an object.");
+    Q_CHECK_PTR(action);
+    Q_CHECK_PTR(cmd);
+    action->setToolTip("Rotate an object.");
     action->setCheckable(true);
-	//action->setEnabled(false);
-	d_->menuTools->addAction(action);
-	d_->toolActionGroup->addAction(action);
-	d_->toolsToolbar->addAction(action);
-	d_->commandManager.registerCommand("Rotate", action, cmd);
+    // action->setEnabled(false);
+    d_->menuTools->addAction(action);
+    d_->toolActionGroup->addAction(action);
+    d_->toolsToolbar->addAction(action);
+    d_->commandManager.registerCommand("Rotate", action, cmd);
 
     action = new QAction("Brush", this);
     cmd = new BrushCommand;
@@ -213,7 +216,7 @@ void QSculptWindow::createWidgets()
     d_->menuTools->addAction(action);
     d_->toolsToolbar->addAction(action);
     d_->commandManager.registerCommand("Subdivide", action, cmd);
-    
+
     action = new QAction("EditSubdivide", this);
     cmd = new EditSubdivideCommand;
     Q_CHECK_PTR(action);
@@ -229,35 +232,36 @@ void QSculptWindow::createWidgets()
     d_->menuTools->addAction(action);
     d_->toolsToolbar->addAction(action);
     d_->commandManager.registerCommand("SmoothSurface", action, cmd);
-    
+
     cmd = new TestCommand;
     action = new QAction("Test", this);
     d_->menuTools->addAction(action);
     d_->toolsToolbar->addAction(action);
     d_->commandManager.registerCommand("Test", action, cmd);
-    
-    connect(&d_->commandManager, SIGNAL(commandActivated(QString)),
-            this, SLOT(commandActivated(QString)));
+
+    connect(&d_->commandManager, SIGNAL(commandActivated(QString)), this,
+            SLOT(commandActivated(QString)));
 
     // Activate default tool
     d_->commandManager.setActiveCommand("Select");
 
-    connect(d_->m_new,SIGNAL(triggered()),this,SLOT(newFile()));
+    connect(d_->m_new, SIGNAL(triggered()), this, SLOT(newFile()));
     connect(d_->m_save, SIGNAL(triggered()), this, SLOT(save()));
     connect(d_->m_saveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
     connect(d_->m_open, SIGNAL(triggered()), this, SLOT(open()));
 
     if (layout())
     {
-    	layout()->setContentsMargins(0, 0, 0, 0);
-    	layout()->setSpacing(0);
+        layout()->setContentsMargins(0, 0, 0, 0);
+        layout()->setSpacing(0);
     }
 
     d_->console->consoleWindow()->setParent(this);
-    this->addDockWidget(Qt::BottomDockWidgetArea, d_->console->consoleWindow());
-    
+    this->addDockWidget(Qt::BottomDockWidgetArea,
+                        d_->console->consoleWindow());
+
     addDockWidget(Qt::RightDockWidgetArea, d_->docTree);
-    
+
     d_->document = std::make_shared<Document>();
     d_->docModel = std::make_shared<DocumentModel>(d_->document);
     d_->documentView->setDocument(d_->document);
@@ -273,14 +277,15 @@ IDocument::shared_ptr QSculptWindow::getCurrentDocument()
     return d_->document;
 }
 
-DocumentView* QSculptWindow::getCurrentView() const
+DocumentView *QSculptWindow::getCurrentView() const
 {
     return d_->documentView;
 }
 
-QWidget* QSculptWindow::toolWidget(const QString & key) const
+QWidget *QSculptWindow::toolWidget(const QString &key) const
 {
-    if (key == "DocTree") {
+    if (key == "DocTree")
+    {
         return d_->docTree;
     }
     return NULL;
@@ -288,26 +293,29 @@ QWidget* QSculptWindow::toolWidget(const QString & key) const
 
 void QSculptWindow::closeEvent(QCloseEvent *event)
 {
-    if (maybeSave()) {
+    if (maybeSave())
+    {
         writeSettings();
         d_->console->consoleWindow()->close();
         event->accept();
-    } else {
+    }
+    else
+    {
         event->ignore();
     }
 }
 
-
 void QSculptWindow::newFile()
 {
-    if (maybeSave()) {
-        //textEdit->clear();
+    if (maybeSave())
+    {
+        // textEdit->clear();
         setCurrentFile("");
-        
+
         d_->document = std::make_shared<Document>();
         d_->docModel = std::make_shared<DocumentModel>(d_->document);
         d_->documentView->setDocument(d_->document);
-        
+
         auto node = std::make_shared<SurfaceNode>(new ::Box, "test");
         auto mat = std::make_shared<PhongMaterial>();
         mat->load();
@@ -321,24 +329,28 @@ void QSculptWindow::newFile()
 
 void QSculptWindow::open()
 {
-    if (maybeSave()) {
+    if (maybeSave())
+    {
         setCurrentFile("");
-        
+
         d_->document = std::make_shared<Document>();
         d_->docModel = std::make_shared<DocumentModel>(d_->document);
         QString fileName = QFileDialog::getOpenFileName(this);
         if (!fileName.isEmpty())
             loadFile(fileName);
-        d_->documentView->setDocument(d_->document);        
+        d_->documentView->setDocument(d_->document);
         d_->docTree->setDocument(d_->docModel);
     }
 }
 
 bool QSculptWindow::save()
 {
-    if (d_->curFile.isEmpty()) {
+    if (d_->curFile.isEmpty())
+    {
         return saveAs();
-    } else {
+    }
+    else
+    {
         return saveFile(d_->curFile);
     }
 }
@@ -354,15 +366,14 @@ bool QSculptWindow::saveAs()
 
 void QSculptWindow::about()
 {
-    QMessageBox::about(this, tr("About Application"),
-                       tr("The <b>Application</b> example demonstrates how to "
-                          "write modern GUI applications using Qt, with a menu bar, "
-                          "toolbars, and a status bar."));
+    QMessageBox::about(
+        this, tr("About Application"),
+        tr("The <b>Application</b> example demonstrates how to "
+           "write modern GUI applications using Qt, with a menu bar, "
+           "toolbars, and a status bar."));
 }
 
-void QSculptWindow::documentWasModified()
-{
-}
+void QSculptWindow::documentWasModified() {}
 
 void QSculptWindow::readSettings()
 {
@@ -380,17 +391,14 @@ void QSculptWindow::writeSettings()
     settings.setValue("size", size());
 }
 
-bool QSculptWindow::maybeSave()
-{
-    return true;
-}
+bool QSculptWindow::maybeSave() { return true; }
 
 void QSculptWindow::loadFile(const QString &fileName)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (d_->document)
     {
-        d_->document->loadFile( fileName.toStdString() );
+        d_->document->loadFile(fileName.toStdString());
     }
     QApplication::restoreOverrideCursor();
 
@@ -403,7 +411,7 @@ bool QSculptWindow::saveFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (d_->document)
     {
-        d_->document->saveFile( fileName.toStdString() );
+        d_->document->saveFile(fileName.toStdString());
     }
     QApplication::restoreOverrideCursor();
 
@@ -433,26 +441,24 @@ QString QSculptWindow::strippedName(const QString &fullFileName)
 
 void QSculptWindow::showGrid(bool val)
 {
-    d_->documentView->setGridVisible( val );
+    d_->documentView->setGridVisible(val);
 }
 
-ICommand* QSculptWindow::getSelectedCommand() const
+ICommand *QSculptWindow::getSelectedCommand() const
 {
     return d_->commandManager.getActiveCommand();
 }
 
-void QSculptWindow::documentChanged(IDocument::ChangeType /*type*/)
-{
-}
+void QSculptWindow::documentChanged(IDocument::ChangeType /*type*/) {}
 
-void QSculptWindow::setOptionsWidget(QWidget* widget)
+void QSculptWindow::setOptionsWidget(QWidget *widget)
 {
     qDebug() << "QSculptWindow::setOptionsWidget";
 
     if (widget)
     {
         // Get the current widget on the dock and hide it
-        QWidget* wid = d_->dockCommandOptions->widget();
+        QWidget *wid = d_->dockCommandOptions->widget();
         if (wid)
         {
             wid->hide();
@@ -472,7 +478,7 @@ void QSculptWindow::commandActivated(QString name)
 {
     qDebug() << "QSculptWindow::commandActivated";
     Q_UNUSED(name);
-    ICommand* cmd = d_->commandManager.getActiveCommand();
+    ICommand *cmd = d_->commandManager.getActiveCommand();
     if (cmd)
     {
 

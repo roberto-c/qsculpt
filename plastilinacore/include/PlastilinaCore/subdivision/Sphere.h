@@ -30,19 +30,17 @@ class GLUquadric;
  */
 class Sphere : public Subdivision
 {
-public:
+  public:
     Sphere();
 
     virtual ~Sphere();
 
-protected:
+  protected:
     virtual void initPoints();
-	
-	Point3 evalCoords(float s, float u);
+
+    Point3 evalCoords(float s, float u);
 
     GLUquadric* m_pquadratic;
-
 };
 
 #endif
-

@@ -20,9 +20,9 @@
 #ifndef BOMANAGER_H_
 #define BOMANAGER_H_
 
-#include <unordered_map>
 #include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
+#include <unordered_map>
 
 class ISurface;
 
@@ -35,89 +35,88 @@ class ISurface;
  */
 class DLLEXPORT BOManager
 {
-	typedef std::unordered_map<GLuint, BufferObject*>   IdBufferObjectMap;
+    typedef std::unordered_map<GLuint, BufferObject*>   IdBufferObjectMap;
     typedef std::unordered_map<GLuint, VAO*>            IdVaoMap;
-	typedef std::unordered_map<GLuint, const ISurface*> BOMeshMap;
-	typedef std::unordered_map<const ISurface*, GLuint> MeshBOMap;
-	typedef std::unordered_map<std::string, MeshBOMap>  BOPool;
-	
-public:
-	static BOManager* getInstance();
-	
-	virtual ~BOManager();
-	
-	/**
-	 * Creates a vertex buffer objects and stablish a relationship between
-	 * the buffer object created and an object mesh.
-	 *
-	 * The same mesh can be binded to differents buffers objects. By doing 
-	 * this, the same 3d data can be represented in different ways by different
-	 * buffer objects.
-	 *
-	 * The pointer returned should not be deleted by the caller of the function.
-	 * To free the resources of the buffer objects call destroyBO function.
-	 *
-	 * TODO: describe the notion of pool's on this class.
-	 */
-	VertexBuffer*   createVBO(const std::string& poolName,
-                              const ISurface* mesh);
-	IndexBuffer*    createIBO(const std::string& poolName,
-                              const ISurface* mesh);
-    VAO*            createVAO(const std::string& poolName,
-                              const ISurface* mesh);
-	
-	/**
-	 * Free the buffer object resources.
-	 *
-	 * This method should be called to free the resources of the buffer objects.
-	 * Free the memory used by the buffer objects and delete the relationship of 
-	 * the buffer object with the mesh stablished with Create*BO
-	 */
-	void destroyBO(const std::string& poolName, BufferObject* vbo);
+    typedef std::unordered_map<GLuint, const ISurface*> BOMeshMap;
+    typedef std::unordered_map<const ISurface*, GLuint> MeshBOMap;
+    typedef std::unordered_map<std::string, MeshBOMap>  BOPool;
+
+  public:
+    static BOManager* getInstance();
+
+    virtual ~BOManager();
+
+    /**
+     * Creates a vertex buffer objects and stablish a relationship between
+     * the buffer object created and an object mesh.
+     *
+     * The same mesh can be binded to differents buffers objects. By doing
+     * this, the same 3d data can be represented in different ways by
+     * different buffer objects.
+     *
+     * The pointer returned should not be deleted by the caller of the
+     * function. To free the resources of the buffer objects call destroyBO
+     * function.
+     *
+     * TODO: describe the notion of pool's on this class.
+     */
+    VertexBuffer* createVBO(const std::string& poolName,
+                            const ISurface*    mesh);
+    IndexBuffer* createIBO(const std::string& poolName, const ISurface* mesh);
+    VAO* createVAO(const std::string& poolName, const ISurface* mesh);
+
+    /**
+     * Free the buffer object resources.
+     *
+     * This method should be called to free the resources of the buffer
+     * objects. Free the memory used by the buffer objects and delete the
+     * relationship of the buffer object with the mesh stablished with
+     * Create*BO
+     */
+    void destroyBO(const std::string& poolName, BufferObject* vbo);
     void destroyBO(const std::string& poolName, VAO* vao);
-	
-	/**
-	 * Free all the BOs binded to an specific mesh.
-	 *
-	 * This can be used when a mesh is deleted to unbind and free all the 
-	 * memory used by the BOs.
-	 */
-	void destroyAllMeshBO(const ISurface* mesh);
-	
-	/**
-	 * Free all the BOs under a named pool.
-	 *
-	 * This can be used when a mesh is deleted to unbind and free all the 
-	 * memory used by the BOs.
-	 */
-	void destroyPool(const std::string& poolName);
-	
-	
-	/**
-	 * Gets the 3D object binded to the specified buffer object.
-	 */
-	ISurface* getMesh(const BufferObject* vbo);
-    
+
+    /**
+     * Free all the BOs binded to an specific mesh.
+     *
+     * This can be used when a mesh is deleted to unbind and free all the
+     * memory used by the BOs.
+     */
+    void destroyAllMeshBO(const ISurface* mesh);
+
+    /**
+     * Free all the BOs under a named pool.
+     *
+     * This can be used when a mesh is deleted to unbind and free all the
+     * memory used by the BOs.
+     */
+    void destroyPool(const std::string& poolName);
+
+    /**
+     * Gets the 3D object binded to the specified buffer object.
+     */
+    ISurface* getMesh(const BufferObject* vbo);
+
     ISurface* getMesh(const VAO* vao);
-	
-	/**
-	 * Gets the BO associated to the mesh inside an specific BO pool.
-	 */
-	VertexBuffer*   getVBO(const std::string& poolName, const ISurface* mesh);
-	IndexBuffer*    getIBO(const std::string& poolName, const ISurface* mesh);
-    VAO*            getVAO(const std::string& poolName, const ISurface* mesh);
-	
-//public slots:
-	void invalidateBO(ISurface* obj);
-	
-private:
-	BOManager();
-	
-private:
+
+    /**
+     * Gets the BO associated to the mesh inside an specific BO pool.
+     */
+    VertexBuffer* getVBO(const std::string& poolName, const ISurface* mesh);
+    IndexBuffer* getIBO(const std::string& poolName, const ISurface* mesh);
+    VAO* getVAO(const std::string& poolName, const ISurface* mesh);
+
+    // public slots:
+    void invalidateBO(ISurface* obj);
+
+  private:
+    BOManager();
+
+  private:
     struct Impl;
-    //std::unique_ptr<Impl> d;
-    Impl* d;
-	static BOManager* m_instance;
+    // std::unique_ptr<Impl> d;
+    Impl*             d;
+    static BOManager* m_instance;
 };
 
 #endif

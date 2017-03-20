@@ -18,47 +18,48 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/Context_private.h>
+#include <PlastilinaCore/Plastilina.h>
 
-namespace core {
-    Context::Context(const CtxAttributeList & attributes)
-    : d(new Impl()){
-        if (d) {
-	        d->createGlCtx(attributes);
-            d->createClCtx(attributes);
-            d->createVkCtx(attributes);
-        }
-    }
-    
-    Context::~Context() {
-        
-    }
-    
-    CtxAttribute Context::attribute(CtxAttribute name)
+namespace core
+{
+Context::Context(const CtxAttributeList& attributes)
+    : d(new Impl())
+{
+    if (d)
     {
-        CtxAttribute value = CTX_ATR_NULL;
-        if (d->attribute(name, &value))
-            return value;
-        
-        return core::CTX_ATR_NULL;
+        d->createGlCtx(attributes);
+        d->createClCtx(attributes);
+        d->createVkCtx(attributes);
     }
-    
-    void Context::setAttribute(CtxAttribute name, CtxAttribute value)
+}
+
+Context::~Context() {}
+
+CtxAttribute Context::attribute(CtxAttribute name)
+{
+    CtxAttribute value = CTX_ATR_NULL;
+    if (d->attribute(name, &value))
+        return value;
+
+    return core::CTX_ATR_NULL;
+}
+
+void Context::setAttribute(CtxAttribute name, CtxAttribute value)
+{
+    // Process the attribute by platform
+    d->setAttribute(name, value);
+
+    // Now do common things
+    switch (name)
     {
-        // Process the attribute by platform
-        d->setAttribute(name, value);
-        
-        // Now do common things
-        switch (name) {
-            case CTX_ATR_GL_DOUBLE_BUFFER:
-                
-                break;
-                
-            default:
-                break;
-        }
+    case CTX_ATR_GL_DOUBLE_BUFFER:
+
+        break;
+
+    default:
+        break;
     }
-    
+}
 }

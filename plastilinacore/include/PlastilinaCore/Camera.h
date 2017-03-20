@@ -23,7 +23,6 @@
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/SceneNode.h>
 
-
 /**
  * @class Camera
  *
@@ -34,19 +33,19 @@
  */
 class DLLEXPORT Camera : public CameraNode
 {
-public:
-    typedef std::shared_ptr<Camera>       	shared_ptr;
-    typedef std::weak_ptr<Camera>    		weak_ptr;
-    typedef std::shared_ptr<const Camera> 	const_shared_ptr;
-    typedef std::weak_ptr<const Camera>		const_weak_ptr;
-    
+  public:
+    typedef std::shared_ptr<Camera>       shared_ptr;
+    typedef std::weak_ptr<Camera>         weak_ptr;
+    typedef std::shared_ptr<const Camera> const_shared_ptr;
+    typedef std::weak_ptr<const Camera>   const_weak_ptr;
+
     Camera();
 
-    Camera(const Camera & orig);
-    
+    Camera(const Camera& orig);
+
     virtual ~Camera();
-    
-    Camera & operator=(const Camera & orig);
+
+    Camera& operator=(const Camera& orig);
 
     /**
      * Set the transformation matrix to use for the camera or eye
@@ -63,7 +62,7 @@ public:
      * Returns the model view matrix used by this camera.
      */
     const Eigen::Matrix4f& modelView();
-    
+
     /**
      * Set the projection matrix to use for the perspective projection
      * transformation.
@@ -82,36 +81,37 @@ public:
      * Constructs a new perspective projection matrix based in the specified
      * planes values.
      */
-    void setPerspectiveMatrix(float left, float right,
-                              float bottom, float top,
-                              float near, float far);
+    void setPerspectiveMatrix(float left, float right, float bottom,
+                              float top, float near, float far);
 
     /**
      * Constructs a new orthographic projection matrix based in the specified
      * planes values.
      */
-    void setOrthoMatrix(float left, float right,
-                        float bottom, float top,
+    void setOrthoMatrix(float left, float right, float bottom, float top,
                         float near, float far);
 
     /**
-     * Construct a perspective projection matrix based in field of view and 
+     * Construct a perspective projection matrix based in field of view and
      * aspect ratio values.
      *
      * @param fovy the field of view angle in degrees in the y direction
-     * @param aspect aspect ratio used to determine the field of view in the x direction
+     * @param aspect aspect ratio used to determine the field of view in the x
+     * direction
      * @param zNear cut off plane in the z direction
-     * @param zFar cut off plane in the z direction, far from the point of view.
+     * @param zFar cut off plane in the z direction, far from the point of
+     * view.
      *
      */
-    void setPerspectiveMatrix(float fovy, float aspect, float zNear, float zFar);
-    
+    void setPerspectiveMatrix(float fovy, float aspect, float zNear,
+                              float zFar);
+
     /**
      * Set the viewport transformation matrix.
      *
-     * This transformation matrix is applied after the projection transformation
-     * to map from the projection canonical view volume to screen space or 
-     * window space.
+     * This transformation matrix is applied after the projection
+     * transformation to map from the projection canonical view volume to
+     * screen space or window space.
      *
      * This is similar to calling glViewpot in OpenGL.
      */
@@ -133,19 +133,19 @@ public:
      * @see Camera::setViewport
      */
     const Eigen::Matrix4f& viewport() const;
-    
+
     /**
      * Maps a point from screen space to world space.
      *
      * This method is similar in purpose to gluUnproject function call.
      */
     Vector3 eyeToWorld(const Vector3& p) const;
-    
+
     /**
      * Overload to accept a vector by components
      */
     Vector3 eyeToWorld(float x, float y, float z, float w = 1.f) const;
-    
+
     /**
      * Maps a point from world space to screen space.
      *
@@ -159,68 +159,66 @@ public:
     Vector3 worldToEye(float x, float y, float z, float w = 1.f) const;
 
     /**
-    * Maps a point from screen space to world space.
-    *
-    * This method is similar in purpose to gluUnproject function call.
-    */
+     * Maps a point from screen space to world space.
+     *
+     * This method is similar in purpose to gluUnproject function call.
+     */
     Vector3 screenToWorld(const Vector3& p) const;
 
     /**
-    * Overload to accept a vector by components
-    */
+     * Overload to accept a vector by components
+     */
     Vector3 screenToWorld(float x, float y, float z, float w = 1.f) const;
 
     /**
-    * Maps a point from world space to screen space.
-    *
-    * This method is similar in purpose to gluProject function call.
-    */
+     * Maps a point from world space to screen space.
+     *
+     * This method is similar in purpose to gluProject function call.
+     */
     Vector3 worldToScreen(const Vector3& p) const;
 
     /**
-    * Overload to accept a vector by components
-    */
+     * Overload to accept a vector by components
+     */
     Vector3 worldToScreen(float x, float y, float z, float w = 1.f) const;
 
-
     /**
-    * Maps a point from eye space to clip space.
-    *
-    */
+     * Maps a point from eye space to clip space.
+     *
+     */
     Vector3 eyeToClip(const Vector3& p) const;
 
     /**
-    * Maps a point from eye space to clip space.
-    *
-    */
+     * Maps a point from eye space to clip space.
+     *
+     */
     Vector3 eyeToClip(float x, float y, float z, float w = 1.f) const;
 
     /**
-    * Maps a point from clip space to eye space.
-    *
-    * This method is similar in purpose to gluProject function call.
-    */
+     * Maps a point from clip space to eye space.
+     *
+     * This method is similar in purpose to gluProject function call.
+     */
     Vector3 clipToEye(const Vector3& p) const;
 
     /**
-    * Overload to accept a vector by components
-    */
+     * Overload to accept a vector by components
+     */
     Vector3 clipToEye(float x, float y, float z, float w = 1.f) const;
 
-
     /**
-     * Create a string representation of the object. 
+     * Create a string representation of the object.
      *
      * Outputs each attribute this class contains.
      */
     std::string toString() const;
 
-private:    
-    Eigen::Matrix4f     _projMat;
-    Eigen::Matrix4f     _viewportMat;
-    Eigen::Vector4f     _viewport;
-    
-public:
+  private:
+    Eigen::Matrix4f _projMat;
+    Eigen::Matrix4f _viewportMat;
+    Eigen::Vector4f _viewport;
+
+  public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 

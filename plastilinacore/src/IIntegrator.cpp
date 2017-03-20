@@ -20,16 +20,13 @@
 
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/IIntegrator.h>
-    
-namespace physics {
-    class Particle;
-    
-    
-    void EulerIntegrator::integrate(double step, 
-                                    Particle *input, 
-                                    Particle *output, 
-                                    int size)
-    {
-    }
-    
+
+namespace physics
+{
+class Particle;
+
+void EulerIntegrator::integrate(double step, Particle* input,
+                                Particle* output, int size)
+{
+}
 }

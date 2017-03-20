@@ -6,7 +6,8 @@ class Material;
 class SceneNode;
 struct RenderState;
 
-enum class RenderMode {
+enum class RenderMode
+{
     RM_WireFrame,
     RM_Flat,
     RM_Smooth,
@@ -14,25 +15,24 @@ enum class RenderMode {
     RM_Points
 };
 
-
 class DLLEXPORT IRenderer
 {
-public:
-	virtual ~IRenderer() {}
+  public:
+    virtual ~IRenderer() {}
 
-	/**
-	 * This method must be implemented by a derived class. This method
-	 * dispatches the commands need it to render objects on the display.
-	 */
-	virtual void renderObject(std::shared_ptr<SceneNode> & node) = 0;
+    /**
+     * This method must be implemented by a derived class. This method
+     * dispatches the commands need it to render objects on the display.
+     */
+    virtual void renderObject(std::shared_ptr<SceneNode>& node) = 0;
 };
 
 class DLLEXPORT IRenderable
 {
-public:
-	virtual ~IRenderable(){};
-	
-	virtual void render(RenderState & state) const = 0;
+  public:
+    virtual ~IRenderable(){};
+
+    virtual void render(RenderState& state) const = 0;
 };
 
 #endif /*IRENDERER_H_*/

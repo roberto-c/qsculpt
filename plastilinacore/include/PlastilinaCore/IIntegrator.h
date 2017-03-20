@@ -20,26 +20,25 @@
 #ifndef IINTEGRATOR_H_
 #define IINTEGRATOR_H_
 
-namespace physics {
-    class Particle;
-    
-    class IIntegrator {
-    public:
-        virtual void integrate(double step,
-                       Particle *input,
-                       Particle *output,
-                       int size) = 0;
-        
-        virtual ~IIntegrator() {}
-    };
-    
-    class EulerIntegrator : public IIntegrator {
-    public:
-        virtual void integrate(double step, 
-                               Particle *input, 
-                               Particle *output, 
-                               int size);
-    };
+namespace physics
+{
+class Particle;
+
+class IIntegrator
+{
+  public:
+    virtual void integrate(double step, Particle* input, Particle* output,
+                           int size) = 0;
+
+    virtual ~IIntegrator() {}
+};
+
+class EulerIntegrator : public IIntegrator
+{
+  public:
+    virtual void integrate(double step, Particle* input, Particle* output,
+                           int size);
+};
 };
 
 #endif

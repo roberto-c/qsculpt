@@ -17,16 +17,17 @@ class SceneNode;
 class CameraNode;
 class Material;
 
-struct DLLEXPORT RenderState {
+struct DLLEXPORT RenderState
+{
     std::shared_ptr<const SceneNode> root;
     std::shared_ptr<const SceneNode> currentNode;
-    RenderMode  		             renderMode;
+    RenderMode                       renderMode;
     std::shared_ptr<CameraNode>      camera;
-    std::shared_ptr<Material>	     material;
-    
-    RenderState 		merge(const RenderState & state) const;
-    
-    bool                isValid() const;
+    std::shared_ptr<Material>        material;
+
+    RenderState merge(const RenderState& state) const;
+
+    bool isValid() const;
 };
 
 #endif

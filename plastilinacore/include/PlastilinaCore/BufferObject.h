@@ -21,128 +21,116 @@
 #ifndef BUFFEROBJECT_H_
 #define BUFFEROBJECT_H_
 
-#include <PlastilinaCore/opengl/OpenGL.h>
 #include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 
 class DLLEXPORT BufferObject
 {
-public:
+  public:
     BufferObject(const BufferObject& cpy);
 
     BufferObject(BufferObject&& cpy);
-	/**
-	 *
-	 */
-	bool needUpdate() const {
-		return m_needUpdate;
-	};
-	
-	/**
-	 *
-	 */
-	void setNeedUpdate(bool val) {
-		m_needUpdate = val;
-	};
-	
-	/**
-	 *
-	 */
-	GLuint objectID() const {
-		return m_vboID;
-	};
-	
-	/**
-	 *
-	 */
-	GLenum getType() const {
-		return m_boTarget;
-	};
-	
-	/**
-	 *
-	 */
-	bool mapBuffer(GLvoid** buffer, GLuint* size);
-	
-	/**
-	 *
-	 */
-	bool unmapBuffer();
-	
-	/**
-	 *
-	 */
-	int getBufferSize() const {
-		return m_bufferSize;
-	}
-	
-	/**
-	 *
-	 */
-	bool setBufferData(GLvoid* buffer, GLuint size);
-	
-	/**
-	 *
-	 */
-	bool setBufferSubData(GLint offset, GLuint size, GLvoid* buffer);
-	
-	//private:
-	/**
-	 * Create a vertex buffer object of the specified type.
-	 */
-	bool create();
-	
-	/**
-	 * Deletes the vertex buffer object, freeing all the resources
-	 */
-	bool destroy();
-	
+    /**
+     *
+     */
+    bool needUpdate() const { return m_needUpdate; };
+
+    /**
+     *
+     */
+    void setNeedUpdate(bool val) { m_needUpdate = val; };
+
+    /**
+     *
+     */
+    GLuint objectID() const { return m_vboID; };
+
+    /**
+     *
+     */
+    GLenum getType() const { return m_boTarget; };
+
+    /**
+     *
+     */
+    bool mapBuffer(GLvoid** buffer, GLuint* size);
+
+    /**
+     *
+     */
+    bool unmapBuffer();
+
+    /**
+     *
+     */
+    int getBufferSize() const { return m_bufferSize; }
+
+    /**
+     *
+     */
+    bool setBufferData(GLvoid* buffer, GLuint size);
+
+    /**
+     *
+     */
+    bool setBufferSubData(GLint offset, GLuint size, GLvoid* buffer);
+
+    // private:
+    /**
+     * Create a vertex buffer object of the specified type.
+     */
+    bool create();
+
+    /**
+     * Deletes the vertex buffer object, freeing all the resources
+     */
+    bool destroy();
+
     /**
      * Bind the buffer object to its target.
      */
     bool bind();
-    
+
     /**
      * Unbind the buffer object.
      */
     bool release();
-    
-protected:
-	/**
-	 * Initializes a Buffer Object (BO)
-	 */
-	BufferObject(GLenum boTarget = 0);
-	
-	GLenum		m_boTarget;
-	GLuint		m_vboID;		/*< ID of the vertex buffer object */
-	GLuint		m_bufferSize;	/*< Size of the buffer in bytes? */
-	bool		m_needUpdate;	/*< True if the data needs to be updated*/
+
+  protected:
+    /**
+     * Initializes a Buffer Object (BO)
+     */
+    BufferObject(GLenum boTarget = 0);
+
+    GLenum m_boTarget;
+    GLuint m_vboID;      /*< ID of the vertex buffer object */
+    GLuint m_bufferSize; /*< Size of the buffer in bytes? */
+    bool   m_needUpdate; /*< True if the data needs to be updated*/
 };
 
 inline BufferObject::BufferObject(GLenum boTarget)
-:	m_boTarget(boTarget),
-	m_vboID(0),
-	m_bufferSize(0),
-	m_needUpdate(true)
+    : m_boTarget(boTarget)
+    , m_vboID(0)
+    , m_bufferSize(0)
+    , m_needUpdate(true)
 {
 }
 
 inline BufferObject::BufferObject(const BufferObject& cpy)
-:   m_boTarget(cpy.m_boTarget),
-    m_vboID(cpy.m_vboID),
-    m_bufferSize(cpy.m_bufferSize),
-    m_needUpdate(cpy.m_needUpdate)
+    : m_boTarget(cpy.m_boTarget)
+    , m_vboID(cpy.m_vboID)
+    , m_bufferSize(cpy.m_bufferSize)
+    , m_needUpdate(cpy.m_needUpdate)
 {
-
 }
 
 inline BufferObject::BufferObject(BufferObject&& cpy)
-:   m_boTarget(std::move(cpy.m_boTarget)),
-    m_vboID(std::move(cpy.m_vboID)),
-    m_bufferSize(std::move(cpy.m_bufferSize)),
-    m_needUpdate(std::move(cpy.m_needUpdate))
+    : m_boTarget(std::move(cpy.m_boTarget))
+    , m_vboID(std::move(cpy.m_vboID))
+    , m_bufferSize(std::move(cpy.m_bufferSize))
+    , m_needUpdate(std::move(cpy.m_needUpdate))
 
 {
-
 }
 
 /**
@@ -150,8 +138,8 @@ inline BufferObject::BufferObject(BufferObject&& cpy)
  */
 inline bool BufferObject::create()
 {
-	glGenBuffers(1, &m_vboID);
-	return true;
+    glGenBuffers(1, &m_vboID);
+    return true;
 }
 
 /**
@@ -159,25 +147,25 @@ inline bool BufferObject::create()
  */
 inline bool BufferObject::destroy()
 {
-	bool result = false;
-	
-	if (glIsBuffer(m_vboID))
-	{
-		glDeleteBuffers(1, &m_vboID);
+    bool result = false;
+
+    if (glIsBuffer(m_vboID))
+    {
+        glDeleteBuffers(1, &m_vboID);
         THROW_IF_GLERROR(__func__);
-		RET_ON_GLERROR(result);
-		// Reset value
-		m_vboID = 0;
-		m_bufferSize = 0;
-	}
-	result = true;
-	return result;
+        RET_ON_GLERROR(result);
+        // Reset value
+        m_vboID      = 0;
+        m_bufferSize = 0;
+    }
+    result = true;
+    return result;
 }
 
 inline bool BufferObject::bind()
 {
     bool ret = false;
-    
+
     glBindBuffer(m_boTarget, m_vboID);
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(ret);
@@ -188,7 +176,7 @@ inline bool BufferObject::bind()
 inline bool BufferObject::release()
 {
     bool ret = false;
-    
+
     glBindBuffer(m_boTarget, 0);
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(ret);
@@ -201,48 +189,48 @@ inline bool BufferObject::release()
  */
 inline bool BufferObject::mapBuffer(GLvoid** buffer, GLuint* size)
 {
-	bool result = false;
-	
-	// Check parameters are not NULL
-	if (buffer == NULL || size == NULL)
-		return result;
-	
-	// Be sure we are working with our buffer
-	glBindBuffer(m_boTarget, m_vboID);
+    bool result = false;
+
+    // Check parameters are not NULL
+    if (buffer == NULL || size == NULL)
+        return result;
+
+    // Be sure we are working with our buffer
+    glBindBuffer(m_boTarget, m_vboID);
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(result);
-	
-	// Set the buffer of the mapped object
-	*buffer = glMapBuffer(m_boTarget, GL_READ_WRITE);
-	*size = 0;
+
+    // Set the buffer of the mapped object
+    *buffer = glMapBuffer(m_boTarget, GL_READ_WRITE);
+    *size   = 0;
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(result);
-	
-	// If the mapping was successful, update the size value
-	if (*buffer != NULL)
-	{
-		*size = m_bufferSize;
-	}
-	result = true;
-	return result;
+
+    // If the mapping was successful, update the size value
+    if (*buffer != NULL)
+    {
+        *size = m_bufferSize;
+    }
+    result = true;
+    return result;
 }
 
 inline bool BufferObject::unmapBuffer()
 {
-	bool result = false;
-	
-	// Be sure we are working with our buffer
-	glBindBuffer(m_boTarget, m_vboID);
+    bool result = false;
+
+    // Be sure we are working with our buffer
+    glBindBuffer(m_boTarget, m_vboID);
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(result);
-	
-	// Unmap the buffer object
-	result = glUnmapBuffer(m_boTarget) == GL_TRUE ? true : false;
+
+    // Unmap the buffer object
+    result = glUnmapBuffer(m_boTarget) == GL_TRUE ? true : false;
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(result);
-	
+
     result = true;
-	return result;
+    return result;
 }
 
 /**
@@ -250,54 +238,56 @@ inline bool BufferObject::unmapBuffer()
  */
 inline bool BufferObject::setBufferData(GLvoid* buffer, GLuint size)
 {
-	bool result = false;
-	
-	glBindBuffer(m_boTarget, m_vboID);
-    THROW_IF_GLERROR(__func__);
-    RET_ON_GLERROR(result);
-	
-	m_bufferSize = size;
-	
-	glBufferData(m_boTarget, 
-				 m_bufferSize,
-				 buffer,
-				 GL_DYNAMIC_DRAW);
+    bool result = false;
+
+    glBindBuffer(m_boTarget, m_vboID);
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(result);
 
-	result = true;
-	return result;
+    m_bufferSize = size;
+
+    glBufferData(m_boTarget, m_bufferSize, buffer, GL_DYNAMIC_DRAW);
+    THROW_IF_GLERROR(__func__);
+    RET_ON_GLERROR(result);
+
+    result = true;
+    return result;
 }
 
-inline bool BufferObject::setBufferSubData(GLint offset, GLuint size, GLvoid* buffer)
+inline bool BufferObject::setBufferSubData(GLint offset, GLuint size,
+                                           GLvoid* buffer)
 {
-	bool result = false;
-    
-	glBindBuffer(m_boTarget, m_vboID);
-    THROW_IF_GLERROR(__func__);	m_bufferSize = size;
+    bool result = false;
+
+    glBindBuffer(m_boTarget, m_vboID);
+    THROW_IF_GLERROR(__func__);
+    m_bufferSize = size;
     RET_ON_GLERROR(result);
-	
-	glBufferSubData(m_boTarget,
-					offset,
-					m_bufferSize,
-					buffer);
+
+    glBufferSubData(m_boTarget, offset, m_bufferSize, buffer);
     THROW_IF_GLERROR(__func__);
     RET_ON_GLERROR(result);
-	
+
     result = true;
     return result;
 };
 
 class VertexBuffer : public BufferObject
 {
-public:
-	VertexBuffer() : BufferObject(GL_ARRAY_BUFFER) {}
+  public:
+    VertexBuffer()
+        : BufferObject(GL_ARRAY_BUFFER)
+    {
+    }
 };
 
 class IndexBuffer : public BufferObject
 {
-public:
-	IndexBuffer() : BufferObject(GL_ELEMENT_ARRAY_BUFFER) {}
+  public:
+    IndexBuffer()
+        : BufferObject(GL_ELEMENT_ARRAY_BUFFER)
+    {
+    }
 };
 
 #endif /*BUFFEROBJECT_H_*/

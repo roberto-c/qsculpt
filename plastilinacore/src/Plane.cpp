@@ -23,17 +23,17 @@
 
 namespace geometry
 {
-    float Plane::DEFAULT_TOL = 0.0001f;
-    Point3 Plane::DEFAULT_POSITION = Point3(0, 0, 0);
-    Vector3 Plane::DEFAULT_ORIENTATION = Vector3(0, 0, 1);
+float   Plane::DEFAULT_TOL         = 0.0001f;
+Point3  Plane::DEFAULT_POSITION    = Point3(0, 0, 0);
+Vector3 Plane::DEFAULT_ORIENTATION = Vector3(0, 0, 1);
 
-    Plane::Plane(const Point3 & c, const Vector3& n)
-        : Eigen::Hyperplane<float, 3>(n, c)
-    {
-    }
+Plane::Plane(const Point3& c, const Vector3& n)
+    : Eigen::Hyperplane<float, 3>(n, c)
+{
+}
 
-    float Plane::intersect(const Ray &ray, Point3 *p, float ep) const
-    {
-        return ray.intersect(*this, p, ep);
-    }
+float Plane::intersect(const Ray& ray, Point3* p, float ep) const
+{
+    return ray.intersect(*this, p, ep);
+}
 }

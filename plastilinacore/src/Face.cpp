@@ -19,28 +19,28 @@ namespace subdivision
 
 class Face::VertexIterator : public IIterator<VertexHandle>
 {
-public:
-    typedef Vertex::shared_ptr          shared_ptr;
-    typedef Vertex::const_shared_ptr    const_shared_ptr;
-    typedef Vertex::weak_ptr            weak_ptr;
-    typedef Vertex::ptr                 ptr;
-    typedef Vertex::const_ptr           const_ptr;
-    
-private:
+  public:
+    typedef Vertex::shared_ptr       shared_ptr;
+    typedef Vertex::const_shared_ptr const_shared_ptr;
+    typedef Vertex::weak_ptr         weak_ptr;
+    typedef Vertex::ptr              ptr;
+    typedef Vertex::const_ptr        const_ptr;
+
+  private:
     friend class Face;
 
-    const Face* _f;
+    const Face*   _f;
     mutable Edge* _e;
-    mutable bool first_;
+    mutable bool  first_;
 
-protected:
+  protected:
     /**
      * Constructor of a vertex iterator. The vertex iterator
      * is only contructed by means of Face::vertexIterator() function
      */
     VertexIterator(const Face* f);
 
-public:
+  public:
     /**
      *
      */
@@ -71,7 +71,7 @@ public:
      * Return the next element without advancing to the iterator
      */
     shared_ptr peekNext();
-    
+
     /**
      * Return the next element without advancing to the iterator
      */
@@ -93,45 +93,44 @@ public:
      * Returns the previous element.
      */
     shared_ptr peekPrevious();
-    
+
     /**
      * Returns the previous element.
      */
     const_shared_ptr peekPrevious() const;
-    
+
     /**
      * Set the current position to pos relative to origin.
      *
      * @param pos number of elements to jump relative to origin
      * @param origin states the reference to jump.
      */
-    bool seek(int pos, IteratorOrigin origin) const ;
+    bool seek(int pos, IteratorOrigin origin) const;
 };
-
 
 class Face::EdgeIterator : public IIterator<EdgeHandle>
 {
-public:
-    typedef Edge::shared_ptr        shared_ptr;
-    typedef Edge::const_shared_ptr  const_shared_ptr;
-    typedef Edge::weak_ptr          weak_ptr;
-    typedef Edge::ptr               ptr;
-    typedef Edge::const_ptr         const_ptr;
-    
-private:
+  public:
+    typedef Edge::shared_ptr       shared_ptr;
+    typedef Edge::const_shared_ptr const_shared_ptr;
+    typedef Edge::weak_ptr         weak_ptr;
+    typedef Edge::ptr              ptr;
+    typedef Edge::const_ptr        const_ptr;
+
+  private:
     friend class Face;
 
-    const Face* _f;
+    const Face*   _f;
     mutable Edge* _e;
 
-protected:
+  protected:
     /**
      * Constructor of a vertex iterator. The Edge iterator
      * is only contructed by means of Face::edgeIterator() function
      */
     EdgeIterator(const Face* f);
 
-public:
+  public:
     /**
      *
      */
@@ -162,12 +161,12 @@ public:
      * Return the next element without advancing to the iterator
      */
     shared_ptr peekNext();
-    
+
     /**
      * Return the next element without advancing to the iterator
      */
     const_shared_ptr peekNext() const;
-    
+
     /**
      * Returns the previous elements and move the iterator one position
      * backwards.
@@ -184,103 +183,100 @@ public:
      * Returns the previous element.
      */
     shared_ptr peekPrevious();
-    
+
     /**
      * Returns the previou element
      */
     const_shared_ptr peekPrevious() const;
-    
+
     /**
      * Set the current position to pos relative to origin.
      *
      * @param pos number of elements to jump relative to origin
      * @param origin states the reference to jump.
      */
-    bool seek(int pos, IteratorOrigin origin) const ;
+    bool seek(int pos, IteratorOrigin origin) const;
 };
 
-//QAtomicInt Face::NEXT_ID(0);
+// QAtomicInt Face::NEXT_ID(0);
 static std::atomic_int NEXT_ID(1);
 
-Face::Face(ISurface *surface)
-    :
-    _surface(surface),
-    _he(NULL),
-    _vertex(NULL),
-    _flags(FF_None),
-    _nVertices(0),
-    _userData(NULL)
-//hashValue(0)
+Face::Face(ISurface* surface)
+    : _surface(surface)
+    , _he(NULL)
+    , _vertex(NULL)
+    , _flags(FF_None)
+    , _nVertices(0)
+    , _userData(NULL)
+// hashValue(0)
 {
     _id = NEXT_ID.fetch_add(1);
 }
 
-Face::Face(ISurface *surface, const std::vector<int>& vertexIndexList)
-    : 
-    _surface(surface),
-    _he(NULL),
-    _vertex(NULL),
-    _flags(FF_None),
-    _nVertices(0),
-    _userData(NULL)
+Face::Face(ISurface* surface, const std::vector<int>& vertexIndexList)
+    : _surface(surface)
+    , _he(NULL)
+    , _vertex(NULL)
+    , _flags(FF_None)
+    , _nVertices(0)
+    , _userData(NULL)
 //    hashValue(0)
 {
     _id = NEXT_ID.fetch_add(1);
 }
 
-Face::~Face()
-{
-}
+Face::~Face() {}
 
 // TODO: implement a correct and fast hash
 unsigned long Face::hashCode() const
 {
     return _id;
-//    return qHash(_id);
-    
-//    if (!_he)
-//        return qHash(_id);
-//    Vector3 v;
-//    Iterator<Vertex> it = _he->vertexIterator();
-//    while(it.hasNext())
-//    {
-//        v = v + (Vector3)it.next();
-//    }
-//    return qHash(v);
+    //    return qHash(_id);
+
+    //    if (!_he)
+    //        return qHash(_id);
+    //    Vector3 v;
+    //    Iterator<Vertex> it = _he->vertexIterator();
+    //    while(it.hasNext())
+    //    {
+    //        v = v + (Vector3)it.next();
+    //    }
+    //    return qHash(v);
 }
 
-bool Face::isValid() {
+bool Face::isValid()
+{
     return true;
     //	return !point.isEmpty();
 }
 
 Face& Face::addEdge(Edge* he)
 {
-    if (!_he) {
+    if (!_he)
+    {
         _he = he;
-    } else {
+    }
+    else
+    {
         Iterator<Edge> it = _he->hedgeIterator();
-        while(it.hasNext())
+        while (it.hasNext())
             it.next();
     }
     return *this;
 }
 
-void Face::addVertex(const std::vector<Vertex*> /*v*/)
-{
-    NOT_IMPLEMENTED
-}
+void Face::addVertex(const std::vector<Vertex*> /*v*/) { NOT_IMPLEMENTED }
 
-void Face::setHEdge(Edge* hedge)
-{
-    _he = hedge;
-}
+void Face::setHEdge(Edge* hedge) { _he = hedge; }
 
-Face::size_t Face::numVertices() const {
-    if (_nVertices > 0) return _nVertices;
-    size_t n = 0;
+Face::size_t Face::numVertices() const
+{
+    if (_nVertices > 0)
+        return _nVertices;
+    size_t                 n  = 0;
     Iterator<VertexHandle> it = constVertexIterator();
-    while (it.hasNext()) {
+    while (it.hasNext())
+    {
         n += 1;
         it.next();
     }
@@ -288,17 +284,19 @@ Face::size_t Face::numVertices() const {
     return _nVertices;
 }
 
-
-void Face::setPoints(const std::vector<size_t>& vertexIndexList) {
+void Face::setPoints(const std::vector<size_t>& vertexIndexList)
+{
     throw std::runtime_error("Not implemented");
 }
 
-bool Face::hasEdge(const Edge& /*e*/) const {
+bool Face::hasEdge(const Edge& /*e*/) const
+{
     NOT_IMPLEMENTED;
     return false;
 }
 
-bool Face::hasEdge(size_t /*v1*/, size_t /*v2*/) const {
+bool Face::hasEdge(size_t /*v1*/, size_t /*v2*/) const
+{
     NOT_IMPLEMENTED;
     return false;
 }
@@ -316,16 +314,17 @@ Face::operator Point3() const
     return Point3();
 }
 
-
-bool Face::operator==(const Face& t) const {
+bool Face::operator==(const Face& t) const
+{
     if (hashCode() != t.hashCode())
         return false;
-    Iterator<VertexHandle> it = constVertexIterator();
+    Iterator<VertexHandle> it  = constVertexIterator();
     Iterator<VertexHandle> it2 = t.constVertexIterator();
-    while(it.hasNext()) {
+    while (it.hasNext())
+    {
         if (!it2.hasNext())
             return false;
-        auto v = it.next();
+        auto v  = it.next();
         auto v2 = it2.next();
         if (v->iid() != v2->iid())
             return false;
@@ -353,24 +352,21 @@ Iterator<EdgeHandle> Face::constEdgeIterator() const
     return Iterator<EdgeHandle>(new Face::EdgeIterator(this));
 }
 
-void Face::subdivide(int /*level*/)
-{
-
-}
+void Face::subdivide(int /*level*/) {}
 
 // VertexIterator
 
 Face::VertexIterator::VertexIterator(const Face* f)
-    :	_f(f),
-    _e(f->_he),
-    first_(true)
+    : _f(f)
+    , _e(f->_he)
+    , first_(true)
 {
 }
 
 IIterator<VertexHandle>* Face::VertexIterator::clone() const
 {
-    VertexIterator *it = new VertexIterator(_f);
-    it->_e = _e;
+    VertexIterator* it = new VertexIterator(_f);
+    it->_e             = _e;
     return it;
 }
 
@@ -383,28 +379,23 @@ bool Face::VertexIterator::hasNext() const
     return (first_ && _e != NULL) || (_e != NULL && _e != _f->_he);
 }
 
-
-bool Face::VertexIterator::hasPrevious() const
-{
-    return false;
-}
-
+bool Face::VertexIterator::hasPrevious() const { return false; }
 
 Face::VertexIterator::shared_ptr Face::VertexIterator::next()
 {
     assert(_e != NULL);
-    first_ = false;
-    Vertex * v = _e->head();
-    _e = _e->next();
+    first_    = false;
+    Vertex* v = _e->head();
+    _e        = _e->next();
     return v;
 }
 
 Face::VertexIterator::const_shared_ptr Face::VertexIterator::next() const
 {
     assert(_e != NULL);
-    first_ = false;
-    Vertex * v = _e->head();
-    _e = _e->next();
+    first_    = false;
+    Vertex* v = _e->head();
+    _e        = _e->next();
     return v;
 }
 
@@ -433,7 +424,8 @@ Face::VertexIterator::shared_ptr Face::VertexIterator::peekPrevious()
     throw std::logic_error("Not implemented");
 }
 
-Face::VertexIterator::const_shared_ptr Face::VertexIterator::peekPrevious() const
+Face::VertexIterator::const_shared_ptr
+Face::VertexIterator::peekPrevious() const
 {
     throw std::logic_error("Not implemented");
 }
@@ -441,38 +433,37 @@ Face::VertexIterator::const_shared_ptr Face::VertexIterator::peekPrevious() cons
 bool Face::VertexIterator::seek(int pos, IteratorOrigin origin) const
 {
     bool res = false;
-    switch(origin)
+    switch (origin)
     {
     case Iter_Start:
+    {
+        _e = NULL;
+        while (pos && hasNext())
         {
-            _e = NULL;
-            while(pos && hasNext()){
-                next();
-                --pos;
-            }
-            res = true;
+            next();
+            --pos;
         }
-        break;
+        res = true;
+    }
+    break;
     default:
         res = false;
     }
     return res;
 }
 
-
-
 // EdgeIterator
 
 Face::EdgeIterator::EdgeIterator(const Face* f)
-    :	_f(f),
-    _e(NULL)
+    : _f(f)
+    , _e(NULL)
 {
 }
 
 IIterator<EdgeHandle>* Face::EdgeIterator::clone() const
 {
     EdgeIterator* it = new EdgeIterator(_f);
-    it->_e = _e;
+    it->_e           = _e;
     return it;
 }
 
@@ -485,16 +476,11 @@ bool Face::EdgeIterator::hasNext() const
     return _f->_he && (!_e || (_e->next() && _e->next() != _f->_he));
 }
 
-
-bool Face::EdgeIterator::hasPrevious() const
-{
-    return false;
-}
-
+bool Face::EdgeIterator::hasPrevious() const { return false; }
 
 Face::EdgeIterator::shared_ptr Face::EdgeIterator::next()
 {
-    //NOT_IMPLEMENTED
+    // NOT_IMPLEMENTED
     _e = _e == NULL ? _f->_he : _e->next();
     assert(_e != NULL);
     return _e;
@@ -502,7 +488,7 @@ Face::EdgeIterator::shared_ptr Face::EdgeIterator::next()
 
 Face::EdgeIterator::const_shared_ptr Face::EdgeIterator::next() const
 {
-    //NOT_IMPLEMENTED
+    // NOT_IMPLEMENTED
 
     _e = _e == NULL ? _f->_he : _e->next();
     assert(_e != NULL);
@@ -511,14 +497,14 @@ Face::EdgeIterator::const_shared_ptr Face::EdgeIterator::next() const
 
 Face::EdgeIterator::shared_ptr Face::EdgeIterator::peekNext()
 {
-    //NOT_IMPLEMENTED
-    return _e==NULL ? (_f->_he) : (_e->next());
+    // NOT_IMPLEMENTED
+    return _e == NULL ? (_f->_he) : (_e->next());
 }
 
 Face::EdgeIterator::const_shared_ptr Face::EdgeIterator::peekNext() const
 {
-    //NOT_IMPLEMENTED
-    return _e==NULL ? (_f->_he) : (_e->next());
+    // NOT_IMPLEMENTED
+    return _e == NULL ? (_f->_he) : (_e->next());
 }
 
 Face::EdgeIterator::shared_ptr Face::EdgeIterator::previous()
@@ -544,18 +530,19 @@ Face::EdgeIterator::const_shared_ptr Face::EdgeIterator::peekPrevious() const
 bool Face::EdgeIterator::seek(int pos, IteratorOrigin origin) const
 {
     bool res = false;
-    switch(origin)
+    switch (origin)
     {
     case Iter_Start:
+    {
+        _e = NULL;
+        while (pos && hasNext())
         {
-            _e = NULL;
-            while(pos && hasNext()){
-                next();
-                --pos;
-            }
-            res = true;
+            next();
+            --pos;
         }
-        break;
+        res = true;
+    }
+    break;
     default:
         res = false;
     }
@@ -564,4 +551,3 @@ bool Face::EdgeIterator::seek(int pos, IteratorOrigin origin) const
 
 } // namespace subdivision
 } // namespace core
-

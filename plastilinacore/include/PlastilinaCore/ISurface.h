@@ -20,13 +20,13 @@
 #ifndef IOBJECT3D_H
 #define IOBJECT3D_H
 
+#include <PlastilinaCore/Face.h>
+#include <PlastilinaCore/HEdge.h>
+#include <PlastilinaCore/IIterator.h>
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/SpEnums.h>
-#include <PlastilinaCore/IIterator.h>
 #include <PlastilinaCore/Vertex.h>
-#include <PlastilinaCore/Face.h>
 #include <PlastilinaCore/geometry/Aabb.h>
-#include <PlastilinaCore/HEdge.h>
 
 #include <iterator>
 
@@ -43,67 +43,68 @@ Interface that every 3D object should implement.
 
   @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
 */
-class DLLEXPORT ISurface {
-    
-public:
-	typedef uint32_t size_t;
-    typedef std::shared_ptr<ISurface>           shared_ptr;
-    typedef std::shared_ptr<const ISurface>     const_shared_ptr;
-    typedef std::weak_ptr<ISurface>             weak_ptr;
-    typedef std::unique_ptr<ISurface>           ptr;
-    typedef std::unique_ptr<const ISurface>     const_ptr;
+class DLLEXPORT ISurface
+{
 
-public:
+  public:
+    typedef uint32_t                        size_t;
+    typedef std::shared_ptr<ISurface>       shared_ptr;
+    typedef std::shared_ptr<const ISurface> const_shared_ptr;
+    typedef std::weak_ptr<ISurface>         weak_ptr;
+    typedef std::unique_ptr<ISurface>       ptr;
+    typedef std::unique_ptr<const ISurface> const_ptr;
+
+  public:
     /**
      * Default contructor. The classes that implement this interface, should
-     * have a default contructor that initiliazes the object with valid values.
+     * have a default contructor that initiliazes the object with valid
+     * values.
      */
-    ISurface(){}
+    ISurface() {}
 
-    virtual ~ISurface(){}
+    virtual ~ISurface() {}
 
     /**
      * Instance id of the surface
      */
     virtual size_t iid() const = 0;
-    
-    
+
     virtual void setScene(Scene* scene) = 0;
 
     virtual Scene* scene() const = 0;
-	
-	/**
-	 * Returns the renderer to use to display this surface.
-	 */
-	virtual const IRenderable* renderable() const = 0;
-	
+
+    /**
+     * Returns the renderer to use to display this surface.
+     */
+    virtual const IRenderable* renderable() const = 0;
+
     /**
      * Returns the bounding box of the object.
      *
      */
     virtual const geometry::AABB& boundingBox() const = 0;
-	
-	/**
-	 *
-	 */
-	// virtual const geometry::Sphere& boundingSphere() const = 0;
 
     /**
-    * Sets the object base color. Used as vertex color, line color, shading
-    * color, etc.
-    *
-    * @param color color of the object.
-    *
-    */
+     *
+     */
+    // virtual const geometry::Sphere& boundingSphere() const = 0;
+
+    /**
+     * Sets the object base color. Used as vertex color, line color, shading
+     * color, etc.
+     *
+     * @param color color of the object.
+     *
+     */
     virtual void setColor(const Color& color) = 0;
 
     /**
-    * Gets the object base color. Used as vertex color, line color, shading
-    * color, etc.
-    *
-    * @return color of the object.
-    *
-    */
+     * Gets the object base color. Used as vertex color, line color, shading
+     * color, etc.
+     *
+     * @return color of the object.
+     *
+     */
     virtual Color color() const = 0;
 
     /**
@@ -135,8 +136,8 @@ public:
 
     /**
      * Add vertex v to this object. The object will mantain the reference
-     * to the vertex. Do not delete the vertex while the object has a reference
-     * to it.
+     * to the vertex. Do not delete the vertex while the object has a
+     * reference to it.
      *
      * @param v vertex to add to the object.
      *
@@ -150,13 +151,13 @@ public:
      *
      * @param id ID of the point to delete.
      */
-    virtual void removeVertex( VertexHandle::size_t id) = 0;
+    virtual void removeVertex(VertexHandle::size_t id) = 0;
 
     /**
      * Returns the vertex with the instance ID iid.
      */
     virtual VertexHandle* vertex(VertexHandle::size_t iid) = 0;
-    
+
     /**
      * Returns the vertex with the instance ID iid.
      */
@@ -175,14 +176,15 @@ public:
     /**
      *
      */
-    virtual EdgeHandle::size_t addEdge(VertexHandle::size_t v1, VertexHandle::size_t v2) = 0;
-	
-    virtual EdgeHandle* edge(EdgeHandle::size_t iid) = 0;
+    virtual EdgeHandle::size_t addEdge(VertexHandle::size_t v1,
+                                       VertexHandle::size_t v2) = 0;
+
+    virtual EdgeHandle* edge(EdgeHandle::size_t iid)             = 0;
     virtual const EdgeHandle* edge(EdgeHandle::size_t iid) const = 0;
-	/**
-	 *
-	 */
-	virtual EdgeHandle::size_t numEdges() const = 0;
+    /**
+     *
+     */
+    virtual EdgeHandle::size_t numEdges() const = 0;
 
     /**
      * Add a triangle to the object. The triangle is formed by the vertices
@@ -194,13 +196,15 @@ public:
      *
      * @return triangle ID
      */
-    virtual FaceHandle::size_t addFace( const std::vector<VertexHandle::size_t>& vertexIndexes )=0;
+    virtual FaceHandle::size_t
+    addFace(const std::vector<VertexHandle::size_t>& vertexIndexes) = 0;
 
     /**
      * Replace a triangle with new indices to existing points.
      */
-    virtual void replaceFace(FaceHandle::size_t index,
-							 const std::vector<VertexHandle::size_t>& vertexIndexList)=0;
+    virtual void
+    replaceFace(FaceHandle::size_t                       index,
+                const std::vector<VertexHandle::size_t>& vertexIndexList) = 0;
 
     /**
      * Remove the triangle from the object. The points or vertices that
@@ -209,7 +213,7 @@ public:
      *
      * @param id triangle ID to remove.
      */
-    virtual void removeFace( FaceHandle::size_t id) =0;
+    virtual void removeFace(FaceHandle::size_t id) = 0;
 
     /**
      * Returns the number of faces that the object has.
@@ -231,12 +235,14 @@ public:
     /**
      *
      */
-    virtual VertexHandle::size_t getClosestPointAtPoint(const Point3 &p) const = 0;
+    virtual VertexHandle::size_t
+    getClosestPointAtPoint(const Point3& p) const = 0;
 
     /**
      *
      */
-    virtual std::vector<VertexHandle::size_t> getPointsInRadius(const Point3 &p, float radius) const = 0;
+    virtual std::vector<VertexHandle::size_t>
+    getPointsInRadius(const Point3& p, float radius) const = 0;
 
     /**
      *
@@ -256,28 +262,29 @@ public:
     /**
      * Flag to check if the surface has been modified.
      */
-    virtual bool hasChanged()=0;
+    virtual bool hasChanged() = 0;
 
     /**
      * Sets a flag to mark the surface as modified.
      */
-    virtual void setChanged(bool val)=0;
+    virtual void setChanged(bool val) = 0;
 
     /**
      *
      */
     virtual std::vector<VertexHandle::size_t> selectedPoints() const = 0;
-    
+
     /*
      *
      */
-    virtual void setSelectedPoints(const std::vector<VertexHandle::size_t>& indicesArray) = 0;
+    virtual void setSelectedPoints(
+        const std::vector<VertexHandle::size_t>& indicesArray) = 0;
 
     /**
      * Returns a vertex iterator to traverse over all the vertices in this
      * object.
      */
-    virtual Iterator<VertexHandle> vertexIterator() = 0;
+    virtual Iterator<VertexHandle> vertexIterator()            = 0;
     virtual Iterator<VertexHandle> constVertexIterator() const = 0;
 
     /**
@@ -294,7 +301,7 @@ public:
      *
      */
     virtual Iterator<EdgeHandle> edgeIterator() = 0;
-    
+
     /**
      *
      */
@@ -303,9 +310,7 @@ public:
     /**
      * Used to notify mesh has changed.
      */
-    void meshChanged(ISurface* mesh) {
-        
-    }
+    void meshChanged(ISurface* mesh) {}
 };
 
 typedef std::vector<ISurface*> ObjectContainer;

@@ -18,93 +18,71 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Material.h>
-#include <PlastilinaCore/opengl/GlslProgram.h>
+#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/ResourcesManager.h>
+#include <PlastilinaCore/opengl/GlslProgram.h>
 #include <atomic>
 
 static std::atomic_int NEXT_ID;
 
-struct Material::Impl {
-    int id;
+struct Material::Impl
+{
+    int         id;
     GlslProgram shaderProgram;
-	
-	Impl() {
-		id = NEXT_ID++;
-	}
+
+    Impl() { id = NEXT_ID++; }
 };
 
-Material::Material() : d_(new Impl)
+Material::Material()
+    : d_(new Impl)
 {
 }
 
-Material::~Material()
-{
-    
-}
+Material::~Material() {}
 
-int Material::iid() const { 
-    return d_->id;
-}
+int Material::iid() const { return d_->id; }
 
-GlslProgram * Material::shaderProgram() const {
-    return &d_->shaderProgram;
-}
-
+GlslProgram* Material::shaderProgram() const { return &d_->shaderProgram; }
 
 struct CookTorrance::Impl
 {
-    VertexShader    vtxShader;
-    FragmentShader  fragShader;
+    VertexShader   vtxShader;
+    FragmentShader fragShader;
 };
 
 CookTorrance::CookTorrance()
-: Material(),
-d(new Impl)
+    : Material()
+    , d(new Impl)
 {
-    d->vtxShader.loadFromFile(ResourcesManager::resourcesDirectory() + "/Shaders/CookTorrance.vs");
-    d->fragShader.loadFromFile(ResourcesManager::resourcesDirectory() + "/Shaders/CookTorrance.fs");
+    d->vtxShader.loadFromFile(ResourcesManager::resourcesDirectory() +
+                              "/Shaders/CookTorrance.vs");
+    d->fragShader.loadFromFile(ResourcesManager::resourcesDirectory() +
+                               "/Shaders/CookTorrance.fs");
 }
 
-CookTorrance::~CookTorrance()
-{
-    
-}
+CookTorrance::~CookTorrance() {}
 
-void CookTorrance::load()
-{
-}
+void CookTorrance::load() {}
 
-void CookTorrance::unload()
-{
-    
-}
+void CookTorrance::unload() {}
 
-void CookTorrance::setup(const std::shared_ptr<SceneNode> & doc)
-{
-    
-}
+void CookTorrance::setup(const std::shared_ptr<SceneNode>& doc) {}
 
-void CookTorrance::setup(const std::shared_ptr<const SceneNode> & doc)
-{
-    
-}
+void CookTorrance::setup(const std::shared_ptr<const SceneNode>& doc) {}
 
-MaterialNode::MaterialNode()
-{
-}
+MaterialNode::MaterialNode() {}
 
-MaterialNode::~MaterialNode()
-{
-}
+MaterialNode::~MaterialNode() {}
 
-bool MaterialNode::connect(const std::string & name, MaterialNode * node2, const std::string & inputName)
+bool MaterialNode::connect(const std::string& name, MaterialNode* node2,
+                           const std::string& inputName)
 {
     return false;
 }
 
-bool MaterialNode::registerProperty(const std::string & name, MaterialProperty type)
+bool MaterialNode::registerProperty(const std::string& name,
+                                    MaterialProperty   type)
 {
     return false;
 }

@@ -21,13 +21,13 @@
 #ifndef qsculpt_Plastilina_h
 #define qsculpt_Plastilina_h
 
-#include <iostream>
 #include <exception>
-#include <stdexcept>
-#include <typeinfo>
-#include <memory>
 #include <functional>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
 #include <string>
+#include <typeinfo>
 
 #include <PlastilinaCore/Config.h>
 #include <PlastilinaCore/Logging.h>
@@ -38,19 +38,18 @@
 #define EIGEN_INITIALIZE_MATRICES_BY_ZERO
 
 #include <Eigen/Core>
-#include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
+#include <Eigen/StdVector>
 #include <iterator>
 
 #ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
 #include <OpenGL/gl3.h>
 #include <OpenGL/gl3ext.h>
-#include <OpenGL/OpenGL.h>
 #else
 #include <GL/glew.h>
 #endif /* __APPLE__ */
-
 
 #ifdef __OBJC__
 #define OBJC_CLASS(name) @class name
@@ -71,44 +70,51 @@
 #define DLLEXPORT
 #endif
 
-namespace Eigen {
-    typedef Affine3f Transform3f;    
+namespace Eigen
+{
+typedef Affine3f Transform3f;
 };
 
 #include "PEngineTypes.h"
 
-#include "opengl/GlException.h"
 #include "Variant.h"
+#include "opengl/GlException.h"
 
 #define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
 
 #ifdef PLASTILINA_GL_EXCEPTON_ENABLE
-#define THROW_IF_GLERROR(msg) { \
-        GLenum error = glGetError(); \
-        if (error != GL_NO_ERROR) { \
-            throw core::GlException(msg, error); \
-        }\
+#define THROW_IF_GLERROR(msg)                                                \
+    {                                                                        \
+        GLenum error = glGetError();                                         \
+        if (error != GL_NO_ERROR)                                            \
+        {                                                                    \
+            throw core::GlException(msg, error);                             \
+        }                                                                    \
     }
 #else
 #define THROW_IF_GLERROR(msg)
 #endif /* PLASTILINA_GL_EXCEPTON_ENABLE */
 
-#define RET_ON_GLERROR(val) { \
-        GLenum error = glGetError(); \
-        if (error != GL_NO_ERROR) { \
-            return val; \
-        }\
+#define RET_ON_GLERROR(val)                                                  \
+    {                                                                        \
+        GLenum error = glGetError();                                         \
+        if (error != GL_NO_ERROR)                                            \
+        {                                                                    \
+            return val;                                                      \
+        }                                                                    \
     }
 
-#define LOG_IF_GLERROR(msg) { \
-        GLenum error = glGetError(); \
-        if (error != GL_NO_ERROR) { \
-            TRACE(error) << "glGetError: " << error << ": " << msg; \
-        }\
+#define LOG_IF_GLERROR(msg)                                                  \
+    {                                                                        \
+        GLenum error = glGetError();                                         \
+        if (error != GL_NO_ERROR)                                            \
+        {                                                                    \
+            TRACE(error) << "glGetError: " << error << ": " << msg;          \
+        }                                                                    \
     }
 
 template <typename T>
-inline void hash_combine(std::size_t & seed, const T & v)
+inline void hash_combine(std::size_t& seed, const T& v)
 {
     std::hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
@@ -116,91 +122,98 @@ inline void hash_combine(std::size_t & seed, const T & v)
 
 namespace std
 {
-    template<typename S, typename T> struct hash<pair<S, T> >
+template <typename S, typename T>
+struct hash<pair<S, T>>
+{
+    inline size_t operator()(const pair<S, T>& v) const
     {
-        inline size_t operator()(const pair<S, T> & v) const
-        {
-            size_t seed = 0;
-            ::hash_combine(seed, v.first);
-            ::hash_combine(seed, v.second);
-            return seed;
-        }
-    };
+        size_t seed = 0;
+        ::hash_combine(seed, v.first);
+        ::hash_combine(seed, v.second);
+        return seed;
+    }
+};
 };
 
-#define DECLARE_ENUM_FLAGS_BEGIN(name) enum class name : unsigned int {
-#define DECLARE_ENUM_FLAGS_END(name) };                      \
-inline name operator~(name lhs) {                            \
-    using T = std::underlying_type<name>::type;              \
-    return name(~static_cast<T>(lhs));                       \
-}                                                            \
-inline name operator|(name lhs, name rhs) {                  \
-    using T = std::underlying_type<name>::type;              \
-    return name(static_cast<T>(lhs) | static_cast<T>(rhs));  \
-}                                                            \
-inline name operator&(name lhs, name rhs) {                  \
-    using T = std::underlying_type<name>::type;              \
-    return name(static_cast<T>(lhs) & static_cast<T>(rhs));  \
-}                                                            \
-inline name operator^(name lhs, name rhs) {                  \
-    using T = std::underlying_type<name>::type;              \
-    return name(static_cast<T>(lhs) ^ static_cast<T>(rhs));  \
+#define DECLARE_ENUM_FLAGS_BEGIN(name)                                       \
+    enum class name : unsigned int                                           \
+    {
+#define DECLARE_ENUM_FLAGS_END(name)                                         \
+    }                                                                        \
+    ;                                                                        \
+    \
+inline name                                                                  \
+    operator~(name lhs)                                                      \
+    {                                                                        \
+        using T = std::underlying_type<name>::type;                          \
+        return name(~static_cast<T>(lhs));                                   \
+    \
+}                                                                     \
+    \
+inline name                                                                  \
+    operator|(name lhs, name rhs)                                            \
+    {                                                                        \
+        using T = std::underlying_type<name>::type;                          \
+        return name(static_cast<T>(lhs) | static_cast<T>(rhs));              \
+    \
+}                                                                     \
+    \
+inline name                                                                  \
+    operator&(name lhs, name rhs)                                            \
+    {                                                                        \
+        using T = std::underlying_type<name>::type;                          \
+        return name(static_cast<T>(lhs) & static_cast<T>(rhs));              \
+    \
+}                                                                     \
+    \
+inline name                                                                  \
+    operator^(name lhs, name rhs)                                            \
+    {                                                                        \
+        using T = std::underlying_type<name>::type;                          \
+        return name(static_cast<T>(lhs) ^ static_cast<T>(rhs));              \
+    \
 }
 
-//enum class PlastilinaSubsystem {
+// enum class PlastilinaSubsystem {
 DECLARE_ENUM_FLAGS_BEGIN(PlastilinaSubsystem)
-NONE = 0,
-OPENGL = 0x0001,
-OPENCL = 0x0002,
-ENABLE_CL_GL_SHARING = 0x0004,
-VULKAN = 0x0008
-DECLARE_ENUM_FLAGS_END(PlastilinaSubsystem)
-//};
+NONE = 0, OPENGL = 0x0001, OPENCL = 0x0002, ENABLE_CL_GL_SHARING = 0x0004,
+          VULKAN = 0x0008 DECLARE_ENUM_FLAGS_END(PlastilinaSubsystem)
+          //};
 
-DECLARE_ENUM_FLAGS_BEGIN(PlastilinaFeatureBitFlag) 
-    NONE = 0,
-    OPENGL = 0x0001,
-    OPENCL = 0x0002,
-    ENABLE_CL_GL_SHARING = 0x0004,
-    VULKAN = 0x0008
-DECLARE_ENUM_FLAGS_END(PlastilinaFeatureBitFlag)
+          DECLARE_ENUM_FLAGS_BEGIN(PlastilinaFeatureBitFlag) NONE = 0,
+          OPENGL = 0x0001, OPENCL = 0x0002, ENABLE_CL_GL_SHARING = 0x0004,
+          VULKAN = 0x0008 DECLARE_ENUM_FLAGS_END(PlastilinaFeatureBitFlag)
 
+              namespace core
+{
+    class Context;
 
-namespace core {
-class Context;
-
-DECLARE_ENUM_FLAGS_BEGIN(ApiSupported)
-NONE = 0,
-OPENGL = 0x0001,
-OPENCL = 0x0002,
-VULKAN = 0x0004
-DECLARE_ENUM_FLAGS_END(ApiSupported)
-
+    DECLARE_ENUM_FLAGS_BEGIN(ApiSupported)
+    NONE = 0, OPENGL = 0x0001, OPENCL = 0x0002,
+    VULKAN = 0x0004 DECLARE_ENUM_FLAGS_END(ApiSupported)
 };
 
 typedef std::map<std::string, core::Variant> AttributeMap;
 
 class DLLEXPORT PlastilinaEngine
 {
-public:
-	static bool initialize(PlastilinaSubsystem subsystem);
+  public:
+    static bool initialize(PlastilinaSubsystem subsystem);
 
     static bool initializeWithAttributes(AttributeMap attr);
-	
+
     static bool initializeFromCommandLine(int argc, const char** athv);
 
-    static bool initializeFromConfigFile(const std::string & filepath);
+    static bool initializeFromConfigFile(const std::string& filepath);
 
-	static bool shutdown();
-    
-    static void setCurrentContext(std::shared_ptr<core::Context> & ctx);
-    
-    static core::Context & currentContext();
+    static bool shutdown();
+
+    static void setCurrentContext(std::shared_ptr<core::Context>& ctx);
+
+    static core::Context& currentContext();
 
     static bool supportsFeature(PlastilinaFeatureBitFlag flags);
-
 };
-
 
 #define ENGINE_NAME u8"PlastilinaCore"
 

@@ -6,35 +6,27 @@
 //
 //
 #include <PlastilinaCore/Stable.h>
-#include "PlastilinaCore/opengl/Sampler.h"
+#include <PlastilinaCore/opengl/OpenGL.h>
+#include <PlastilinaCore/opengl/Sampler.h>
 
-
-namespace gl {
+namespace gl
+{
 
 gl::Sampler::Sampler()
-	: gl::Object<Sampler>()
+    : gl::Object<Sampler>()
 {
+}
 
-}
-	
-gl::Sampler::~Sampler()
-{
+gl::Sampler::~Sampler() {}
 
-}
-		
-void gl::Sampler::bind(GLuint unit)
+void gl::Sampler::bind(GLuint unit) { glBindSampler(unit, oglname_); }
+
+void gl::Sampler::create(uint32_t num, uint32_t* samplers)
 {
-	glBindSampler(unit, oglname_);
+    glGenSamplers(num, samplers);
 }
-		
-		
-void gl::Sampler::create(uint32_t num, uint32_t * samplers)
+void gl::Sampler::destroy(uint32_t num, uint32_t* samplers)
 {
-	glGenSamplers(num, samplers);
+    glDeleteSamplers(num, samplers);
 }
-void gl::Sampler::destroy(uint32_t num, uint32_t * samplers)
-{
-	glDeleteSamplers(num, samplers);
-}
-	
 };

@@ -19,7 +19,3 @@
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/SpEnums.h>
-
-
-
-

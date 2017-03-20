@@ -18,9 +18,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#include <stdlib.h>
-#include <PlastilinaCore/opencl/ClStlAllocator.h>
 #include <PlastilinaCore/Logging.h>
+#include <PlastilinaCore/opencl/ClStlAllocator.h>
+#include <stdlib.h>
 
 namespace core
 {
@@ -30,18 +30,18 @@ namespace cl
 std::vector<MemoryPool*> g_poolList;
 
 MemoryPool::MemoryPool(std::size_t n, int alignment) noexcept
-: dataPtr(nullptr)
-, size(n)
-, locked(false)
+    : dataPtr(nullptr)
+    , size(n)
+    , locked(false)
 {
     TRACE(debug) << "MemoryPool()";
     initialize(alignment);
 }
 
-MemoryPool::MemoryPool(const MemoryPool && pool)
-: dataPtr(std::move(pool.dataPtr))
-, size(std::move(pool.size))
-, locked(std::move(pool.locked))
+MemoryPool::MemoryPool(const MemoryPool&& pool)
+    : dataPtr(std::move(pool.dataPtr))
+    , size(std::move(pool.size))
+    , locked(std::move(pool.locked))
 {
     TRACE(debug) << "MemoryPool(const MemoryPool && pool)";
 }
@@ -49,56 +49,52 @@ MemoryPool::MemoryPool(const MemoryPool && pool)
 MemoryPool::~MemoryPool()
 {
     TRACE(debug) << "~MemoryPool()";
-    delete [] dataPtr;
+    delete[] dataPtr;
     dataPtr = nullptr;
 }
 
-bool
-MemoryPool::initialize(int alignment)
+bool MemoryPool::initialize(int alignment)
 {
     if (dataPtr)
     {
         // already initialized
         return true;
     }
-    size_t sizeElements = size % alignof(std::max_align_t) == 0 ? size / alignof(std::max_align_t) : (size / alignof(std::max_align_t)) + 1;
-    size = sizeElements * alignof(std::max_align_t);
+    size_t sizeElements = size % alignof(std::max_align_t) == 0
+                              ? size / alignof(std::max_align_t)
+                              : (size / alignof(std::max_align_t)) + 1;
+    size    = sizeElements * alignof(std::max_align_t);
     dataPtr = (char*)(new std::max_align_t[sizeElements]);
-    if (!dataPtr) return false;
+    if (!dataPtr)
+        return false;
     return true;
 }
 
-bool
-MemoryPool::lock()
+bool MemoryPool::lock()
 {
     locked = true;
     return true;
 }
 
-bool
-MemoryPool::unlock()
+bool MemoryPool::unlock()
 {
     locked = false;
     return true;
 }
 
-
-MemoryPoolGpu::MemoryPoolGpu(
-    ::cl::Context & ctx
-    , ::cl::CommandQueue & queue
-    , std::size_t n
-    , cl_mem_flags flags)
+MemoryPoolGpu::MemoryPoolGpu(::cl::Context& ctx, ::cl::CommandQueue& queue,
+                             std::size_t n, cl_mem_flags flags)
     : MemoryPool(n)
     , queue(queue)
 {
     TRACE(debug) << "MemoryPoolGpu()";
-    
+
     context = ctx;
-    buffer = ::cl::Buffer(context, flags| CL_MEM_USE_HOST_PTR, n, dataPtr);
-    size = n;
+    buffer  = ::cl::Buffer(context, flags | CL_MEM_USE_HOST_PTR, n, dataPtr);
+    size    = n;
 }
 
-MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu & pool)
+MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu& pool)
     : MemoryPool(pool)
     , context(pool.context)
     , queue(pool.queue)
@@ -108,45 +104,44 @@ MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu & pool)
     NOT_IMPLEMENTED;
 }
 
-
-MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu && pool)
-: MemoryPool(std::move(pool))
-, context(std::move(pool.context))
-, queue(std::move(pool.queue))
-, buffer(std::move(pool.buffer))
+MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu&& pool)
+    : MemoryPool(std::move(pool))
+    , context(std::move(pool.context))
+    , queue(std::move(pool.queue))
+    , buffer(std::move(pool.buffer))
 {
     TRACE(trace) << "MemoryPoolGpu(const MemoryPoolGpu &&)";
 }
 
-
 MemoryPoolGpu::~MemoryPoolGpu()
 {
     TRACE(trace) << "~MemoryPoolGpu()";
-    if (dataPtr) {
+    if (dataPtr)
+    {
         unlock();
     }
 }
 
-bool
-MemoryPoolGpu::lock()
+bool MemoryPoolGpu::lock()
 {
     TRACE(trace) << "MemoryPoolGpu::lock()";
-    if (locked) {
+    if (locked)
+    {
         TRACE(warning) << "MemoryPoolGpu::lock(): Already locked";
         return true;
     }
-    locked = true;
-    char* dataPtr2 = static_cast<char*>(queue.enqueueMapBuffer(buffer,
-        CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, 0, size));
+    locked         = true;
+    char* dataPtr2 = static_cast<char*>(queue.enqueueMapBuffer(
+        buffer, CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, 0, size));
     assert(dataPtr2 == dataPtr);
     return dataPtr != nullptr;
 }
 
-bool
-MemoryPoolGpu::unlock()
+bool MemoryPoolGpu::unlock()
 {
     TRACE(trace) << "MemoryPoolGpu::unlock()";
-    if (!locked) {
+    if (!locked)
+    {
         TRACE(warning) << "MemoryPoolGpu::unlock(): Not locked";
         return true;
     }
@@ -155,11 +150,8 @@ MemoryPoolGpu::unlock()
     return true;
 }
 
-MemoryPoolGlCl::MemoryPoolGlCl(
-    ::cl::Context & ctx
-    , ::cl::CommandQueue & queue
-    , std::size_t n
-    , cl_mem_flags flags)
+MemoryPoolGlCl::MemoryPoolGlCl(::cl::Context& ctx, ::cl::CommandQueue& queue,
+                               std::size_t n, cl_mem_flags flags)
     : MemoryPool(n)
     , queue(queue)
 {
@@ -167,11 +159,11 @@ MemoryPoolGlCl::MemoryPoolGlCl(
     context = ctx;
     gldata.create();
     gldata.setBufferData(dataPtr, n);
-    size = n;
+    size   = n;
     buffer = ::cl::BufferGL(context, flags, gldata.objectID());
 }
 
-MemoryPoolGlCl::MemoryPoolGlCl(const MemoryPoolGlCl & pool)
+MemoryPoolGlCl::MemoryPoolGlCl(const MemoryPoolGlCl& pool)
     : MemoryPool(pool)
     , context(pool.context)
     , queue(pool.queue)
@@ -181,8 +173,7 @@ MemoryPoolGlCl::MemoryPoolGlCl(const MemoryPoolGlCl & pool)
     TRACE(trace) << "MemoryPoolGlCl(const MemoryPoolGlCl &)";
 }
 
-
-MemoryPoolGlCl::MemoryPoolGlCl(const MemoryPoolGlCl && pool)
+MemoryPoolGlCl::MemoryPoolGlCl(const MemoryPoolGlCl&& pool)
     : MemoryPool(std::move(pool))
     , context(std::move(pool.context))
     , queue(std::move(pool.queue))
@@ -192,20 +183,20 @@ MemoryPoolGlCl::MemoryPoolGlCl(const MemoryPoolGlCl && pool)
     TRACE(trace) << "MemoryPoolGlCl(const MemoryPoolGlCl &&)";
 }
 
-
 MemoryPoolGlCl::~MemoryPoolGlCl()
 {
     TRACE(trace) << "~MemoryPoolGlCl()";
-    if (locked) {
+    if (locked)
+    {
         unlock();
     }
 }
 
-bool
-MemoryPoolGlCl::lock()
+bool MemoryPoolGlCl::lock()
 {
     TRACE(trace) << "MemoryPoolGlCl::lock()";
-    if (locked) {
+    if (locked)
+    {
         TRACE(debug) << "Already locked";
         return true;
     }
@@ -220,11 +211,11 @@ MemoryPoolGlCl::lock()
     return dataPtr != nullptr;
 }
 
-bool
-MemoryPoolGlCl::unlock()
+bool MemoryPoolGlCl::unlock()
 {
     TRACE(trace) << "MemoryPoolGlCl::unlock()";
-    if (!locked) {
+    if (!locked)
+    {
         TRACE(debug) << "Not locked";
         return true;
     }
@@ -238,7 +229,6 @@ MemoryPoolGlCl::unlock()
     locked = false;
     return true;
 }
-
 
 }; // namespace cl
 }; // namspace core
