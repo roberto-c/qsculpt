@@ -23,28 +23,29 @@
 
 #include <QtWidgets/QDockWidget>
 
-namespace Ui {
-    class ConsoleWindow;
+namespace Ui
+{
+class ConsoleWindow;
 }
 
 class ConsoleWindow : public QDockWidget
 {
     Q_OBJECT
 
-public:
-    explicit ConsoleWindow(QWidget *parent = 0);
+  public:
+    explicit ConsoleWindow(QWidget* parent = 0);
     ~ConsoleWindow();
 
-    void write(const QString &);
-    
-public slots:
+    void write(const QString&);
+
+  public slots:
     void executeLine();
 
-protected:
-    void changeEvent(QEvent *e);
+  protected:
+    void changeEvent(QEvent* e);
 
-private:
-    Ui::ConsoleWindow *ui;
+  private:
+    Ui::ConsoleWindow* ui;
 };
 
 #endif // CONSOLEWINDOW_H

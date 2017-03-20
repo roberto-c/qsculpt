@@ -21,49 +21,56 @@
 #ifndef __PLASTILINACORE_PRIMITIVEFACTORY_H__
 #define __PLASTILINACORE_PRIMITIVEFACTORY_H__
 
-#include <memory>
 #include <PlastilinaCore/subdivision/GpuSubdivision.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
+#include <memory>
 
-namespace core {
-    class GpuSubdivision;
-    //class Subdivision;
-    class Mesh;
-    
-    template<typename TSurface>
-    class PrimitiveFactory {
-    public:
-        /**
-         * Create a unit size box (all sides of size 1) with the center at 
-         * (0,0,0)
-         *
-         * @return TSurface a constructed ISurface box
-         */
-        static TSurface * createBox();
+namespace core
+{
+class GpuSubdivision;
+// class Subdivision;
+class Mesh;
 
-        static TSurface * createQuad(float w = 1.0f, float h = 1.0f);
-    };
-    
-    template<> class PrimitiveFactory<GpuSubdivision>;
-    template<> class PrimitiveFactory<Subdivision>;
-    template<> class PrimitiveFactory<Mesh>;
+template <typename TSurface>
+class PrimitiveFactory
+{
+  public:
+    /**
+     * Create a unit size box (all sides of size 1) with the center at
+     * (0,0,0)
+     *
+     * @return TSurface a constructed ISurface box
+     */
+    static TSurface* createBox();
+
+    static TSurface* createQuad(float w = 1.0f, float h = 1.0f);
 };
 
-namespace core {
-    template<>
-    class PrimitiveFactory<GpuSubdivision> {
-    public:
-        static GpuSubdivision * createBox();
-        static GpuSubdivision * createQuad(float w = 1.0f, float h = 1.0f);
-    };
-    
-    template<>
-    class PrimitiveFactory<Subdivision> {
-    public:
-        static Subdivision * createBox();
-        static Subdivision * createQuad(float w = 1.0f, float h = 1.0f);
-    };
+template <>
+class PrimitiveFactory<GpuSubdivision>;
+template <>
+class PrimitiveFactory<Subdivision>;
+template <>
+class PrimitiveFactory<Mesh>;
+};
 
+namespace core
+{
+template <>
+class PrimitiveFactory<GpuSubdivision>
+{
+  public:
+    static GpuSubdivision* createBox();
+    static GpuSubdivision* createQuad(float w = 1.0f, float h = 1.0f);
+};
+
+template <>
+class PrimitiveFactory<Subdivision>
+{
+  public:
+    static Subdivision* createBox();
+    static Subdivision* createQuad(float w = 1.0f, float h = 1.0f);
+};
 };
 
 #endif

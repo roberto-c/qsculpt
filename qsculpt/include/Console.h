@@ -27,57 +27,56 @@ class ICommand;
 class ConsoleWindow;
 
 /**
-  * Execute a given command entered by keyboard by using the ConsoleWindow.
-  */
+ * Execute a given command entered by keyboard by using the ConsoleWindow.
+ */
 class Console
 {
-public:
-    static Console* instance() ;
+  public:
+    static Console* instance();
 
     /**
-      * Destructor
-      */
+     * Destructor
+     */
     virtual ~Console();
 
     /**
-      * Register a command into the console. This makes the command available
-      * to the console interpreter.
-      */
+     * Register a command into the console. This makes the command available
+     * to the console interpreter.
+     */
     bool registerCommand(const QString& name, ICommand* cmd);
 
     /**
-      * Unregister the command from the console.
-      */
+     * Unregister the command from the console.
+     */
     bool unregisterCommand(const QString& name);
 
     /**
-      * Execute the command
-      *
-      * @param command a text string stating the command to execute.
-      *
-      */
+     * Execute the command
+     *
+     * @param command a text string stating the command to execute.
+     *
+     */
     bool evaluate(const QString& command);
 
     /**
-      * Get the console window.
-      */
+     * Get the console window.
+     */
     ConsoleWindow* consoleWindow();
 
     /**
      * Write a string into the console
      */
-    void write(const QString &);
-    
-private:
+    void write(const QString&);
+
+  private:
     /**
-      * Default constructor of the console.
-      */
+     * Default constructor of the console.
+     */
     Console();
 
     class Impl;
     QScopedPointer<Impl> _impl;
 };
-
 
 #define CONSOLE() Console::instance()
 

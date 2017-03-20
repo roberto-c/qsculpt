@@ -24,21 +24,16 @@
 
 struct SurfaceViewController::PrivateData
 {
-    ISurface*               surface;
-    //EditMode                mode;
-    std::vector<VertexHandle*>    vertices;
+    ISurface* surface;
+    // EditMode                mode;
+    std::vector<VertexHandle*> vertices;
 };
 
 SurfaceViewController::SurfaceViewController(ISurface* surface)
 {
     Q_UNUSED(surface);
 }
-    
-SurfaceViewController::~SurfaceViewController()
-{
-}
 
-void SurfaceViewController::paintGL()
-{
-    
-}
+SurfaceViewController::~SurfaceViewController() {}
+
+void SurfaceViewController::paintGL() {}

@@ -18,14 +18,14 @@ ContinuationIndentWidth: 4
 SortIncludes:    true
 IncludeCategories:
   - Regex:           '^<.*/Stable\.h\>'
-    Priority:        1 
+    Priority:        -1
   - Regex:           '^\"Stable\.h\"'
-    Priority:        1 
+    Priority:        -1
   - Regex:           '^<.*\.h>'
-    Priority:        2
+    Priority:        1
   - Regex:           '^<.*'
-    Priority:        3
+    Priority:        2
   - Regex:           '.*'
-    Priority:        4
+    Priority:        3
 ...
 

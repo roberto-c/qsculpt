@@ -15,16 +15,15 @@ class TestApp
 {
     struct Impl;
     std::unique_ptr<Impl> d;
-    
-public:
-    
-    TestApp(int argc, char** argv) ;
-    
+
+  public:
+    TestApp(int argc, char** argv);
+
     ~TestApp();
-    
+
     void init(int argc, char** argv);
-    
-    int run() ;
+
+    int run();
 };
 
 #endif

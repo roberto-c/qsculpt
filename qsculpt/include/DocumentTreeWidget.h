@@ -21,61 +21,60 @@
 #ifndef DOCUMENTTREEWIDGET_H_
 #define DOCUMENTTREEWIDGET_H_
 
-#include <QtWidgets/QDockWidget>
-#include <QtCore/QModelIndex>
-#include <QtCore/QItemSelectionModel>
 #include <PlastilinaCore/IDocument.h>
+#include <QtCore/QItemSelectionModel>
+#include <QtCore/QModelIndex>
+#include <QtWidgets/QDockWidget>
 
 class DocumentModel;
 
 class DocumentTreeWidget : public QDockWidget
 {
     Q_OBJECT
-    //Q_PROPERTY(IDocument::shared_ptr document READ document WRITE setDocument)
-    
-public:
+    // Q_PROPERTY(IDocument::shared_ptr document READ document WRITE
+    // setDocument)
+
+  public:
     DocumentTreeWidget(QWidget* parent);
     virtual ~DocumentTreeWidget();
-    
+
     /**
      * Gets the document to which this DocumentTree is associated to.
      */
     std::shared_ptr<DocumentModel> document() const;
-    
+
     /**
      * Sets the document to which this DocumentTree instance is associated to.
      */
-    void setDocument(const std::shared_ptr<DocumentModel> & doc);
-    
+    void setDocument(const std::shared_ptr<DocumentModel>& doc);
+
     /**
      *
      */
     QModelIndexList selectedIndexes() const;
-    
+
     /**
      * Set the index as selected. Clears previously set indices.
      *
      * @param index QModelIndex to select.
      */
-    void selectIndex(const QModelIndex & index);
-    
-public slots:
-    void itemActivated(const QModelIndex &index);
-    
+    void selectIndex(const QModelIndex& index);
+
+  public slots:
+    void itemActivated(const QModelIndex& index);
+
     /**
      * Handles the selection / deselection of item in the model view.
      *
      */
-    void onSelectionChanged(const QItemSelection & selected,
-                            const QItemSelection & deselected );
-    
-private:
+    void onSelectionChanged(const QItemSelection& selected,
+                            const QItemSelection& deselected);
+
+  private:
     void updateTree();
-    
+
     struct Private;
     QScopedPointer<Private> _d;
-    
 };
 
-#endif // DOCUMENTTREEWIDGET_H_ 
-
+#endif // DOCUMENTTREEWIDGET_H_

@@ -20,29 +20,29 @@
 #ifndef MOVECOMMAND_H
 #define MOVECOMMAND_H
 
-#include "command/CommandBase.h"
 #include <PlastilinaCore/Point3D.h>
 #include <QtCore/QList>
 #include <QtCore/QPoint>
+#include "command/CommandBase.h"
 
 class ISurface;
 class SceneNode;
 
 // Configuration keys constants
-#define CONF_ACTION         "ACTION"
-#define CONF_MOVE_AXIS      "MOVE_AXIS"
-#define CONF_ROTATE_AXIS    "ROTATE_AXIS"
-#define CONF_SCALE_AXIS     "SCALE_AXIS"
+#define CONF_ACTION "ACTION"
+#define CONF_MOVE_AXIS "MOVE_AXIS"
+#define CONF_ROTATE_AXIS "ROTATE_AXIS"
+#define CONF_SCALE_AXIS "SCALE_AXIS"
 
-#define CONF_MOVE_X         "MX"
-#define CONF_MOVE_Y         "MY"
-#define CONF_MOVE_Z         "MZ"
-#define CONF_ROTATE_X       "RX"
-#define CONF_ROTATE_Y       "RY"
-#define CONF_ROTATE_Z       "RZ"
-#define CONF_SCALE_X        "SX"
-#define CONF_SCALE_Y        "SY"
-#define CONF_SCALE_Z        "SZ"
+#define CONF_MOVE_X "MX"
+#define CONF_MOVE_Y "MY"
+#define CONF_MOVE_Z "MZ"
+#define CONF_ROTATE_X "RX"
+#define CONF_ROTATE_Y "RY"
+#define CONF_ROTATE_Z "RZ"
+#define CONF_SCALE_X "SX"
+#define CONF_SCALE_Y "SY"
+#define CONF_SCALE_Z "SZ"
 
 /**
  * Command for transformation of an object. This command can move, rotate
@@ -52,29 +52,32 @@ class SceneNode;
  */
 class TransformCommand : public CommandBase
 {
-public:
+  public:
     /**
      * Action enumeration flags. Identifies the action of the command
      */
-    enum Action {
-        Move = 0,                   /**< Move action */
-        Rotate,                     /**< Rotate action */
-        Scale,                      /**< Scale action */
-        AllActions                  /**< Do all actions */
+    enum Action
+    {
+        Move = 0,  /**< Move action */
+        Rotate,    /**< Rotate action */
+        Scale,     /**< Scale action */
+        AllActions /**< Do all actions */
     };
 
     /**
      * Enumeration flags used as the posible configuration values for
      * the axis movement
      */
-    enum MoveAxis {
-        XAxis = 0x00000001,         /**< Move on X axis */
-        YAxis = 0x00000002,         /**< Move on X axis */
-        ZAxis = 0x00000004,         /**< Move on X axis */
-        XYAxis = XAxis | YAxis,     /**< Move on X and Y axis */
-        XZAxis = XAxis | ZAxis,     /**< Move on X and Z axis */
-        YZAxis = YAxis | ZAxis      /**< Move on Y and Z axis */
-    }RotateAxis, ScaleAxis;
+    enum MoveAxis
+    {
+        XAxis  = 0x00000001,    /**< Move on X axis */
+        YAxis  = 0x00000002,    /**< Move on X axis */
+        ZAxis  = 0x00000004,    /**< Move on X axis */
+        XYAxis = XAxis | YAxis, /**< Move on X and Y axis */
+        XZAxis = XAxis | ZAxis, /**< Move on X and Z axis */
+        YZAxis = YAxis | ZAxis  /**< Move on Y and Z axis */
+    } RotateAxis,
+        ScaleAxis;
 
     /**
      * Move command constructor. Fill the configuration values container with
@@ -86,7 +89,7 @@ public:
      * Copy constructor.
      */
     TransformCommand(const TransformCommand& cpy);
-    
+
     /**
      * Transform command destructor
      */
@@ -134,16 +137,13 @@ public:
      * Overriden from ICommand. Returns the configuration widget for this
      * command.
      */
-    virtual QWidget* getOptionsWidget() {
-    	return NULL;
-    }
+    virtual QWidget* getOptionsWidget() { return NULL; }
 
-    virtual void paintGL(GlCanvas *c);
+    virtual void paintGL(GlCanvas* c);
 
-private:
+  private:
     struct Impl;
     QScopedPointer<Impl> d_;
 };
 
 #endif
-

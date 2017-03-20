@@ -19,25 +19,23 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "ConsoleWindow.h"
-#include "ui_ConsoleWindow.h"
 #include "Console.h"
+#include "ui_ConsoleWindow.h"
 
-ConsoleWindow::ConsoleWindow(QWidget *parent) :
-    QDockWidget(parent),
-    ui(new Ui::ConsoleWindow)
+ConsoleWindow::ConsoleWindow(QWidget* parent)
+    : QDockWidget(parent)
+    , ui(new Ui::ConsoleWindow)
 {
     ui->setupUi(this);
 }
 
-ConsoleWindow::~ConsoleWindow()
-{
-    delete ui;
-}
+ConsoleWindow::~ConsoleWindow() { delete ui; }
 
-void ConsoleWindow::changeEvent(QEvent *e)
+void ConsoleWindow::changeEvent(QEvent* e)
 {
     QDockWidget::changeEvent(e);
-    switch (e->type()) {
+    switch (e->type())
+    {
     case QEvent::LanguageChange:
         ui->retranslateUi(this);
         break;
@@ -48,12 +46,12 @@ void ConsoleWindow::changeEvent(QEvent *e)
 
 void ConsoleWindow::executeLine()
 {
-//    qDebug() << "Execute...";
+    //    qDebug() << "Execute...";
     Console::instance()->evaluate(ui->input->text());
     ui->input->setText("");
 }
 
-void ConsoleWindow::write(const QString &text)
+void ConsoleWindow::write(const QString& text)
 {
     ui->output->appendPlainText(text);
 }

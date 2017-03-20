@@ -20,11 +20,11 @@
 #ifndef TRANSFORMWIDGET_H
 #define TRANSFORMWIDGET_H
 
-
 #include <QtWidgets/QWidget>
 
-namespace Ui {
-    class TransformWidget;
+namespace Ui
+{
+class TransformWidget;
 }
 
 class ICommand;
@@ -38,19 +38,18 @@ class TransformWidget : public QWidget
 {
     Q_OBJECT
 
-public:
+  public:
     TransformWidget(QWidget* parent);
 
     virtual ~TransformWidget();
 
     void enable(bool enable);
 
-private slots:
+  private slots:
     void applyTransform();
-    
-private:
-    Ui::TransformWidget *ui_;
+
+  private:
+    Ui::TransformWidget* ui_;
 };
 
 #endif
-

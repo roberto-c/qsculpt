@@ -13,6 +13,6 @@
 
 #include <PlastilinaCore/SceneNode.h>
 
-void subdivide(SurfaceNode::shared_ptr & node);
+void subdivide(SurfaceNode::shared_ptr& node);
 
 #endif /* defined(__TestApp__Subdivision__) */

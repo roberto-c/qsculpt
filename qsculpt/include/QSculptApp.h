@@ -20,8 +20,8 @@
 #ifndef QSCULPTAPP_H
 #define QSCULPTAPP_H
 
-#include <QtWidgets/QApplication>
 #include <PlastilinaCore/IDocument.h>
+#include <QtWidgets/QApplication>
 
 #define g_pApp g_pApp
 
@@ -29,31 +29,31 @@ class QSculptWindow;
 
 /**
  * Contains methods or variables that are used in all the application.
- * 
+ *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ */
 class QSculptApp : public QApplication
 {
-public:
+  public:
     /**
-     * Application's constructor that receives arguments. Constructs an instance of
-     * the main window.
+     * Application's constructor that receives arguments. Constructs an
+     * instance of the main window.
      */
     QSculptApp(int& argc, char** argv);
-    
+
     /**
      * Default detructor of the application
      */
     virtual ~QSculptApp();
 
     /**
-     * Get the main widget of the application. The main widget generally is the
-     * main window.
-     * 
+     * Get the main widget of the application. The main widget generally is
+     * the main window.
+     *
      * @return a pointer to the main widget
      */
     QSculptWindow* getMainWindow();
-    
+
     /**
      * Get the current document.
      *
@@ -61,14 +61,13 @@ public:
      * are being executed on.
      */
     IDocument::shared_ptr getCurrentDocument();
-    
-    virtual bool	notify ( QObject * receiver, QEvent * e );
 
-private:
+    virtual bool notify(QObject* receiver, QEvent* e);
+
+  private:
     QSculptWindow* m_mainWindow; /**< main widget of the application. */
 };
 
 extern QSculptApp* g_pApp;
 
 #endif
-

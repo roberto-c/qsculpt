@@ -37,7 +37,7 @@ class SubdivideCommand : public CommandBase
 {
     Q_OBJECT
 
-public:
+  public:
     SubdivideCommand();
 
     SubdivideCommand(const SubdivideCommand& cpy);
@@ -46,20 +46,17 @@ public:
 
     // ICommand Interface
     virtual ICommand* clone() const;
-    virtual bool needsUserInteraction() const { return false; }
-    virtual void execute();
-    virtual void undo();
-    virtual void redo();
-    virtual QWidget* getOptionsWidget(){return NULL;}
+    virtual bool      needsUserInteraction() const { return false; }
+    virtual void      execute();
+    virtual void      undo();
+    virtual void      redo();
+    virtual QWidget*  getOptionsWidget() { return NULL; }
     // End ICommand Interface
 
-private:
-
+  private:
     struct Impl;
     QScopedPointer<Impl> _d;
-
 };
-
 
 /**
  * Subdivision command. Subdvide the selected object.
@@ -69,53 +66,50 @@ private:
 class EditSubdivideCommand : public CommandBase
 {
     Q_OBJECT
-    
-public:
+
+  public:
     EditSubdivideCommand();
-    
+
     EditSubdivideCommand(const EditSubdivideCommand& cpy);
-    
+
     ~EditSubdivideCommand();
-    
+
     // ICommand Interface
     virtual ICommand* clone() const;
-    virtual bool needsUserInteraction() const { return true; }
-    virtual void execute();
-    virtual void undo();
-    virtual void redo();
-    virtual QWidget* getOptionsWidget(){return NULL;}
-    
+    virtual bool      needsUserInteraction() const { return true; }
+    virtual void      execute();
+    virtual void      undo();
+    virtual void      redo();
+    virtual QWidget*  getOptionsWidget() { return NULL; }
+
     /**
      *
      */
-    virtual void mousePressEvent(QMouseEvent *e);
-    
+    virtual void mousePressEvent(QMouseEvent* e);
+
     /**
      * Called when a mouse release event ocurrs. This method is called by the
      * widget (a QGLWidget).
      *
      */
-    virtual void mouseReleaseEvent(QMouseEvent *e);
-    
+    virtual void mouseReleaseEvent(QMouseEvent* e);
+
     /**
      * Called when a mouse move event ocurrs. This method is called by the
      * widget (a QGLWidget).
      *
      */
-    virtual void mouseMoveEvent(QMouseEvent *e);
-    
+    virtual void mouseMoveEvent(QMouseEvent* e);
+
     /**
      * Used to display anything specific to the command as user feedback.
      */
-    virtual void paintGL(GlCanvas *c);
+    virtual void paintGL(GlCanvas* c);
     // End ICommand Interface
-    
-private:
-    
+
+  private:
     struct Impl;
     QScopedPointer<Impl> d_;
-    
 };
 
 #endif
-

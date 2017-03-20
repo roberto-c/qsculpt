@@ -19,46 +19,47 @@
  ***************************************************************************/
 
 #include "Stable.h"
-#include <QtGui/QStandardItemModel>
-#include <QtGui/QStandardItem>
 #include <QtCore/QItemSelectionModel>
+#include <QtGui/QStandardItem>
+#include <QtGui/QStandardItemModel>
 
 #include <PlastilinaCore/IDocument.h>
+#include "DocumentModel.h"
 #include "DocumentTreeWidget.h"
-#include "ui_DocumentTreeWidget.h"
 #include "DocumentView.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "DocumentModel.h"
-
+#include "ui_DocumentTreeWidget.h"
 
 static const QString TITLE("Document Tree");
 
 struct DocumentTreeWidget::Private
 {
     QScopedPointer<Ui::DocumentTreeWidget> ui;
-    std::shared_ptr<DocumentModel> doc;
-    
-    Private() : ui(new Ui::DocumentTreeWidget){}
+    std::shared_ptr<DocumentModel>         doc;
+
+    Private()
+        : ui(new Ui::DocumentTreeWidget)
+    {
+    }
 };
 
 DocumentTreeWidget::DocumentTreeWidget(QWidget* parent)
-:   QDockWidget(TITLE, parent),
-    _d(new Private)
+    : QDockWidget(TITLE, parent)
+    , _d(new Private)
 {
     _d->ui->setupUi(this);
 }
 
-DocumentTreeWidget::~DocumentTreeWidget()
-{
-}
+DocumentTreeWidget::~DocumentTreeWidget() {}
 
 std::shared_ptr<DocumentModel> DocumentTreeWidget::document() const
 {
     return _d->doc;
 }
 
-void DocumentTreeWidget::setDocument(const std::shared_ptr<DocumentModel> & doc)
+void DocumentTreeWidget::setDocument(
+    const std::shared_ptr<DocumentModel>& doc)
 {
     _d->doc = doc;
     updateTree();
@@ -66,53 +67,62 @@ void DocumentTreeWidget::setDocument(const std::shared_ptr<DocumentModel> & doc)
 
 QModelIndexList DocumentTreeWidget::selectedIndexes() const
 {
-    QItemSelectionModel * sm = _d->ui->nodeTree->selectionModel();
-    if (!sm) {
-        throw std::runtime_error("DocumentTreeWidget::selectedIndexes: Invalid selectionModel");
+    QItemSelectionModel* sm = _d->ui->nodeTree->selectionModel();
+    if (!sm)
+    {
+        throw std::runtime_error(
+            "DocumentTreeWidget::selectedIndexes: Invalid selectionModel");
     }
     return sm->selectedIndexes();
 }
 
-void DocumentTreeWidget::selectIndex(const QModelIndex & index)
+void DocumentTreeWidget::selectIndex(const QModelIndex& index)
 {
-    QItemSelectionModel * sm = _d->ui->nodeTree->selectionModel();
-    if (!sm) {
-        throw std::runtime_error("DocumentTreeWidget::selectedIndexes: Invalid selectionModel");
+    QItemSelectionModel* sm = _d->ui->nodeTree->selectionModel();
+    if (!sm)
+    {
+        throw std::runtime_error(
+            "DocumentTreeWidget::selectedIndexes: Invalid selectionModel");
     }
     sm->clearSelection();
     sm->select(index, QItemSelectionModel::Select);
 }
 
-void DocumentTreeWidget::itemActivated(const QModelIndex &index)
+void DocumentTreeWidget::itemActivated(const QModelIndex& index)
 {
     qDebug() << "Index selected";
-//    SceneNode::shared_ptr ptr = _d->doc->findItem(index.internalId());
-//    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-//    if (ptr && view) {
-//        ptr->setSelected(true);
-//        view->updateView();
-//    }
+    //    SceneNode::shared_ptr ptr = _d->doc->findItem(index.internalId());
+    //    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    //    if (ptr && view) {
+    //        ptr->setSelected(true);
+    //        view->updateView();
+    //    }
 }
 
-void DocumentTreeWidget::onSelectionChanged(const QItemSelection & selected,
-                                      const QItemSelection & deselected )
+void DocumentTreeWidget::onSelectionChanged(const QItemSelection& selected,
+                                            const QItemSelection& deselected)
 {
-    DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+    DocumentView*         view = g_pApp->getMainWindow()->getCurrentView();
     SceneNode::shared_ptr ptr;
-    
-    foreach(QModelIndex index, selected.indexes()) {
+
+    foreach (QModelIndex index, selected.indexes())
+    {
         ptr = _d->doc->findItem(index.internalId());
-        if (ptr) {
+        if (ptr)
+        {
             ptr->setSelected(true);
         }
     }
-    foreach(QModelIndex index, deselected.indexes()) {
+    foreach (QModelIndex index, deselected.indexes())
+    {
         ptr = _d->doc->findItem(index.internalId());
-        if (ptr) {
+        if (ptr)
+        {
             ptr->setSelected(false);
         }
     }
-    if (view) {
+    if (view)
+    {
         view->updateView();
     }
 }
@@ -123,22 +133,23 @@ void DocumentTreeWidget::updateTree()
     {
         return;
     }
-    if (_d->ui->nodeTree->model()) 
+    if (_d->ui->nodeTree->model())
     {
         //_d->ui->nodeTree->model()->
-        QItemSelectionModel *sm = _d->ui->nodeTree->selectionModel();
+        QItemSelectionModel* sm = _d->ui->nodeTree->selectionModel();
         QObject::disconnect(sm, 0, this, 0);
         delete sm;
     }
     _d->ui->nodeTree->setModel(_d->doc.get());
-    QItemSelectionModel *sm = _d->ui->nodeTree->selectionModel();
-    QObject::connect(sm, 
-                     SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
+    QItemSelectionModel* sm = _d->ui->nodeTree->selectionModel();
+    QObject::connect(
+        sm, SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+        this, SLOT(itemActivated(QModelIndex)));
+
+    QObject::connect(sm,
+                     SIGNAL(selectionChanged(const QItemSelection&,
+                                             const QItemSelection&)),
                      this,
-                     SLOT(itemActivated(QModelIndex)));
-    
-    QObject::connect(sm, 
-                     SIGNAL(selectionChanged(const QItemSelection &,const QItemSelection &)),
-                     this,
-                     SLOT(onSelectionChanged(const QItemSelection &,const QItemSelection &)));
+                     SLOT(onSelectionChanged(const QItemSelection&,
+                                             const QItemSelection&)));
 }

@@ -34,27 +34,34 @@ class GlCanvas;
  * The command can have several configuration parameters.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ */
 class ICommand : public QObject, public QUndoCommand
 {
     Q_OBJECT
 
-public:
+  public:
     /**
      * Default contructor.
      */
-    ICommand(ICommand* parent=0) : QUndoCommand(parent) {
+    ICommand(ICommand* parent = 0)
+        : QUndoCommand(parent)
+    {
     }
 
-    ICommand(const QString& text, ICommand* parent=0)
-        : QUndoCommand(text, parent) {
+    ICommand(const QString& text, ICommand* parent = 0)
+        : QUndoCommand(text, parent)
+    {
     }
 
-    ICommand(const ICommand& cpy) : QObject(cpy.parent()), QUndoCommand(){}
+    ICommand(const ICommand& cpy)
+        : QObject(cpy.parent())
+        , QUndoCommand()
+    {
+    }
     /**
      * Default destructor.
      */
-    virtual ~ICommand(){}
+    virtual ~ICommand() {}
 
     /**
      * Creates a new instance of the command. The new command instance should
@@ -98,55 +105,55 @@ public:
     virtual bool isActive() = 0;
 
     /**
-     * Returns a reference to the container of config paramters for the command
+     * Returns a reference to the container of config paramters for the
+     * command
      *
      * @return referece to an IConfigContainer class
      */
-    virtual IConfigContainer& getConfig()const = 0;
-    IConfigContainer& config() const { return getConfig(); }
+    virtual IConfigContainer& getConfig() const = 0;
+    IConfigContainer&         config() const { return getConfig(); }
 
     /**
      * Called when a mouse press event ocurrs. This method is called by the
      * widget (a QGLWidget).
      *
      */
-    virtual void mousePressEvent(QMouseEvent *e) = 0;
+    virtual void mousePressEvent(QMouseEvent* e) = 0;
 
     /**
      * Called when a mouse release event ocurrs. This method is called by the
      * widget (a QGLWidget).
      *
      */
-    virtual void mouseReleaseEvent(QMouseEvent *e) = 0;
+    virtual void mouseReleaseEvent(QMouseEvent* e) = 0;
 
     /**
      * Called when a mouse move event ocurrs. This method is called by the
      * widget (a QGLWidget).
      *
      */
-    virtual void mouseMoveEvent(QMouseEvent *e) = 0;
+    virtual void mouseMoveEvent(QMouseEvent* e) = 0;
 
     /**
      * Used to display anything specific to the command as user feedback.
      */
-    virtual void paintGL(GlCanvas *c) = 0;
-    
-public slots:
+    virtual void paintGL(GlCanvas* c) = 0;
+
+  public slots:
     /**
-     * Execute the command in no interactive way. This means, that once that all the
-     * parameters of the command are set, the command will be executed without user
-     * intervention.
+     * Execute the command in no interactive way. This means, that once that
+     * all the parameters of the command are set, the command will be executed
+     * without user intervention.
      */
     virtual void execute() = 0;
 
-
-signals:
+  signals:
     /**
-	 * Serves as a way to indicate when the command has finished its execution.
-	 * This signal should be sent at the end of the undo() method implementation.
-	 */
+     * Serves as a way to indicate when the command has finished its
+     * execution. This signal should be sent at the end of the undo() method
+     * implementation.
+     */
     void executed();
 };
 
 #endif
-

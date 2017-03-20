@@ -6,11 +6,11 @@
 
 class ISurface;
 
-class ObjectProperties: public QWidget, private Ui::TransformWidget
+class ObjectProperties : public QWidget, private Ui::TransformWidget
 {
-public:
-	ObjectProperties();
-	virtual ~ObjectProperties();
+  public:
+    ObjectProperties();
+    virtual ~ObjectProperties();
 };
 
 #endif /*OBJECTPROPERTIES_H_*/

@@ -18,12 +18,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
 #ifndef QSCULPTWINDOW_H
 #define QSCULPTWINDOW_H
 
-#include <QtWidgets/QMainWindow>
 #include <QtCore/QStack>
+#include <QtWidgets/QMainWindow>
 
 #include <PlastilinaCore/IDocument.h>
 #include "command/CommandManager.h"
@@ -42,7 +41,7 @@ class QSculptWindow : public QMainWindow
 {
     Q_OBJECT
 
-public:
+  public:
     QSculptWindow();
     virtual ~QSculptWindow();
 
@@ -55,7 +54,7 @@ public:
     /**
      * Gets the current document. This document is the one that all commands
      * should operate on.
-     * 
+     *
      * @return pointer to current document
      */
     IDocument::shared_ptr getCurrentDocument();
@@ -78,25 +77,26 @@ public:
     /**
      * Set the options configuration widget for the current command.
      */
-    void setOptionsWidget( QWidget* widget);
+    void setOptionsWidget(QWidget* widget);
 
     /**
      * This method is used to get the pointer to one of the docking widget.
      *
-     * The caller should cast the widget to the correct widget to use if needed.
+     * The caller should cast the widget to the correct widget to use if
+     * needed.
      *
-     * @param key id of the widget to retrieve. Each widget is added to a lookup
-     * table. This parameter is the index in that lookup table.
+     * @param key id of the widget to retrieve. Each widget is added to a
+     * lookup table. This parameter is the index in that lookup table.
      *
-     * @return The widget registered with the given key. Null if the key is not
-     * found. 
+     * @return The widget registered with the given key. Null if the key is
+     * not found.
      */
-    QWidget* toolWidget(const QString & key) const;
-    
-protected:
-    void closeEvent(QCloseEvent *event);
+    QWidget* toolWidget(const QString& key) const;
 
-private slots:
+  protected:
+    void closeEvent(QCloseEvent* event);
+
+  private slots:
     void newFile();
     void open();
     bool save();
@@ -126,7 +126,7 @@ private slots:
      */
     void viewFullscreen(bool value);
 
-private:
+  private:
     /**
      * Create the widgets used on ths window. It setups the UI, create the
      * dock widgets, create some of the connections of slot/signal
@@ -136,15 +136,13 @@ private:
     void readSettings();
     void writeSettings();
     bool maybeSave();
-    void loadFile(const QString &fileName);
-    bool saveFile(const QString &fileName);
-    void setCurrentFile(const QString &fileName);
-    QString strippedName(const QString &fullFileName);
+    void loadFile(const QString& fileName);
+    bool saveFile(const QString& fileName);
+    void setCurrentFile(const QString& fileName);
+    QString strippedName(const QString& fullFileName);
 
     struct Impl;
     QScopedPointer<Impl> d_;
 };
 
-
 #endif
-

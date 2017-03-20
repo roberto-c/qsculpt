@@ -10,19 +10,20 @@
 
 #include <QtOpenGL/QGLContext>
 
-class CustomGLContext : public QGLContext {
+class CustomGLContext : public QGLContext
+{
     bool _useSoftwareRenderer;
-    
-public:
+
+  public:
     CustomGLContext();
-    
-    CustomGLContext(const QGLFormat & format);
-    
+
+    CustomGLContext(const QGLFormat& format);
+
 #ifdef __APPLE__
-    void * chooseMacVisual(GDHandle /*handle*/);
+    void* chooseMacVisual(GDHandle /*handle*/);
 #endif
     void setUseSoftwareRenderer(bool use);
-    
+
     bool useSoftwareRenderer();
 };
 

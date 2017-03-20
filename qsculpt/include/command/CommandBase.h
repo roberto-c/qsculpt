@@ -20,22 +20,22 @@
 #ifndef COMMANDBASE_H
 #define COMMANDBASE_H
 
-#include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/Camera.h>
+#include <PlastilinaCore/Point3D.h>
 #include "ICommand.h"
 
 /**
  * Base class for commands. Contains basic and common command implementation.
  *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
+ */
 class CommandBase : public ICommand
 {
-public:
+  public:
     /**
      *
      */
-    CommandBase(ICommand* parent=0);
+    CommandBase(ICommand* parent = 0);
 
     /**
      *
@@ -45,45 +45,45 @@ public:
     /**
      *
      */
-    CommandBase(const QString& text, ICommand* parent=0);
+    CommandBase(const QString& text, ICommand* parent = 0);
 
     virtual ~CommandBase();
 
     /*
      * ICommand interface implementation
      */
-    virtual IConfigContainer& getConfig()const;
-    virtual bool needsUserInteraction() const { return true; }
+    virtual IConfigContainer& getConfig() const;
+    virtual bool              needsUserInteraction() const { return true; }
     virtual void activate(bool active);
     virtual bool isActive();
-    virtual void mousePressEvent(QMouseEvent *e);
-    virtual void mouseReleaseEvent(QMouseEvent *e);
-    virtual void mouseMoveEvent(QMouseEvent *e);
+    virtual void mousePressEvent(QMouseEvent* e);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
+    virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void execute() {}
-    virtual void paintGL(GlCanvas *c);
+    virtual void paintGL(GlCanvas* c);
 
-protected:
-    virtual void initializeConfigContainer(){}
+  protected:
+    virtual void initializeConfigContainer() {}
 
-protected:
-    IConfigContainer*   _configContainer;
-    bool                _isActive;
-    Point3              _intialPoint;
-    Point3              _currentPoint;
-    Point3              _finalPoint;
-    Point3              _initialWinPoint;
-    Point3              _currentWinPoint;
-    Point3              _finalWinPoint;
-    double              _modelMatrix[16];
-    double              _projMatrix[16];
-    GLint               _viewPort[4];
-    float               _rotationRadius;
-private:
-    Camera*             _currentCamera;
-    Camera*             _intialCameraState;
-    bool                _panViewMode;
-    bool                _rotateViewMode;
+  protected:
+    IConfigContainer* _configContainer;
+    bool              _isActive;
+    Point3            _intialPoint;
+    Point3            _currentPoint;
+    Point3            _finalPoint;
+    Point3            _initialWinPoint;
+    Point3            _currentWinPoint;
+    Point3            _finalWinPoint;
+    double            _modelMatrix[16];
+    double            _projMatrix[16];
+    GLint             _viewPort[4];
+    float             _rotationRadius;
+
+  private:
+    Camera* _currentCamera;
+    Camera* _intialCameraState;
+    bool    _panViewMode;
+    bool    _rotateViewMode;
 };
 
 #endif
-

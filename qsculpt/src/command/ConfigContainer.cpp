@@ -22,19 +22,18 @@
 
 Q_DECLARE_METATYPE(Point3);
 
-ConfigContainer::ConfigContainer(): IConfigContainer()
+ConfigContainer::ConfigContainer()
+    : IConfigContainer()
 {
 }
 
 ConfigContainer::ConfigContainer(const ConfigContainer& cpy)
-: IConfigContainer(cpy),
-m_container(cpy.m_container)
+    : IConfigContainer(cpy)
+    , m_container(cpy.m_container)
 {
 }
 
-ConfigContainer::~ConfigContainer()
-{
-}
+ConfigContainer::~ConfigContainer() {}
 
 IConfigContainer* ConfigContainer::clone() const
 {
@@ -58,7 +57,8 @@ int ConfigContainer::getInt(const QString& key)
 
 QString ConfigContainer::getString(const QString& key)
 {
-    return !m_container.contains(key) ? QString("") : m_container[key].toString();
+    return !m_container.contains(key) ? QString("")
+                                      : m_container[key].toString();
 }
 
 void ConfigContainer::setDouble(const QString& key, double value)
@@ -88,11 +88,11 @@ void ConfigContainer::setBool(const QString& key, bool value)
 
 Point3 ConfigContainer::getPoint3D(const QString& key)
 {
-    return !m_container.contains(key) ? Point3( 0, 0, 0) : m_container[key].value<Point3>();
+    return !m_container.contains(key) ? Point3(0, 0, 0)
+                                      : m_container[key].value<Point3>();
 }
 
-void ConfigContainer::setPoint3D(const QString& key, const Point3 &v)
+void ConfigContainer::setPoint3D(const QString& key, const Point3& v)
 {
     m_container[key] = QVariant::fromValue(v);
 }
-

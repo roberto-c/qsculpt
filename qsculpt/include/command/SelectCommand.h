@@ -20,19 +20,19 @@
 #ifndef SELECTCOMMAND_H
 #define SELECTCOMMAND_H
 
-#include <QtCore/QVector>
-#include <QtCore/QPointer>
 #include <PlastilinaCore/Point3D.h>
+#include <QtCore/QPointer>
+#include <QtCore/QVector>
 
-#include "command/CommandBase.h"
 #include "DocumentView.h"
+#include "command/CommandBase.h"
 
 class TransformWidget;
 
+#define SELECT_TYPE "SELECTION_TYPE"
 
-#define SELECT_TYPE     "SELECTION_TYPE"
-
-enum SelectionType{
+enum SelectionType
+{
     ST_Surface,
     ST_Vertex,
     ST_Edge,
@@ -46,7 +46,7 @@ enum SelectionType{
  */
 class SelectCommand : public CommandBase
 {
-public:
+  public:
     SelectCommand(ICommand* parent = 0);
 
     SelectCommand(const SelectCommand& cpy);
@@ -55,11 +55,11 @@ public:
 
     // ICommand interface
     virtual ICommand* clone() const;
-    virtual void execute();
+    virtual void      execute();
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void paintGL(GlCanvas *c);
+    virtual void paintGL(GlCanvas* c);
     virtual QWidget* getOptionsWidget();
     // End ICommand interface
 
@@ -77,16 +77,16 @@ public:
      */
     SelectionType selectionType();
 
-private:
-    ObjectContainer _objectsSelected;
-    bool            _boxSelection;
-    bool            _drawBox;
-    Point3          _startPoint;
-    Point3          _endPoint;
-    Point3          _startPointWin;
-    Point3          _endPointWin;
-    SelectionType   _selectionType;
-    Scene::shared_ptr  _rectangle;
+  private:
+    ObjectContainer   _objectsSelected;
+    bool              _boxSelection;
+    bool              _drawBox;
+    Point3            _startPoint;
+    Point3            _endPoint;
+    Point3            _startPointWin;
+    Point3            _endPointWin;
+    SelectionType     _selectionType;
+    Scene::shared_ptr _rectangle;
 
     void select();
     void selectSurface();
@@ -96,8 +96,7 @@ private:
 
     void unselectAll();
 
-    static QPointer<TransformWidget>	_objectProperties;
+    static QPointer<TransformWidget> _objectProperties;
 };
 
 #endif
-

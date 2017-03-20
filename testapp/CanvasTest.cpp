@@ -1,40 +1,40 @@
 /***************************************************************************
-*   Copyright (C) 2016 by Juan Roberto Cabral Flores                      *
-*   roberto.cabral@gmail.com                                              *
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-*   This program is distributed in the hope that it will be useful,       *
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-*   GNU General Public License for more details.                          *
-*                                                                         *
-*   You should have received a copy of the GNU General Public License     *
-*   along with this program; if not, write to the                         *
-*   Free Software Foundation, Inc.,                                       *
-*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
-***************************************************************************/
-#include "stable.h"
+ *   Copyright (C) 2016 by Juan Roberto Cabral Flores                      *
+ *   roberto.cabral@gmail.com                                              *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include "Stable.h"
 #include "CanvasTest.h"
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_syswm.h>
 
+#include <PLastilinaCore/subdivision/GpuSubdivision.h>
+#include <PLastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/Canvas.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Logging.h>
+#include <PlastilinaCore/ResourcesManager.h>
+#include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/material/PhongMaterial.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opengl/Texture.h>
-#include <PlastilinaCore/ResourcesManager.h>
-#include <PlastilinaCore/Scene.h>
-#include <PLastilinaCore/subdivision/GpuSubdivision.h>
-#include <PLastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/subdivision/SubdivisionRenderable.h>
 #include "DocumentModelTest.h"
 #include "PrimitiveFactory.h"
@@ -43,41 +43,45 @@ using namespace std;
 
 struct CanvasTest::Impl
 {
-    CanvasTest                  *test;
-    Scene::shared_ptr           scene;
-    shared_ptr<PhongMaterial>   material;
-    ISurface::shared_ptr        surface;
-    Camera::shared_ptr          camera;
-    unique_ptr<core::Canvas>    canvas;
-    int                         x, y;
-    bool                    runUi;
-    bool                        drawPoint;
+    CanvasTest*               test;
+    Scene::shared_ptr         scene;
+    shared_ptr<PhongMaterial> material;
+    ISurface::shared_ptr      surface;
+    Camera::shared_ptr        camera;
+    unique_ptr<core::Canvas>  canvas;
+    int                       x, y;
+    bool                      runUi;
+    bool                      drawPoint;
 
     Impl()
         : test(nullptr)
         , scene(nullptr)
         , runUi(false)
         , drawPoint(false)
-    {}
+    {
+    }
 
     int setup();
 
     int cleanup();
 };
 
-int CanvasTest::Impl::setup() {
+int CanvasTest::Impl::setup()
+{
     TRACEFUNCTION("");
 
-    x = 0;
-    y = 0;
-    surface = std::shared_ptr<Subdivision>(core::PrimitiveFactory<Subdivision>::createQuad(1280, 720));
-    scene = std::make_shared<Scene>();
+    x       = 0;
+    y       = 0;
+    surface = std::shared_ptr<Subdivision>(
+        core::PrimitiveFactory<Subdivision>::createQuad(1280, 720));
+    scene            = std::make_shared<Scene>();
     auto surfacenode = std::make_shared<SurfaceNode>(surface.get());
-    material = make_shared<PhongMaterial>();
-    auto camnode = make_shared<CameraNode>();
-    camera = make_shared<Camera>();
+    material         = make_shared<PhongMaterial>();
+    auto camnode     = make_shared<CameraNode>();
+    camera           = make_shared<Camera>();
 
-    canvas = std::unique_ptr<core::Canvas>(core::Canvas::factory(core::Canvas::ClTexture, 1280, 720));
+    canvas = std::unique_ptr<core::Canvas>(
+        core::Canvas::factory(core::Canvas::ClTexture, 1280, 720));
 
     if (material && surfacenode && scene && camera && camnode && canvas)
     {
@@ -95,20 +99,21 @@ int CanvasTest::Impl::setup() {
         material->setExponent(200);
         material->setDiffuseTexture(canvas->colorTexture());
         surfacenode->setMaterial(material);
-
     }
     return 0;
 }
 
-int CanvasTest::Impl::cleanup() {
+int CanvasTest::Impl::cleanup()
+{
     TRACEFUNCTION("");
     canvas = nullptr;
-    if (material) {
+    if (material)
+    {
         material->unload();
     }
     material = nullptr;
-    surface = nullptr;
-    scene = nullptr;
+    surface  = nullptr;
+    scene    = nullptr;
     return 0;
 }
 
@@ -119,9 +124,7 @@ CanvasTest::CanvasTest()
     d_->test = this;
 }
 
-CanvasTest::~CanvasTest()
-{
-}
+CanvasTest::~CanvasTest() {}
 
 void CanvasTest::doSetup()
 {
@@ -129,27 +132,25 @@ void CanvasTest::doSetup()
     {
         d_->setup();
     }
-    catch (core::GlException & e)
+    catch (core::GlException& e)
     {
         TRACE(error) << "Failed: " << e.error();
     }
-    catch (std::exception & e)
+    catch (std::exception& e)
     {
         TRACE(error) << "Failed" << e.what();
     }
 }
 
-void CanvasTest::doRun() {
+void CanvasTest::doRun()
+{
     if (!d_->runUi)
     {
         d_->runUi = true;
     }
 }
 
-void CanvasTest::doShutdown()
-{
-    d_->cleanup();
-}
+void CanvasTest::doShutdown() { d_->cleanup(); }
 
 void CanvasTest::resize(int w, int h)
 {
@@ -179,47 +180,54 @@ void CanvasTest::doRenderFrame()
 
 void CanvasTest::keyboard(int key, int x, int y)
 {
-    switch (key) {
+    switch (key)
+    {
     case SDLK_ESCAPE:
         notify(TestEvent::TE_RUN_TEST_END);
         break;
     case SDLK_w:
-        d_->y-=4;
+        d_->y -= 4;
         break;
     case SDLK_UP:
-        if (d_->camera) {
+        if (d_->camera)
+        {
             d_->camera->transform().translate(Vector3(0, 0.25f, 0));
         }
         break;
     case SDLK_s:
-        d_->y+=4;
+        d_->y += 4;
         break;
     case SDLK_DOWN:
-        if (d_->camera) {
+        if (d_->camera)
+        {
             d_->camera->transform().translate(Vector3(0, -0.25f, 0));
         }
         break;
     case SDLK_a:
-        d_->x-=4;
+        d_->x -= 4;
         break;
     case SDLK_LEFT:
-        if (d_->camera) {
+        if (d_->camera)
+        {
             d_->camera->transform().translate(Vector3(0.25f, 0, 0));
         }
         break;
     case SDLK_d:
-        d_->x+=4;
+        d_->x += 4;
         break;
     case SDLK_RIGHT:
-        if (d_->camera) {
+        if (d_->camera)
+        {
             d_->camera->transform().translate(Vector3(-0.25f, 0, 0));
         }
         break;
     default:
         break;
     }
-    if (d_->x < 0) d_->x = 0;
-    if (d_->y < 0) d_->y = 0;
+    if (d_->x < 0)
+        d_->x = 0;
+    if (d_->y < 0)
+        d_->y = 0;
 }
 
 void CanvasTest::mouseClick(uint32_t button, uint32_t state, int x, int y)
@@ -228,17 +236,18 @@ void CanvasTest::mouseClick(uint32_t button, uint32_t state, int x, int y)
     if ((button & SDL_BUTTON_LEFT) && (state & SDL_BUTTON_LMASK))
     {
         d_->drawPoint = true;
-        d_->x = x;
-        d_->y = y;
+        d_->x         = x;
+        d_->y         = y;
     }
-    
+
     d_->canvas->setPenColor(Color(0.9f, 0.3f, 0.2f, 1.0f));
     d_->canvas->setFillColor(Color(0.8f, 0.7f, 0.3f, 1.0f));
 }
 
 void CanvasTest::mouseMove(uint32_t state, int x, int y)
 {
-    if (state & SDL_BUTTON_LMASK) {
+    if (state & SDL_BUTTON_LMASK)
+    {
         d_->x = x;
         d_->y = y;
     }

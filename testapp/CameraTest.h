@@ -7,29 +7,28 @@
 //
 #pragma once
 
-#include "stable.h"
-#include "BaseTest.h"
+#include "Stable.h"
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/Document.h>
+#include "BaseTest.h"
 
-class CameraTest : public BaseTest 
+class CameraTest : public BaseTest
 {
-    
-public:
-    
+
+  public:
     CameraTest();
-    
+
     virtual ~CameraTest();
-    
-protected:
+
+  protected:
     virtual void doSetup();
 
     virtual void doRun();
 
     virtual void doShutdown();
 
-private:
-    Eigen::IOFormat 					octaveFmt;
+  private:
+    Eigen::IOFormat octaveFmt;
 };
 
 inline CameraTest::CameraTest()
@@ -38,14 +37,9 @@ inline CameraTest::CameraTest()
 {
 }
 
-inline CameraTest::~CameraTest()
-{
-}
+inline CameraTest::~CameraTest() {}
 
-inline void CameraTest::doSetup()
-{
-
-}
+inline void CameraTest::doSetup() {}
 
 inline void CameraTest::doRun()
 {
@@ -60,14 +54,20 @@ inline void CameraTest::doRun()
         Vector3 res(320.0f, 240.0f, 0.5f);
 
         TRACE(trace) << "Viewport: " << camera.viewport().format(octaveFmt);
-        TRACE(trace) << "Projection: " << camera.projection().format(octaveFmt);
-        TRACE(trace) << "View matrix: " << camera.modelView().format(octaveFmt);
+        TRACE(trace) << "Projection: "
+                     << camera.projection().format(octaveFmt);
+        TRACE(trace) << "View matrix: "
+                     << camera.modelView().format(octaveFmt);
         auto r = camera.localToWorld(p3);
-        TRACE(info) << "Point: " << core::utils::to_string(p3) << " localToWorld: " << core::utils::to_string(r);
-        TRACE(info) << "Expected EQUAL:  " << std::string(p3 == r ? "PASSED" : "FAILED");
+        TRACE(info) << "Point: " << core::utils::to_string(p3)
+                    << " localToWorld: " << core::utils::to_string(r);
+        TRACE(info) << "Expected EQUAL:  "
+                    << std::string(p3 == r ? "PASSED" : "FAILED");
         r = camera.worldToEye(p3);
-        TRACE(info) << "Point: " << core::utils::to_string(p3) << " worldToEye: " << core::utils::to_string(r);
-        TRACE(info) << "Expected value= " << core::utils::to_string(res) << " " << std::string(r == res ? "PASSED" : "FAILED");
+        TRACE(info) << "Point: " << core::utils::to_string(p3)
+                    << " worldToEye: " << core::utils::to_string(r);
+        TRACE(info) << "Expected value= " << core::utils::to_string(res)
+                    << " " << std::string(r == res ? "PASSED" : "FAILED");
     }
 
     {
@@ -79,23 +79,33 @@ inline void CameraTest::doRun()
         Vector3 res(640.0f, 240.0f, 0.5f);
 
         TRACE(trace) << "Viewport: " << camera.viewport().format(octaveFmt);
-        TRACE(trace) << "Projection: " << camera.projection().format(octaveFmt);
-        TRACE(trace) << "View matrix: " << camera.modelView().format(octaveFmt);
+        TRACE(trace) << "Projection: "
+                     << camera.projection().format(octaveFmt);
+        TRACE(trace) << "View matrix: "
+                     << camera.modelView().format(octaveFmt);
         auto r = camera.worldToEye(p3);
-        TRACE(info) << "Point: " << core::utils::to_string(p3) << " worldToEye: " << core::utils::to_string(r);
-        TRACE(info) << "Expected value:  " << core::utils::to_string(Vector3(10, 0, 0)) << " " << std::string(Vector3(10, 0, 0) == r ? "PASSED" : "FAILED");
+        TRACE(info) << "Point: " << core::utils::to_string(p3)
+                    << " worldToEye: " << core::utils::to_string(r);
+        TRACE(info) << "Expected value:  "
+                    << core::utils::to_string(Vector3(10, 0, 0)) << " "
+                    << std::string(Vector3(10, 0, 0) == r ? "PASSED"
+                                                          : "FAILED");
 
-        p3 = Vector3(10.0f, 0.0f, 0.0f);
+        p3  = Vector3(10.0f, 0.0f, 0.0f);
         res = Vector3(640.0f, 240.0f, 0.5f);
-        r = camera.worldToScreen(p3);
-        TRACE(info) << "Point: " << core::utils::to_string(p3) << " worldToScreen: " << core::utils::to_string(r);
-        TRACE(info) << "Expected value= " << core::utils::to_string(res) << " " << std::string(r == res ? "PASSED" : "FAILED");
+        r   = camera.worldToScreen(p3);
+        TRACE(info) << "Point: " << core::utils::to_string(p3)
+                    << " worldToScreen: " << core::utils::to_string(r);
+        TRACE(info) << "Expected value= " << core::utils::to_string(res)
+                    << " " << std::string(r == res ? "PASSED" : "FAILED");
 
-        p3 = Vector3(640.0f, 240.0f, 0.5f);
+        p3  = Vector3(640.0f, 240.0f, 0.5f);
         res = Vector3(10.0f, 0.0f, 0.0f);
-        r = camera.screenToWorld(p3);
-        TRACE(info) << "Point: " << core::utils::to_string(p3) << " screenToWorld: " << core::utils::to_string(r);
-        TRACE(info) << "Expected value= " << core::utils::to_string(res) << " " << std::string(r == res ? "PASSED" : "FAILED");
+        r   = camera.screenToWorld(p3);
+        TRACE(info) << "Point: " << core::utils::to_string(p3)
+                    << " screenToWorld: " << core::utils::to_string(r);
+        TRACE(info) << "Expected value= " << core::utils::to_string(res)
+                    << " " << std::string(r == res ? "PASSED" : "FAILED");
     }
 
     {
@@ -108,31 +118,37 @@ inline void CameraTest::doRun()
         Vector3 res(640.0f, 240.0f, 0.5f);
 
         TRACE(trace) << "Viewport: " << camera.viewport().format(octaveFmt);
-        TRACE(trace) << "Projection: " << camera.projection().format(octaveFmt);
-        TRACE(trace) << "View matrix: " << camera.modelView().format(octaveFmt);
+        TRACE(trace) << "Projection: "
+                     << camera.projection().format(octaveFmt);
+        TRACE(trace) << "View matrix: "
+                     << camera.modelView().format(octaveFmt);
         auto r = camera.worldToEye(p3);
-        TRACE(info) << "Point: " << core::utils::to_string(p3) << " worldToEye: " << core::utils::to_string(r);
-        TRACE(info) << "Expected value:  " << core::utils::to_string(Vector3(11, -1, 0)) << " " << std::string(Vector3(11, -1, 0) == r ? "PASSED" : "FAILED");
+        TRACE(info) << "Point: " << core::utils::to_string(p3)
+                    << " worldToEye: " << core::utils::to_string(r);
+        TRACE(info) << "Expected value:  "
+                    << core::utils::to_string(Vector3(11, -1, 0)) << " "
+                    << std::string(Vector3(11, -1, 0) == r ? "PASSED"
+                                                           : "FAILED");
 
-        p3 = Vector3(10.0f, 0.0f, 0.0f);
+        p3  = Vector3(10.0f, 0.0f, 0.0f);
         res = Vector3(640.0f, 240.0f, 0.5f);
-        r = camera.worldToScreen(p3);
-        TRACE(info) << "Point: " << core::utils::to_string(p3) << " worldToScreen: " << core::utils::to_string(r);
-        TRACE(info) << "Expected value= " << core::utils::to_string(res) << " " << std::string(r == res ? "PASSED" : "FAILED");
-        
-        p3 = Vector3(640.0f, 240.0f, 0.5f);
+        r   = camera.worldToScreen(p3);
+        TRACE(info) << "Point: " << core::utils::to_string(p3)
+                    << " worldToScreen: " << core::utils::to_string(r);
+        TRACE(info) << "Expected value= " << core::utils::to_string(res)
+                    << " " << std::string(r == res ? "PASSED" : "FAILED");
+
+        p3  = Vector3(640.0f, 240.0f, 0.5f);
         res = Vector3(10.0f, 0.0f, 0.0f);
-        r = camera.screenToWorld(p3);
-        TRACE(info) << "Point: " << core::utils::to_string(p3) << " screenToWorld: " << core::utils::to_string(r);
-        TRACE(info) << "Expected value= " << core::utils::to_string(res) << " " << std::string(r == res ? "PASSED" : "FAILED");
+        r   = camera.screenToWorld(p3);
+        TRACE(info) << "Point: " << core::utils::to_string(p3)
+                    << " screenToWorld: " << core::utils::to_string(r);
+        TRACE(info) << "Expected value= " << core::utils::to_string(res)
+                    << " " << std::string(r == res ? "PASSED" : "FAILED");
     }
 }
 
 /*
-*/
+ */
 
-
-inline void CameraTest::doShutdown()
-{
-    TRACE(info) << "shutdown";
-}
+inline void CameraTest::doShutdown() { TRACE(info) << "shutdown"; }

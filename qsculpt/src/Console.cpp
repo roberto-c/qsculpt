@@ -22,30 +22,28 @@
 #include "ConsoleWindow.h"
 
 #include <QtCore/QHash>
-#include <string>
-#include <iostream>
 #include <QtCore/QStringList>
+#include <iostream>
+#include <string>
 #include "command/ICommand.h"
 #include "command/IConfigContainer.h"
 
 using namespace std;
 
-typedef QHash< QString, ICommand* > CommandMap;
-
+typedef QHash<QString, ICommand*> CommandMap;
 
 class Console::Impl
 {
-public:
+  public:
     /**
-      * Parses a command line and constructs a new command, ready to execute
-      * the command.
-      */
+     * Parses a command line and constructs a new command, ready to execute
+     * the command.
+     */
     bool parseCommandLine(const QString& line, ICommand** cmd);
 
-
-    CommandMap commands; /*< list of command registered*/
+    CommandMap                    commands; /*< list of command registered*/
     QScopedPointer<ConsoleWindow> window;
-    QStringList buffer;
+    QStringList                   buffer;
 };
 
 Console::Console()
@@ -54,14 +52,13 @@ Console::Console()
     _impl->window.reset(new ConsoleWindow());
 }
 
-Console::~Console()
-{
-}
+Console::~Console() {}
 
 Console* Console::instance()
 {
     static Console* console = NULL;
-    if (!console) console = new Console();
+    if (!console)
+        console = new Console();
     return console;
 }
 
@@ -72,7 +69,7 @@ bool Console::registerCommand(const QString& name, ICommand* cmd)
     if (cmd)
     {
         _impl->commands[name] = cmd;
-        res = true;
+        res                   = true;
     }
     return res;
 }
@@ -96,12 +93,9 @@ bool Console::evaluate(const QString& command)
     return false;
 }
 
-ConsoleWindow* Console::consoleWindow()
-{
-    return _impl->window.data();
-}
+ConsoleWindow* Console::consoleWindow() { return _impl->window.data(); }
 
-void Console::write(const QString & str)
+void Console::write(const QString& str)
 {
     _impl->buffer << str.split('\n');
     _impl->window.data()->write(str);
@@ -124,7 +118,7 @@ bool Console::Impl::parseCommandLine(const QString& line, ICommand** cmd)
             if (*cmd)
             {
                 (*cmd)->config().setString("0", tokens[0]);
-                for (int i = 1; i < tokens.size(); ++i) 
+                for (int i = 1; i < tokens.size(); ++i)
                 {
                     (*cmd)->config().setString(QString::number(i), tokens[i]);
                 }

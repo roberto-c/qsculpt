@@ -13,6 +13,6 @@
 
 #include <PlastilinaCore/SceneNode.h>
 
-void ParticleSystem_step(SurfaceNode::shared_ptr & node, float time);
+void ParticleSystem_step(SurfaceNode::shared_ptr& node, float time);
 
 #endif /* defined(__TestApp__ParticleSystem__) */

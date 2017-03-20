@@ -23,9 +23,8 @@
 
 class IRenderable
 {
-public:
+  public:
     virtual void paintGL() = 0;
 };
 
 #endif // IRENDERABLE_H
-

@@ -11,22 +11,22 @@
 
 #include "PlastilinaCore/Document.h"
 
-class DocumentModelTest {
-    Document::shared_ptr    doc;
+class DocumentModelTest
+{
+    Document::shared_ptr doc;
 
     SurfaceNode::shared_ptr node1;
     SurfaceNode::shared_ptr node2;
     SurfaceNode::shared_ptr node3;
-    
+
     int setup();
-    
+
     int test();
-    
+
     int cleanup();
-    
-public:
+
+  public:
     int run();
 };
-
 
 #endif

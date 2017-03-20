@@ -19,52 +19,53 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "command/SubdivideCommand.h"
-#include <QtCore/QtDebug>
 #include <QtCore/QThread>
+#include <QtCore/QtDebug>
 #include <QtWidgets/QProgressDialog>
 //#include <omp.h>
+#include <PlastilinaCore/Face.h>
+#include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/ISurface.h>
-#include <PlastilinaCore/HEdge.h>
-#include <PlastilinaCore/Face.h>
-#include <PlastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/PointRenderer.h>
+#include <PlastilinaCore/subdivision/Subdivision.h>
 
+#include "DocumentView.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "DocumentView.h"
 
-typedef QHash< std::pair<int, int>, Vertex*> MidEdgeMap;
+typedef QHash<std::pair<int, int>, Vertex*> MidEdgeMap;
 
 // Vertex flags:
-// VF_User1 => True if the vertex is an original point (was before the 
+// VF_User1 => True if the vertex is an original point (was before the
 //             subdivision iteration)
 
-struct SubdivideCommand::Impl {
+struct SubdivideCommand::Impl
+{
     MidEdgeMap edgeMidPoint;
-    
-    Impl(){}
-    Impl(const Impl& cpy){}
-    
+
+    Impl() {}
+    Impl(const Impl& cpy) {}
+
     void splitEdges(ISurface& s);
-    
+
     void addFaceMidPointVertex(ISurface& s);
-    
+
     void createFaces(ISurface& s);
-    
+
     void removeOldFaces(ISurface& s);
-    
+
     void computeNewPosition(ISurface& s);
-    
-//    void computeBorderPosition(ISurface& s,
-    
+
+    //    void computeBorderPosition(ISurface& s,
+
     void cleanUserData(ISurface& s);
-    
+
     void smoothNormals(ISurface& s);
-    
+
     Vector3 computeFaceNormal(FaceHandle::weak_ptr f);
-    
-    void diagnostiscs(ISurface & s);
+
+    void diagnostiscs(ISurface& s);
 };
 
 SubdivideCommand::SubdivideCommand()
@@ -74,139 +75,91 @@ SubdivideCommand::SubdivideCommand()
 
 SubdivideCommand::SubdivideCommand(const SubdivideCommand& cpy)
     : CommandBase(cpy)
-, _d(new Impl(*cpy._d.data()))
+    , _d(new Impl(*cpy._d.data()))
 {
 }
 
-SubdivideCommand::~SubdivideCommand()
-{
-}
+SubdivideCommand::~SubdivideCommand() {}
 
 ICommand* SubdivideCommand::clone() const
 {
     return new SubdivideCommand(*this);
 }
 
-void SubdivideCommand::undo()
-{
-}
+void SubdivideCommand::undo() {}
 
-void SubdivideCommand::redo()
-{
-}
+void SubdivideCommand::redo() {}
 
-void SubdivideCommand::execute()
-{
-    
-}
+void SubdivideCommand::execute() {}
 
-void SubdivideCommand::Impl::addFaceMidPointVertex(ISurface& s)
-{
+void SubdivideCommand::Impl::addFaceMidPointVertex(ISurface& s) {}
 
-}
+void SubdivideCommand::Impl::splitEdges(ISurface& s) {}
 
-void SubdivideCommand::Impl::splitEdges(ISurface& s)
-{
+void SubdivideCommand::Impl::createFaces(ISurface& s) {}
 
-}
+void SubdivideCommand::Impl::computeNewPosition(ISurface& s) {}
 
-void SubdivideCommand::Impl::createFaces(ISurface& s)
-{
+void SubdivideCommand::Impl::removeOldFaces(ISurface& s) {}
 
-}
+void SubdivideCommand::Impl::cleanUserData(ISurface& s) {}
 
-void SubdivideCommand::Impl::computeNewPosition(ISurface& s)
-{
-
-}
-
-void SubdivideCommand::Impl::removeOldFaces(ISurface& s)
-{
-
-}
-
-void SubdivideCommand::Impl::cleanUserData(ISurface& s)
-{
-
-}
-
-void SubdivideCommand::Impl::smoothNormals(ISurface& s)
-{
-
-}
+void SubdivideCommand::Impl::smoothNormals(ISurface& s) {}
 
 Vector3 SubdivideCommand::Impl::computeFaceNormal(FaceHandle::weak_ptr face)
 {
     return Vector3();
 }
 
-void SubdivideCommand::Impl::diagnostiscs(ISurface & s)
+void SubdivideCommand::Impl::diagnostiscs(ISurface& s) {}
+
+struct EditSubdivideCommand::Impl
 {
+    SurfaceNode::shared_ptr surf;
+    PointRenderer           renderer;
+    uint32_t                vtxIID;
+    Point3                  mouseScreen;
 
-}
-
-
-struct EditSubdivideCommand::Impl {
-    SurfaceNode::shared_ptr  surf;
-    PointRenderer   renderer;
-    uint32_t             vtxIID;
-    Point3          mouseScreen;
-    
-    Impl() : surf(NULL), vtxIID(0) 
+    Impl()
+        : surf(NULL)
+        , vtxIID(0)
     {
         renderer.setPointSize(10.0f);
     }
-    
-    Impl(const Impl & cpy) : surf(cpy.surf),vtxIID(cpy.vtxIID) 
+
+    Impl(const Impl& cpy)
+        : surf(cpy.surf)
+        , vtxIID(cpy.vtxIID)
     {
         renderer.setPointSize(10.0f);
     }
 };
 
-EditSubdivideCommand::EditSubdivideCommand() : d_(new Impl)
+EditSubdivideCommand::EditSubdivideCommand()
+    : d_(new Impl)
 {
-    
 }
-    
-EditSubdivideCommand::EditSubdivideCommand(const EditSubdivideCommand& cpy)
-: d_(new Impl(*cpy.d_.data())){
-    
-}
-    
-EditSubdivideCommand::~EditSubdivideCommand(){
-    
-}
-    
 
-ICommand* EditSubdivideCommand::clone() const{
+EditSubdivideCommand::EditSubdivideCommand(const EditSubdivideCommand& cpy)
+    : d_(new Impl(*cpy.d_.data()))
+{
+}
+
+EditSubdivideCommand::~EditSubdivideCommand() {}
+
+ICommand* EditSubdivideCommand::clone() const
+{
     return new EditSubdivideCommand(*this);
 }
-    
-void EditSubdivideCommand::execute(){
-    
-}
-void EditSubdivideCommand::undo(){
-    
-}
-void EditSubdivideCommand::redo(){
-    
-}
 
-void EditSubdivideCommand::mousePressEvent(QMouseEvent *e){
+void EditSubdivideCommand::execute() {}
+void EditSubdivideCommand::undo() {}
+void EditSubdivideCommand::redo() {}
 
-}
-    
-void EditSubdivideCommand::mouseReleaseEvent(QMouseEvent *e)
-{
+void EditSubdivideCommand::mousePressEvent(QMouseEvent* e) {}
 
-}
+void EditSubdivideCommand::mouseReleaseEvent(QMouseEvent* e) {}
 
-void EditSubdivideCommand::mouseMoveEvent(QMouseEvent *e)
-{
+void EditSubdivideCommand::mouseMoveEvent(QMouseEvent* e) {}
 
-}
-    
-void EditSubdivideCommand::paintGL(GlCanvas *c)
-{
-    
-}
+void EditSubdivideCommand::paintGL(GlCanvas* c) {}

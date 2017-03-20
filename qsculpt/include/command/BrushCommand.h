@@ -20,14 +20,13 @@
 #ifndef BRUSHCOMMAND_H
 #define BRUSHCOMMAND_H
 
-#include <QtCore/QVector>
+#include <PlastilinaCore/Point3D.h>
+#include <PlastilinaCore/Vertex.h>
 #include <QtCore/QHash>
 #include <QtCore/QMap>
-#include <PlastilinaCore/Vertex.h>
-#include <PlastilinaCore/Point3D.h>
-#include "command/CommandBase.h"
+#include <QtCore/QVector>
 #include "DocumentView.h"
-
+#include "command/CommandBase.h"
 
 class BrushProperties;
 
@@ -38,13 +37,14 @@ class BrushProperties;
  */
 class BrushCommand : public CommandBase
 {
-public:
-    enum BrushAction {
+  public:
+    enum BrushAction
+    {
         Push,
         Pull
     };
 
-    BrushCommand(ICommand* parent=0);
+    BrushCommand(ICommand* parent = 0);
 
     BrushCommand(const BrushCommand& cpy);
 
@@ -56,30 +56,29 @@ public:
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void undo();
-    virtual void redo();
+    virtual void     undo();
+    virtual void     redo();
     virtual QWidget* getOptionsWidget();
     // End ICommand Interface
 
-private:
-    typedef QMap<ISurface*, QHash<int, Point3> > DirtyFaceMap;
+  private:
+    typedef QMap<ISurface*, QHash<int, Point3>> DirtyFaceMap;
 
     void applyOperation();
 
     void selectObject();
 
-    ObjectContainer     _selectedObjects;
-    ISurface*           _object;
-    double              _radius;
-    double              _depth;
-    BrushAction         _action;
+    ObjectContainer                   _selectedObjects;
+    ISurface*                         _object;
+    double                            _radius;
+    double                            _depth;
+    BrushAction                       _action;
     std::vector<VertexHandle::size_t> _vertexSelected;
-    BrushProperties*    _propertiesWindow;
-    DirtyFaceMap        _previousState;
-    bool                _undoCalled;
-    static QImage       _cursorImage;
-    int                 _direction;
+    BrushProperties*                  _propertiesWindow;
+    DirtyFaceMap                      _previousState;
+    bool                              _undoCalled;
+    static QImage                     _cursorImage;
+    int                               _direction;
 };
 
 #endif
-

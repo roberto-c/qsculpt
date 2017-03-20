@@ -20,25 +20,26 @@
 #ifndef ICONFIGCONTAINER_H
 #define ICONFIGCONTAINER_H
 
-#include <QtCore/QString>
 #include <PlastilinaCore/Point3D.h>
+#include <QtCore/QString>
 
 /**
  * Container for configuration parameters of the commands.
- * 
+ *
  * @author Juan Roberto Cabral Flores <roberto.cabral@gmail.com>
-*/
-class IConfigContainer{
-public:
+ */
+class IConfigContainer
+{
+  public:
     /**
      * Default constructor.
      */
-    IConfigContainer(){}
+    IConfigContainer() {}
 
     /**
      * Default destructor.
      */
-    virtual ~IConfigContainer(){}
+    virtual ~IConfigContainer() {}
 
     /**
      * Creates a new copy of this container.
@@ -53,7 +54,7 @@ public:
      * @return true if the key exists. Otherwise, false.
      */
     virtual bool containsKey(const QString& key) = 0;
-    
+
     /**
      * Get a config string value. The key is the name of the parameter to
      * retrieve. Return an empty string if the key is not found.
@@ -63,7 +64,7 @@ public:
      * @return config value
      */
     virtual QString getString(const QString& key) = 0;
-    
+
     /**
      * Set a config string value. The key is the name of the parameter to
      * set. If the key is not found, then the key is added.
@@ -73,7 +74,7 @@ public:
      *
      */
     virtual void setString(const QString& key, QString value) = 0;
-    
+
     /**
      * Get a config int value. The key is the name of the parameter to
      * retrieve. Return a default value 0 in case that the key isn't found.
@@ -83,7 +84,7 @@ public:
      * @return config value
      */
     virtual int getInt(const QString& key) = 0;
-    
+
     /**
      * Set a config int value. The key is the name of the parameter to
      * set. If the key is not found, then the key is added.
@@ -93,7 +94,7 @@ public:
      *
      */
     virtual void setInt(const QString& key, int value) = 0;
-    
+
     /**
      * Get a config double value. The key is the name of the parameter to
      * retrieve. Return a default value 0 in case that the key isn't found.
@@ -103,7 +104,7 @@ public:
      * @return config value
      */
     virtual double getDouble(const QString& key) = 0;
-    
+
     /**
      * Set a config double value. The key is the name of the parameter to
      * set. If the key is not found, then the key is added.
@@ -113,17 +114,18 @@ public:
      *
      */
     virtual void setDouble(const QString& key, double value) = 0;
-    
+
     /**
      * Get a bool config value. The key is the name of the parameter to
-     * retrieve. Return a default value of false in case that the key isn't found.
+     * retrieve. Return a default value of false in case that the key isn't
+     * found.
      *
      * @param key key name of the parameter to retrieve.
      *
      * @return config value
      */
     virtual bool getBool(const QString& key) = 0;
-    
+
     /**
      * Set a config boolean value. The key is the name of the parameter to
      * set. If the key is not found, then the key is added.
@@ -133,12 +135,10 @@ public:
      *
      */
     virtual void setBool(const QString& key, bool value) = 0;
-    
-    virtual Point3 getPoint3D(const QString& key)=0;
-    
-    
-    virtual void setPoint3D(const QString& key, const Point3 &v) = 0;
+
+    virtual Point3 getPoint3D(const QString& key) = 0;
+
+    virtual void setPoint3D(const QString& key, const Point3& v) = 0;
 };
 
 #endif
-

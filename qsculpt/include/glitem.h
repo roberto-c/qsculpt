@@ -21,57 +21,58 @@
 #ifndef GLITEM_H
 #define GLITEM_H
 
-
 class GlCanvas;
 class ISurface;
 
 /**
  * Interface class to define a renderer for the item.
  */
-//class IGlItemRenderer
+// class IGlItemRenderer
 //{
-//public:
+// public:
 //};
 
+namespace Plastilina
+{
+enum ItemFlag
+{
+    None     = 0,
+    Selected = 0x00000001
+};
 
-namespace Plastilina {
-    enum ItemFlag {
-        None = 0,
-        Selected = 0x00000001
-    };
+/**
+ * Render item in the GlCanvas
+ */
+class GlItem
+{
+    ISurface* _s;
+
+  public:
+    GlItem();
+
+    virtual ~GlItem();
+
+    virtual void paintGl(GlCanvas* c);
 
     /**
-      * Render item in the GlCanvas
-      */
-    class GlItem
-    {
-        ISurface* _s;
-    public:
-        GlItem();
+     * Set a pointer to a user data.
+     */
+    void setData(void* d);
 
-        virtual ~GlItem();
-        
-        virtual void paintGl(GlCanvas *c);
-        
-        /**
-         * Set a pointer to a user data.
-         */
-        void setData(void* d);
+    /**
+     * Returns the data attached to this item.
+     */
+    void* data();
 
-        /**
-         * Returns the data attached to this item.
-         */
-        void* data();
+    /**
+     *
+     */
+    void setSelected(bool value);
 
-        /**
-         *
-         */
-        void setSelected(bool value);
-
-        /**
-         *
-         */
-        bool isSelected();
-    };
+    /**
+     *
+     */
+    bool isSelected();
+};
 };
 #endif // GLITEM_H

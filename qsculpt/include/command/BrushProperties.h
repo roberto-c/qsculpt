@@ -23,32 +23,31 @@
 #include <QtWidgets/QWidget>
 #include "command/BrushCommand.h"
 
-namespace Ui {
-    class BrushProperties;
+namespace Ui
+{
+class BrushProperties;
 }
 
 class BrushProperties : public QWidget
 {
     Q_OBJECT
-    
-public:
+
+  public:
     BrushProperties(QWidget* parent);
     virtual ~BrushProperties();
-    
-// public signals:
+
+    // public signals:
     double getBrushRadius();
     void setBrushRadius(double radius);
-    
+
     double getBrushStrength();
     void setBrushStrength(double strength);
-    
+
     BrushCommand::BrushAction getBrushAction();
     void setBrushAction(BrushCommand::BrushAction action);
-    
-private:
+
+  private:
     Ui::BrushProperties* ui_;
 };
 
-
 #endif
-

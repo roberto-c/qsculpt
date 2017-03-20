@@ -21,8 +21,8 @@
 #ifndef MESHCONTROLLER_H
 #define MESHCONTROLLER_H
 
-#include "IRenderable.h"
 #include <PlastilinaCore/Point3D.h>
+#include "IRenderable.h"
 
 class ISurface;
 
@@ -31,22 +31,22 @@ class ISurface;
  */
 class SurfaceViewController : public IRenderable
 {
-public:
+  public:
     /**
      * Constructor of a controller
      *
      * @param surface surface to which this controller sends commands to
      */
     SurfaceViewController(ISurface* surface);
-    
+
     virtual ~SurfaceViewController();
-    
+
     /**
      *
      */
     void setPosition(const Point3& pos);
     Point3 position() const;
-    
+
     /**
      * Rotates the surface around a given axis by the given angle.
      */
@@ -54,10 +54,9 @@ public:
     void setRotation(const Eigen::Quaternionf& r);
     Eigen::Quaternionf rotation();
 
-    
     void paintGL();
-    
-private:
+
+  private:
     struct PrivateData;
     PrivateData* d;
 };

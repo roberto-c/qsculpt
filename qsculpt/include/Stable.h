@@ -18,18 +18,18 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #ifndef STABLE_H_
-#define STABLE_H_ 
+#define STABLE_H_
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 #define NOMINMAX
 #define _USE_MATH_DEFINES
 
 #if defined __cplusplus
-#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/Logging.h>
+#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/opengl/OpenGL.h>
-#include <QtCore/QtGlobal>
 #include <QtCore/QDebug>
+#include <QtCore/QtGlobal>
 #endif /* defined __cplusplus */
 
 #endif /* STABLE_H_ */

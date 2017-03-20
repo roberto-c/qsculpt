@@ -20,11 +20,11 @@
 #ifndef DOCUMENTVIEW_H
 #define DOCUMENTVIEW_H
 
-#include <QtWidgets/QWidget>
+#include <PlastilinaCore/IDocument.h>
+#include <PlastilinaCore/Point3D.h>
 #include <QtCore/QList>
 #include <QtCore/QPoint>
-#include <PlastilinaCore/Point3D.h>
-#include <PlastilinaCore/IDocument.h>
+#include <QtWidgets/QWidget>
 #include "GlView.h"
 
 class ISurface;
@@ -42,13 +42,13 @@ class DocumentView : public QWidget
 {
     Q_OBJECT
 
-public:
+  public:
     /**
      * Widget contructor.
      *
      * @param parent widget's parent.
      */
-    DocumentView(QWidget *parent = 0);
+    DocumentView(QWidget* parent = 0);
 
     /**
      * Widget destructor.
@@ -71,7 +71,7 @@ public:
      *
      * @return source document for this view.
      */
-    IDocument::shared_ptr getDocument() ;
+    IDocument::shared_ptr getDocument();
 
     /**
      * Return the state of the visibility of the grid.
@@ -90,10 +90,10 @@ public:
      *
      * @return an object container with the results of the test.
      */
-	ObjectContainer getSelectedObjects(int x, int y);
-    
-	PointIndexList getSelectedVertices(GLint x, GLint y,
-                                       GLint width, GLint height);
+    ObjectContainer getSelectedObjects(int x, int y);
+
+    PointIndexList getSelectedVertices(GLint x, GLint y, GLint width,
+                                       GLint height);
 
     /**
      * getViewType
@@ -122,12 +122,12 @@ public:
     QImage getCursorImage();
 
     bool getDrawVertices();
-    
+
     GlCanvas* getCanvas();
-    
+
     IRenderer* renderer() const;
-    
-public slots:
+
+  public slots:
     /**
      * Turn the visibility of the grid on/off.
      *
@@ -159,11 +159,10 @@ public slots:
     void grabMouse(bool val);
 
     void setDrawVertices(bool drawVertices);
-    
-protected:    
+
+  protected:
     struct Impl;
     QScopedPointer<Impl> _d;
 };
 
 #endif
-

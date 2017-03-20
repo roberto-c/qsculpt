@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
 #include <functional>
+#include <string>
 
-enum class TestEvent {
+enum class TestEvent
+{
     TE_UNKNOWN,
     TE_SETUP_PRE,
     TE_SETUP_POST,
@@ -20,19 +21,19 @@ std::string to_string(TestEvent evt);
 
 class BaseTest
 {
-public:
+  public:
     typedef std::function<void(const BaseTest*, TestEvent, void*)> FNCALLBACK;
 
     BaseTest();
 
-    BaseTest(const std::string & name);
+    BaseTest(const std::string& name);
 
     virtual ~BaseTest() {}
 
     void setup();
 
     void run();
-    
+
     void shutdown();
 
     std::string name() const;
@@ -41,22 +42,22 @@ public:
 
     void setNotifyCallback(FNCALLBACK callback, void* userData);
 
-protected:
+  protected:
     virtual void doSetup() = 0;
 
     virtual void doRun() = 0;
 
     virtual void doShutdown() = 0;
 
-private:
-    std::string         _name;
-    FNCALLBACK          _callback;
-    void*               _userData;
+  private:
+    std::string _name;
+    FNCALLBACK  _callback;
+    void*       _userData;
 };
 
 class BaseUITest : public BaseTest
 {
-public:
+  public:
     BaseUITest();
 
     BaseUITest(const std::string name);
@@ -65,15 +66,15 @@ public:
 
     virtual void resize(int w, int h) = 0;
 
-            void display();
+    void display();
 
     virtual void keyboard(int key, int x, int y) = 0;
 
-    virtual void mouseClick(uint32_t button, uint32_t state, int x, int y) = 0;
+    virtual void mouseClick(uint32_t button, uint32_t state, int x,
+                            int y) = 0;
 
     virtual void mouseMove(uint32_t state, int x, int y) = 0;
 
-protected:
+  protected:
     virtual void doRenderFrame() = 0;
-
 };

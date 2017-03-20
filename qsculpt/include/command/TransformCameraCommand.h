@@ -30,31 +30,31 @@
  */
 class TransformCameraCommand : public CommandBase
 {
-public:
+  public:
     TransformCameraCommand();
-    
-    TransformCameraCommand(const TransformCameraCommand & cpy);
+
+    TransformCameraCommand(const TransformCameraCommand& cpy);
 
     ~TransformCameraCommand();
 
     // ICommand Interface
-    virtual ICommand* clone() const {
-    	return new TransformCameraCommand(*this);
+    virtual ICommand* clone() const
+    {
+        return new TransformCameraCommand(*this);
     }
     virtual void activate(bool active);
     virtual void execute();
     virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void undo();
-    virtual QWidget* getOptionsWidget(){return NULL;}
-    virtual void paintGL(GlCanvas *c);
+    virtual void     undo();
+    virtual QWidget* getOptionsWidget() { return NULL; }
+    virtual void paintGL(GlCanvas* c);
     // End ICommand Interface
-    
-private:
+
+  private:
     struct Impl;
     QScopedPointer<Impl> _d;
 };
 
 #endif
-

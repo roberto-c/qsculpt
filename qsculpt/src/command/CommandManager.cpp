@@ -1,44 +1,42 @@
 /***************************************************************************
-*   Copyright (C) 2007 by Juan Roberto Cabral Flores   *
-*   roberto.cabral@gmail.com   *
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-*   This program is distributed in the hope that it will be useful,       *
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-*   GNU General Public License for more details.                          *
-*                                                                         *
-*   You should have received a copy of the GNU General Public License     *
-*   along with this program; if not, write to the                         *
-*   Free Software Foundation, Inc.,                                       *
-*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
-***************************************************************************/
+ *   Copyright (C) 2007 by Juan Roberto Cabral Flores   *
+ *   roberto.cabral@gmail.com   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
 #include "Stable.h"
 #include "command/CommandManager.h"
 
-#include "command/ICommand.h"
 #include <QtWidgets/QAction>
 #include "Console.h"
+#include "command/ICommand.h"
 
 CommandManager::CommandManager()
-    : m_currentCommand(NULL),
-    m_undoAction(NULL),
-    m_redoAction(NULL)
+    : m_currentCommand(NULL)
+    , m_undoAction(NULL)
+    , m_redoAction(NULL)
 {
     m_undoStack = new QUndoStack;
     m_undoStack->setActive(true);
 }
 
-CommandManager::~CommandManager()
-{
-    delete m_undoStack;
-}
+CommandManager::~CommandManager() { delete m_undoStack; }
 
-bool CommandManager::registerCommand(QString name, QAction* action, ICommand* cmd)
+bool CommandManager::registerCommand(QString name, QAction* action,
+                                     ICommand* cmd)
 {
     if (!action || !cmd)
         return false;
@@ -63,8 +61,8 @@ void CommandManager::unregisterCommand(QString name)
     Console::instance()->unregisterCommand(name.toLower());
 }
 
-QAction* CommandManager::createUndoAction(QObject * parent,
-                                          const QString & prefix ) const
+QAction* CommandManager::createUndoAction(QObject*       parent,
+                                          const QString& prefix) const
 {
     if (m_undoAction == NULL)
     {
@@ -74,8 +72,8 @@ QAction* CommandManager::createUndoAction(QObject * parent,
     return m_undoAction;
 }
 
-QAction* CommandManager::createRedoAction( QObject * parent,
-                                           const QString & prefix ) const
+QAction* CommandManager::createRedoAction(QObject*       parent,
+                                          const QString& prefix) const
 {
     if (m_redoAction == NULL)
     {
@@ -88,17 +86,14 @@ QAction* CommandManager::createRedoAction( QObject * parent,
 void CommandManager::setActiveCommand(QString name)
 {
     QAction* action = NULL;
-    action = m_actionTable[name];
+    action          = m_actionTable[name];
     if (action)
     {
         action->activate(QAction::Trigger);
     }
 }
 
-QString CommandManager::getActiveCommandName()
-{
-    return QString();
-}
+QString CommandManager::getActiveCommandName() { return QString(); }
 
 // TODO: Check this function for mem leaks.
 void CommandManager::commandTriggered()
@@ -106,9 +101,9 @@ void CommandManager::commandTriggered()
     QAction* obj = qobject_cast<QAction*>(sender());
     if (obj)
     {
-        ICommand* cmd = NULL;
-        QString commandName = m_actionTable.key(obj);
-        cmd = m_commandTable[commandName];
+        ICommand* cmd         = NULL;
+        QString   commandName = m_actionTable.key(obj);
+        cmd                   = m_commandTable[commandName];
         if (cmd)
         {
             ICommand* newCommand = cmd->clone();
@@ -116,26 +111,26 @@ void CommandManager::commandTriggered()
             {
                 if (newCommand->needsUserInteraction())
                 {
-                    if (m_currentCommand) 
+                    if (m_currentCommand)
                     {
                         m_currentCommand->activate(false);
-                        disconnect(m_currentCommand, SIGNAL(executed()), 0, 0);
+                        disconnect(m_currentCommand, SIGNAL(executed()), 0,
+                                   0);
                         delete m_currentCommand;
                     }
-                    
+
                     m_currentCommand = newCommand;
 
-                    
-                    connect(m_currentCommand, SIGNAL(executed()),
-                            this, SLOT(commandExecuted()));
+                    connect(m_currentCommand, SIGNAL(executed()), this,
+                            SLOT(commandExecuted()));
 
                     m_currentCommand->activate(true);
                     emit commandActivated(commandName);
                 }
                 else
                 {
-                    connect(newCommand, SIGNAL(executed()),
-                            this, SLOT(commandExecuted()));
+                    connect(newCommand, SIGNAL(executed()), this,
+                            SLOT(commandExecuted()));
                     newCommand->execute();
                     delete newCommand;
                 }
@@ -163,8 +158,8 @@ void CommandManager::commandExecuted()
                 disconnect(cmd, SIGNAL(executed()), 0, 0);
 
                 m_currentCommand = newCommand;
-                connect(m_currentCommand, SIGNAL(executed()),
-                        this, SLOT(commandExecuted()));
+                connect(m_currentCommand, SIGNAL(executed()), this,
+                        SLOT(commandExecuted()));
 
                 m_currentCommand->activate(true);
             }

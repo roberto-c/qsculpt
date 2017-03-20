@@ -22,20 +22,15 @@
 #include "ui_BrushProperties.h"
 
 BrushProperties::BrushProperties(QWidget* _parent)
-: QWidget(_parent), ui_(new Ui::BrushProperties())
+    : QWidget(_parent)
+    , ui_(new Ui::BrushProperties())
 {
     ui_->setupUi(this);
 }
 
-BrushProperties::~BrushProperties()
-{
-    delete ui_;
-}
+BrushProperties::~BrushProperties() { delete ui_; }
 
-double BrushProperties::getBrushRadius()
-{
-    return ui_->spinRadius->value();
-}
+double BrushProperties::getBrushRadius() { return ui_->spinRadius->value(); }
 
 void BrushProperties::setBrushRadius(double radius)
 {
@@ -59,20 +54,19 @@ BrushCommand::BrushAction BrushProperties::getBrushAction()
         return BrushCommand::Push;
     else if (ui_->radPull->isChecked())
         return BrushCommand::Pull;
-    
+
     return BrushCommand::Push;
 }
 
 void BrushProperties::setBrushAction(BrushCommand::BrushAction action)
 {
-    switch(action)
+    switch (action)
     {
-        case BrushCommand::Pull:
-            ui_->radPull->setChecked(true);
-            break;
-        case BrushCommand::Push:
-            ui_->radPush->setChecked(true);
-            break;
+    case BrushCommand::Pull:
+        ui_->radPull->setChecked(true);
+        break;
+    case BrushCommand::Push:
+        ui_->radPush->setChecked(true);
+        break;
     }
 }
-

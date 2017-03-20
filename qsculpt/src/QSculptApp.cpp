@@ -19,39 +19,39 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "QSculptApp.h"
-#include <stdexcept>
-#include <boost/program_options.hpp>
-#include <QtGui/QSurfaceFormat>
-#include <QtWidgets/QWidget>
-#include "QSculptWindow.h"
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/ResourcesManager.h>
+#include <QtGui/QSurfaceFormat>
+#include <QtWidgets/QWidget>
+#include <boost/program_options.hpp>
+#include <stdexcept>
+#include "QSculptWindow.h"
 
 namespace po = boost::program_options;
 
 QSculptApp* g_pApp = NULL;
 
 QSculptApp::QSculptApp(int& argc, char** argv)
-    : QApplication(argc, argv),
-    m_mainWindow(new QSculptWindow)
+    : QApplication(argc, argv)
+    , m_mainWindow(new QSculptWindow)
 {
 }
 
 QSculptApp::~QSculptApp()
 {
-    //delete m_mainWindow;
+    // delete m_mainWindow;
 }
 
-QSculptWindow* QSculptApp::getMainWindow()
-{
-    return m_mainWindow;
-}
+QSculptWindow* QSculptApp::getMainWindow() { return m_mainWindow; }
 
-bool QSculptApp::notify ( QObject * receiver, QEvent * e )
+bool QSculptApp::notify(QObject* receiver, QEvent* e)
 {
-    try {
+    try
+    {
         return QApplication::notify(receiver, e);
-    } catch (std::exception & e) {
+    }
+    catch (std::exception& e)
+    {
         qDebug() << "Exception: " << e.what();
     }
     return false;
@@ -64,31 +64,37 @@ bool QSculptApp::notify ( QObject * receiver, QEvent * e )
  * applicatoin object to process them. Creates and show the main
  * application window.
  */
-int main( int argc, char ** argv ) {
+int main(int argc, char** argv)
+{
     int result = 0;
-    
-    try {
+
+    try
+    {
         using namespace std;
         po::options_description optionsDesc;
-        po::variables_map   options;
-        vector<string> default_search_dirs = { core::utils::get_app_path() };
+        po::variables_map       options;
+        vector<string> default_search_dirs = {core::utils::get_app_path()};
         // Declare the supported options.
-        optionsDesc.add_options()
-            ("help", "produce help message")
-            ("interactive", po::value<bool>()->default_value(true), "True to run interactive test bed. False to run automated tests")
-            ("resourcesdir", po::value<vector<string>>()->default_value(default_search_dirs, core::utils::get_app_path()), "path used to load all resources")
-            ;
+        optionsDesc.add_options()("help", "produce help message")(
+            "interactive", po::value<bool>()->default_value(true),
+            "True to run interactive test bed. False to run automated tests")(
+            "resourcesdir",
+            po::value<vector<string>>()->default_value(
+                default_search_dirs, core::utils::get_app_path()),
+            "path used to load all resources");
 
         po::store(po::parse_command_line(argc, argv, optionsDesc), options);
         po::notify(options);
 
-        if (options.count("help")) {
+        if (options.count("help"))
+        {
             std::cout << optionsDesc << "\n";
             return 1;
         }
 
         // Set Resources search directories
-        for (auto path : (options["resourcesdir"].as<std::vector<std::string>>()))
+        for (auto path :
+             (options["resourcesdir"].as<std::vector<std::string>>()))
         {
             ResourcesManager::addResourcesDirectory(path);
         }
@@ -100,22 +106,25 @@ int main( int argc, char ** argv ) {
         format.setProfile(QSurfaceFormat::CoreProfile);
         QSurfaceFormat::setDefaultFormat(format);
 
-        QSculptApp a( argc, argv );
-        
+        QSculptApp a(argc, argv);
+
         g_pApp = (QSculptApp*)QSculptApp::instance();
-        
+
         g_pApp->setOrganizationName("QSculpt");
         g_pApp->setOrganizationDomain("qsculpt.com");
         g_pApp->setApplicationName("QSculpt");
 
         g_pApp->getMainWindow()->show();
-        
+
         result = a.exec();
-    } catch (std::exception & e) {
+    }
+    catch (std::exception& e)
+    {
         std::cerr << "What: " << e.what() << std::endl;
         result = -1;
     }
-    catch (...) {
+    catch (...)
+    {
         result = -1;
     }
 

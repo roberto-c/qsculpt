@@ -20,11 +20,11 @@
 #ifndef CONFIGCONTAINER_H
 #define CONFIGCONTAINER_H
 
-#include "command/IConfigContainer.h"
+#include <PlastilinaCore/Point3D.h>
 #include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
-#include <PlastilinaCore/Point3D.h>
+#include "command/IConfigContainer.h"
 
 /**
  * Implementation of IConfigContainer interface
@@ -33,7 +33,7 @@
  */
 class ConfigContainer : public IConfigContainer
 {
-public:
+  public:
     ConfigContainer();
 
     ConfigContainer(const ConfigContainer& cpy);
@@ -54,11 +54,10 @@ public:
     virtual bool getBool(const QString& key);
     virtual void setBool(const QString& key, bool value);
     virtual Point3 getPoint3D(const QString& key);
-    virtual void setPoint3D(const QString& key, const Point3 &v);
-    
-private:
+    virtual void setPoint3D(const QString& key, const Point3& v);
+
+  private:
     QMap<QString, QVariant> m_container;
 };
 
 #endif
-

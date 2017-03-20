@@ -12,17 +12,16 @@
 #include "BaseTest.h"
 #include "PlastilinaCore/Document.h"
 
-class SubdivisionTest : public BaseUITest 
+class SubdivisionTest : public BaseUITest
 {
     struct Impl;
     std::unique_ptr<Impl> d_;
-    
-public:
-    
+
+  public:
     SubdivisionTest();
-    
+
     virtual ~SubdivisionTest();
-    
+
     virtual void resize(int w, int h);
 
     virtual void keyboard(int key, int x, int y);
@@ -31,7 +30,7 @@ public:
 
     virtual void mouseMove(uint32_t state, int x, int y);
 
-protected:
+  protected:
     virtual void doSetup();
 
     virtual void doRun();

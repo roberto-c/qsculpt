@@ -21,7 +21,8 @@
 #ifndef GLOBALDEFS_H
 #define GLOBALDEFS_H
 
-enum EditMode {
+enum EditMode
+{
     None,
     Vertex,
     Edge,

@@ -19,62 +19,56 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "command/SelectCommand.h"
-#include <QtOpenGL/QtOpenGL>
-#include <QtGui/QMouseEvent>
-#include <QtCore/QPointer>
+#include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/ISurface.h>
-#include <PlastilinaCore/Camera.h>
-#include <PlastilinaCore/geometry/Aabb.h>
+#include <PlastilinaCore/Quad.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SceneNode.h>
-#include <PlastilinaCore/Quad.h>
+#include <PlastilinaCore/geometry/Aabb.h>
+#include <QtCore/QPointer>
+#include <QtGui/QMouseEvent>
+#include <QtOpenGL/QtOpenGL>
+#include "Console.h"
+#include "DocumentModel.h"
+#include "DocumentTreeWidget.h"
+#include "DocumentView.h"
+#include "IConfigContainer.h"
 #include "QSculptApp.h"
 #include "QSculptWindow.h"
-#include "DocumentView.h"
 #include "TransformWidget.h"
-#include "IConfigContainer.h"
-#include "Console.h"
-#include "DocumentTreeWidget.h"
-#include "DocumentModel.h"
 
 QPointer<TransformWidget> SelectCommand::_objectProperties = NULL;
 
 SelectCommand::SelectCommand(ICommand* parent)
-    : CommandBase("Select", parent),
-    _boxSelection(true),
-    _drawBox(false),
-    _selectionType(ST_Surface)
+    : CommandBase("Select", parent)
+    , _boxSelection(true)
+    , _drawBox(false)
+    , _selectionType(ST_Surface)
 {
     _configContainer->setInt(SELECT_TYPE, ST_Surface);
 
-    if(getOptionsWidget())
+    if (getOptionsWidget())
     {
         // TODO: initialize object properties window
     }
 }
 
 SelectCommand::SelectCommand(const SelectCommand& cpy)
-    : CommandBase(cpy),
-    _boxSelection(cpy._boxSelection),
-    _drawBox(false),
-    _selectionType(cpy._selectionType)
+    : CommandBase(cpy)
+    , _boxSelection(cpy._boxSelection)
+    , _drawBox(false)
+    , _selectionType(cpy._selectionType)
 {
-    if(getOptionsWidget())
+    if (getOptionsWidget())
     {
         // TODO: initialize object properties window
     }
 }
 
-SelectCommand::~SelectCommand()
-{
+SelectCommand::~SelectCommand() {}
 
-}
-
-ICommand* SelectCommand::clone() const
-{
-    return new SelectCommand(*this);
-}
+ICommand* SelectCommand::clone() const { return new SelectCommand(*this); }
 
 QWidget* SelectCommand::getOptionsWidget()
 {
@@ -86,8 +80,8 @@ QWidget* SelectCommand::getOptionsWidget()
 void SelectCommand::execute()
 {
     const QString output("\tselected object %1");
-    
-    bool ok = true;
+
+    bool     ok  = true;
     uint32_t iid = 0;
     // If the config container has a numeric key, then we assume it was
     // called by the console.
@@ -101,17 +95,23 @@ void SelectCommand::execute()
             if (cmdArg1 == "object")
             {
                 iid = _configContainer->getString("2").toUInt(&ok);
-                if (!ok) {
+                if (!ok)
+                {
                     qDebug() << "error in parameter";
                     return;
                 }
-                
-                DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
+
+                DocumentView* view =
+                    g_pApp->getMainWindow()->getCurrentView();
                 assert(view);
-                auto doc = view->getDocument();
-                DocumentTreeWidget * treewdt = qobject_cast<DocumentTreeWidget*>( g_pApp->getMainWindow()->toolWidget("DocTree"));
-                if (doc && treewdt) {
-                    QModelIndex index = treewdt->document()->findItemIndex(iid);
+                auto                doc = view->getDocument();
+                DocumentTreeWidget* treewdt =
+                    qobject_cast<DocumentTreeWidget*>(
+                        g_pApp->getMainWindow()->toolWidget("DocTree"));
+                if (doc && treewdt)
+                {
+                    QModelIndex index =
+                        treewdt->document()->findItemIndex(iid);
                     treewdt->selectIndex(index);
                     doc->selectObject(iid);
                     view->updateView();
@@ -126,14 +126,15 @@ void SelectCommand::execute()
 void SelectCommand::mouseMoveEvent(QMouseEvent* e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-    if (_boxSelection) 
+    if (_boxSelection)
     {
-        _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
+        _endPointWin = Point3(
+            e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
         view->getCanvas()->screenToWorld(_endPointWin, _endPoint);
         _drawBox = true;
         select();
-    } 
-    else 
+    }
+    else
     {
         if (_objectsSelected.empty())
         {
@@ -146,36 +147,41 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
 {
     TRACE(trace) << "SelectCommand::mousePressEvent";
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
-    
+
     unselectAll();
 
     // Get the config options
     _selectionType = (SelectionType)_configContainer->getInt(SELECT_TYPE);
     TRACE(trace) << "selectionType:" << _selectionType;
     TRACE(trace) << "boxSelection:" << _boxSelection;
-    if (_boxSelection) 
+    if (_boxSelection)
     {
-        _startPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 0.0f);
+        _startPointWin = Point3(
+            e->pos().x(), view->getCanvas()->height() - e->pos().y(), 0.0f);
         view->getCanvas()->screenToWorld(_startPointWin, _startPoint);
-        TRACE(trace) << "ScreenPointWin:" << core::utils::to_string(_startPointWin)
-            << "ScreenPontWorld:" << core::utils::to_string(_startPoint);
-        if (!_rectangle) 
+        TRACE(trace) << "ScreenPointWin:"
+                     << core::utils::to_string(_startPointWin)
+                     << "ScreenPontWorld:"
+                     << core::utils::to_string(_startPoint);
+        if (!_rectangle)
         {
-            _rectangle = std::make_shared<Scene>();
+            _rectangle    = std::make_shared<Scene>();
             auto surfnode = std::make_shared<SurfaceNode>();
             surfnode->setSurface(new Quad());
             _rectangle->add(surfnode);
         }
-    } 
-    else 
+    }
+    else
     {
-        _objectsSelected = view->getSelectedObjects( e->pos().x(), e->pos().y());
+        _objectsSelected =
+            view->getSelectedObjects(e->pos().x(), e->pos().y());
 
         if (_objectsSelected.size() > 0)
         {
             for (auto i = 0; i < _objectsSelected.size(); ++i)
             {
-                _objectsSelected[i]->setSelected(!_objectsSelected[i]->isSelected());
+                _objectsSelected[i]->setSelected(
+                    !_objectsSelected[i]->isSelected());
             }
         }
         else
@@ -192,26 +198,29 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
     if (_rectangle)
     {
         auto item = _rectangle->item(0).lock();
-        if (item) {
+        if (item)
+        {
             auto surf = std::dynamic_pointer_cast<SurfaceNode>(item);
-            if (surf) {
+            if (surf)
+            {
                 delete surf->surface();
                 surf->setSurface(nullptr);
             }
         }
         _rectangle = nullptr;
     }
-    if (_boxSelection) 
+    if (_boxSelection)
     {
-        _endPointWin = Point3(e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
+        _endPointWin = Point3(
+            e->pos().x(), view->getCanvas()->height() - e->pos().y(), 1.0f);
         view->getCanvas()->screenToWorld(_endPointWin, _endPoint);
         TRACE(trace) << "endPointWin:" << core::utils::to_string(_endPointWin)
-            << "endPointWorld:" << core::utils::to_string(_endPoint);
+                     << "endPointWorld:" << core::utils::to_string(_endPoint);
         _drawBox = false;
         select();
         emit executed();
-    } 
-    else 
+    }
+    else
     {
         if (_objectsSelected.size() > 0)
             emit executed();
@@ -222,9 +231,10 @@ void SelectCommand::mouseReleaseEvent(QMouseEvent* e)
     }
 }
 
-void SelectCommand::paintGL(GlCanvas *c)
+void SelectCommand::paintGL(GlCanvas* c)
 {
-    if (_drawBox) {
+    if (_drawBox)
+    {
         c->enable(GL_BLEND);
         c->disable(GL_DEPTH_TEST);
         c->setPen(QPen(QColor(49, 122, 255, 255)));
@@ -233,7 +243,8 @@ void SelectCommand::paintGL(GlCanvas *c)
         c->disable(GL_BLEND);
         c->enable(GL_DEPTH_TEST);
 
-        if (_rectangle) {
+        if (_rectangle)
+        {
             c->drawScene(_rectangle);
         }
     }
@@ -241,7 +252,8 @@ void SelectCommand::paintGL(GlCanvas *c)
 
 void SelectCommand::select()
 {
-    switch(_selectionType) {
+    switch (_selectionType)
+    {
     case ST_Vertex:
         selectVertices();
         break;
@@ -264,38 +276,41 @@ void SelectCommand::selectVertices()
 
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
-    if (!view->getDocument()) {
+    if (!view->getDocument())
+    {
         return;
     }
 
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
 
-    Point3 p;
-    ISurface *surface = NULL;
-    auto ptr = view->getDocument()->scene().lock();
-    if (!ptr) {
+    Point3    p;
+    ISurface* surface = NULL;
+    auto      ptr     = view->getDocument()->scene().lock();
+    if (!ptr)
+    {
         qDebug() << __FILE__ << " : " << __LINE__ << " Scene destroyed";
         return;
     }
     Iterator<SceneNode> nodeIt = ptr->iterator();
-    while(nodeIt.hasNext())
+    while (nodeIt.hasNext())
     {
         auto n = nodeIt.next();
         if (n->nodeType() != NT_Surface)
             continue;
-        
-        surface = std::static_pointer_cast<SurfaceNode> (n)->surface();
-        if(!surface) 
+
+        surface = std::static_pointer_cast<SurfaceNode>(n)->surface();
+        if (!surface)
             continue;
-        
+
         auto it = surface->vertexIterator();
-        while(it.hasNext()) {
+        while (it.hasNext())
+        {
             auto v = it.next();
-            //view->getCanvas()->worldToScreen(v->position(), p);
-            //qDebug() << toString(v->position()) << toString(p);
-            //v->removeFlag(VF_Selected);
-            //if (box.contains(p)) {
+            // view->getCanvas()->worldToScreen(v->position(), p);
+            // qDebug() << toString(v->position()) << toString(p);
+            // v->removeFlag(VF_Selected);
+            // if (box.contains(p)) {
             //    v->addFlag(VF_Selected);
             //}
         }
@@ -303,10 +318,7 @@ void SelectCommand::selectVertices()
     }
 }
 
-void SelectCommand::selectSurface()
-{
-
-}
+void SelectCommand::selectSurface() {}
 
 void SelectCommand::selectFaces()
 {
@@ -315,39 +327,42 @@ void SelectCommand::selectFaces()
 
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
-    if (!view->getDocument()) {
+    if (!view->getDocument())
+    {
         return;
     }
 
     AABB box;
     box.extend(_startPointWin).extend(_endPointWin);
 
-    Point3 p;
-    ISurface *surface = NULL;
-    auto ptr = view->getDocument()->scene().lock();
-    if (!ptr) {
+    Point3    p;
+    ISurface* surface = NULL;
+    auto      ptr     = view->getDocument()->scene().lock();
+    if (!ptr)
+    {
         qDebug() << __FILE__ << " : " << __LINE__ << " Scene destroyed";
         return;
     }
     Iterator<SceneNode> nodeIt = ptr->iterator();
-    while(nodeIt.hasNext())
+    while (nodeIt.hasNext())
     {
         auto n = nodeIt.next();
         if (n->nodeType() != NT_Surface)
             continue;
-        
+
         surface = std::static_pointer_cast<SurfaceNode>(n)->surface();
-        if(!surface) 
+        if (!surface)
             continue;
-        
+
         surface->setSelected(false);
         n->setSelected(false);
         auto it = surface->faceIterator();
-        while(it.hasNext()) {
+        while (it.hasNext())
+        {
             auto f = it.next();
-            //f->removeFlag(FF_Selected);
-            //auto vtxIt = f->vertexIterator();
-            //while(vtxIt.hasNext()) {
+            // f->removeFlag(FF_Selected);
+            // auto vtxIt = f->vertexIterator();
+            // while(vtxIt.hasNext()) {
             //    auto v = vtxIt.next();
             //    view->getCanvas()->worldToScreen(v->position(), p);
             //    //qDebug() << toString(v->position()) << toString(p);
@@ -362,10 +377,7 @@ void SelectCommand::selectFaces()
     }
 }
 
-void SelectCommand::selectEdges()
-{
-
-}
+void SelectCommand::selectEdges() {}
 
 void SelectCommand::unselectAll()
 {
@@ -374,29 +386,31 @@ void SelectCommand::unselectAll()
 
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
     assert(view);
-    if (!view->getDocument()) {
+    if (!view->getDocument())
+    {
         return;
     }
-    ISurface *surface = NULL;
-    auto ptr = view->getDocument()->scene().lock();
-    if (!ptr) {
+    ISurface* surface = NULL;
+    auto      ptr     = view->getDocument()->scene().lock();
+    if (!ptr)
+    {
         qDebug() << __FILE__ << " : " << __LINE__ << " Scene destroyed";
         return;
     }
     Iterator<SceneNode> nodeIt = ptr->iterator();
-    while(nodeIt.hasNext())
+    while (nodeIt.hasNext())
     {
         auto n = nodeIt.next();
         if (n->nodeType() != NT_Surface)
             continue;
-        
+
         surface = std::static_pointer_cast<SurfaceNode>(n)->surface();
-        if(!surface) 
+        if (!surface)
             continue;
-        
-        //surface->setSelected(false);
-        //auto it = surface->faceIterator();
-        //while(it.hasNext()) {
+
+        // surface->setSelected(false);
+        // auto it = surface->faceIterator();
+        // while(it.hasNext()) {
         //    auto f = it.next();
         //    f->removeFlag(FF_Selected);
         //    auto vtxIt = f->vertexIterator();
@@ -408,4 +422,3 @@ void SelectCommand::unselectAll()
         surface->setChanged(true);
     }
 }
-
