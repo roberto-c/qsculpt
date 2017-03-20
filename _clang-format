@@ -1,0 +1,28 @@
+---
+Language:        Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignEscapedNewlinesLeft: false
+AlignTrailingComments: true
+AllowShortIfStatementsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: true
+BreakBeforeBraces: Allman
+BreakConstructorInitializersBeforeComma: true
+ColumnLimit: 78
+NamespaceIndentation: None
+UseTab: Never
+ContinuationIndentWidth: 4
+SortIncludes:    true
+IncludeCategories:
+  - Regex:           '^\"Stable\.h\"'
+    Priority:        1 
+  - Regex:           '^<.*\.h>'
+    Priority:        2
+  - Regex:           '^<.*'
+    Priority:        3
+  - Regex:           '.*'
+    Priority:        4
+...
+
