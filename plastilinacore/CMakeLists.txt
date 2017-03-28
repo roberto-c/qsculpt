@@ -237,7 +237,6 @@ source_group(Resources FILES
 if (WIN32)
 	add_library(PlastilinaCore STATIC
 		${PLASTILINACORE_SOURCES}
-		${PLASTILINACORE_SOURCES_OBJCXX}
 		${PLASTILINACORE_PUBLIC_HEADERS}
 		${RESOURCES}
 	)
@@ -248,7 +247,6 @@ else()
 		${PLASTILINACORE_PUBLIC_HEADERS}
 		${RESOURCES}
 	)
-
 endif()
 
 find_package(OpenGL REQUIRED)
@@ -301,6 +299,11 @@ target_include_directories(PlastilinaCore
 	)
 	
 set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/share/shaders)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/share/shaders)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/share)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${PROJECT_BINARY_DIR}/share)
 
 install(TARGETS PlastilinaCore
         RUNTIME DESTINATION bin

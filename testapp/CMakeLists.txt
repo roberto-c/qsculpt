@@ -30,10 +30,10 @@ set(TESTAPP_PRIVATE_HEADERS
 
 set(RESOURCES
 	./config.cfg
-	./TestMaterial.fs
-	./TestMaterial.vs
-	./ParticleSystem.cl
-	./Render.cl
+	./shaders/TestMaterial.fs
+	./shaders/TestMaterial.vs
+	./shaders/ParticleSystem.cl
+	./shaders/Render.cl
 	../images/Texture01.png
 )
 
@@ -103,6 +103,17 @@ target_link_libraries(PTestApp ${OPENGL_LIBRARIES}
 	PlastilinaCore
 )
 
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/share/shaders)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/share/images)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/share/shaders)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/share/images)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/share)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${PROJECT_BINARY_DIR}/share)
+file(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/share)
+file(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${PROJECT_BINARY_DIR}/share)
+get_target_property(RT_OUTPUT PTestApp RUNTIME_OUTPUT_DIRECTORY)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.cfg DESTINATION ${RT_OUTPUT}/Debug)
 
 install(TARGETS PTestApp
         RUNTIME DESTINATION bin

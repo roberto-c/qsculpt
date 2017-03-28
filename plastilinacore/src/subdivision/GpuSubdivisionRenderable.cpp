@@ -104,7 +104,8 @@ bool GpuSubdivisionRenderable::Impl::initializeOcl()
         ::cl::Program::Sources source(
             1, std::make_pair(kernelSource.c_str(), kernelSource.length()));
         program = ::cl::Program(oclManager->context(), source);
-        program.build("-I . -I ../share -I ../../share");
+		auto options = "-I . -I " + path.substr(0, path.find("Subdivision"));
+        program.build(options.c_str());
 
         krnGenerateMesh = ::cl::Kernel(program, "build_mesh");
         TRACE(trace)
