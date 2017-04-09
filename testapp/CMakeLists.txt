@@ -37,12 +37,6 @@ set(RESOURCES
 	../images/Texture01.png
 )
 
-add_executable(PTestApp MACOSX_BUNDLE
-	${TESTAPP_SOURCES}
-	${TESTAPP_PRIVATE_HEADERS}
-	${RESOURCES}
-)
-
 if (APPLE)
 	set(TESTAPP_SOURCES 
 		${TESTAPP_SOURCES} 
@@ -52,10 +46,19 @@ if (APPLE)
 		${TESTAPP_PRIVATE_HEADERS} 
 		./SDLMain.h
 	)
-	set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h )
+endif()
+
+add_executable(PTestApp MACOSX_BUNDLE
+	${TESTAPP_SOURCES}
+	${TESTAPP_PRIVATE_HEADERS}
+	${RESOURCES}
+)
+
+if (APPLE)
+	set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h )
 elseif (UNIX)
     set_property(TARGET PlastilinaCore
-    	PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h
+    	PROPERTY COMPILE_FLAGS -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h
     )
 endif()
 
@@ -115,9 +118,9 @@ file(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${PROJECT_BINARY_DIR}/share)
 get_target_property(RT_OUTPUT PTestApp RUNTIME_OUTPUT_DIRECTORY)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.cfg DESTINATION ${RT_OUTPUT}/Debug)
 
-#install(TARGETS PTestApp
-#        RUNTIME DESTINATION bin
-#        LIBRARY DESTINATION lib
-#        ARCHIVE DESTINATION lib
-#        RESOURCE DESTINATION share)
+install(TARGETS PTestApp
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RESOURCE DESTINATION share)
         

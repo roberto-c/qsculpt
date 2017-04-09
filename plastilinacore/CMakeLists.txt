@@ -70,7 +70,8 @@ set(PLASTILINACORE_SOURCES
 )
 
 if (Vulkan_FOUND)
-set(PLASTILINACORE_SOURCES 
+set(PLASTILINACORE_SOURCES
+	${PLASTILINACORE_SOURCES}
 	./src/vulkan/Context.cpp
 	./src/vulkan/VkDevice.cpp
 	./src/vulkan/VkUtils.cpp
@@ -266,7 +267,7 @@ target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
 if (Vulkan_FOUND)
-	target_include_directories(PlastilinaCore ${Vulkan_INCLUDE_DIRS})
+	target_include_directories(PlastilinaCore PUBLIC ${Vulkan_INCLUDE_DIRS})
 	target_link_libraries(PlastilinaCore ${Vulkan_LIBRARIES})
 endif()
 if (SDL2_FOUND)
@@ -320,7 +321,7 @@ install(TARGETS PlastilinaCore
         ARCHIVE DESTINATION lib)
 
 if (APPLE)
-	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -std=c++14 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)
 	set_property(TARGET PlastilinaCore 
 		PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore
@@ -346,7 +347,7 @@ if (APPLE)
 	target_link_libraries(PlastilinaCore ${COCOA_LIBRARIES})
 elseif (UNIX)
 	set_property(TARGET PlastilinaCore 
-		PROPERTY COMPILE_FLAGS -std=c++14 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+		PROPERTY COMPILE_FLAGS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)
 elseif (WIN32)
 	set_property(TARGET PlastilinaCore 

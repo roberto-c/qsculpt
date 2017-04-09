@@ -165,7 +165,7 @@ struct allocator
 
     T* allocate(std::size_t n)
     {
-        TRACE(debug) << "allocastor::allocate size n = " << n;
+        TRACE(debug) << "allocator::allocate size n = " << n;
         MemoryPool* pool = new MemoryPool(n * sizeof(T));
         pool->lock();
         g_poolList.push_back(pool);
@@ -173,7 +173,7 @@ struct allocator
     }
     void deallocate(T* ptr, std::size_t n)
     {
-        TRACE(debug) << "allocastor::deallocate size n = " << n;
+        TRACE(debug) << "allocator::deallocate size n = " << n;
         auto it = std::find_if(g_poolList.begin(), g_poolList.end(),
                                SearchPtr((const char*)ptr));
         if (it != g_poolList.end())

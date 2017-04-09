@@ -104,11 +104,11 @@ if (APPLE)
 	)
 
 	set_property(TARGET QSculpt 
-		PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h
+		PROPERTY COMPILE_OPTIONS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h
 	)
 elseif (UNIX)
 	set_property(TARGET QSculpt 
-		PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h
+		PROPERTY COMPILE_FLAGS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h
 	)
 endif()
 

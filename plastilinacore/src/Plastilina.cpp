@@ -25,7 +25,7 @@
 #include <PlastilinaCore/Utilities.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opengl/OpenGL.h>
-#if HAS_VULKAN
+#ifdef HAS_VULKAN
 #include <PlastilinaCore/vulkan/VkUtils.h>
 #include <PlastilinaCore/vulkan/Vulkan.h>
 #endif

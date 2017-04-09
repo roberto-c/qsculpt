@@ -16,6 +16,8 @@
 
 #include <PLastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/Camera.h>
+#include <PlastilinaCore/ISurface.h>
+#include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/material/PhongMaterial.h>
@@ -27,8 +29,6 @@
 #include <PlastilinaCore/subdivision/GpuSubdivisionRenderable.h>
 #include <PlastilinaCore/subdivision/SubdivisionRenderable.h>
 #include "DocumentModelTest.h"
-#include "PlastilinaCore/ISurface.h"
-#include "PlastilinaCore/Logging.h"
 #include "PrimitiveFactory.h"
 
 using namespace std;
@@ -211,7 +211,6 @@ int SubdivisionTest::Impl::vectorPrimitivesTest()
                       });
     TRACE(info) << "gpu vector<vertex> device read "
                 << std::string(comp ? "PASSED" : "FAILED");
-    ;
 
     vector<Edge>     edgeHostList;
     gpu_vector<Edge> edgeList(gpu_allocator);
@@ -235,7 +234,6 @@ int SubdivisionTest::Impl::vectorPrimitivesTest()
                       });
     TRACE(info) << "gpu vector<edge> device read "
                 << std::string(comp ? "PASSED" : "FAILED");
-    ;
 
     return 0;
 }
