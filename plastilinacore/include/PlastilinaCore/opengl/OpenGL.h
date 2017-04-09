@@ -20,16 +20,6 @@
 #ifndef PlastilinaCore_OpenGL_h
 #define PlastilinaCore_OpenGL_h
 
-#ifdef __APPLE__
-#include <OpenGL/OpenGL.h>
-#include <OpenGL/gl3.h>
-#include <OpenGL/gl3ext.h>
-
-/* to avoid including gl.h*/
-#define __gl_h_
-
-#else
 #include <GL/glew.h>
-#endif
 
 #endif

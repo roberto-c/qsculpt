@@ -272,7 +272,7 @@ class Iterator
     inline Iterator operator++(int)
     {
         assert(_it != 0);
-        Itarator<T> tmp(*this);
+        Iterator<T> tmp(*this);
         ++(*this);
         return tmp;
     }

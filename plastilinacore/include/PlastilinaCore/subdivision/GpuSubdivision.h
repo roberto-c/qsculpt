@@ -14,7 +14,7 @@
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/geometry/Aabb.h>
-#include <PlastilinaCore/opencl/ClUtils.h>
+#include <PlastilinaCore/opencl/CLUtils.h>
 #include <utility>
 #include <vector>
 

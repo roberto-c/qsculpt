@@ -17,14 +17,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#pragma once
-
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/IDevice.h>
 
 #include <PlastilinaCore/opengl/GlDevice.h>
+
+#ifdef HAS_VULKAN
 #include <PlastilinaCore/vulkan/VkDevice.h>
 #include <PlastilinaCore/vulkan/Vulkan.h>
+#endif
 
 namespace core
 {
@@ -40,11 +41,14 @@ core::PlatformList getPlatformList()
     {
         list.push_back(move(platform));
     }
+
+#ifdef HAS_VULKAN
     platform = make_unique<vulkan::VkPlatform>();
     if (platform->isSupported())
     {
         list.push_back(move(platform));
     }
+#endif
 
     return list;
 }

@@ -9,7 +9,7 @@
 #include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/Plastilina.h>
-#include <PlastilinaCore/opencl/opencl.h>
+#include <PlastilinaCore/opencl/OpenCL.h>
 #include <memory>
 #include <new>
 
@@ -83,8 +83,8 @@ class MemoryPoolGpu : public MemoryPool
      */
     bool unlock();
 
-    ::cl_mem&       clMem() { return buffer(); }
-    const ::cl_mem& clMem() const { return buffer(); }
+    ::cl_mem& clMem() { return buffer(); }
+    ::cl_mem  clMem() const { return buffer(); }
 };
 
 class MemoryPoolGlCl : public MemoryPool
@@ -126,8 +126,8 @@ class MemoryPoolGlCl : public MemoryPool
      */
     bool unlock();
 
-    ::cl_mem&       clMem() { return buffer(); }
-    const ::cl_mem& clMem() const { return buffer(); }
+    ::cl_mem& clMem() { return buffer(); }
+    ::cl_mem  clMem() const { return buffer(); }
 
     BufferObject& glBuffer() { return gldata; }
 

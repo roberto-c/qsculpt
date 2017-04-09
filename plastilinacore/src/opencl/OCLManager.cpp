@@ -89,7 +89,7 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
         {
             prop.clear();
             prop.push_back(CL_CONTEXT_PLATFORM);
-            prop.push_back((cl_int)platform());
+            prop.push_back((cl_context_properties)platform());
 #ifdef __APPLE__
             prop.push_back(CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE);
             prop.push_back(d->glCtxHnd);
@@ -102,7 +102,10 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
 #endif
             prop.push_back(0);
 
-            size_t                   bytes = 0;
+            size_t                    bytes = 0;
+            std::vector<cl_device_id> devs;
+#ifdef __APPLE__
+#else
             clGetGLContextInfoKHR_fn clGetGLContextInfoKHR =
                 (clGetGLContextInfoKHR_fn)platform
                     .getExtensionFunctionAddress("clGetGLContextInfoKHR");
@@ -117,13 +120,14 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
                 &bytes);
             cl::detail::errHandler(error, "clGetGLContextInfoKHR");
             // allocating the mem
-            size_t                    devNum = bytes / sizeof(cl_device_id);
-            std::vector<cl_device_id> devs(devNum);
+            size_t devNum = bytes / sizeof(cl_device_id);
+            devs.resize(devNum);
             // reading the info
             error = clGetGLContextInfoKHR(prop.data(),
                                           CL_DEVICES_FOR_GL_CONTEXT_KHR,
                                           bytes, devs.data(), NULL);
             cl::detail::errHandler(error, "clGetGLContextInfoKHR");
+#endif
             for (auto& dev : devs)
             {
                 deviceList.push_back(cl::Device(dev));
@@ -229,7 +233,7 @@ bool CLManager::initialize(PlastilinaSubsystem flags)
             {
                 prop.push_back(CL_CONTEXT_PLATFORM);
                 prop.push_back(
-                    (cl_int)d->devices[0].getInfo<CL_DEVICE_PLATFORM>());
+                    (cl_context_properties)d->devices[0].getInfo<CL_DEVICE_PLATFORM>());
             }
         }
         else

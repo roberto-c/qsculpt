@@ -40,7 +40,17 @@ class GlException : public std::exception
 
     const char* errorString() const throw()
     {
-        return (const char*)gluErrorString(error_);
+	#define GLENUMTOSTR(x) case x: return #x
+	switch(error_)
+	{
+	GLENUMTOSTR(GL_NO_ERROR);
+	GLENUMTOSTR(GL_INVALID_ENUM);
+	GLENUMTOSTR(GL_INVALID_OPERATION);
+	GLENUMTOSTR(GL_INVALID_VALUE);
+	GLENUMTOSTR(GL_INVALID_FRAMEBUFFER_OPERATION);
+	GLENUMTOSTR(GL_OUT_OF_MEMORY);
+	}
+        return "UNKONWN";
     }
 };
 }

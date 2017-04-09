@@ -9,7 +9,10 @@
 
 #include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/opencl/OpenCL.h>
+
+#ifdef HAS_VULKAN
 #include <PlastilinaCore/vulkan/Context.h>
+#endif
 
 OBJC_CLASS(NSView);
 OBJC_CLASS(NSOpenGLContext);
@@ -24,7 +27,10 @@ namespace core
 struct Context::Impl
 {
     cl::Context                      oclctx;
+
+#ifdef HAS_VULKAN
     std::unique_ptr<vulkan::Context> vkCtx;
+#endif
 
 #if defined(__APPLE__)
 

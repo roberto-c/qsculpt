@@ -25,8 +25,10 @@
 #include <PlastilinaCore/Utilities.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opengl/OpenGL.h>
+#if HAS_VULKAN
 #include <PlastilinaCore/vulkan/VkUtils.h>
 #include <PlastilinaCore/vulkan/Vulkan.h>
+#endif
 
 #include <boost/program_options.hpp>
 
@@ -137,6 +139,7 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
         }
         g_engineState.openglInitialized = true;
     }
+#ifdef HAS_VULKAN
     else if ((subsystem & PlastilinaSubsystem::VULKAN) !=
              PlastilinaSubsystem::NONE)
     {
@@ -146,10 +149,12 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
                             "use another rendering API.";
         }
     }
+#endif
     if ((subsystem & PlastilinaSubsystem::OPENCL) !=
         PlastilinaSubsystem::NONE)
     {
         CLManager::startup(subsystem);
+#ifdef _WIN32
         if (((subsystem & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) !=
              PlastilinaSubsystem::NONE) &&
             ((subsystem & PlastilinaSubsystem::OPENGL) !=
@@ -159,6 +164,7 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
             CLManager::instance()->setOpenGLContext(glCtx);
             CLManager::instance()->setDeviceContext(get_device_context());
         }
+#endif
 
         g_engineState.openclInitialized =
             CLManager::instance()->initialize(subsystem);

@@ -43,13 +43,7 @@
 #include <Eigen/StdVector>
 #include <iterator>
 
-#ifdef __APPLE__
-#include <OpenGL/OpenGL.h>
-#include <OpenGL/gl3.h>
-#include <OpenGL/gl3ext.h>
-#else
 #include <GL/glew.h>
-#endif /* __APPLE__ */
 
 #ifdef __OBJC__
 #define OBJC_CLASS(name) @class name

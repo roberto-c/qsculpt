@@ -169,14 +169,14 @@ void convert_to<Eigen::Vector3f, cl_float4>(const cl_float4& from,
 std::string to_string(const cl_float2& v)
 {
     std::stringstream strout;
-    strout << "(" << v.x << "," << v.y << ")";
+    strout << "(" << v.s[0] << "," << v.s[1] << ")";
     return strout.str();
 }
 
 std::string to_string(const cl_float4& v)
 {
     std::stringstream strout;
-    strout << "(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
+    strout << "(" << v.s[0] << "," << v.s[1] << "," << v.s[2] << "," << v.s[3] << ")";
     return strout.str();
 }
 

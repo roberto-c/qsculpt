@@ -588,7 +588,7 @@ void GpuSubdivision::setScene(Scene* scene) { _d->_scene = scene; }
 
 Scene* GpuSubdivision::scene() const { return _d->_scene; }
 
-const IRenderable* GpuSubdivision::renderable() const { return _d.get(); }
+const IRenderable* GpuSubdivision::renderable() const { return _d->_renderable; }
 
 const geometry::AABB& GpuSubdivision::boundingBox() const
 {

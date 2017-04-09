@@ -49,6 +49,7 @@ typedef std::unordered_map<VertexPairKey, Edge::size_t> VerticesToEdgeMap;
 namespace core
 {
 struct clSurfaceList;
+class GpuSubdivisionRenderable;
 
 struct GpuSubdivision::Impl : public IRenderable
 {

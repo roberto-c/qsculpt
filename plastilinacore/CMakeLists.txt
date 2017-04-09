@@ -67,11 +67,16 @@ set(PLASTILINACORE_SOURCES
 	./src/Utilities.cpp
 	./src/Vertex.cpp
 	./src/WireframeRenderer.cpp
+)
+
+if (Vulkan_FOUND)
+set(PLASTILINACORE_SOURCES 
 	./src/vulkan/Context.cpp
 	./src/vulkan/VkDevice.cpp
 	./src/vulkan/VkUtils.cpp
 	./src/vulkan/Vulkan.cpp
 )
+endif()
 
 source_group(core REGULAR_EXPRESSION
 	".*"
@@ -98,9 +103,11 @@ source_group(opencl REGULAR_EXPRESSION
 	".*\\opencl\\.*"
 	)
 
+if (Vulkan_FOUND)
 source_group(vulkan  REGULAR_EXPRESSION
 	".*\\vulkan\\.*"
 	)
+endif()
 
 if (APPLE)
 	set(PLASTILINACORE_SOURCES_OBJCXX ./src/Context_mac.mm)
@@ -258,7 +265,10 @@ target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
 target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
 target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
-target_link_libraries(PlastilinaCore ${Vulkan_LIBRARIES})
+if (Vulkan_FOUND)
+	target_include_directories(PlastilinaCore ${Vulkan_INCLUDE_DIRS})
+	target_link_libraries(PlastilinaCore ${Vulkan_LIBRARIES})
+endif()
 if (SDL2_FOUND)
 	target_link_libraries(PlastilinaCore ${SDL2_LIBRARIES})
 endif()
@@ -294,7 +304,6 @@ target_include_directories(PlastilinaCore
 		${OPENGL_INCLUDE_DIRS}
 		${OpenCL_INCLUDE_DIRS}
 		${ASSIMP_INCLUDE_DIRS}
-		${Vulkan_INCLUDE_DIRS}
 		${Boost_INCLUDE_DIRS}
 	)
 	
@@ -311,7 +320,7 @@ install(TARGETS PlastilinaCore
         ARCHIVE DESTINATION lib)
 
 if (APPLE)
-	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -std=c++11 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -std=c++14 -stdlib=libc++ -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)
 	set_property(TARGET PlastilinaCore 
 		PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore
@@ -337,7 +346,7 @@ if (APPLE)
 	target_link_libraries(PlastilinaCore ${COCOA_LIBRARIES})
 elseif (UNIX)
 	set_property(TARGET PlastilinaCore 
-		PROPERTY COMPILE_FLAGS -std=c++11 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
+		PROPERTY COMPILE_FLAGS -std=c++14 -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)
 elseif (WIN32)
 	set_property(TARGET PlastilinaCore 
