@@ -107,8 +107,8 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
 #ifdef __APPLE__
 #else
             clGetGLContextInfoKHR_fn clGetGLContextInfoKHR =
-                (clGetGLContextInfoKHR_fn)platform
-                    .getExtensionFunctionAddress("clGetGLContextInfoKHR");
+                (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(
+					platform(), "clGetGLContextInfoKHR");
             if (!clGetGLContextInfoKHR)
             {
                 TRACE(debug)
