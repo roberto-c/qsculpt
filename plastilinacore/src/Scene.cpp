@@ -302,8 +302,9 @@ void Scene::Impl::processMeshes(const aiScene* scene, const aiNode* node,
 
     for (unsigned int i = 0; i < node->mNumMeshes; ++i)
     {
+		auto surface = std::make_shared<Subdivision>();
         SurfaceNode::shared_ptr surfaceNode =
-            std::make_shared<SurfaceNode>(new Subdivision());
+            std::make_shared<SurfaceNode>(surface);
         outNode->add(surfaceNode);
         const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         surfaceNode->setName(mesh->mName.C_Str());

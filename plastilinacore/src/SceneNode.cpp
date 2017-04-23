@@ -634,7 +634,7 @@ Iterator<SceneNode> SceneNode::treeIterator()
 
 void SceneNode::dump() { _d->dump(); }
 
-SurfaceNode::SurfaceNode(ISurface* surface, const std::string& name)
+SurfaceNode::SurfaceNode(const std::shared_ptr<ISurface> & surface, const std::string& name)
     : SceneNode(name, NT_Surface)
     , surface_(surface)
 {
@@ -647,11 +647,11 @@ SurfaceNode::SurfaceNode(ISurface* surface, const std::string& name)
 
 SurfaceNode::~SurfaceNode() {}
 
-ISurface* SurfaceNode::surface() const { return surface_; }
+ISurface* SurfaceNode::surface() const { return surface_.get(); }
 
-ISurface* SurfaceNode::surface() { return surface_; }
+ISurface* SurfaceNode::surface() { return surface_.get(); }
 
-void SurfaceNode::setSurface(ISurface* surface)
+void SurfaceNode::setSurface(const std::shared_ptr<ISurface> & surface)
 {
     surface_ = surface;
     boundingBox().extend(surface->boundingBox());

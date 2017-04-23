@@ -256,7 +256,7 @@ class DLLEXPORT SceneNode : public std::enable_shared_from_this<SceneNode>
 
 class DLLEXPORT SurfaceNode : public SceneNode, public IRenderable
 {
-    ISurface*                 surface_;
+    std::shared_ptr<ISurface> surface_;
     std::shared_ptr<Material> material_;
 
   public:
@@ -269,10 +269,12 @@ class DLLEXPORT SurfaceNode : public SceneNode, public IRenderable
     /**
      *
      */
-    SurfaceNode(ISurface*          surface = nullptr,
+    SurfaceNode(const std::shared_ptr<ISurface> & surface = std::shared_ptr<ISurface>(nullptr),
                 const std::string& name    = "NoName");
 
-    // SurfaceNode(const ISurface *surface = NULL);
+    // disabled copy semantics for now
+    SurfaceNode(const SurfaceNode&) = delete;
+    SurfaceNode& operator=(const SurfaceNode&) = delete;
 
     /**
      * Free resources used by this node.
@@ -296,7 +298,7 @@ class DLLEXPORT SurfaceNode : public SceneNode, public IRenderable
     /**
      * Set the surface contained in this node.
      */
-    void setSurface(ISurface* surface);
+    void setSurface(const std::shared_ptr<ISurface> & surface);
 
     /**
      * Returns the material used for this surface
@@ -309,11 +311,6 @@ class DLLEXPORT SurfaceNode : public SceneNode, public IRenderable
     void setMaterial(const std::shared_ptr<Material>& material);
 
     virtual void render(RenderState& state) const;
-
-  private:
-    // disabled copy semantics for now
-    SurfaceNode(const SurfaceNode&);
-    SurfaceNode& operator=(const SurfaceNode&);
 };
 
 class DLLEXPORT LightNode : public SceneNode
