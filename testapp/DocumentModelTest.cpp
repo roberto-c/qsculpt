@@ -35,7 +35,7 @@ int DocumentModelTest::setup()
     TRACEFUNCTION("");
     doc = std::make_shared<Document>();
 
-    ISurface* surf = new Subdivision();
+    auto surf = std::make_shared<Subdivision>();
     // surf->addVertex(Point3(0,0,0));
     // surf->addVertex(Point3(1,0,0));
 
@@ -43,7 +43,7 @@ int DocumentModelTest::setup()
     node1->transform().translate(Vector3(1, 0, 0));
     node1->setName("Node 1");
 
-    surf = new Subdivision();
+    surf = std::make_shared<Subdivision>();
     // surf->addVertex(Point3(0,0,0));
     // surf->addVertex(Point3(1,0,0));
 

@@ -91,19 +91,22 @@ void TransformCameraCommand::Impl::setup()
 {
     SceneNode::shared_ptr root(new SceneNode);
 
-    SurfaceNode::shared_ptr surface(new SurfaceNode(new Box));
+    auto surf = std::make_shared<Box>();
+    auto surface = std::make_shared<SurfaceNode>(surf);
     surface->setParent(root);
     root->add(surface);
     surface->transform() *= Eigen::Translation<float, 3>(1, 0, 0);
     surface->transform() *= Eigen::AlignedScaling3f(0.2, 0.2, 0.2);
 
-    surface = SurfaceNode::shared_ptr(new SurfaceNode(new Box));
+    surf = std::make_shared<Box>();
+    surface = std::make_shared<SurfaceNode>(surf);
     surface->setParent(root);
     root->add(surface);
     surface->transform() *= Eigen::Translation<float, 3>(0, 1, 0);
     surface->transform() *= Eigen::AlignedScaling3f(0.2, 0.2, 0.2);
 
-    surface = SurfaceNode::shared_ptr(new SurfaceNode(new Box));
+    surf = std::make_shared<Box>();
+    surface = std::make_shared<SurfaceNode>(surf);
     surface->setParent(root);
     root->add(surface);
     surface->transform() *= Eigen::Translation<float, 3>(0, 0, 1);

@@ -72,15 +72,15 @@ int SubdivisionTest::Impl::setup()
     TRACEFUNCTION("");
     ResourcesManager rscMgr;
 
-    // surface =
-    // std::shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createQuad(1280,
-    // 720));
-    surface = std::shared_ptr<GpuSubdivision>(
-        core::PrimitiveFactory<GpuSubdivision>::createQuad(2, 2));
+    surface =
+     shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createQuad(1280,
+     720));
+    //surface = std::shared_ptr<GpuSubdivision>(
+    //    core::PrimitiveFactory<GpuSubdivision>::createQuad(2, 2));
     // surface =
     // std::shared_ptr<Subdivision>(core::PrimitiveFactory<Subdivision>::createBox());
-    scene            = std::make_shared<Scene>();
-    auto surfacenode = std::make_shared<SurfaceNode>(surface.get());
+    scene            = make_shared<Scene>();
+    auto surfacenode = make_shared<SurfaceNode>(surface);
     material         = make_shared<PhongMaterial>();
     auto camnode     = make_shared<CameraNode>();
     camera           = make_shared<Camera>();
@@ -309,7 +309,7 @@ void SubdivisionTest::doRun()
     }
 }
 
-void SubdivisionTest::doShutdown() { d_->cleanup(); }
+void SubdivisionTest::doShutdown() { d_->runUi = false;  d_->cleanup(); }
 
 void SubdivisionTest::resize(int w, int h)
 {

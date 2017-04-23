@@ -21,7 +21,8 @@ namespace cl
 class MemoryPool
 {
   protected:
-    char*       dataPtr;
+    void*       dataPtr;    // aligned pointer
+	void*       rawDataPtr; // unaligned pointer
     std::size_t size;
     bool        locked;
 
@@ -62,7 +63,7 @@ class MemoryPoolGpu : public MemoryPool
 
     MemoryPoolGpu(const MemoryPoolGpu&& pool);
 
-    MemoryPoolGpu& operator=(MemoryPoolGpu&& other) = default;
+    MemoryPoolGpu& operator=(MemoryPoolGpu&& other);
 
     virtual ~MemoryPoolGpu();
 
@@ -178,6 +179,7 @@ struct allocator
                                SearchPtr((const char*)ptr));
         if (it != g_poolList.end())
         {
+			(*it)->unlock();
             delete *it;
             g_poolList.erase(it);
         }

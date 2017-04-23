@@ -72,9 +72,7 @@ void CLRender::initialize()
         ResourcesManager     mgr;
         std::string          path = mgr.findResourcePath("Render", "cl");
         std::string          kernelSource = core::cl::loadFromFile(path);
-        cl::Program::Sources source(
-            1, std::make_pair(kernelSource.c_str(), kernelSource.length()));
-        d->program = cl::Program(mngr->context(), source);
+        d->program = cl::Program(mngr->context(), kernelSource);
         d->program.build();
         d->krnFilterImg = cl::Kernel(d->program, "filter_img");
     }

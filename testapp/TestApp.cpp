@@ -129,10 +129,10 @@ void TestApp::init(int argc, char** argv)
 
     if (testid == -1 || testid == 0)
         d->testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
-    if (testid == -1 || testid == 1)
-        d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
-    if (testid == -1 || testid == 2)
-        d->testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
+    //if (testid == -1 || testid == 1)
+    //    d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
+    //if (testid == -1 || testid == 2)
+    //    d->testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
 
     // install test callsback
     for (auto& test : d->testList)
@@ -334,6 +334,12 @@ void TestApp::Impl::initialize()
         TRACE(error) << "Failed to intialize SDL";
         return; // false;
     }
+	int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
+	if (IMG_Init(imgFlags) != imgFlags)
+	{
+		TRACE(error) << "Failed to intialize SDL_image";
+		return;
+	}
 
     /* Turn on double buffering with a 24bit Z buffer.
      * You may need to change this to 16 or 32 for your system */

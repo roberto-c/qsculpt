@@ -90,9 +90,9 @@ struct OrbitCommand::Impl
 void OrbitCommand::Impl::setup()
 {
     SceneNode::shared_ptr root(new SceneNode);
-
+	ISurface::shared_ptr surf = std::make_shared<Sphere>();
     SurfaceNode::shared_ptr surface =
-        std::make_shared<SurfaceNode>(new Sphere, "Unamed");
+        std::make_shared<SurfaceNode>(surf, "No name");
     root->add(surface);
     surface->surface()->setColor(Color(1.0, 1.0, 0.0, 0.2));
 

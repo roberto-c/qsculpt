@@ -270,11 +270,11 @@ void BrushCommand::applyOperation()
         // Vector3& n =
         // _object->getNormalAtPoint(_vertexSelected[_vertexSelected.count()/2]);
         Vector3 n;
-        for (auto i = 0; i < _vertexSelected.size(); i++)
+        for (auto & vertex : _vertexSelected)
         {
 
             Point3 v =
-                _object->vertex(_vertexSelected[i])->position().head(3);
+                _object->vertex(vertex)->position().head(3);
             //            gluProject(v.x(), v.y(), v.z(),
             //                       _modelMatrix, _projMatrix, _viewPort,
             //                       &winX, &winY, &winZ);
@@ -291,7 +291,7 @@ void BrushCommand::applyOperation()
                 factor      = factor * _depth * _direction;
                 Point3 disp = n * factor;
                 v           = v + disp;
-                _object->adjustPointNormal(_vertexSelected[i]);
+                _object->adjustPointNormal(vertex);
             }
         }
         _object->setChanged(true);

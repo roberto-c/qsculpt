@@ -31,6 +31,7 @@ std::vector<MemoryPool*> g_poolList;
 
 MemoryPool::MemoryPool(std::size_t n, int alignment) noexcept
     : dataPtr(nullptr)
+    , rawDataPtr(nullptr)
     , size(n)
     , locked(false)
 {
@@ -40,6 +41,7 @@ MemoryPool::MemoryPool(std::size_t n, int alignment) noexcept
 
 MemoryPool::MemoryPool(const MemoryPool&& pool)
     : dataPtr(std::move(pool.dataPtr))
+    , rawDataPtr(std::move(pool.rawDataPtr))
     , size(std::move(pool.size))
     , locked(std::move(pool.locked))
 {
@@ -49,8 +51,9 @@ MemoryPool::MemoryPool(const MemoryPool&& pool)
 MemoryPool::~MemoryPool()
 {
     TRACE(debug) << "~MemoryPool()";
-    delete[] dataPtr;
-    dataPtr = nullptr;
+	dataPtr = nullptr;
+    delete[] rawDataPtr;
+	rawDataPtr = nullptr;
 }
 
 bool MemoryPool::initialize(int alignment)
@@ -63,10 +66,11 @@ bool MemoryPool::initialize(int alignment)
     size_t sizeElements = size % alignof(std::max_align_t) == 0
                               ? size / alignof(std::max_align_t)
                               : (size / alignof(std::max_align_t)) + 1;
-    size    = sizeElements * alignof(std::max_align_t);
-    dataPtr = (char*)(new std::max_align_t[sizeElements]);
-    if (!dataPtr)
+    rawDataPtr = new std::max_align_t[sizeElements];
+    if (!rawDataPtr)
         return false;
+	size_t space = sizeElements * alignof(std::max_align_t);
+	dataPtr = std::align(alignof(std::max_align_t), size, rawDataPtr, space);
     return true;
 }
 
@@ -81,6 +85,8 @@ bool MemoryPool::unlock()
     locked = false;
     return true;
 }
+
+/////////////////////////////////////////////////////////////////////////////
 
 MemoryPoolGpu::MemoryPoolGpu(::cl::Context& ctx, ::cl::CommandQueue& queue,
                              std::size_t n, cl_mem_flags flags)
@@ -112,6 +118,11 @@ MemoryPoolGpu::MemoryPoolGpu(const MemoryPoolGpu&& pool)
 {
     TRACE(trace) << "MemoryPoolGpu(const MemoryPoolGpu &&)";
 }
+
+//MemoryPoolGpu& MemoryPool::operator=(MemoryPoolGpu&& other)
+//{
+//    TRACE(trace) << "MemoryPoolGpu(const MemoryPoolGpu &&)";
+//}
 
 MemoryPoolGpu::~MemoryPoolGpu()
 {
@@ -149,6 +160,8 @@ bool MemoryPoolGpu::unlock()
     locked = false;
     return true;
 }
+
+/////////////////////////////////////////////////////////////////////////////
 
 MemoryPoolGlCl::MemoryPoolGlCl(::cl::Context& ctx, ::cl::CommandQueue& queue,
                                std::size_t n, cl_mem_flags flags)

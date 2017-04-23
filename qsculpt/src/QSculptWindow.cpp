@@ -315,8 +315,8 @@ void QSculptWindow::newFile()
         d_->document = std::make_shared<Document>();
         d_->docModel = std::make_shared<DocumentModel>(d_->document);
         d_->documentView->setDocument(d_->document);
-
-        auto node = std::make_shared<SurfaceNode>(new ::Box, "test");
+        auto surf = std::make_shared<::Box>();
+        auto node = std::make_shared<SurfaceNode>(surf, "test");
         auto mat  = std::make_shared<PhongMaterial>();
         mat->load();
         node->setMaterial(mat);

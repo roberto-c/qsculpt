@@ -75,7 +75,7 @@ int CanvasTest::Impl::setup()
     surface = std::shared_ptr<Subdivision>(
         core::PrimitiveFactory<Subdivision>::createQuad(1280, 720));
     scene            = std::make_shared<Scene>();
-    auto surfacenode = std::make_shared<SurfaceNode>(surface.get());
+    auto surfacenode = std::make_shared<SurfaceNode>(surface);
     material         = make_shared<PhongMaterial>();
     auto camnode     = make_shared<CameraNode>();
     camera           = make_shared<Camera>();
@@ -170,7 +170,7 @@ void CanvasTest::doRenderFrame()
         if (d_->drawPoint)
         {
             d_->canvas->begin();
-            d_->canvas->drawEllipse(d_->x, d_->y, 50, 50);
+            d_->canvas->drawEllipse(d_->x, d_->y, 50.0f, 50.0f);
             d_->canvas->end();
         }
         d_->canvas->applyFilter();

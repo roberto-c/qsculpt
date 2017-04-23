@@ -101,17 +101,15 @@ bool GpuSubdivisionRenderable::Impl::initializeOcl()
         ResourcesManager mgr;
         std::string      path = mgr.findResourcePath("Subdivision", "cl");
         std::string      kernelSource = core::cl::loadFromFile(path);
-        ::cl::Program::Sources source(
-            1, std::make_pair(kernelSource.c_str(), kernelSource.length()));
-        program = ::cl::Program(oclManager->context(), source);
+        program = ::cl::Program(oclManager->context(), kernelSource);
 		auto options = "-I . -I " + path.substr(0, path.find("Subdivision"));
         program.build(options.c_str());
 
         krnGenerateMesh = ::cl::Kernel(program, "build_mesh");
-        TRACE(trace)
-            << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: "
-            << krnGenerateMesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(
-                   NULL);
+        //TRACE(trace)
+        //    << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: "
+        //    << krnGenerateMesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(
+        //           NULL);
         GpuSubdivisionRenderable::Impl::oclInitialized = true;
         return true;
     }
@@ -314,7 +312,7 @@ void GpuSubdivisionRenderable::Impl::build_mesh(
 
         std::vector<::cl::Memory> list;
         ::cl::Memory              mem(
-            core::cl::get_mem_backing_store(*(surface._d->_triangleOutput)));
+            core::cl::get_mem_backing_store(*(surface._d->_triangleOutput)), true);
         list.push_back(mem);
         clmgr->commandQueue().enqueueAcquireGLObjects(&list);
         this->krnGenerateMesh.setArg(

@@ -63,9 +63,7 @@ int Impl::initialize_ocl(void)
         std::string sourcePath =
             rscMgr.findResourcePath("ParticleSystem", "cl");
         std::string kernelSource = core::cl::loadFromFile(sourcePath);
-        cl::Program::Sources source(
-            1, std::make_pair(kernelSource.c_str(), kernelSource.length()));
-        program = cl::Program(oclManager->context(), source);
+        program = cl::Program(oclManager->context(), kernelSource);
         program.build(oclManager->devices());
 
         krnInit = cl::Kernel(program, "surface_init", &err);

@@ -53,12 +53,13 @@ void AddSurfaceCommand::execute()
         g_pApp->getMainWindow()->toolWidget("DocTree"));
     if (doc && treewdt)
     {
+        auto surf = std::make_shared<Box>();
         QString cmdName = _configContainer->getString("0");
         QString cmdArg1 = _configContainer->getString("1");
         if (cmdArg1.isEmpty())
             cmdArg1 = "Unamed";
         _surface =
-            std::make_shared<SurfaceNode>(new Box, cmdArg1.toStdString());
+            std::make_shared<SurfaceNode>(surf, cmdArg1.toStdString());
         _surface->surface()->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f));
         auto material = std::make_shared<PhongMaterial>();
         _surface->setMaterial(material);
@@ -288,19 +289,17 @@ struct TestCommand::Impl
 {
     Document               doc;
     SceneNode::shared_ptr  root;
-    ISurface*              surf;
+    ISurface::shared_ptr   surf;
     VertexHandle*          vtx;
     Iterator<FaceHandle>   faceIt;
     Iterator<VertexHandle> vtxIt;
 
     Impl()
-        : surf(0)
-        , vtx(0)
+        : vtx(0)
     {
     }
     Impl(const Impl& cpy)
-        : surf(0)
-        , vtx(0)
+        : vtx(0)
     {
     }
 
@@ -310,7 +309,7 @@ struct TestCommand::Impl
 void TestCommand::Impl::setup()
 {
     root                      = SceneNode::shared_ptr(new SceneNode);
-    surf                      = new Subdivision;
+    surf                      = std::make_shared<Subdivision>();
     auto             sceneptr = doc.scene().lock();
     std::vector<int> vertexID;
 

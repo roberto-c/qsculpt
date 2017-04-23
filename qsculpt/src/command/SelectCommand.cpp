@@ -167,7 +167,8 @@ void SelectCommand::mousePressEvent(QMouseEvent* e)
         {
             _rectangle    = std::make_shared<Scene>();
             auto surfnode = std::make_shared<SurfaceNode>();
-            surfnode->setSurface(new Quad());
+			auto quad     = std::make_shared<Quad>();
+            surfnode->setSurface(quad);
             _rectangle->add(surfnode);
         }
     }
