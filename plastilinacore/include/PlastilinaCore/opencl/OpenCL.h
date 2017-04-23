@@ -19,6 +19,13 @@
  ***************************************************************************/
 #pragma once
 
-#define CL_USE_DEPRECATED_OPENCL_2_0_APIS
-#define __CL_ENABLE_EXCEPTIONS
-#include "cl.hpp"
+#define CL_HPP_TARGET_OPENCL_VERSION 200
+#define CL_HPP_MINIMUM_OPENCL_VERSION 120
+#define CL_HPP_ENABLE_EXCEPTIONS
+
+WARNINGS_DISABLE
+#include "cl2.hpp"
+WARNINGS_ENABLE
+
+#include <PlastilinaCore/opencl/CLUtils.h>
+#include <PlastilinaCore/opencl/OCLManager.h>

@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
+#pragma once
 #ifndef qsculpt_Plastilina_h
 #define qsculpt_Plastilina_h
 
@@ -52,6 +52,8 @@
 #endif
 
 #ifdef _MSC_VER
+#define WARNINGS_DISABLE __pragma(warning(push, 0))
+#define WARNINGS_ENABLE __pragma(warning(pop))
 #define THREAD __declspec(thread)
 #define DLLEXPORT
 //#ifdef PLASTILINACORE_EXPORT
@@ -60,6 +62,8 @@
 //#define DLLEXPORT __declspec( dllimport )
 //#endif
 #else
+#define WARNINGS_DISABLE _Pragma("GCC diagnostic push")
+#define WARNINGS_ENABLE _Pragma("GCC diagnostic pop")
 #define THREAD __thread
 #define DLLEXPORT
 #endif
