@@ -26,8 +26,6 @@
 #include <PlastilinaCore/Canvas.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/ResourcesManager.h>
-#include <PlastilinaCore/opencl/CLUtils.h>
-#include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opengl/FrameBufferObject.h>
 #include <PlastilinaCore/opengl/GlslProgram.h>
@@ -387,18 +385,18 @@ void CanvasCL::setup(int w, int h)
 
         std::string            path = mgr.findResourcePath("Canvas", "cl");
         std::string            kernelSource = core::cl::loadFromFile(path);
-        ::cl::Program::Sources source(
-            1, std::make_pair(kernelSource.c_str(), kernelSource.length()));
-        program = ::cl::Program(oclManager->context(), source);
+        //::cl::Program::Sources source(
+        //    1, std::make_pair(kernelSource.c_str(), kernelSource.length()));
+        program = ::cl::Program(oclManager->context(), kernelSource);
         program.build("-I . -I ../share -I ../../share");
 
         drawKernel       = ::cl::Kernel(program, "drawRectangle", &err);
         drawCircleKernel = ::cl::Kernel(program, "drawEllipse", &err);
         inkDropKernel    = ::cl::Kernel(program, "ink_drop", &err);
         inkStepKernel    = ::cl::Kernel(program, "ink_step", &err);
-        TRACE(trace)
-            << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: "
-            << drawKernel.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL);
+        // TRACE(trace)
+        //    << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: "
+        //    << drawKernel.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(NULL);
     }
     catch (::cl::Error err)
     {
@@ -501,13 +499,13 @@ void CanvasCL::applyFilter()
         inkStepKernel.setArg(3, nullptr);
         clmgr->commandQueue().enqueueNDRangeKernel(
             inkStepKernel, ::cl::NullRange, ::cl::NDRange(1280, 720));
-        ::cl::size_t<3> region;
+        std::array<size_t,3> region;
         region[0] = 1280;
         region[1] = 720;
         region[2] = 1;
         clmgr->commandQueue().enqueueCopyImage(clColorImage, clColorBackImage,
-                                               ::cl::size_t<3>(),
-                                               ::cl::size_t<3>(), region);
+                                               std::array<size_t,3>(),
+                                               std::array<size_t,3>(), region);
         clmgr->commandQueue().enqueueReleaseGLObjects(&list);
         clmgr->commandQueue().flush();
     }
