@@ -26,7 +26,7 @@ namespace core
 {
 struct Context::Impl
 {
-    cl::Context                      oclctx;
+    ::cl::Context                      oclctx;
 
 #ifdef HAS_VULKAN
     std::unique_ptr<vulkan::Context> vkCtx;

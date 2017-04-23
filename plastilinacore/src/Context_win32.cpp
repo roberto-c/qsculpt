@@ -92,30 +92,11 @@ void Context::Impl::createVkCtx(const CtxAttributeList& attributes)
 
 bool Context::Impl::attribute(CtxAttribute name, CtxAttribute* value)
 {
-    switch (name)
-    {
-    //            case CTX_ATR_GL_NSVIEW:
-    //                if (value) *value = (CtxAttribute)view;
-    //                break;
-
-    default:
-        return false;
-        break;
-    }
-    return true;
+    return false;
 }
 
 bool Context::Impl::setAttribute(CtxAttribute name, CtxAttribute value)
 {
-    switch (name)
-    {
-    //            case CTX_ATR_GL_NSVIEW:
-    //                view = (NSView*)value;
-    //                break;
-
-    default:
-        return false;
-    }
-    return true;
+    return false;
 }
 };
