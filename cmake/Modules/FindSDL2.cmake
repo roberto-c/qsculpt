@@ -1,5 +1,11 @@
 FIND_PACKAGE(PackageHandleStandardArgs)
 
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(_arch_suffix x64)
+else()
+  set(_arch_suffix x86)
+endif()
+
 find_library(SDL2_LIBRARIES 
     NAMES SDL2 
     DOC "SDL2 library")
