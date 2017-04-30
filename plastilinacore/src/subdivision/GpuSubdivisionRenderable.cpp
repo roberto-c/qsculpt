@@ -316,23 +316,22 @@ void GpuSubdivisionRenderable::Impl::build_mesh(
     try
     {
         CLManager* clmgr = CLManager::instance();
-
         std::vector<::cl::Memory> list;
         cl::Memory              mem(
             get_mem_backing_store(*(surface._d->_triangleOutput)), true);
         list.push_back(mem);
         clmgr->commandQueue().enqueueAcquireGLObjects(&list);
-        this->krnGenerateMesh.setArg(
-            0, sizeof(cl_mem), get_mem_backing_store(*(surface._d->_vertices)));
-        this->krnGenerateMesh.setArg(1, surface._d->_vertices->size());
-        this->krnGenerateMesh.setArg(
-            2, sizeof(cl_mem), get_mem_backing_store(*(surface._d->_edges)));
-        this->krnGenerateMesh.setArg(3, surface._d->_edges->size());
-        this->krnGenerateMesh.setArg(
-            4, sizeof(cl_mem), get_mem_backing_store(*(surface._d->_faces)));
-        this->krnGenerateMesh.setArg(5, surface._d->_faces->size());
+        cl_mem clmem = get_mem_backing_store(*(surface._d->_vertices));
+        this->krnGenerateMesh.setArg(0, sizeof(cl_mem), &clmem);
+        this->krnGenerateMesh.setArg<cl_uint>(1, surface._d->_vertices->size());
+        clmem = get_mem_backing_store(*(surface._d->_edges));
+        this->krnGenerateMesh.setArg(2, sizeof(cl_mem), &clmem);
+        this->krnGenerateMesh.setArg<cl_uint>(3, surface._d->_edges->size());
+        clmem = get_mem_backing_store(*(surface._d->_faces));
+        this->krnGenerateMesh.setArg(4, sizeof(cl_mem), &clmem);
+        this->krnGenerateMesh.setArg<cl_uint>(5, surface._d->_faces->size());
         this->krnGenerateMesh.setArg(6, mem);
-        this->krnGenerateMesh.setArg(7, surface._d->_triangleOutput->size());
+        this->krnGenerateMesh.setArg<cl_uint>(7, surface._d->_triangleOutput->size());
         clmgr->commandQueue().enqueueNDRangeKernel(
             this->krnGenerateMesh, ::cl::NullRange,
             ::cl::NDRange(surface._d->_faces->size()));

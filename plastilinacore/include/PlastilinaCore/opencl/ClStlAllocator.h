@@ -260,7 +260,7 @@ struct gpu_allocator
         if (it != g_poolList.end())
         {
             MemoryPoolGpu* pool = static_cast<MemoryPoolGpu*>(*it);
-            return (cl_mem)pool->clMem();
+            return pool->clMem();
         }
         throw std::runtime_error("opencl backing store not found");
     }
