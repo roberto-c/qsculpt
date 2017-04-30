@@ -6,10 +6,13 @@
 //
 //
 #include <PlastilinaCore/Stable.h>
+#include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 
 #include <iostream>
+
+using namespace core::opencl;
 
 struct CLManager::Impl
 {
@@ -137,7 +140,7 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
         {
             TRACE(error) << "Failed to get platform info";
             TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                         << core::cl::errorToString(e.err())
+                         << errorToString(e.err())
                          << "): " << e.what();
             d->printPlatformInfo(platform);
         }
@@ -256,7 +259,7 @@ bool CLManager::initialize(PlastilinaSubsystem flags)
     catch (cl::Error e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << errorToString(e.err()) << "): " << e.what();
     }
 
     d->initialized = true;

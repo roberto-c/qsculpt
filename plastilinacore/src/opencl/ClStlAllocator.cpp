@@ -18,13 +18,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/opencl/ClStlAllocator.h>
+
+#include <PlastilinaCore/opencl/OpenCL.h>
+
+#include <PlastilinaCore/Logging.h>
 #include <stdlib.h>
 
 namespace core
 {
-namespace cl
+namespace opencl
 {
 
 std::vector<MemoryPool*> g_poolList;

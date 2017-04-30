@@ -163,7 +163,7 @@ void RendererPrivate::renderObject(std::shared_ptr<SceneNode>& node)
     }
 
     mat->shaderProgram()->useProgram();
-    GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
+    GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(FlatVtxStruct));
     glDrawArrays(GL_LINES, 0, numVertices);
 
     vao->unbind();

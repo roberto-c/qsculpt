@@ -21,6 +21,9 @@
 #ifndef qsculpt_Plastilina_h
 #define qsculpt_Plastilina_h
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <exception>
 #include <functional>
 #include <iostream>

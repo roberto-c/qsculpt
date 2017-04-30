@@ -44,6 +44,8 @@
 #include <PlastilinaCore/subdivision/GpuSubdivisionRenderable.h>
 #include <PlastilinaCore/subdivision/Subdivision.h>
 
+using namespace core::opencl;
+
 #ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
@@ -866,13 +868,13 @@ void GpuSubdivision::lock() const
     // acquire gpu memory pointers and update container with valid pointers
     _d->_lock.lock();
     if (_d->_triangleOutput)
-        core::cl::lock_container(*(_d->_triangleOutput));
+        lock_container(*(_d->_triangleOutput));
     if (_d->_vertices)
-        core::cl::lock_container(*(_d->_vertices));
+        lock_container(*(_d->_vertices));
     if (_d->_edges)
-        core::cl::lock_container(*(_d->_edges));
+        lock_container(*(_d->_edges));
     if (_d->_faces)
-        core::cl::lock_container(*(_d->_faces));
+        lock_container(*(_d->_faces));
 }
 
 void GpuSubdivision::unlock() const
@@ -880,17 +882,17 @@ void GpuSubdivision::unlock() const
     // invalidate pointers/submit data to gpu
     // release lock
     if (_d->_faces)
-        core::cl::unlock_container(*(_d->_faces));
+        unlock_container(*(_d->_faces));
     if (_d->_edges)
-        core::cl::unlock_container(*(_d->_edges));
+        unlock_container(*(_d->_edges));
     if (_d->_vertices)
-        core::cl::unlock_container(*(_d->_vertices));
+        unlock_container(*(_d->_vertices));
     // Resize gl buffer if available
     if (_d->_triangleOutput)
     {
         // Resize triangles output to hold the number of faces
         _d->_triangleOutput->resize(_d->_faces->size() * 6);
-        core::cl::unlock_container(*(_d->_triangleOutput));
+        unlock_container(*(_d->_triangleOutput));
     }
     _d->_lock.unlock();
 }

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <PlastilinaCore/BufferObject.h>
+#include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opencl/ClStlAllocator.h>
 #include <PlastilinaCore/subdivision/GpuSubdivision.h>
 
@@ -35,12 +36,12 @@ using core::gpusubdivision::Edge;
 using core::gpusubdivision::Face;
 using core::gpusubdivision::GLVertexData;
 template <class T>
-using vector = std::vector<T, core::cl::gpu_allocator<T>>;
+using vector = std::vector<T, core::opencl::gpu_allocator<T>>;
 
 typedef vector<Vertex> VertexCollection;
 typedef vector<Edge>   EdgesCollection;
 typedef vector<Face>   FacesCollection;
-typedef std::vector<GLVertexData, core::cl::glgpu_allocator<GLVertexData>>
+typedef std::vector<GLVertexData, core::opencl::glgpu_allocator<GLVertexData>>
     GlVertexCollection;
 
 typedef std::pair<Vertex::size_t, Vertex::size_t>       VertexPairKey;

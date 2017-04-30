@@ -14,7 +14,7 @@
 
 namespace core
 {
-namespace cl
+namespace opencl
 {
 DLLEXPORT std::string loadFromFile(const std::string& filename);
 

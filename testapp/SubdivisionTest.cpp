@@ -34,7 +34,7 @@
 using namespace std;
 using core::GpuSubdivision;
 template <class T>
-using gpu_vector = std::vector<T, core::cl::gpu_allocator<T>>;
+using gpu_vector = std::vector<T, core::opencl::gpu_allocator<T>>;
 
 struct SubdivisionTest::Impl
 {
@@ -199,10 +199,10 @@ int SubdivisionTest::Impl::vectorPrimitivesTest()
                            });
     TRACE(info) << "gpu vector<vertex> host write "
                 << std::string(comp ? "PASSED" : "FAILED");
-    core::cl::unlock_container(list);
+    core::opencl::unlock_container(list);
 
     // lock the container for read/write. Reads from device into host
-    core::cl::lock_container(list);
+    core::opencl::lock_container(list);
     // Verify the data is the same
     comp = std::equal(points.begin(), points.end(), list.begin(),
                       [](const cl_float4& i, const Vertex& j) -> bool {

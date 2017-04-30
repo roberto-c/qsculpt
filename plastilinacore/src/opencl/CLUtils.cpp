@@ -15,7 +15,7 @@
 
 namespace core
 {
-namespace cl
+namespace opencl
 {
 std::string loadFromFile(const std::string& filename)
 {

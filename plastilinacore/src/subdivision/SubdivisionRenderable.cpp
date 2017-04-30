@@ -193,7 +193,7 @@ void SubdivisionRenderable::renderObject(RenderState& state) const
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         mat->shaderProgram()->useProgram();
-        GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+        GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(SmoothVtxStruct));
         glDrawArrays(GL_TRIANGLES, 0, numVertices);
     }
     break;
@@ -202,7 +202,7 @@ void SubdivisionRenderable::renderObject(RenderState& state) const
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         mat->shaderProgram()->useProgram();
-        GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+        GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(SmoothVtxStruct));
         glDrawArrays(GL_TRIANGLES, 0, numVertices);
     }
     break;
@@ -210,7 +210,7 @@ void SubdivisionRenderable::renderObject(RenderState& state) const
     {
         mat->shaderProgram()->useProgram();
         glPointSize(3.0f);
-        GLsizei numVertices = vbo->getBufferSize() / sizeof(SmoothVtxStruct);
+        GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(SmoothVtxStruct));
         glDrawArrays(GL_POINTS, 0, numVertices);
     }
 

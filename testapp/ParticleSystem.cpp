@@ -62,7 +62,7 @@ int Impl::initialize_ocl(void)
 
         std::string sourcePath =
             rscMgr.findResourcePath("ParticleSystem", "cl");
-        std::string kernelSource = core::cl::loadFromFile(sourcePath);
+        std::string kernelSource = core::opencl::loadFromFile(sourcePath);
         program = cl::Program(oclManager->context(), kernelSource);
         program.build(oclManager->devices());
 
@@ -77,7 +77,7 @@ int Impl::initialize_ocl(void)
     catch (cl::Error e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << core::opencl::errorToString(e.err()) << "): " << e.what();
     }
 
     return EXIT_SUCCESS;
@@ -221,7 +221,7 @@ void Impl::step(Subdivision* s)
     catch (cl::Error e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << core::opencl::errorToString(e.err()) << "): " << e.what();
     }
 }
 

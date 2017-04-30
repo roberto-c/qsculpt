@@ -15,7 +15,7 @@
 
 namespace core
 {
-namespace cl
+namespace opencl
 {
 
 class MemoryPool

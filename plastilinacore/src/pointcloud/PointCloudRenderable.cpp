@@ -181,7 +181,7 @@ void PointCloudRenderable::renderObject(RenderState& state) const
     {
         mat->shaderProgram()->useProgram();
         glPointSize(8.0f);
-        GLsizei numVertices = vbo->getBufferSize() / sizeof(PointVtxStruct);
+        GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(PointVtxStruct));
         glDrawArrays(GL_POINTS, 0, numVertices);
     }
 

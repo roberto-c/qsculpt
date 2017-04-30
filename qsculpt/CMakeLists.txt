@@ -143,3 +143,21 @@ if (APPLE)
 	target_link_libraries(QSculpt ${FOUNDATION_LIBRARIES})
 	target_link_libraries(QSculpt ${COCOA_LIBRARIES})
 endif(APPLE)
+if(WIN32)
+	add_custom_command(
+		TARGET QSculpt POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			$<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:QSculpt>)
+	add_custom_command(
+		TARGET QSculpt POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			$<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:QSculpt>)
+	add_custom_command(
+		TARGET QSculpt POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			$<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:QSculpt>)
+	add_custom_command(
+		TARGET QSculpt POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			$<TARGET_FILE:Qt5::OpenGL> $<TARGET_FILE_DIR:QSculpt>)
+endif(WIN32)

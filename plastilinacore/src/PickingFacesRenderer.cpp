@@ -160,7 +160,7 @@ void PickingFacesRenderer::renderObject(std::shared_ptr<SceneNode>& node)
         THROW_IF_GLERROR("Failed to get attribute");
     }
     mat->shaderProgram()->useProgram();
-    GLsizei numVertices = vbo->getBufferSize() / sizeof(FlatVtxStruct);
+    GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(FlatVtxStruct));
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
     vao->unbind();

@@ -53,7 +53,7 @@ class DLLEXPORT BufferObject
     /**
      *
      */
-    bool mapBuffer(GLvoid** buffer, GLuint* size);
+    bool mapBuffer(GLvoid** buffer, GLsizeiptr* size);
 
     /**
      *
@@ -63,17 +63,17 @@ class DLLEXPORT BufferObject
     /**
      *
      */
-    int getBufferSize() const { return m_bufferSize; }
+    std::size_t getBufferSize() const { return m_bufferSize; }
 
     /**
      *
      */
-    bool setBufferData(GLvoid* buffer, GLuint size);
+    bool setBufferData(GLvoid* buffer, GLsizeiptr size);
 
     /**
      *
      */
-    bool setBufferSubData(GLint offset, GLuint size, GLvoid* buffer);
+    bool setBufferSubData(GLint offset, GLsizeiptr size, GLvoid* buffer);
 
     // private:
     /**
@@ -102,10 +102,10 @@ class DLLEXPORT BufferObject
      */
     BufferObject(GLenum boTarget = 0);
 
-    GLenum m_boTarget;
-    GLuint m_vboID;      /*< ID of the vertex buffer object */
-    GLuint m_bufferSize; /*< Size of the buffer in bytes? */
-    bool   m_needUpdate; /*< True if the data needs to be updated*/
+    GLenum     m_boTarget;
+    GLuint     m_vboID;      /*< ID of the vertex buffer object */
+    GLsizeiptr m_bufferSize; /*< Size of the buffer in bytes? */
+    bool       m_needUpdate; /*< True if the data needs to be updated*/
 };
 
 inline BufferObject::BufferObject(GLenum boTarget)
@@ -187,7 +187,7 @@ inline bool BufferObject::release()
 /**
  *
  */
-inline bool BufferObject::mapBuffer(GLvoid** buffer, GLuint* size)
+inline bool BufferObject::mapBuffer(GLvoid** buffer, GLsizeiptr* size)
 {
     bool result = false;
 
@@ -236,7 +236,7 @@ inline bool BufferObject::unmapBuffer()
 /**
  *
  */
-inline bool BufferObject::setBufferData(GLvoid* buffer, GLuint size)
+inline bool BufferObject::setBufferData(GLvoid* buffer, GLsizeiptr size)
 {
     bool result = false;
 
@@ -254,7 +254,7 @@ inline bool BufferObject::setBufferData(GLvoid* buffer, GLuint size)
     return result;
 }
 
-inline bool BufferObject::setBufferSubData(GLint offset, GLuint size,
+inline bool BufferObject::setBufferSubData(GLint offset, GLsizeiptr size,
                                            GLvoid* buffer)
 {
     bool result = false;

@@ -33,6 +33,8 @@
 #include <PlastilinaCore/opengl/Texture.h>
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 
+using namespace core::opencl;
+
 struct VtxStruct
 {
     GLfloat v[4];
@@ -282,7 +284,7 @@ void CanvasGL::end()
 {
     shaderProgram.useProgram();
     vertexArrayObject.bind();
-    GLsizei numVertices = vertexBuffer.getBufferSize() / sizeof(VtxStruct);
+    GLsizei numVertices = static_cast<GLsizei>(vertexBuffer.getBufferSize() / sizeof(VtxStruct));
     glDrawArrays(GL_TRIANGLES, 0, numVertices / 2);
     glDrawArrays(GL_LINE_LOOP, numVertices / 2, numVertices / 2);
     glFlush();
@@ -384,7 +386,7 @@ void CanvasCL::setup(int w, int h)
                           GL_TEXTURE_2D, 0, colorBack->oid(), 0);
 
         std::string            path = mgr.findResourcePath("Canvas", "cl");
-        std::string            kernelSource = core::cl::loadFromFile(path);
+        std::string            kernelSource = loadFromFile(path);
         //::cl::Program::Sources source(
         //    1, std::make_pair(kernelSource.c_str(), kernelSource.length()));
         program = ::cl::Program(oclManager->context(), kernelSource);
@@ -448,7 +450,7 @@ void CanvasCL::drawRectangle(float x, float y, float w, float h)
     catch (::cl::Error& e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << errorToString(e.err()) << "): " << e.what();
     }
 }
 
@@ -479,7 +481,7 @@ void CanvasCL::drawEllipse(float x, float y, float w, float h)
     catch (::cl::Error& e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << errorToString(e.err()) << "): " << e.what();
     }
 }
 
@@ -512,7 +514,7 @@ void CanvasCL::applyFilter()
     catch (::cl::Error& e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << errorToString(e.err()) << "): " << e.what();
     }
 }
 

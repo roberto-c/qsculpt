@@ -71,7 +71,7 @@ void CLRender::initialize()
 
         ResourcesManager     mgr;
         std::string          path = mgr.findResourcePath("Render", "cl");
-        std::string          kernelSource = core::cl::loadFromFile(path);
+        std::string          kernelSource = core::opencl::loadFromFile(path);
         d->program = cl::Program(mngr->context(), kernelSource);
         d->program.build();
         d->krnFilterImg = cl::Kernel(d->program, "filter_img");
@@ -79,7 +79,7 @@ void CLRender::initialize()
     catch (cl::Error& e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what()
+                     << core::opencl::errorToString(e.err()) << "): " << e.what()
                      << "\n";
         if (e.err() == CL_BUILD_PROGRAM_FAILURE)
         {
@@ -119,7 +119,7 @@ void CLRender::setGLTexSrc(gl::Texture2D::shared_ptr tex)
     catch (::cl::Error& e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << core::opencl::errorToString(e.err()) << "): " << e.what();
         d->validState = false;
     }
 }
@@ -137,7 +137,7 @@ void CLRender::setGLTexDest(gl::Texture2D::shared_ptr tex)
     catch (::cl::Error& e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << core::opencl::errorToString(e.err()) << "): " << e.what();
         d->validState = false;
     }
 }
@@ -176,6 +176,6 @@ void CLRender::render(float step)
     catch (cl::Error& e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << core::opencl::errorToString(e.err()) << "): " << e.what();
     }
 }

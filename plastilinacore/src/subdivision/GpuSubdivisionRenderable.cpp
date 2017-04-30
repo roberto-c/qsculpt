@@ -32,6 +32,7 @@
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SmoothRenderer.h>
 
+#include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opengl/GlslProgram.h>
@@ -39,6 +40,12 @@
 #include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 #define BO_POOL_NAME "SmoothRendererPool"
+
+using namespace core::opencl;
+using cl::Program;
+using cl::Kernel;
+using Eigen::Vector3f;
+using Eigen::Vector4f;
 
 namespace core
 {
@@ -67,9 +74,9 @@ struct GpuSubdivisionRenderable::Impl
     void build_mesh(const core::GpuSubdivision& surface) const;
 };
 
-bool          GpuSubdivisionRenderable::Impl::oclInitialized = false;
-::cl::Program GpuSubdivisionRenderable::Impl::program;
-::cl::Kernel  GpuSubdivisionRenderable::Impl::krnGenerateMesh;
+bool    GpuSubdivisionRenderable::Impl::oclInitialized = false;
+Program GpuSubdivisionRenderable::Impl::program;
+Kernel  GpuSubdivisionRenderable::Impl::krnGenerateMesh;
 
 GpuSubdivisionRenderable::GpuSubdivisionRenderable(
     const core::GpuSubdivision* surface)
@@ -99,13 +106,13 @@ bool GpuSubdivisionRenderable::Impl::initializeOcl()
     try
     {
         ResourcesManager mgr;
-        std::string      path = mgr.findResourcePath("Subdivision", "cl");
-        std::string      kernelSource = core::cl::loadFromFile(path);
-        program = ::cl::Program(oclManager->context(), kernelSource);
+        std::string  path = mgr.findResourcePath("Subdivision", "cl");
+        std::string  kernelSource = loadFromFile(path);
+        program =    Program(oclManager->context(), kernelSource);
 		auto options = "-I . -I " + path.substr(0, path.find("Subdivision"));
         program.build(options.c_str());
 
-        krnGenerateMesh = ::cl::Kernel(program, "build_mesh");
+        krnGenerateMesh = Kernel(program, "build_mesh");
         //TRACE(trace)
         //    << "CL_KERNEL_COMPILE_WORK_GROUP_SIZE: "
         //    << krnGenerateMesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(
@@ -174,8 +181,8 @@ void GpuSubdivisionRenderable::Impl::renderObject(RenderState& state) const
         if (matId != -1)
             prog->setUniform(matId, camera->projection());
 
-        Eigen::Vector3f p      = t.translation();
-        Eigen::Vector4f camPos = Eigen::Vector4f(p[0], p[1], p[2], 1.0f);
+        Vector3f p      = t.translation();
+        Vector4f camPos = Vector4f(p[0], p[1], p[2], 1.0f);
         matId                  = prog->uniformLocation("eyePosition");
         if (matId != -1)
             prog->setUniform(matId, camPos);
@@ -186,7 +193,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(RenderState& state) const
     if (obj == NULL || mat == NULL)
         return;
 
-    BufferObject* bo = core::cl::get_glbuffer_backing_store(
+    BufferObject* bo = get_glbuffer_backing_store(
         *(this->surface->_d->_triangleOutput));
     VertexBuffer* vbo = static_cast<VertexBuffer*>(bo);
     if (vbo == NULL || vbo->objectID() == 0)
@@ -253,7 +260,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(RenderState& state) const
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         mat->shaderProgram()->useProgram();
-        GLsizei numVertices = vbo->getBufferSize() / sizeof(GLVertexData);
+        GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(GLVertexData));
         glDrawArrays(GL_TRIANGLES, 0, numVertices);
     }
     break;
@@ -262,7 +269,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(RenderState& state) const
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         mat->shaderProgram()->useProgram();
-        GLsizei numVertices = vbo->getBufferSize() / sizeof(GLVertexData);
+        GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(GLVertexData));
         glDrawArrays(GL_TRIANGLES, 0, numVertices);
     }
     break;
@@ -270,7 +277,7 @@ void GpuSubdivisionRenderable::Impl::renderObject(RenderState& state) const
     {
         mat->shaderProgram()->useProgram();
         glPointSize(3.0f);
-        GLsizei numVertices = vbo->getBufferSize() / sizeof(GLVertexData);
+        GLsizei numVertices = static_cast<GLsizei>(vbo->getBufferSize() / sizeof(GLVertexData));
         glDrawArrays(GL_POINTS, 0, numVertices);
     }
 
@@ -311,18 +318,18 @@ void GpuSubdivisionRenderable::Impl::build_mesh(
         CLManager* clmgr = CLManager::instance();
 
         std::vector<::cl::Memory> list;
-        ::cl::Memory              mem(
-            core::cl::get_mem_backing_store(*(surface._d->_triangleOutput)), true);
+        cl::Memory              mem(
+            get_mem_backing_store(*(surface._d->_triangleOutput)), true);
         list.push_back(mem);
         clmgr->commandQueue().enqueueAcquireGLObjects(&list);
         this->krnGenerateMesh.setArg(
-            0, core::cl::get_mem_backing_store(*(surface._d->_vertices)));
+            0, sizeof(cl_mem), get_mem_backing_store(*(surface._d->_vertices)));
         this->krnGenerateMesh.setArg(1, surface._d->_vertices->size());
         this->krnGenerateMesh.setArg(
-            2, core::cl::get_mem_backing_store(*(surface._d->_edges)));
+            2, sizeof(cl_mem), get_mem_backing_store(*(surface._d->_edges)));
         this->krnGenerateMesh.setArg(3, surface._d->_edges->size());
         this->krnGenerateMesh.setArg(
-            4, core::cl::get_mem_backing_store(*(surface._d->_faces)));
+            4, sizeof(cl_mem), get_mem_backing_store(*(surface._d->_faces)));
         this->krnGenerateMesh.setArg(5, surface._d->_faces->size());
         this->krnGenerateMesh.setArg(6, mem);
         this->krnGenerateMesh.setArg(7, surface._d->_triangleOutput->size());
@@ -332,10 +339,10 @@ void GpuSubdivisionRenderable::Impl::build_mesh(
         clmgr->commandQueue().enqueueReleaseGLObjects(&list);
         clmgr->commandQueue().flush();
     }
-    catch (::cl::Error& e)
+    catch (cl::Error& e)
     {
         TRACE(error) << "OpenCL exception:" << e.err() << " ("
-                     << core::cl::errorToString(e.err()) << "): " << e.what();
+                     << errorToString(e.err()) << "): " << e.what();
     }
 }
 
