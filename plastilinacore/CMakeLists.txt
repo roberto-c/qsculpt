@@ -315,11 +315,6 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/share/shaders)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/share)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${PROJECT_BINARY_DIR}/share)
 
-install(TARGETS PlastilinaCore
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib)
-
 if (APPLE)
 	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
 	)
@@ -356,5 +351,5 @@ elseif (WIN32)
 else()
 	Message("Unsupported platform")		
 endif()
-
-
+set_target_properties(PlastilinaCore PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h")
+cotire(PlastilinaCore)

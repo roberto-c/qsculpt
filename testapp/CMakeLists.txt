@@ -118,9 +118,4 @@ file(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${PROJECT_BINARY_DIR}/share)
 get_target_property(RT_OUTPUT PTestApp RUNTIME_OUTPUT_DIRECTORY)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.cfg DESTINATION ${RT_OUTPUT}/Debug)
 
-install(TARGETS PTestApp
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RESOURCE DESTINATION share)
-        
+cotire(PTestApp)
