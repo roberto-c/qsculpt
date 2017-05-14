@@ -18,8 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #pragma once
-#ifndef qsculpt_Plastilina_h
-#define qsculpt_Plastilina_h
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -45,8 +43,6 @@
 #include <Eigen/LU>
 #include <Eigen/StdVector>
 #include <iterator>
-
-#include <GL/glew.h>
 
 #ifdef __OBJC__
 #define OBJC_CLASS(name) @class name
@@ -79,40 +75,9 @@ typedef Affine3f Transform3f;
 #include "PEngineTypes.h"
 
 #include "Variant.h"
-#include "opengl/GlException.h"
 
 #define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
 
-#ifdef PLASTILINA_GL_EXCEPTON_ENABLE
-#define THROW_IF_GLERROR(msg)                                                \
-    {                                                                        \
-        GLenum error = glGetError();                                         \
-        if (error != GL_NO_ERROR)                                            \
-        {                                                                    \
-            throw core::GlException(msg, error);                             \
-        }                                                                    \
-    }
-#else
-#define THROW_IF_GLERROR(msg)
-#endif /* PLASTILINA_GL_EXCEPTON_ENABLE */
-
-#define RET_ON_GLERROR(val)                                                  \
-    {                                                                        \
-        GLenum error = glGetError();                                         \
-        if (error != GL_NO_ERROR)                                            \
-        {                                                                    \
-            return val;                                                      \
-        }                                                                    \
-    }
-
-#define LOG_IF_GLERROR(msg)                                                  \
-    {                                                                        \
-        GLenum error = glGetError();                                         \
-        if (error != GL_NO_ERROR)                                            \
-        {                                                                    \
-            TRACE(error) << "glGetError: " << error << ": " << msg;          \
-        }                                                                    \
-    }
 
 template <typename T>
 inline void hash_combine(std::size_t& seed, const T& v)
@@ -136,62 +101,66 @@ struct hash<pair<S, T>>
 };
 };
 
-#define DECLARE_ENUM_FLAGS_BEGIN(name)                                       \
-    enum class name : unsigned int                                           \
-    {
+#define DECLARE_ENUM_FLAGS_BEGIN(name)  enum class name : unsigned int                                           
+    
 #define DECLARE_ENUM_FLAGS_END(name)                                         \
-    }                                                                        \
-    ;                                                                        \
-    \
-inline name                                                                  \
-    operator~(name lhs)                                                      \
-    {                                                                        \
-        using T = std::underlying_type<name>::type;                          \
-        return name(~static_cast<T>(lhs));                                   \
-    \
-}                                                                     \
-    \
-inline name                                                                  \
-    operator|(name lhs, name rhs)                                            \
-    {                                                                        \
-        using T = std::underlying_type<name>::type;                          \
-        return name(static_cast<T>(lhs) | static_cast<T>(rhs));              \
-    \
-}                                                                     \
-    \
-inline name                                                                  \
-    operator&(name lhs, name rhs)                                            \
-    {                                                                        \
-        using T = std::underlying_type<name>::type;                          \
-        return name(static_cast<T>(lhs) & static_cast<T>(rhs));              \
-    \
-}                                                                     \
-    \
-inline name                                                                  \
-    operator^(name lhs, name rhs)                                            \
-    {                                                                        \
-        using T = std::underlying_type<name>::type;                          \
-        return name(static_cast<T>(lhs) ^ static_cast<T>(rhs));              \
-    \
+inline name operator~(name lhs)                                              \
+{                                                                            \
+    using T = std::underlying_type<name>::type;                              \
+    return name(~static_cast<T>(lhs));                                       \
+}                                                                            \
+                                                                             \
+inline name operator|(name lhs, name rhs)                                    \
+{                                                                            \
+    using T = std::underlying_type<name>::type;                              \
+    return name(static_cast<T>(lhs) | static_cast<T>(rhs));                  \
+}                                                                            \
+                                                                             \
+inline name operator&(name lhs, name rhs)                                    \
+{                                                                            \
+    using T = std::underlying_type<name>::type;                              \
+    return name(static_cast<T>(lhs) & static_cast<T>(rhs));                  \
+}                                                                            \
+                                                                             \
+inline name operator^(name lhs, name rhs)                                    \
+{                                                                            \
+    using T = std::underlying_type<name>::type;                              \
+    return name(static_cast<T>(lhs) ^ static_cast<T>(rhs));                  \
 }
 
-// enum class PlastilinaSubsystem {
 DECLARE_ENUM_FLAGS_BEGIN(PlastilinaSubsystem)
-NONE = 0, OPENGL = 0x0001, OPENCL = 0x0002, ENABLE_CL_GL_SHARING = 0x0004,
-          VULKAN = 0x0008 DECLARE_ENUM_FLAGS_END(PlastilinaSubsystem)
-          //};
+{
+    NONE = 0,
+    OPENGL = 0x0001,
+    OPENCL = 0x0002,
+    ENABLE_CL_GL_SHARING = 0x0004,
+    VULKAN = 0x0008
+};
+DECLARE_ENUM_FLAGS_END(PlastilinaSubsystem)
+          
 
-          DECLARE_ENUM_FLAGS_BEGIN(PlastilinaFeatureBitFlag) NONE = 0,
-          OPENGL = 0x0001, OPENCL = 0x0002, ENABLE_CL_GL_SHARING = 0x0004,
-          VULKAN = 0x0008 DECLARE_ENUM_FLAGS_END(PlastilinaFeatureBitFlag)
+DECLARE_ENUM_FLAGS_BEGIN(PlastilinaFeatureBitFlag)
+{
+    NONE = 0,
+    OPENGL = 0x0001,
+    OPENCL = 0x0002,
+    ENABLE_CL_GL_SHARING = 0x0004,
+    VULKAN = 0x0008
+};
+DECLARE_ENUM_FLAGS_END(PlastilinaFeatureBitFlag)
 
-              namespace core
+namespace core
 {
     class Context;
 
     DECLARE_ENUM_FLAGS_BEGIN(ApiSupported)
-    NONE = 0, OPENGL = 0x0001, OPENCL = 0x0002,
-    VULKAN = 0x0004 DECLARE_ENUM_FLAGS_END(ApiSupported)
+    {
+        NONE = 0,
+        OPENGL = 0x0001,
+        OPENCL = 0x0002,
+        VULKAN = 0x0004
+    };
+    DECLARE_ENUM_FLAGS_END(ApiSupported)
 };
 
 typedef std::map<std::string, core::Variant> AttributeMap;
@@ -214,8 +183,9 @@ class DLLEXPORT PlastilinaEngine
     static core::Context& currentContext();
 
     static bool supportsFeature(PlastilinaFeatureBitFlag flags);
+
+private:
+    class PlatformPriv;
 };
 
 #define ENGINE_NAME u8"PlastilinaCore"
-
-#endif /* qsculpt_Plastilina_h */

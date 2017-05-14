@@ -21,7 +21,7 @@ set(TESTAPP_PRIVATE_HEADERS
 	./ParticleSystem.h
 	./PrimitiveFactory.h
 	./SceneNodeTest.h
-	./stable.h
+	./Stable.h
 	./SubdivisionTest.h
 	./TestApp.h
 	./TestMaterial.h
@@ -118,4 +118,5 @@ file(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${PROJECT_BINARY_DIR}/share)
 get_target_property(RT_OUTPUT PTestApp RUNTIME_OUTPUT_DIRECTORY)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.cfg DESTINATION ${RT_OUTPUT}/Debug)
 
+set_target_properties(PTestApp PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/Stable.h")
 cotire(PTestApp)

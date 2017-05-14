@@ -17,9 +17,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef PlastilinaCore_OpenGL_h
-#define PlastilinaCore_OpenGL_h
+#pragma once
 
 #include <GL/glew.h>
+#include "GlException.h"
 
-#endif
+#ifdef PLASTILINA_GL_EXCEPTON_ENABLE
+#define THROW_IF_GLERROR(msg)                                                \
+    {                                                                        \
+        GLenum error = glGetError();                                         \
+        if (error != GL_NO_ERROR)                                            \
+        {                                                                    \
+            throw core::GlException(msg, error);                             \
+        }                                                                    \
+    }
+#else
+#define THROW_IF_GLERROR(msg)
+#endif /* PLASTILINA_GL_EXCEPTON_ENABLE */
+
+#define RET_ON_GLERROR(val)                                                  \
+    {                                                                        \
+        GLenum error = glGetError();                                         \
+        if (error != GL_NO_ERROR)                                            \
+        {                                                                    \
+            return val;                                                      \
+        }                                                                    \
+    }
+
+#define LOG_IF_GLERROR(msg)                                                  \
+    {                                                                        \
+        GLenum error = glGetError();                                         \
+        if (error != GL_NO_ERROR)                                            \
+        {                                                                    \
+            TRACE(error) << "glGetError: " << error << ": " << msg;          \
+        }                                                                    \
+    }

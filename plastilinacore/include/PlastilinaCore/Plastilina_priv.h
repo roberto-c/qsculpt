@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2016 by Juan Roberto Cabral Flores                      *
+ *   Copyright (C) 2017 by Juan Roberto Cabral Flores                      *
  *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,30 +18,22 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #pragma once
-#ifndef PlastilinaCore_opengl_Object_h
-#define PlastilinaCore_opengl_Object_h
 
-#include <PlastilinaCore/opengl/OpenGL.h>
+#include <boost/program_options.hpp>
 
-namespace gl
+struct PlastilinaEngineState
 {
-template <typename T>
-class Object
-{
-  protected:
-    GLuint oglname_;
+    boost::program_options::options_description optionsDesc;
+    boost::program_options::variables_map       options;
 
-  public:
-    Object()
-        : oglname_(0)
-    {
-        T::create(1, &oglname_);
-    }
-
-    virtual ~Object() { T::destroy(1, &oglname_); }
-
-    GLuint oid() const { return oglname_; }
-};
+    std::shared_ptr<core::Context> defaultctx;
+    std::shared_ptr<core::Context> currentctx;
+    bool                           openclInitialized;
+    bool                           openglInitialized;
+    std::string                    resourcesPath;
+    
+    PlastilinaEngineState();
+    void config_setup();
 };
 
-#endif
+extern PlastilinaEngineState g_engineState;

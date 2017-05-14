@@ -14,10 +14,10 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
-//#include <omp.h>
 
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/opencl/OpenCL.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 
 #include "TestApp.h"
 
@@ -37,7 +37,6 @@ extern "C" int main(int argc, char** argv)
     int errorCode = 0;
     try
     {
-
         TestApp app(argc, argv);
 
         app.run();

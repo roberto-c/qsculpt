@@ -112,12 +112,14 @@ endif()
 
 if (APPLE)
 	set(PLASTILINACORE_SOURCES_OBJCXX ./src/Context_mac.mm)
+	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/Plastilina_mac.cpp)
 	set_source_files_properties(${PLASTILINACORE_SOURCES_OBJCXX} PROPERTIES 
 	                            COMPILE_FLAGS "-x objective-c++")
 elseif(UNIX)
 	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/Context_unix.cpp)
 elseif(WIN32)
 	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/Context_win32.cpp)
+	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/Plastilina_win32.cpp)
 endif()
 
 # Public headers. These headers are meant to be distributed to users of the engine
@@ -178,6 +180,7 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/Picking.h
 	${PLASTILINACORE_HEADERS_ROOT}/PickingFacesRenderer.h
 	${PLASTILINACORE_HEADERS_ROOT}/Plastilina.h
+	${PLASTILINACORE_HEADERS_ROOT}/Plastilina_priv.h
 	${PLASTILINACORE_HEADERS_ROOT}/Point3D.h
 	${PLASTILINACORE_HEADERS_ROOT}/pointcloud/PointCloud.h
 	${PLASTILINACORE_HEADERS_ROOT}/pointcloud/PointCloudRenderable.h

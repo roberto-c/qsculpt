@@ -101,7 +101,7 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
             prop.push_back(CL_GL_CONTEXT_KHR);
             prop.push_back(d->glCtxHnd);
             prop.push_back(CL_WGL_HDC_KHR);
-            prop.push_back(cl_int(d->hdc));
+            prop.push_back(reinterpret_cast<cl_context_properties>(d->hdc));
 #endif
             prop.push_back(0);
 
@@ -217,7 +217,7 @@ bool CLManager::initialize(PlastilinaSubsystem flags)
             prop.push_back(CL_GL_CONTEXT_KHR);
             prop.push_back(d->glCtxHnd);
             prop.push_back(CL_WGL_HDC_KHR);
-            prop.push_back(cl_int(d->hdc));
+            prop.push_back(reinterpret_cast<cl_context_properties>(d->hdc));
 #endif
             auto           glClDevices = devicesForGLContext();
             cl_device_type devType =
