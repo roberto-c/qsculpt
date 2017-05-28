@@ -56,7 +56,6 @@ set(PLASTILINACORE_SOURCES
 	./src/Scene.cpp
 	./src/SceneNode.cpp
 	./src/SmoothRenderer.cpp
-	./src/SpEnums.cpp
 	./src/Stable.cpp
 	./src/subdivision/Box.cpp
 	./src/subdivision/Sphere.cpp
@@ -173,13 +172,13 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/Sampler.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/Texture.h
 	${PLASTILINACORE_HEADERS_ROOT}/opengl/VertexArrayObject.h
-	${PLASTILINACORE_HEADERS_ROOT}/PEngineTypes.h
 	${PLASTILINACORE_HEADERS_ROOT}/physics/Actor.h
 	${PLASTILINACORE_HEADERS_ROOT}/physics/ForceFunctors.h
 	${PLASTILINACORE_HEADERS_ROOT}/physics/SimSystem.h
 	${PLASTILINACORE_HEADERS_ROOT}/Picking.h
 	${PLASTILINACORE_HEADERS_ROOT}/PickingFacesRenderer.h
 	${PLASTILINACORE_HEADERS_ROOT}/Plastilina.h
+	${PLASTILINACORE_HEADERS_ROOT}/PlastilinaDefs.h
 	${PLASTILINACORE_HEADERS_ROOT}/Plastilina_priv.h
 	${PLASTILINACORE_HEADERS_ROOT}/Point3D.h
 	${PLASTILINACORE_HEADERS_ROOT}/pointcloud/PointCloud.h
@@ -193,7 +192,6 @@ set(PLASTILINACORE_PUBLIC_HEADERS
 	${PLASTILINACORE_HEADERS_ROOT}/Scene.h
 	${PLASTILINACORE_HEADERS_ROOT}/SceneNode.h
 	${PLASTILINACORE_HEADERS_ROOT}/SmoothRenderer.h
-	${PLASTILINACORE_HEADERS_ROOT}/SpEnums.h
 	${PLASTILINACORE_HEADERS_ROOT}/Stable.h
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/Box.h
 	${PLASTILINACORE_HEADERS_ROOT}/subdivision/Sphere.h

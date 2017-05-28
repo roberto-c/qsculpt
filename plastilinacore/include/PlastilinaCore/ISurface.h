@@ -24,7 +24,6 @@
 #include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/IIterator.h>
 #include <PlastilinaCore/Point3D.h>
-#include <PlastilinaCore/SpEnums.h>
 #include <PlastilinaCore/Vertex.h>
 #include <PlastilinaCore/geometry/Aabb.h>
 

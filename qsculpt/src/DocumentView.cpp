@@ -110,13 +110,13 @@ void DocumentView::createWidgets()
     _d->_viewPerspective->setCurrentIndex(7);
     _d->_display->setPerspectiveView(GlCanvas::CameraView);
 
-    _d->_drawingMode->addItem("Points", Points);
-    _d->_drawingMode->addItem("Wireframe", Wireframe);
-    _d->_drawingMode->addItem("Flat", Flat);
-    _d->_drawingMode->addItem("Smooth", Smooth);
-    _d->_drawingMode->addItem("Textured", Texture);
+    _d->_drawingMode->addItem("Points", static_cast<int>(DrawingMode::Points));
+    _d->_drawingMode->addItem("Wireframe", static_cast<int>(DrawingMode::Wireframe));
+    _d->_drawingMode->addItem("Flat", static_cast<int>(DrawingMode::Flat));
+    _d->_drawingMode->addItem("Smooth", static_cast<int>(DrawingMode::Smooth));
+    _d->_drawingMode->addItem("Textured", static_cast<int>(DrawingMode::Texture));
     _d->_drawingMode->setCurrentIndex(2);
-    _d->_display->setDrawingMode(Flat);
+    _d->_display->setDrawingMode(DrawingMode::Flat);
 
     connect(_d->_viewPerspective, SIGNAL(currentIndexChanged(int)), this,
             SLOT(viewPerspectiveChanged(int)));

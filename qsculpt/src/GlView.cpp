@@ -104,7 +104,7 @@ struct GlCanvas::Impl
         , selectBuffer(NULL)
         , aspectRatio(1.0)
         , viewType(Front)
-        , drawingMode(Points)
+        , drawingMode(DrawingMode::Points)
         , renderer(NULL)
         , selectionRenderer(NULL)
         , editVertexRenderer(NULL)
@@ -119,10 +119,10 @@ struct GlCanvas::Impl
         renderer = RendererFactory::getRenderer(drawingMode);
 
         // Type of renderer used for user object picking
-        selectionRenderer = RendererFactory::getRenderer(Points);
+        selectionRenderer = RendererFactory::getRenderer(DrawingMode::Points);
 
         // Type of renderer used for vertex edition mode
-        editVertexRenderer = RendererFactory::getRenderer(Points);
+        editVertexRenderer = RendererFactory::getRenderer(DrawingMode::Points);
 
         selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
 

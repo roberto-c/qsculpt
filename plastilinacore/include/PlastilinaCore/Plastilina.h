@@ -19,6 +19,9 @@
  ***************************************************************************/
 #pragma once
 
+// Global definitions
+#include "PlastilinaDefs.h"
+
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -44,40 +47,17 @@
 #include <Eigen/StdVector>
 #include <iterator>
 
-#ifdef __OBJC__
-#define OBJC_CLASS(name) @class name
-#else
-#define OBJC_CLASS(name) typedef struct objc_object name
-#endif
-
-#ifdef _MSC_VER
-#define WARNINGS_DISABLE __pragma(warning(push, 0))
-#define WARNINGS_ENABLE __pragma(warning(pop))
-#define THREAD __declspec(thread)
-#define DLLEXPORT
-//#ifdef PLASTILINACORE_EXPORT
-//#define DLLEXPORT __declspec( dllexport )
-//#else
-//#define DLLEXPORT __declspec( dllimport )
-//#endif
-#else
-#define WARNINGS_DISABLE _Pragma("GCC diagnostic push")
-#define WARNINGS_ENABLE _Pragma("GCC diagnostic pop")
-#define THREAD __thread
-#define DLLEXPORT
-#endif
 
 namespace Eigen
 {
 typedef Affine3f Transform3f;
 };
 
-#include "PEngineTypes.h"
-
+namespace core
+{
+typedef unsigned int IID;
+};
 #include "Variant.h"
-
-#define NOT_IMPLEMENTED throw std::runtime_error("Not implemented");
-
 
 template <typename T>
 inline void hash_combine(std::size_t& seed, const T& v)
@@ -164,6 +144,19 @@ namespace core
 };
 
 typedef std::map<std::string, core::Variant> AttributeMap;
+
+/**
+ * @enum DrawingMode
+ * Different modes for drawing a object.
+ */
+enum class DrawingMode
+{
+    Points = 0,
+    Wireframe,
+    Flat,
+    Smooth,
+    Texture
+};
 
 class DLLEXPORT PlastilinaEngine
 {

@@ -17,14 +17,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef GLDISPLAY_H
-#define GLDISPLAY_H
+#pragma once
 
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/Scene.h>
-#include <PlastilinaCore/SpEnums.h>
 #include <PlastilinaCore/opengl/OpenGL.h>
 #include <QtCore/QPoint>
 #include <QtCore/QVector>
@@ -408,5 +406,3 @@ class GlCanvas : public QOpenGLWidget
     struct Impl;
     QScopedPointer<Impl> _d;
 };
-
-#endif
