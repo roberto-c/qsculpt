@@ -352,5 +352,7 @@ elseif (WIN32)
 else()
 	Message("Unsupported platform")		
 endif()
-set_target_properties(PlastilinaCore PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h")
+set_target_properties(PlastilinaCore PROPERTIES 
+	COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h"
+	COTIRE_ADD_UNITY_BUILD False)
 cotire(PlastilinaCore)
