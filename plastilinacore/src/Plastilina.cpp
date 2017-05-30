@@ -31,11 +31,6 @@
 #include <PlastilinaCore/vulkan/Vulkan.h>
 #endif
 
-
-// forward declarations
-void Plastilina_intializeOptions(const std::string& filepath);
-
-
 namespace po = boost::program_options;
 
 PlastilinaEngineState::PlastilinaEngineState()
@@ -51,14 +46,26 @@ void PlastilinaEngineState::config_setup()
     using namespace core::utils;
     vector<string> default_search_dirs = {get_app_path()};
 
-    optionsDesc.add_options()("resourcesdir",
-                              po::value<vector<string>>()->default_value(
-                                  default_search_dirs, get_app_path()),
-                              "path used to load all resources")(
-        "verbosity",
-        po::value<boost::log::trivial::severity_level>()->default_value(
-            boost::log::trivial::info),
-        "verbosity level to print");
+    vector<string> defaultRendering  = {string("OpenGL")};
+    vector<string> defaultSubsystems = {string("Video")};
+    optionsDesc.add_options()
+        // PlastilinaCore section
+        ("PlastilinaCore.RenderEngine",
+         po::value<vector<string>>()->default_value(defaultRendering,
+                                                    "OpenGL"),
+         "Render engine to use.")(
+            "PlastilinaCore.EnableSubsystems",
+            po::value<vector<string>>()->default_value(defaultSubsystems,
+                                                       "Video"),
+            "Which subsystems to initalize. Video, Audio, Physics.")(
+            "PlastilinaCore.ResourcesDir",
+            po::value<vector<string>>()->default_value(default_search_dirs,
+                                                       get_app_path()),
+            "path used to load all resources")(
+            "PlastilinaCore.Verbosity", po::value<int>()->default_value(2),
+            "verbosity level to print")
+        // Vulkan section
+        ;
 }
 
 PlastilinaEngineState g_engineState;
@@ -68,8 +75,20 @@ bool PlastilinaEngine::initializeWithAttributes(AttributeMap attr)
     return false;
 }
 
-bool PlastilinaEngine::initializeFromCommandLine(int argc, const char** athv)
+bool PlastilinaEngine::initializeFromCommandLine(int argc, char** argv)
 {
+    try
+    {
+        po::parsed_options parsed =
+            po::command_line_parser(argc, argv).options(g_engineState.optionsDesc).allow_unregistered().run();
+        po::store(parsed, g_engineState.options);
+        po::notify(g_engineState.options);
+        return true;
+    }
+    catch (std::exception& e)
+    {
+        TRACE(error) << "Failed to parse options: " << e.what();
+    }
     return false;
 }
 
@@ -77,16 +96,9 @@ bool PlastilinaEngine::initializeFromConfigFile(const std::string& filepath)
 {
     try
     {
-        Plastilina_intializeOptions(filepath);
-        // if (g_engineState.options.count("verbosity") > 0) {
-        //    TRACE(info) << "verbosity: " <<
-        //    g_engineState.options["verbosity"].as<boost::log::trivial::severity_level>();
-        //}
-        for (auto it : g_engineState.options)
-        {
-            TRACE(info) << "Name: " << it.first;
-        }
-
+        po::store(po::parse_config_file<char>(filepath.c_str(), g_engineState.optionsDesc),
+                  g_engineState.options);
+        po::notify(g_engineState.options);
         return true;
     }
     catch (std::exception& e)
@@ -97,7 +109,10 @@ bool PlastilinaEngine::initializeFromConfigFile(const std::string& filepath)
     return false;
 }
 
-bool PlastilinaEngine::shutdown() { return true; }
+bool PlastilinaEngine::shutdown() 
+{ 
+    return true;
+}
 
 void PlastilinaEngine::setCurrentContext(std::shared_ptr<core::Context>& ctx)
 {
@@ -111,4 +126,9 @@ core::Context& PlastilinaEngine::currentContext()
         throw std::runtime_error("No current context set");
     }
     return *g_engineState.currentctx;
+}
+
+core::variables_map PlastilinaEngine::options()
+{
+    return g_engineState.options;
 }

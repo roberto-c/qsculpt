@@ -47,6 +47,12 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
     ResourcesManager::addResourcesDirectory(core::utils::get_app_path());
     ResourcesManager::addResourcesDirectory(".");
 
+    auto options = PlastilinaEngine::options();
+    // Set Resources search directories
+    for (auto path : (options["PlastilinaCore.ResourcesDir"].as<std::vector<std::string>>()))
+    {
+        ResourcesManager::addResourcesDirectory(path);
+    }
     auto platforms = core::getPlatformList();
     for (auto& platform : platforms)
     {
@@ -67,7 +73,7 @@ bool PlastilinaEngine::initialize(PlastilinaSubsystem subsystem)
         {
             throw core::GlException("Failed to initialize GLEW", glewerror);
         }
-        // clear glError g=flags
+        // clear glError flags
         glewerror = glGetError();
         if (glewerror != GL_NO_ERROR)
         {

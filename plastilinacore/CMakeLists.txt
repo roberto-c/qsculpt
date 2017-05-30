@@ -44,7 +44,6 @@ set(PLASTILINACORE_SOURCES
 	./src/PickingFacesRenderer.cpp
 	./src/Plane.cpp
 	./src/Plastilina.cpp
-	./src/PlastilinaOptions.cpp
 	./src/pointcloud/PointCloud.cpp
 	./src/pointcloud/PointCloudRenderable.cpp
 	./src/PointRenderer.cpp

@@ -47,6 +47,7 @@
 #include <Eigen/StdVector>
 #include <iterator>
 
+#include <boost/program_options.hpp>
 
 namespace Eigen
 {
@@ -56,6 +57,8 @@ typedef Affine3f Transform3f;
 namespace core
 {
 typedef unsigned int IID;
+
+typedef boost::program_options::variables_map variables_map;
 };
 #include "Variant.h"
 
@@ -165,11 +168,13 @@ class DLLEXPORT PlastilinaEngine
 
     static bool initializeWithAttributes(AttributeMap attr);
 
-    static bool initializeFromCommandLine(int argc, const char** athv);
+    static bool initializeFromCommandLine(int argc, char** athv);
 
     static bool initializeFromConfigFile(const std::string& filepath);
 
     static bool shutdown();
+
+    static core::variables_map options();
 
     static void setCurrentContext(std::shared_ptr<core::Context>& ctx);
 
