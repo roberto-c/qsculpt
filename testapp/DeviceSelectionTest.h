@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2016 by Juan Roberto Cabral Flores                      *
+ *   Copyright (C) 2017 by Juan Roberto Cabral Flores                      *
  *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,39 +17,72 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include <PlastilinaCore/Stable.h>
+#pragma once
+
+#include "Stable.h"
 #include <PlastilinaCore/IDevice.h>
-
 #include <PlastilinaCore/opengl/GlDevice.h>
-
-#ifdef HAS_VULKAN
 #include <PlastilinaCore/vulkan/VkDevice.h>
-#include <PlastilinaCore/vulkan/Vulkan.h>
-#endif
+#include "BaseTest.h"
 
-namespace core
+class DeviceSelectionTest : public BaseTest
 {
 
-core::PlatformList getPlatformList()
-{
-    using namespace std;
+  public:
+    DeviceSelectionTest();
 
-    auto list = core::PlatformList();
+    virtual ~DeviceSelectionTest();
 
-    if (gl::GlPlatform::isSupported())
-    {
-        unique_ptr<IPlatform> platform = make_unique<gl::GlPlatform>();
-        list.push_back(move(platform));
-    }
+  protected:
+    virtual void doSetup();
 
-#ifdef HAS_VULKAN
-    if (vulkan::VkPlatform::isSupported())
-    {
-        unique_ptr<IPlatform> platform = make_unique<vulkan::VkPlatform>();
-        list.push_back(move(platform));
-    }
-#endif
+    virtual void doRun();
 
-    return list;
-}
+    virtual void doShutdown();
+
+  private:
+    Eigen::IOFormat octaveFmt;
 };
+
+inline DeviceSelectionTest::DeviceSelectionTest()
+    : BaseTest("DeviceSelectionTest")
+    , octaveFmt(Eigen::StreamPrecision, 0, ", ", ";\n", "", "", "[", "]")
+{
+}
+
+inline DeviceSelectionTest::~DeviceSelectionTest() {}
+
+inline void DeviceSelectionTest::doSetup() 
+{
+    TRACE(info) << "setup";
+}
+
+inline void DeviceSelectionTest::doRun()
+{
+    TRACE(info) << "run";
+    auto platforms = core::getPlatformList();
+    for (auto& platform : platforms)
+    {
+        if (!platform)
+        {
+            continue;
+        }
+        auto devices = platform->deviceList();
+        for (auto& device : devices)
+        {
+            if (!device)
+            {
+                continue;
+            }
+            TRACE(info) << "Device API type:" << (uint32_t)device->api();
+            TRACE(info) << "Device name:" << device->name();
+            TRACE(info) << "Device vendor:" << device->vendor();
+            TRACE(info) << "Device driver string:" << device->driverString();
+        }
+    }
+}
+
+inline void DeviceSelectionTest::doShutdown() 
+{ 
+    TRACE(info) << "shutdown"; 
+}

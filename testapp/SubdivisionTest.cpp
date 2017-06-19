@@ -331,14 +331,15 @@ void SubdivisionTest::doRenderFrame()
         float aspect_ratio = float(w / 2) / float(h);
         d_->camera->setViewport(0, 0, w / 2, h);
         glViewport(0, 0, w / 2, h);
-        // d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio, 10 *
-        // aspect_ratio, -1000, 1000);
+        d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio, 10 *
+            aspect_ratio, -1000, 1000);
         d_->scene->render();
         d_->camera->setViewport(w / 2, 0, w / 2, h);
         glViewport(w / 2, 0, w / 2, h);
-        // d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio, 10 *
-        // aspect_ratio, -1000, 1000);
+        d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio, 10 *
+            aspect_ratio, -1000, 1000);
         d_->scene->render();
+        glViewport(0, 0, w, h);
     }
 }
 

@@ -24,15 +24,17 @@
 #include <PlastilinaCore/opengl/GlslProgram.h>
 #include <atomic>
 
-static std::atomic_int NEXT_ID;
 
 struct Material::Impl
 {
-    int         id;
-    GlslProgram shaderProgram;
+    static std::atomic_int NEXT_ID;
+    int                    id;
+    GlslProgram            shaderProgram;
 
     Impl() { id = NEXT_ID++; }
 };
+
+std::atomic_int Material::Impl::NEXT_ID;
 
 Material::Material()
     : d_(new Impl)

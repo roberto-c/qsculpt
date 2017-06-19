@@ -164,10 +164,6 @@ enum class DrawingMode
 class DLLEXPORT PlastilinaEngine
 {
   public:
-    static bool initialize(PlastilinaSubsystem subsystem);
-
-    static bool initializeWithAttributes(AttributeMap attr);
-
     static bool initializeFromCommandLine(int argc, char** athv);
 
     static bool initializeFromConfigFile(const std::string& filepath);

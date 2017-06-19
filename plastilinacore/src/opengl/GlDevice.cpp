@@ -26,7 +26,7 @@
 
 namespace gl
 {
-GlDevice::GlDevice(std::string vendor, std::string name,
+Device::Device(std::string vendor, std::string name,
                    std::string driverString)
     : vendor_(vendor)
     , name_(name)
@@ -34,20 +34,20 @@ GlDevice::GlDevice(std::string vendor, std::string name,
 {
 }
 
-GlDevice::~GlDevice() {}
+Device::~Device() {}
 
-core::ApiSupported GlDevice::api() const
+core::ApiSupported Device::api() const
 {
     return core::ApiSupported::OPENGL;
 }
 
-std::string GlDevice::vendor() const { return vendor_; }
+std::string Device::vendor() const { return vendor_; }
 
-std::string GlDevice::name() const { return name_; }
+std::string Device::name() const { return name_; }
 
-std::string GlDevice::driverString() const { return driverString_; }
+std::string Device::driverString() const { return driverString_; }
 
-core::Variant GlDevice::attribute(const std::string& name) const
+core::Variant Device::attribute(const std::string& name) const
 {
     return "";
 }
@@ -62,14 +62,14 @@ core::DeviceList GlPlatform::deviceList(DeviceFilter filter) const
 
     auto                      vendorStr   = glGetString(GL_VENDOR);
     auto                      rendererStr = glGetString(GL_RENDERER);
-    unique_ptr<core::IDevice> device      = make_unique<GlDevice>(
+    unique_ptr<core::IDevice> device      = make_unique<Device>(
         string((const char*)vendorStr), string((const char*)rendererStr));
     auto list = core::DeviceList();
     list.push_back(std::move(device));
     return list;
 }
 
-bool GlPlatform::isSupported() const
+bool GlPlatform::isSupported()
 {
     try
     {

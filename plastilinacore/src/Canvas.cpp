@@ -346,18 +346,22 @@ void CanvasCL::setup(int w, int h)
         throw std::bad_alloc();
     }
 
+    std::vector<uint32_t> colorBuffer;
+    colorBuffer.resize(w*h, 0x000000FF);
     color->bind();
     color->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     color->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     color->texImage2D(0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                      nullptr);
+                      colorBuffer.data());
 
     colorBack->bind();
     colorBack->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     colorBack->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     colorBack->texImage2D(0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                          nullptr);
+                          colorBuffer.data());
 
+    std::vector<GLfloat> depthBuffer;
+    depthBuffer.resize(w*h, 0.0f);
     depth->bind();
     depth->setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     depth->setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -366,7 +370,7 @@ void CanvasCL::setup(int w, int h)
     depth->setParameter(GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
     depth->setParameter(GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     depth->texImage2D(0, GL_DEPTH_COMPONENT, w, h, 0, GL_DEPTH_COMPONENT,
-                      GL_FLOAT, nullptr);
+                      GL_FLOAT, depthBuffer.data());
 
     cl_int err = CL_SUCCESS;
 
@@ -387,8 +391,6 @@ void CanvasCL::setup(int w, int h)
 
         std::string            path = mgr.findResourcePath("Canvas", "cl");
         std::string            kernelSource = loadFromFile(path);
-        //::cl::Program::Sources source(
-        //    1, std::make_pair(kernelSource.c_str(), kernelSource.length()));
         program = ::cl::Program(oclManager->context(), kernelSource);
         program.build("-I . -I ../share -I ../../share");
 

@@ -17,6 +17,7 @@ set(TESTAPP_PRIVATE_HEADERS
 	./CameraTest.h
 	./CanvasTest.h
 	./CLRender.h
+	./DeviceSelectionTest.h
 	./DocumentModelTest.h
 	./ParticleSystem.h
 	./PrimitiveFactory.h
@@ -118,5 +119,7 @@ file(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${PROJECT_BINARY_DIR}/share)
 get_target_property(RT_OUTPUT PTestApp RUNTIME_OUTPUT_DIRECTORY)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.cfg DESTINATION ${RT_OUTPUT}/Debug)
 
-set_target_properties(PTestApp PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/Stable.h")
+set_target_properties(PTestApp PROPERTIES
+    COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/Stable.h"
+	COTIRE_ADD_UNITY_BUILD False)
 cotire(PTestApp)

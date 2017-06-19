@@ -76,8 +76,6 @@ int main(int argc, char** argv)
         vector<string> default_search_dirs = {core::utils::get_app_path()};
         // Declare the supported options.
         optionsDesc.add_options()("help", "produce help message")(
-            "interactive", po::value<bool>()->default_value(true),
-            "True to run interactive test bed. False to run automated tests")(
             "resourcesdir",
             po::value<vector<string>>()->default_value(
                 default_search_dirs, core::utils::get_app_path()),
@@ -93,8 +91,8 @@ int main(int argc, char** argv)
         }
 
         // Set Resources search directories
-        for (auto path :
-             (options["resourcesdir"].as<std::vector<std::string>>()))
+        auto pathList = options["resourcesdir"].as<std::vector<std::string>>();
+        for (auto path : pathList)
         {
             ResourcesManager::addResourcesDirectory(path);
         }

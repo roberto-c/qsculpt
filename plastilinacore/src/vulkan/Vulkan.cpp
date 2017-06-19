@@ -33,7 +33,9 @@ union vkVersion {
     } fields;
 };
 
-vk::Instance vulkan::getVkAppInstance()
+namespace vulkan
+{
+vk::Instance getVkAppInstance()
 {
     if (gVkInstance)
     {
@@ -50,6 +52,25 @@ vk::Instance vulkan::getVkAppInstance()
     appInfo.applicationVersion = 0x01000000;
     appInfo.engineVersion      = ENGINE_VERSION;
     appInfo.pApplicationName   = u8"Unknown App";
+    std::vector<const char*> enabledExtensions = {
+            VK_KHR_SURFACE_EXTENSION_NAME };
+        // Enable surface extensions depending on os
+#if defined(_WIN32)
+        enabledExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#elif defined(__ANDROID__)
+        enabledExtensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+#elif defined(__linux__)
+        enabledExtensions.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
+#endif
+    if (enabledExtensions.size() > 0)
+    {
+        createInfo.enabledExtensionCount =
+            (uint32_t)enabledExtensions.size();
+        createInfo.ppEnabledExtensionNames =
+            enabledExtensions.data();
+    }
     gVkInstance                = vk::createInstance(createInfo);
     return gVkInstance;
+}
+
 }

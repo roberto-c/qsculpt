@@ -161,5 +161,7 @@ if(WIN32)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
 			$<TARGET_FILE:Qt5::OpenGL> $<TARGET_FILE_DIR:QSculpt>)
 endif(WIN32)
-set_target_properties(QSculpt PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h")
+set_target_properties(QSculpt PROPERTIES
+    COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h"
+	COTIRE_ADD_UNITY_BUILD False)
 cotire(QSculpt)

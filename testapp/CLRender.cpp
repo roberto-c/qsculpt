@@ -49,12 +49,7 @@ CLRender::~CLRender()
 
 void CLRender::initialize()
 {
-    if (!CLManager::instance()->initialize())
-    {
-        std::cerr << "Error: Failed to initialize OpenCL\n";
-        throw std::runtime_error("Failed to initialize OpenCL");
-    }
-    CLManager* mngr = CLManager::instance();
+    CLManager* clmgr = CLManager::instance();
 
     try
     {
@@ -62,17 +57,17 @@ void CLRender::initialize()
         format.image_channel_order     = CL_RGBA;
         format.image_channel_data_type = CL_UNSIGNED_INT8;
 
-        d->imageInp = cl::Buffer(mngr->context(),
+        d->imageInp = cl::Buffer(clmgr->context(),
                                  CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
                                  d->buffer.size(), d->buffer.data());
-        d->imageOut = cl::Buffer(mngr->context(),
+        d->imageOut = cl::Buffer(clmgr->context(),
                                  CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
                                  d->bufferOut.size(), d->bufferOut.data());
 
         ResourcesManager     mgr;
         std::string          path = mgr.findResourcePath("Render", "cl");
         std::string          kernelSource = core::opencl::loadFromFile(path);
-        d->program = cl::Program(mngr->context(), kernelSource);
+        d->program = cl::Program(clmgr->context(), kernelSource);
         d->program.build();
         d->krnFilterImg = cl::Kernel(d->program, "filter_img");
     }
@@ -84,7 +79,7 @@ void CLRender::initialize()
         if (e.err() == CL_BUILD_PROGRAM_FAILURE)
         {
             std::string buildlog;
-            d->program.getBuildInfo(mngr->devices()[0], CL_PROGRAM_BUILD_LOG,
+            d->program.getBuildInfo(clmgr->devices()[0], CL_PROGRAM_BUILD_LOG,
                                     &buildlog);
             TRACE(error) << "Build log: " << buildlog << std::endl;
         }

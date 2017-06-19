@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 by Juan R Cabral                                   *
+ *   Copyright (C) 2017 by Juan Roberto Cabral Flores                      *
  *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,30 +18,5 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <PlastilinaCore/Stable.h>
-#include <PlastilinaCore/Context.h>
-#include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/opengl/Context.h>
-#include <PlastilinaCore/vulkan/Context.h>
 
-namespace core
-{
-
-IGraphicsContext * IGraphicsContext::createGraphicsContext(GraphicsContextCreateInfo & createInfo)
-{
-    switch (createInfo.contextType)
-    {
-    case core::ContextType::OpenGL:
-        {
-            gl::Context * ctx = new gl::Context(createInfo);
-            return ctx;
-        }
-    }
-    return nullptr;
-}
-
-void IGraphicsContext::destroyGraphicsContext(IGraphicsContext * ctx)
-{
-    delete ctx;
-}
-
-}

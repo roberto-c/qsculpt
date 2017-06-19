@@ -70,11 +70,6 @@ void PlastilinaEngineState::config_setup()
 
 PlastilinaEngineState g_engineState;
 
-bool PlastilinaEngine::initializeWithAttributes(AttributeMap attr)
-{
-    return false;
-}
-
 bool PlastilinaEngine::initializeFromCommandLine(int argc, char** argv)
 {
     try
@@ -83,6 +78,12 @@ bool PlastilinaEngine::initializeFromCommandLine(int argc, char** argv)
             po::command_line_parser(argc, argv).options(g_engineState.optionsDesc).allow_unregistered().run();
         po::store(parsed, g_engineState.options);
         po::notify(g_engineState.options);
+
+        // Set Resources search directories
+        for (auto path : (g_engineState.options["PlastilinaCore.ResourcesDir"].as<std::vector<std::string>>()))
+        {
+            ResourcesManager::addResourcesDirectory(path);
+        }
         return true;
     }
     catch (std::exception& e)
@@ -99,6 +100,12 @@ bool PlastilinaEngine::initializeFromConfigFile(const std::string& filepath)
         po::store(po::parse_config_file<char>(filepath.c_str(), g_engineState.optionsDesc),
                   g_engineState.options);
         po::notify(g_engineState.options);
+        
+        // Set Resources search directories
+        for (auto path : (g_engineState.options["PlastilinaCore.ResourcesDir"].as<std::vector<std::string>>()))
+        {
+            ResourcesManager::addResourcesDirectory(path);
+        }
         return true;
     }
     catch (std::exception& e)

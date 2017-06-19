@@ -20,6 +20,9 @@
 #pragma once
 
 #include <GL/glew.h>
+#ifdef WIN32
+#include <GL/wglew.h>
+#endif
 #include "GlException.h"
 
 #ifdef PLASTILINA_GL_EXCEPTON_ENABLE

@@ -24,37 +24,35 @@
 
 #include <sstream>
 
-vulkan::VkDevice::VkDevice(std::string vendor, std::string name,
-                           std::string driverString)
+namespace vulkan
+{
+Device::Device(std::string vendor, std::string name, std::string driverString)
     : vendor_(vendor)
     , name_(name)
     , driverString_(driverString)
 {
 }
 
-vulkan::VkDevice::~VkDevice() {}
+Device::~Device() {}
 
-core::ApiSupported vulkan::VkDevice::api() const
-{
-    return core::ApiSupported::VULKAN;
-}
+core::ApiSupported Device::api() const { return core::ApiSupported::VULKAN; }
 
-std::string vulkan::VkDevice::vendor() const { return vendor_; }
+std::string Device::vendor() const { return vendor_; }
 
-std::string vulkan::VkDevice::name() const { return name_; }
+std::string Device::name() const { return name_; }
 
-std::string vulkan::VkDevice::driverString() const { return driverString_; }
+std::string Device::driverString() const { return driverString_; }
 
-core::Variant vulkan::VkDevice::attribute(const std::string& name) const
+core::Variant Device::attribute(const std::string& name) const
 {
     return core::Variant();
 }
 
-vulkan::VkPlatform::VkPlatform() {}
+VkPlatform::VkPlatform() {}
 
-vulkan::VkPlatform::~VkPlatform() {}
+VkPlatform::~VkPlatform() {}
 
-bool vulkan::VkPlatform::isSupported() const
+bool VkPlatform::isSupported()
 {
     try
     {
@@ -70,24 +68,32 @@ bool vulkan::VkPlatform::isSupported() const
     return false;
 }
 
-core::DeviceList vulkan::VkPlatform::deviceList(DeviceFilter filter) const
+core::DeviceList VkPlatform::deviceList(DeviceFilter filter) const
 {
     using namespace std;
 
     auto list     = core::DeviceList();
-    auto instance = vulkan::getVkAppInstance();
-    if (instance)
+    try
     {
-        auto devices = instance.enumeratePhysicalDevices();
-        for (auto& device : devices)
+        auto instance = vulkan::getVkAppInstance();
+        if (instance)
         {
-            auto         props = device.getProperties();
-            stringstream vendor;
-            vendor << hex << props.vendorID << dec;
-            unique_ptr<core::IDevice> dev = make_unique<VkDevice>(
-                vendor.str(), string((const char*)props.deviceName));
-            list.push_back(std::move(dev));
+            auto devices = instance.enumeratePhysicalDevices();
+            for (auto& device : devices)
+            {
+                auto         props = device.getProperties();
+                stringstream vendor;
+                vendor << hex << props.vendorID << dec;
+                unique_ptr<core::IDevice> dev = make_unique<Device>(
+                    vendor.str(), string((const char*)props.deviceName));
+                list.push_back(std::move(dev));
+            }
         }
     }
+    catch (const std::exception& e)
+    {
+        TRACE(error) << e.what();
+    }
     return list;
+}
 }

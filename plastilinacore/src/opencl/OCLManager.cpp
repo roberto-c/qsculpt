@@ -9,6 +9,7 @@
 #include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opencl/CLUtils.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
+#include <PlastilinaCore/opengl/Context.h>
 
 #include <iostream>
 
@@ -57,17 +58,17 @@ CLManager* CLManager::instance()
     return g_clManager;
 }
 
-bool CLManager::startup(PlastilinaSubsystem flags)
+bool CLManager::create()
 {
     if (!g_clManager)
     {
         g_clManager = new CLManager();
     }
     assert(g_clManager && "CLManager not initialized");
-    return true;
+    return g_clManager != nullptr;
 }
 
-bool CLManager::shutdown()
+bool CLManager::destroy()
 {
     assert(g_clManager && "CLManager not initialized");
     g_clManager->destroy();
@@ -172,11 +173,12 @@ void CLManager::setOpenGLContext(intptr_t hnd) { d->glCtxHnd = hnd; }
 void CLManager::setDeviceContext(HDC hdc) { d->hdc = hdc; }
 #endif
 
-/**
- * Method used to initialize OpenCL. This creates a default context and
- * a command queue.
- */
-bool CLManager::initialize(PlastilinaSubsystem flags)
+bool CLManager::initializeWithGLContext(void* oglCtx, void* deviceCtx)
+{
+    return false;
+}
+
+bool CLManager::initializeWithGraphicsContext(core::IGraphicsContext * ctx)
 {
     cl_int err = CL_SUCCESS;
 
@@ -185,6 +187,13 @@ bool CLManager::initialize(PlastilinaSubsystem flags)
         TRACE(debug) << "Already initialized.";
         return true;
     }
+
+    if (ctx == nullptr || ctx->contextType() != core::ContextType::OpenGL)
+    {
+        TRACE(error) << "OpenCL can only be used with an OpenGL context";
+        return false;
+    }
+    gl::Context* context = static_cast<gl::Context*>(ctx);
     try
     {
         TRACE(debug) << "Initializing OpenCL...";
@@ -204,9 +213,9 @@ bool CLManager::initialize(PlastilinaSubsystem flags)
         std::vector<cl_context_properties> prop;
         // If we have a GL context, check which device is being used and use
         // that one.
-        if (d->glCtxHnd &&
-            (flags & PlastilinaSubsystem::ENABLE_CL_GL_SHARING) !=
-                PlastilinaSubsystem::NONE)
+        d->glCtxHnd = context->nativeGlContext();
+        d->hdc = reinterpret_cast<HDC>(context->nativeDeviceHandle());
+        if (d->glCtxHnd) 
         {
             d->devices.clear();
 #ifdef __APPLE__
@@ -265,17 +274,6 @@ bool CLManager::initialize(PlastilinaSubsystem flags)
     d->initialized = true;
     return d->initialized;
 }
-
-bool CLManager::initializeWithGLContext(void* oglCtx, void* deviceCtx)
-{
-    return false;
-}
-
-/**
- * Method used to free all OpenCL objects. This will destroy all command
- * queues and contexts managed by this manager object.
- */
-void CLManager::destroy() {}
 
 /**
  * Returns the context created by the manager at initialization.

@@ -35,13 +35,13 @@ class Device;
 namespace vulkan
 {
 
-class VkDevice : public core::IDevice
+class Device : public core::IDevice
 {
   public:
-    VkDevice(std::string vendor = "Unknown", std::string name = "Unknown",
+    Device(std::string vendor = "Unknown", std::string name = "Unknown",
              std::string driverString = "Unknown");
 
-    virtual ~VkDevice();
+    virtual ~Device();
 
     // Inherited via IDevice
     virtual core::ApiSupported api() const override;
@@ -62,12 +62,11 @@ typedef std::vector<std::unique_ptr<VkDevice>> VkDeviceList;
 class VkPlatform : public core::IPlatform
 {
   public:
+    static bool isSupported();
+
     VkPlatform();
 
     virtual ~VkPlatform();
-
-    // Inherited via IPlatform
-    virtual bool isSupported() const override;
 
     virtual core::DeviceList
     deviceList(DeviceFilter filter = DeviceFilter()) const override;

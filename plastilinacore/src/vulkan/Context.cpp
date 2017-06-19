@@ -29,7 +29,6 @@ namespace vulkan
 struct Context::Impl
 {
     VkCtxFlags        flags;
-    vk::Instance      instance;
     vk::Device        device;
     vk::PipelineCache pipelineCache;
     vk::Queue         queue;
@@ -69,56 +68,14 @@ struct Context::Impl
 Context::Context(VkCtxFlags flags)
     : d(new Impl(flags))
 {
-    bool enableValidation =
-        static_cast<uint32_t>(flags) &
-        static_cast<uint32_t>(VkCtxFlags::EnableValidation);
-    {
-        // Vulkan instance
-        vk::ApplicationInfo appInfo;
-        appInfo.pApplicationName = "VulkanExamples";
-        appInfo.pEngineName      = "VulkanExamples";
-        appInfo.apiVersion       = VK_API_VERSION_1_0;
-
-        std::vector<const char*> enabledExtensions = {
-            VK_KHR_SURFACE_EXTENSION_NAME};
-// Enable surface extensions depending on os
-#if defined(_WIN32)
-        enabledExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-#elif defined(__ANDROID__)
-        enabledExtensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
-#elif defined(__linux__)
-        enabledExtensions.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
-#endif
-
-        vk::InstanceCreateInfo instanceCreateInfo;
-        instanceCreateInfo.pApplicationInfo = &appInfo;
-        if (enabledExtensions.size() > 0)
-        {
-            if (enableValidation)
-            {
-                enabledExtensions.push_back(
-                    VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-            }
-            instanceCreateInfo.enabledExtensionCount =
-                (uint32_t)enabledExtensions.size();
-            instanceCreateInfo.ppEnabledExtensionNames =
-                enabledExtensions.data();
-        }
-        // if (enableValidation) {
-        //    instanceCreateInfo.enabledLayerCount =
-        //    debug::validationLayerCount;
-        //    instanceCreateInfo.ppEnabledLayerNames =
-        //    debug::validationLayerNames;
-        //}
-        d->instance = vk::createInstance(instanceCreateInfo);
-    }
+    auto instance = vulkan::getVkAppInstance();
 
 #if defined(__ANDROID__)
     loadVulkanFunctions(instance);
 #endif
 
     // Physical device
-    auto physicalDevices = d->instance.enumeratePhysicalDevices();
+    auto physicalDevices = instance.enumeratePhysicalDevices();
     // Note :
     // This example will always use the first physical device reported,
     // change the vector index if you have multiple Vulkan devices installed
@@ -170,26 +127,9 @@ Context::Context(VkCtxFlags flags)
             deviceCreateInfo.ppEnabledExtensionNames =
                 enabledExtensions.data();
         }
-        if (enableValidation)
-        {
-            // deviceCreateInfo.enabledLayerCount =
-            // debug::validationLayerCount;
-            // deviceCreateInfo.ppEnabledLayerNames =
-            // debug::validationLayerNames;
-        }
         d->device = physicalDevice.createDevice(deviceCreateInfo);
     }
 
-    if (enableValidation)
-    {
-        // debug::setupDebugging(d->instance,
-        // vk::DebugReportFlagBitsEXT::eError |
-        // vk::DebugReportFlagBitsEXT::eWarning);
-    }
-
-    // if (enableDebugMarkers) {
-    //    debug::marker::setup(device);
-    //}
     d->pipelineCache =
         d->device.createPipelineCache(vk::PipelineCacheCreateInfo());
     // Find a queue that supports graphics operations

@@ -27,13 +27,13 @@ namespace gl
 /**
  * Abstract class to identify
  */
-class GlDevice : public core::IDevice
+class Device : public core::IDevice
 {
   public:
-    GlDevice(std::string vendor = "Unknown", std::string name = "Unknown",
+    Device(std::string vendor = "Unknown", std::string name = "Unknown",
              std::string driverString = "Unknown");
 
-    virtual ~GlDevice();
+    virtual ~Device();
 
     virtual core::ApiSupported api() const;
 
@@ -51,11 +51,13 @@ class GlDevice : public core::IDevice
     std::string driverString_;
 };
 
-typedef std::vector<std::unique_ptr<GlDevice>> GlDeviceList;
+typedef std::vector<std::unique_ptr<Device>> GlDeviceList;
 
 class GlPlatform : public core::IPlatform
 {
   public:
+    static bool isSupported();
+
     GlPlatform();
 
     virtual ~GlPlatform();
@@ -63,8 +65,5 @@ class GlPlatform : public core::IPlatform
     // Inherited via IPlatform
     virtual core::DeviceList
     deviceList(DeviceFilter filter = DeviceFilter()) const override;
-
-    // Inherited via IPlatform
-    virtual bool isSupported() const override;
 };
 };

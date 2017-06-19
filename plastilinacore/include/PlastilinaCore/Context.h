@@ -20,43 +20,50 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 namespace core
 {
 typedef intptr_t                  CtxAttribute;
 typedef std::vector<CtxAttribute> CtxAttributeList;
+typedef intptr_t                          PixelFormatAttribute;
+typedef std::vector<PixelFormatAttribute> PixelFormatAttributeList;
 
-enum
+class IDevice;
+
+enum class ContextType : uint32_t
 {
-    CTX_ATR_NULL = 0,
-    CTX_ATR_GL_NSVIEW,
-    CTX_ATR_GL_QTWIDGET,
-    CTX_ATR_GL_DOUBLE_BUFFER,
-    CTX_ATR_GL_COLOR_SIZE,
-    CTX_ATR_CL_ALPHA_SIZE,
-    CTX_ATR_GL_DEPTH_SIZE,
-    CTX_ATR_GL_STENCIL_SIZE,
-    CTX_ATR_GL_ACCUM_SIZE,
-    CTX_ATR_CL_SHARE_GL,
-    CTX_ATR_VK_DOUBLE_BUFFER,
-    CTX_ATR_BACKEND_GL,
-    CTX_ATR_BACKEND_VK
+    OpenGL,
+    Vulkan,
+    OpenCL
 };
 
-class DLLEXPORT Context
+struct GraphicsContextCreateInfo
 {
-    struct Impl;
-    std::unique_ptr<Impl> d;
-
-  public:
-    Context(const CtxAttributeList& oclctx);
-
-    Context(core::Context& oclctx);
-
-    ~Context();
-
-    CtxAttribute attribute(CtxAttribute attribute);
-
-    void setAttribute(CtxAttribute attributeName, CtxAttribute value);
+    ContextType       contextType;
+    intptr_t          osWindowHandle;
+    intptr_t          osHandleEx;
+    CtxAttributeList  attributesList;
+    PixelFormatAttributeList   pixelFormatAttributes;
 };
+
+class DLLEXPORT IGraphicsContext
+{
+public:
+    static IGraphicsContext * createGraphicsContext(GraphicsContextCreateInfo & createInfo);
+    static void               destroyGraphicsContext(IGraphicsContext * ctx);
+
+    virtual ContextType contextType() const = 0;
+
+    virtual bool makeCurrent() = 0;
+    virtual bool swapBuffers() = 0;
+
+    virtual IDevice* device() = 0;
+    virtual void resize(int width, int height) = 0;
+
+protected:
+    IGraphicsContext() {}
+    virtual ~IGraphicsContext(){}
+};
+
 }

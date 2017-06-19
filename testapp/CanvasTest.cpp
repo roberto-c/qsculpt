@@ -94,11 +94,16 @@ int CanvasTest::Impl::setup()
         scene->add(camnode);
         material->load();
         material->setAmbient(Color(0.2f, 0.2f, 0.2f, 1.0f));
-        material->setDiffuse(Color(0.2f, 0.2f, 0.8f, 1.0f));
+        material->setDiffuse(Color(0.2f, 0.2f, 0.2f, 1.0f));
         material->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
         material->setExponent(200);
         material->setDiffuseTexture(canvas->colorTexture());
         surfacenode->setMaterial(material);
+        canvas->setPenColor(Color(0.f, 0.f, 0.f, 1.0f));
+        canvas->setFillColor(Color(0.f, 0.f, 0.f, 1.0f));
+        canvas->begin();
+        canvas->drawRectangle(0, 0, 1280, 720);
+        canvas->end();
     }
     return 0;
 }
@@ -240,7 +245,7 @@ void CanvasTest::mouseClick(uint32_t button, uint32_t state, int x, int y)
         d_->y         = y;
     }
 
-    d_->canvas->setPenColor(Color(0.9f, 0.3f, 0.2f, 1.0f));
+    d_->canvas->setPenColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
     d_->canvas->setFillColor(Color(0.8f, 0.7f, 0.3f, 1.0f));
 }
 

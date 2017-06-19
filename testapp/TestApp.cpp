@@ -7,9 +7,12 @@
 //
 #include "Stable.h"
 
+#include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/Plastilina.h>
 #include <PlastilinaCore/ResourcesManager.h>
+#include <PlastilinaCore/opencl/OpenCL.h>
+#include <PlastilinaCore/opengl/OpenGL.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_syswm.h>
@@ -32,10 +35,12 @@
 #include "BaseTest.h"
 #include "CameraTest.h"
 #include "CanvasTest.h"
+#include "DeviceSelectionTest.h"
 #include "SubdivisionTest.h"
 #include "TestApp.h"
 
 using namespace std;
+using namespace core;
 namespace po = boost::program_options;
 
 struct TestApp::Impl
@@ -49,6 +54,7 @@ struct TestApp::Impl
     SDL_Window*             mainwindow;  /* Our window handle */
     SDL_GLContext           maincontext; /* Our opengl context handle */
     uint32_t                testEventType;
+    IGraphicsContext*       context;
 
     string appName;
 
@@ -65,6 +71,7 @@ struct TestApp::Impl
         , maincontext(nullptr)
         , testEventType(-1)
         , currentTest(testList.end())
+        , context(nullptr)
     {
     }
 
@@ -107,32 +114,31 @@ void TestApp::init(int argc, char** argv)
 {
     using namespace std;
     using namespace core::utils;
-    vector<string> default_search_dirs = {get_app_path()};
     // Declare the supported options.
     d->optionsDesc.add_options()("help", "produce help message")(
         "interactive", po::value<bool>()->default_value(true),
         "True to run interactive test bed. False to run automated tests")(
-        "resourcesdir",
-        po::value<vector<string>>()->default_value(default_search_dirs,
-                                                   get_app_path()),
-        "path used to load all resources")(
         "verbosity",
         po::value<boost::log::trivial::severity_level>()->default_value(
             boost::log::trivial::info),
         "verbosity level to print")(
         "testid", po::value<int>()->default_value(-1), "test to execute");
 
-    po::store(po::parse_command_line(argc, argv, d->optionsDesc), d->options);
+    po::parsed_options parsed =
+        po::command_line_parser(argc, argv).options(d->optionsDesc).allow_unregistered().run();
+    po::store(parsed, d->options);
     po::notify(d->options);
 
     auto testid = d->options["testid"].as<int>();
 
     if (testid == -1 || testid == 0)
+        d->testList.push_back(unique_ptr<BaseTest>(new DeviceSelectionTest()));
+    if (testid == -1 || testid == 1)
         d->testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
-    //if (testid == -1 || testid == 1)
-    //    d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
-    //if (testid == -1 || testid == 2)
-    //    d->testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
+    if (testid == -1 || testid == 2)
+        d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
+    if (testid == -1 || testid == 3)
+        d->testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
 
     // install test callsback
     for (auto& test : d->testList)
@@ -156,6 +162,33 @@ void TestApp::init(int argc, char** argv)
             (void*)this);
     }
     d->currentTest = d->testList.end();
+    
+    if (d->options.count("verbosity"))
+    {
+        auto verbosity =
+            d->options["verbosity"].as<boost::log::trivial::severity_level>();
+        boost::log::core::get()->set_filter(boost::log::trivial::severity >=
+                                            verbosity);
+    }
+
+    if (!PlastilinaEngine::initializeFromCommandLine(argc, argv))
+    {
+        TRACE(error) << "Failed to parse command line";
+    }
+    std::string configFile = core::utils::get_app_path() + "\\config.cfg";
+    if (!PlastilinaEngine::initializeFromConfigFile(configFile))
+    {
+        TRACE(error)
+            << "Failed to initilize with config file. Using defaults.";
+    }
+
+    auto options = PlastilinaEngine::options();
+    for (auto it : options)
+    {
+        TRACE(info) << "Name: " << it.first;
+    }
+
+    d->initialize();
 }
 
 int TestApp::run()
@@ -166,15 +199,6 @@ int TestApp::run()
         return 1;
     }
 
-    if (d->options.count("verbosity"))
-    {
-        auto verbosity =
-            d->options["verbosity"].as<boost::log::trivial::severity_level>();
-        boost::log::core::get()->set_filter(boost::log::trivial::severity >=
-                                            verbosity);
-    }
-
-    d->initialize();
     d->mainLoop();
 
     return 0;
@@ -202,10 +226,6 @@ void TestApp::Impl::dispatchEvent(SDL_Event* event)
         }
         break;
     }
-    //        case SDL_VIDEOEXPOSE: {
-    //            display();
-    //            break;
-    //        }
     case SDL_KEYDOWN:
     {
         keyboard(event->key.keysym.sym, 0, 0);
@@ -235,6 +255,10 @@ bool TestApp::Impl::quitRequested() { return true; }
 void TestApp::Impl::onQuit()
 {
     std::cout << std::endl;
+    if (currentTest != testList.end())
+    {
+        (*currentTest)->shutdown();
+    }
     /* Delete our opengl context, destroy our window, and shutdown SDL */
     SDL_GL_DeleteContext(maincontext);
     SDL_DestroyWindow(mainwindow);
@@ -257,7 +281,7 @@ void TestApp::Impl::keyboard(int key, int x, int y)
     }
     switch (key)
     {
-    case SDLK_ESCAPE:
+    case SDLK_q:
         SDL_Event event;
         event.type = SDL_QUIT;
         SDL_PushEvent(&event);
@@ -274,8 +298,6 @@ void TestApp::Impl::keyboard(int key, int x, int y)
         break;
     case SDLK_d:
     case SDLK_RIGHT:
-        break;
-    case SDLK_q:
         break;
     case SDLK_e:
         break;
@@ -341,19 +363,6 @@ void TestApp::Impl::initialize()
 		return;
 	}
 
-    /* Turn on double buffering with a 24bit Z buffer.
-     * You may need to change this to 16 or 32 for your system */
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-    /* Request opengl 3.2 context.
-     * SDL doesn't have the ability to choose which profile at this time of
-     * writing, but it should default to the core profile */
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                        SDL_GL_CONTEXT_PROFILE_CORE);
-
     /* Create our window centered at 512x512 resolution */
     mainwindow = SDL_CreateWindow("TEST", SDL_WINDOWPOS_CENTERED,
                                   SDL_WINDOWPOS_CENTERED, 1280, 720,
@@ -364,37 +373,56 @@ void TestApp::Impl::initialize()
         TRACE(error) << "Unable to create window";
         return;
     }
-    /* Create our opengl context and attach it to our window */
-    maincontext = SDL_GL_CreateContext(mainwindow);
-    if (!maincontext)
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+
+    if (!SDL_GetWindowWMInfo(mainwindow, &wmInfo))
     {
-        TRACE(error) << "Unable to create OpenGL context";
+        TRACE(error) << "Failed to get window system information";
         return;
     }
+    GraphicsContextCreateInfo createInfo;
+    createInfo.contextType = ContextType::OpenGL;
+#if WIN32
+    createInfo.osWindowHandle = reinterpret_cast<intptr_t>(wmInfo.info.win.window);
+    createInfo.osHandleEx = reinterpret_cast<intptr_t>(wmInfo.info.win.hdc);
 
-    // Now that we have the window created with an apropriate GL context,
-    // Setup the engine with O
-    SDL_GL_MakeCurrent(mainwindow, maincontext);
-    PlastilinaSubsystem flags = PlastilinaSubsystem::OPENGL |
-                                PlastilinaSubsystem::OPENCL |
-                                PlastilinaSubsystem::ENABLE_CL_GL_SHARING;
-    if (!PlastilinaEngine::initialize(flags))
+    createInfo.pixelFormatAttributes = {
+        WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+        WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+        WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+        WGL_COLOR_BITS_ARB, 32,
+        WGL_DEPTH_BITS_ARB, 24,
+        WGL_STENCIL_BITS_ARB, 8,
+        0,        //End
+    };
+
+    createInfo.attributesList = {
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+        WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+        0
+    };
+#endif
+    context = IGraphicsContext::createGraphicsContext(createInfo);
+    if (context == nullptr)
     {
-        TRACE(error) << "Unable to initialize PlastilinaEngine";
+        TRACE(error) << "Failed to create graphics context";
         return;
     }
-
-    std::string configFile = core::utils::get_app_path() + "\\config.cfg";
-    if (!PlastilinaEngine::initializeFromConfigFile(configFile))
+    if (!context->makeCurrent())
     {
-        TRACE(error)
-            << "Failed to initilize with config file. Using defaults.";
+        TRACE(error) << "Failed to make context current";
     }
-
-    // Set Resources search directories
-    for (auto path : (options["resourcesdir"].as<std::vector<std::string>>()))
+    if (!CLManager::create())
     {
-        ResourcesManager::addResourcesDirectory(path);
+        TRACE(error) << "Failed to initialize OpenCL manager";
+        return;
+    }
+    if (!CLManager::instance()->initializeWithGraphicsContext(context))
+    {
+        TRACE(error) << "Failed to initialize OpenCL with OpenGL context";
+        return;
     }
 
     reshape(1280, 720);
@@ -415,7 +443,7 @@ void TestApp::Impl::initialize()
 
 void TestApp::Impl::reshape(int w, int h)
 {
-    SDL_GL_MakeCurrent(mainwindow, maincontext);
+    context->makeCurrent();
     if (app->d->currentTest != app->d->testList.end())
     {
         auto test   = (*(app->d->currentTest)).get();
@@ -425,7 +453,7 @@ void TestApp::Impl::reshape(int w, int h)
             uitest->resize(w, h);
         }
     }
-    SDL_GL_SwapWindow(mainwindow);
+    context->swapBuffers();
 }
 
 void TestApp::Impl::display()
@@ -435,7 +463,7 @@ void TestApp::Impl::display()
     frameCtr++;
     uint64_t t1 = SDL_GetPerformanceCounter();
 
-    SDL_GL_MakeCurrent(mainwindow, maincontext);
+    context->makeCurrent();
     if (app->d->currentTest != app->d->testList.end())
     {
         auto test   = (*(app->d->currentTest)).get();
@@ -445,7 +473,7 @@ void TestApp::Impl::display()
             uitest->display();
         }
     }
-    SDL_GL_SwapWindow(mainwindow);
+    context->swapBuffers();
     uint64_t t2     = SDL_GetPerformanceCounter();
     double   tdelta = double(t2 - t1) / double(SDL_GetPerformanceFrequency());
     updatelapse += tdelta;

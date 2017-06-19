@@ -56,7 +56,7 @@ class IPlatform
 
     virtual ~IPlatform(){};
 
-    virtual bool isSupported() const = 0;
+    //virtual bool isSupported() const = 0;
 
     virtual core::DeviceList
     deviceList(DeviceFilter filter = DeviceFilter()) const = 0;

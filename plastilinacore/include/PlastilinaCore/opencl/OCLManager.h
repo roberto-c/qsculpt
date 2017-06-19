@@ -19,6 +19,7 @@
  ***************************************************************************/
 #pragma once
 
+#include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/opencl/OpenCL.h>
 
 /**
@@ -38,9 +39,8 @@ class DLLEXPORT CLManager
      Returns the instance yo the OpenCL Manager.
      */
     static CLManager* instance();
-    static bool
-    startup(PlastilinaSubsystem flags = PlastilinaSubsystem::NONE);
-    static bool shutdown();
+    static bool create();
+    static bool destroy();
 
     ~CLManager();
 
@@ -71,23 +71,17 @@ class DLLEXPORT CLManager
     // cl::Context createContextWithGLContext(void* oglCtx, void* deviceCtx);
 
     /**
-     * Method used to initialize OpenCL. This creates a default context and
-     * a command queue.
-     */
-    bool initialize(PlastilinaSubsystem flags = PlastilinaSubsystem::NONE);
-
-    /**
      * Initialize OpenCL context with the use of OpenGL context specified.
      *
      */
     bool initializeWithGLContext(void* oglCtx, void* deviceCtx);
 
     /**
-     * Method used to free all OpenCL objects. This will destroy all command
-     * queues and contexts managed by this manager object.
+     * Initialize OpenCL context with the use of context specified.
+     *
      */
-    void destroy();
-
+    bool initializeWithGraphicsContext(core::IGraphicsContext * ctx);
+    
     /**
      * Returns the context created by the manager at initialization.
      */
