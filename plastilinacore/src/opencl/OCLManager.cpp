@@ -71,7 +71,7 @@ bool CLManager::create()
 bool CLManager::destroy()
 {
     assert(g_clManager && "CLManager not initialized");
-    g_clManager->destroy();
+    delete g_clManager;
     return true;
 }
 
@@ -122,7 +122,10 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
             cl_int error = clGetGLContextInfoKHR(
                 prop.data(), CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, nullptr,
                 &bytes);
-            cl::detail::errHandler(error, "clGetGLContextInfoKHR");
+            if (error != CL_SUCCESS)
+            {
+                continue;
+            }
             // allocating the mem
             size_t devNum = bytes / sizeof(cl_device_id);
             devs.resize(devNum);
@@ -130,7 +133,10 @@ std::vector<cl::Device> CLManager::devicesForGLContext()
             error = clGetGLContextInfoKHR(prop.data(),
                                           CL_DEVICES_FOR_GL_CONTEXT_KHR,
                                           bytes, devs.data(), NULL);
-            cl::detail::errHandler(error, "clGetGLContextInfoKHR");
+            if (error != CL_SUCCESS)
+            {
+                continue;
+            }
 #endif
             for (auto& dev : devs)
             {

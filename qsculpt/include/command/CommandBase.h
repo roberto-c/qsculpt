@@ -76,7 +76,7 @@ class CommandBase : public ICommand
     Point3            _finalWinPoint;
     double            _modelMatrix[16];
     double            _projMatrix[16];
-    GLint             _viewPort[4];
+    int               _viewPort[4];
     float             _rotationRadius;
 
   private:

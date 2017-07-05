@@ -27,6 +27,13 @@
 #include <stdexcept>
 #include <strstream>
 
+#if _WIN32
+  #ifndef ssize_t
+    #include <basetsd.h>
+    typedef SSIZE_T ssize_t;
+  #endif
+#endif
+
 #ifdef __APPLE__
 #include <mach-o/dyld.h> // for application directory
 #endif
@@ -35,6 +42,18 @@ namespace core
 {
 namespace utils
 {
+
+template <>
+void convert_to(const std::size_t& d, int& to)
+{
+    to = (d <= std::numeric_limits<size_t>::max()) ? (int)((ssize_t)d) : -1;
+}
+
+template <>
+void convert_to(const int& d, std::size_t& to)
+{
+    to = (d < 0) ? std::numeric_limits<size_t>::max() : (size_t)((unsigned)d);
+}
 
 std::string to_string(Eigen::Vector2f& v)
 {

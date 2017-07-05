@@ -49,7 +49,6 @@ struct TestApp::Impl
     po::options_description optionsDesc;
     po::variables_map       options;
     bool                    running;
-    bool                    initialized;
     SDL_Surface*            surfDisplay;
     SDL_Window*             mainwindow;  /* Our window handle */
     SDL_GLContext           maincontext; /* Our opengl context handle */
@@ -65,7 +64,6 @@ struct TestApp::Impl
         : app(nullptr)
         , optionsDesc("Allowed options")
         , running(false)
-        , initialized(false)
         , surfDisplay(nullptr)
         , mainwindow(nullptr)
         , maincontext(nullptr)
@@ -74,6 +72,8 @@ struct TestApp::Impl
         , context(nullptr)
     {
     }
+
+    void init(int argc, char** argv);
 
     void display();
 
@@ -93,8 +93,6 @@ struct TestApp::Impl
 
     void dispatchEvent(SDL_Event* event);
 
-    void initialize();
-
     void mainLoop();
 
     void testEventHandler(const BaseTest* test, TestEvent evt,
@@ -105,17 +103,30 @@ TestApp::TestApp(int argc, char** argv)
     : d(new TestApp::Impl())
 {
     d->app = this;
-    init(argc, argv);
+    d->init(argc, argv);
 }
 
 TestApp::~TestApp() {}
 
-void TestApp::init(int argc, char** argv)
+int TestApp::run()
+{
+    if (d->options.count("help"))
+    {
+        std::cout << d->optionsDesc << "\n";
+        return 1;
+    }
+
+    d->mainLoop();
+
+    return 0;
+}
+
+void TestApp::Impl::init(int argc, char** argv)
 {
     using namespace std;
     using namespace core::utils;
     // Declare the supported options.
-    d->optionsDesc.add_options()("help", "produce help message")(
+    optionsDesc.add_options()("help", "produce help message")(
         "interactive", po::value<bool>()->default_value(true),
         "True to run interactive test bed. False to run automated tests")(
         "verbosity",
@@ -124,24 +135,26 @@ void TestApp::init(int argc, char** argv)
         "verbosity level to print")(
         "testid", po::value<int>()->default_value(-1), "test to execute");
 
-    po::parsed_options parsed =
-        po::command_line_parser(argc, argv).options(d->optionsDesc).allow_unregistered().run();
-    po::store(parsed, d->options);
-    po::notify(d->options);
+    po::parsed_options parsed = po::command_line_parser(argc, argv)
+        .options(optionsDesc)
+        .allow_unregistered()
+        .run();
+    po::store(parsed, options);
+    po::notify(options);
 
-    auto testid = d->options["testid"].as<int>();
+    auto testid = options["testid"].as<int>();
 
     if (testid == -1 || testid == 0)
-        d->testList.push_back(unique_ptr<BaseTest>(new DeviceSelectionTest()));
+        testList.push_back(unique_ptr<BaseTest>(new DeviceSelectionTest()));
     if (testid == -1 || testid == 1)
-        d->testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
+        testList.push_back(unique_ptr<BaseTest>(new SubdivisionTest()));
     if (testid == -1 || testid == 2)
-        d->testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
+        testList.push_back(unique_ptr<BaseTest>(new CameraTest()));
     if (testid == -1 || testid == 3)
-        d->testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
+        testList.push_back(unique_ptr<BaseTest>(new CanvasTest()));
 
     // install test callsback
-    for (auto& test : d->testList)
+    for (auto& test : testList)
     {
         test->setNotifyCallback(
             [](const BaseTest* test, TestEvent evt, void* userData) -> void {
@@ -159,14 +172,14 @@ void TestApp::init(int argc, char** argv)
                 myEvent.user.data2 = userData;
                 SDL_PushEvent(&myEvent);
             },
-            (void*)this);
+            (void*)this->app);
     }
-    d->currentTest = d->testList.end();
+    currentTest = testList.end();
     
-    if (d->options.count("verbosity"))
+    if (options.count("verbosity"))
     {
         auto verbosity =
-            d->options["verbosity"].as<boost::log::trivial::severity_level>();
+            options["verbosity"].as<boost::log::trivial::severity_level>();
         boost::log::core::get()->set_filter(boost::log::trivial::severity >=
                                             verbosity);
     }
@@ -188,20 +201,110 @@ void TestApp::init(int argc, char** argv)
         TRACE(info) << "Name: " << it.first;
     }
 
-    d->initialize();
-}
-
-int TestApp::run()
-{
-    if (d->options.count("help"))
+    // Initialize SDL's Video subsystem
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        std::cout << d->optionsDesc << "\n";
-        return 1;
+        TRACE(error) << "Failed to intialize SDL";
+        return;
+    }
+	int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
+	if (IMG_Init(imgFlags) != imgFlags)
+	{
+		TRACE(error) << "Failed to intialize SDL_image";
+		return;
+	}
+
+    // Create our window centered at 512x512 resolution
+    mainwindow = SDL_CreateWindow("TEST", SDL_WINDOWPOS_CENTERED,
+                                  SDL_WINDOWPOS_CENTERED, 1280, 720,
+                                  SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    if (!mainwindow)
+    {
+        TRACE(error) << "Unable to create window";
+        return;
+    }
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+
+    if (!SDL_GetWindowWMInfo(mainwindow, &wmInfo))
+    {
+        TRACE(error) << "Failed to get window system information";
+        return;
+    }
+    GraphicsContextCreateInfo createInfo;
+    createInfo.contextType = ContextType::OpenGL;
+#if WIN32
+    createInfo.osWindowHandle = reinterpret_cast<intptr_t>(wmInfo.info.win.window);
+    createInfo.osHandleEx = reinterpret_cast<intptr_t>(wmInfo.info.win.hdc);
+
+    createInfo.pixelFormatAttributes = {
+        WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+        WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+        WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+        WGL_COLOR_BITS_ARB, 32,
+        WGL_DEPTH_BITS_ARB, 24,
+        WGL_STENCIL_BITS_ARB, 8,
+        0,        //End
+    };
+
+    createInfo.attributesList = {
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+        WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+        0
+    };
+#endif
+    context = IGraphicsContext::createGraphicsContext(createInfo);
+    if (context == nullptr)
+    {
+        TRACE(error) << "Failed to create graphics context";
+        return;
+    }
+    if (!context->makeCurrent())
+    {
+        TRACE(error) << "Failed to make context current";
+    }
+    if (!CLManager::create())
+    {
+        TRACE(error) << "Failed to initialize OpenCL manager";
+        return;
+    }
+    if (!CLManager::instance()->initializeWithGraphicsContext(context))
+    {
+        TRACE(error) << "Failed to initialize OpenCL with OpenGL context";
+        return;
     }
 
-    d->mainLoop();
+    reshape(1280, 720);
 
-    return 0;
+    testEventType = SDL_RegisterEvents(1);
+
+    // post event to start testing
+    SDL_Event myEvent;
+    SDL_memset(&myEvent, 0, sizeof(SDL_Event));
+    myEvent.type       = testEventType;
+    myEvent.user.code  = static_cast<uint32_t>(TestEvent::TE_SHUTDOWN_POST);
+    myEvent.user.data1 = (void*)(nullptr);
+    myEvent.user.data2 = (void*)(this->app);
+    SDL_PushEvent(&myEvent);
+}
+
+void TestApp::Impl::mainLoop()
+{
+    SDL_Event Event;
+    running = true;
+    while (running)
+    {
+        while (SDL_PollEvent(&Event))
+        {
+            dispatchEvent(&Event);
+        }
+
+        loop();
+        display();
+    }
+
+    onQuit();
 }
 
 void TestApp::Impl::dispatchEvent(SDL_Event* event)
@@ -286,21 +389,6 @@ void TestApp::Impl::keyboard(int key, int x, int y)
         event.type = SDL_QUIT;
         SDL_PushEvent(&event);
         break;
-
-    case SDLK_w:
-    case SDLK_UP:
-        break;
-    case SDLK_s:
-    case SDLK_DOWN:
-        break;
-    case SDLK_a:
-    case SDLK_LEFT:
-        break;
-    case SDLK_d:
-    case SDLK_RIGHT:
-        break;
-    case SDLK_e:
-        break;
     case SDLK_SPACE:
         // post event to start testing
         SDL_Event myEvent;
@@ -311,8 +399,6 @@ void TestApp::Impl::keyboard(int key, int x, int y)
         myEvent.user.data1 = (void*)(nullptr);
         myEvent.user.data2 = (void*)(this->app);
         SDL_PushEvent(&myEvent);
-        break;
-    case SDLK_p:
         break;
 
     default:
@@ -344,101 +430,6 @@ void TestApp::Impl::mouseMotion(uint8_t state, int x, int y)
             uitest->mouseMove(state, x, y);
         }
     }
-}
-
-void TestApp::Impl::initialize()
-{
-    initialized = false;
-
-    /* Initialize SDL's Video subsystem */
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-        TRACE(error) << "Failed to intialize SDL";
-        return; // false;
-    }
-	int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
-	if (IMG_Init(imgFlags) != imgFlags)
-	{
-		TRACE(error) << "Failed to intialize SDL_image";
-		return;
-	}
-
-    /* Create our window centered at 512x512 resolution */
-    mainwindow = SDL_CreateWindow("TEST", SDL_WINDOWPOS_CENTERED,
-                                  SDL_WINDOWPOS_CENTERED, 1280, 720,
-                                  SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if (!mainwindow)
-    {
-        /* Die if creation failed */
-        TRACE(error) << "Unable to create window";
-        return;
-    }
-    SDL_SysWMinfo wmInfo;
-    SDL_VERSION(&wmInfo.version);
-
-    if (!SDL_GetWindowWMInfo(mainwindow, &wmInfo))
-    {
-        TRACE(error) << "Failed to get window system information";
-        return;
-    }
-    GraphicsContextCreateInfo createInfo;
-    createInfo.contextType = ContextType::OpenGL;
-#if WIN32
-    createInfo.osWindowHandle = reinterpret_cast<intptr_t>(wmInfo.info.win.window);
-    createInfo.osHandleEx = reinterpret_cast<intptr_t>(wmInfo.info.win.hdc);
-
-    createInfo.pixelFormatAttributes = {
-        WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-        WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-        WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-        WGL_COLOR_BITS_ARB, 32,
-        WGL_DEPTH_BITS_ARB, 24,
-        WGL_STENCIL_BITS_ARB, 8,
-        0,        //End
-    };
-
-    createInfo.attributesList = {
-        WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-        WGL_CONTEXT_MINOR_VERSION_ARB, 3,
-        0
-    };
-#endif
-    context = IGraphicsContext::createGraphicsContext(createInfo);
-    if (context == nullptr)
-    {
-        TRACE(error) << "Failed to create graphics context";
-        return;
-    }
-    if (!context->makeCurrent())
-    {
-        TRACE(error) << "Failed to make context current";
-    }
-    if (!CLManager::create())
-    {
-        TRACE(error) << "Failed to initialize OpenCL manager";
-        return;
-    }
-    if (!CLManager::instance()->initializeWithGraphicsContext(context))
-    {
-        TRACE(error) << "Failed to initialize OpenCL with OpenGL context";
-        return;
-    }
-
-    reshape(1280, 720);
-
-    testEventType = SDL_RegisterEvents(1);
-
-    // post event to start testing
-    SDL_Event myEvent;
-    SDL_memset(&myEvent, 0, sizeof(SDL_Event));
-    myEvent.type       = testEventType;
-    myEvent.user.code  = static_cast<uint32_t>(TestEvent::TE_SHUTDOWN_POST);
-    myEvent.user.data1 = (void*)(nullptr);
-    myEvent.user.data2 = (void*)(this->app);
-    SDL_PushEvent(&myEvent);
-
-    initialized = true;
 }
 
 void TestApp::Impl::reshape(int w, int h)
@@ -487,30 +478,12 @@ void TestApp::Impl::display()
     }
 }
 
-void TestApp::Impl::mainLoop()
-{
-    SDL_Event Event;
-    running = true;
-    while (running)
-    {
-        while (SDL_PollEvent(&Event))
-        {
-            dispatchEvent(&Event);
-        }
-
-        loop();
-        display();
-    }
-
-    onQuit();
-}
-
 void TestApp::Impl::testEventHandler(const BaseTest* test, TestEvent evt,
                                      void* userData)
 {
     assert(userData && "Expected to have userData set");
-    // TRACE(trace) << ">> Test Name: " << std::string(test ? test->name() :
-    // "nullptr") << "Event: " << to_string(evt);
+    TRACE(trace) << ">> Test Name: " << std::string(test ? test->name() :
+        "nullptr") << "Event: " << to_string(evt);
     TestApp* app      = static_cast<TestApp*>(userData);
     bool     isUiTest = false;
     if (app->d->currentTest != app->d->testList.end())
@@ -526,7 +499,7 @@ void TestApp::Impl::testEventHandler(const BaseTest* test, TestEvent evt,
         app->d->currentTest = app->d->testList.begin();
         if (app->d->currentTest != app->d->testList.end())
         {
-            SDL_GL_MakeCurrent(mainwindow, maincontext);
+            app->d->context->makeCurrent();
             (*(app->d->currentTest))->setup();
             auto test   = (*(app->d->currentTest)).get();
             auto uitest = dynamic_cast<BaseUITest*>(test);
@@ -565,6 +538,6 @@ void TestApp::Impl::testEventHandler(const BaseTest* test, TestEvent evt,
         (*(app->d->currentTest))->shutdown();
         break;
     }
-    // TRACE(trace) << "<< Test Name: " << std::string(test ? test->name() :
-    // "nullptr") << "Event: " << to_string(evt);
+    TRACE(trace) << "<< Test Name: " << std::string(test ? test->name() :
+        "nullptr") << "Event: " << to_string(evt);
 }

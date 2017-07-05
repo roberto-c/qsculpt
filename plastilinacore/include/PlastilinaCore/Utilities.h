@@ -37,6 +37,12 @@ namespace utils
 template <typename TO, typename FROM>
 void convert_to(const FROM& from, TO& to);
 
+template <>
+DLLEXPORT void convert_to(const std::size_t& d, int& to);
+
+template <>
+DLLEXPORT void convert_to(const int& d, std::size_t& to);
+
 template <typename TO, typename FROM>
 TO convert_to(const FROM& d)
 {

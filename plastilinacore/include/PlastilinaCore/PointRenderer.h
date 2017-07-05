@@ -1,7 +1,6 @@
 #ifndef POINTRENDERER_H_
 #define POINTRENDERER_H_
 
-#include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/IRenderer.h>
 
 /**

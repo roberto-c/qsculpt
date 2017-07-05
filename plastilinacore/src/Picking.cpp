@@ -22,6 +22,7 @@
 #include <PlastilinaCore/Picking.h>
 
 #include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Material.h>

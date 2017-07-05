@@ -23,7 +23,6 @@
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/Scene.h>
-#include <PlastilinaCore/opengl/OpenGL.h>
 #include <QtCore/QPoint>
 #include <QtCore/QVector>
 #include <QtGui/QBrush>
@@ -110,14 +109,14 @@ class GlCanvas : public QOpenGLWidget
      *
      * @return HitRecord vector
      */
-    ObjectContainer getSelectedObjects(GLint x, GLint y);
+    ObjectContainer getSelectedObjects(int x, int y);
 
     /**
      * This method returns the vertices contained inside the specified 2D box
      * in screen coordinates.
      */
-    PointIndexList getSelectedVertices(GLint x, GLint y, GLint width,
-                                       GLint height);
+    PointIndexList getSelectedVertices(int x, int y, int width, int height);
+
     /**
      * Return the current active camera in the canvas.
      */
@@ -204,12 +203,12 @@ class GlCanvas : public QOpenGLWidget
     /**
      *
      */
-    void enable(GLenum flag) { glEnable(flag); }
+    void enable(int flag) { /*glEnable(flag);*/ }
 
     /**
      *
      */
-    void disable(GLenum flag) { glDisable(flag); }
+    void disable(int flag) { /*glDisable(flag);*/ }
 
     /**
      * This function sets the QPen to use to draw different primitves.
@@ -335,7 +334,7 @@ class GlCanvas : public QOpenGLWidget
      * Used to emulate glBegin()/ glEnd() from OpenGL. It will use temporary
      * buffer to send data to GPU.
      */
-    void begin(GLenum mode);
+    void begin(int mode);
 
     /**
      *
@@ -371,11 +370,11 @@ class GlCanvas : public QOpenGLWidget
   protected:
     void initializeGL();
     void resizeGL(int w, int h);
-    void paintGL();
-    void mouseMoveEvent(QMouseEvent* e);
-    void mousePressEvent(QMouseEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
-    void wheelEvent(QWheelEvent* e);
+    void paintGL() override;
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void wheelEvent(QWheelEvent* e) override;
 
     bool   _mousePressed;
     QPoint _mousePosition;

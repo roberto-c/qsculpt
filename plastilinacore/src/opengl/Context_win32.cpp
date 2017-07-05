@@ -133,6 +133,13 @@ Context::Context(const core::GraphicsContextCreateInfo & createInfo)
     if (!d->initialized)
         d->initialized = d->initializeGL();
 
+    if (createInfo.osContext != 0)
+    {
+        d->glrc = reinterpret_cast<HGLRC>(createInfo.osContext);
+        d->osDevice = wglGetCurrentDC();
+        return;
+    }
+
     std::vector<int> attList;
     std::vector<int> pixelFormatAttList;
     d->nativeWindow = reinterpret_cast<HWND>(createInfo.osWindowHandle);
@@ -146,15 +153,20 @@ Context::Context(const core::GraphicsContextCreateInfo & createInfo)
     int pixelFormat;
     UINT numFormats;
     BOOL res = wglChoosePixelFormatARB(d->osDevice, pixelFormatAttList.data(),
-        NULL, 1, &pixelFormat, &numFormats);
+        nullptr, 1, &pixelFormat, &numFormats);
     THROW_IF((res == FALSE), "Failed to find a suitable pixel format");
     for (auto att : createInfo.attributesList)
     {
         attList.push_back(att);
     }
     THROW_IF((wglCreateContextAttribsARB == nullptr), "wglCreateContextAttribsARB not available");
-    d->glrc = wglCreateContextAttribsARB(d->osDevice, NULL, attList.data());
-    THROW_IF((d->glrc == NULL), "Failed to create an OpenGL context");
+    d->glrc = wglCreateContextAttribsARB(d->osDevice, nullptr, attList.data());
+    if (d->glrc == nullptr)
+    {
+        DWORD errorCode = GetLastError();
+        TRACE(error) << "Errorcode:" << errorCode << " hex: " << std::hex << errorCode << std::dec;
+    }
+    THROW_IF((d->glrc == nullptr), "Failed to create an OpenGL context");
 }
 
 Context::~Context()

@@ -33,6 +33,7 @@
 
 using namespace std;
 using core::GpuSubdivision;
+
 template <class T>
 using gpu_vector = std::vector<T, core::opencl::gpu_allocator<T>>;
 
@@ -72,21 +73,21 @@ int SubdivisionTest::Impl::setup()
     TRACEFUNCTION("");
     ResourcesManager rscMgr;
 
+    using core::PrimitiveFactory;
+
     surface =
-     shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createQuad(1280,
-     720));
+    // shared_ptr<GpuSubdivision>(core::PrimitiveFactory<GpuSubdivision>::createQuad(1280,
+    // 720));
     //surface = std::shared_ptr<GpuSubdivision>(
     //    core::PrimitiveFactory<GpuSubdivision>::createQuad(2, 2));
-    // surface =
-    // std::shared_ptr<Subdivision>(core::PrimitiveFactory<Subdivision>::createBox());
+    surface          = shared_ptr<GpuSubdivision>(PrimitiveFactory<GpuSubdivision>::createBox());
     scene            = make_shared<Scene>();
     auto surfacenode = make_shared<SurfaceNode>(surface);
     material         = make_shared<PhongMaterial>();
     auto camnode     = make_shared<CameraNode>();
     camera           = make_shared<Camera>();
 
-    std::string texturePath =
-        rscMgr.findResourcePath("Texture_1280x720", "png");
+    string texturePath = rscMgr.findResourcePath("Texture_1280x720", "png");
     texture = IMG_Load(texturePath.c_str());
     if (!texture)
     {
@@ -123,12 +124,12 @@ int SubdivisionTest::Impl::setup()
         camnode->setCamera(camera);
         camera->setViewport(0, 0, 1280, 720);
         camera->transform()
-            .translate(Vector3(0, 2, -6))
-            .rotate(Eigen::Quaternionf(M_PI_4, 0, 0, 1));
-        camera->setOrthoMatrix(-10, 10, -10 / aspect_ratio, 10 / aspect_ratio,
-                               -1000, 1000);
+            .translate(Vector3(0, 0, -6));
+            //.rotate(Eigen::Quaternionf(M_PI_4, 0, 1, 0));
+        //camera->setOrthoMatrix(-10, 10, -10 / aspect_ratio, 10 / aspect_ratio,
+        //                       -1000, 1000);
         camera->setPerspectiveMatrix(45, aspect_ratio, 1, 10);
-        // camera->setOrthoMatrix(0, 1280, 0, 720, -1000, 1000);
+        //camera->setOrthoMatrix(0, 1280, 0, 720, -1000, 1000);
         scene->add(surfacenode);
         scene->add(camnode);
         material->load();
@@ -297,7 +298,10 @@ SubdivisionTest::SubdivisionTest()
 
 SubdivisionTest::~SubdivisionTest() {}
 
-void SubdivisionTest::doSetup() { d_->setup(); }
+void SubdivisionTest::doSetup()
+{
+    d_->setup();
+}
 
 void SubdivisionTest::doRun()
 {
@@ -309,14 +313,18 @@ void SubdivisionTest::doRun()
     }
 }
 
-void SubdivisionTest::doShutdown() { d_->runUi = false;  d_->cleanup(); }
+void SubdivisionTest::doShutdown()
+{
+    d_->runUi = false;
+    d_->cleanup();
+}
 
 void SubdivisionTest::resize(int w, int h)
 {
     if (d_ && d_->camera)
     {
         float aspect_ratio = float(w) / float(h);
-        d_->camera->setViewport(0, 0, w / 2, h);
+        d_->camera->setViewport(0, 0, w, h);
         d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio,
                                    10 * aspect_ratio, -1000, 1000);
     }
@@ -327,19 +335,7 @@ void SubdivisionTest::doRenderFrame()
     if (d_->runUi && d_->scene)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        int   w = 1280, h = 720;
-        float aspect_ratio = float(w / 2) / float(h);
-        d_->camera->setViewport(0, 0, w / 2, h);
-        glViewport(0, 0, w / 2, h);
-        d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio, 10 *
-            aspect_ratio, -1000, 1000);
         d_->scene->render();
-        d_->camera->setViewport(w / 2, 0, w / 2, h);
-        glViewport(w / 2, 0, w / 2, h);
-        d_->camera->setOrthoMatrix(-10, 10, -10 * aspect_ratio, 10 *
-            aspect_ratio, -1000, 1000);
-        d_->scene->render();
-        glViewport(0, 0, w, h);
     }
 }
 
@@ -388,4 +384,6 @@ void SubdivisionTest::mouseClick(uint32_t button, uint32_t state, int x,
 {
 }
 
-void SubdivisionTest::mouseMove(uint32_t state, int x, int y) {}
+void SubdivisionTest::mouseMove(uint32_t state, int x, int y)
+{
+}

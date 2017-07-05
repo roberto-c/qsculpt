@@ -21,12 +21,14 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtGui/QtGui>
-#include <QtOpenGL/QtOpenGL>
 #include <QtWidgets/QDockWidget>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 
 #include <PlastilinaCore/Document.h>
 #include <PlastilinaCore/ISurface.h>
-#include <PlastilinaCore/Material/PhongMaterial.h>
 #include <PlastilinaCore/SceneNode.h>
 #include <PlastilinaCore/subdivision/Box.h>
 #include "BrushCommand.h"
@@ -315,6 +317,7 @@ void QSculptWindow::newFile()
         d_->document = std::make_shared<Document>();
         d_->docModel = std::make_shared<DocumentModel>(d_->document);
         d_->documentView->setDocument(d_->document);
+#if 0
         auto surf = std::make_shared<::Box>();
         auto node = std::make_shared<SurfaceNode>(surf, "test");
         auto mat  = std::make_shared<PhongMaterial>();
@@ -323,6 +326,7 @@ void QSculptWindow::newFile()
         d_->docModel->addItem(node);
         CameraNode::shared_ptr cam = std::make_shared<CameraNode>();
         d_->docModel->addItem(cam);
+#endif
         d_->docTree->setDocument(d_->docModel);
     }
 }

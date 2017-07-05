@@ -36,4 +36,4 @@ struct PlastilinaEngineState
     void config_setup();
 };
 
-extern PlastilinaEngineState g_engineState;
+extern PlastilinaEngineState* g_engineState;

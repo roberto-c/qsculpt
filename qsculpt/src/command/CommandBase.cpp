@@ -91,11 +91,11 @@ void CommandBase::mousePressEvent(QMouseEvent* e)
 {
     DocumentView* view = g_pApp->getMainWindow()->getCurrentView();
 
-    GLdouble x, y, z;
+    double x, y, z;
 
-    glGetDoublev(GL_MODELVIEW_MATRIX, _modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, _projMatrix);
-    glGetIntegerv(GL_VIEWPORT, _viewPort);
+    //glGetDoublev(GL_MODELVIEW_MATRIX, _modelMatrix);
+    //glGetDoublev(GL_PROJECTION_MATRIX, _projMatrix);
+    //glGetIntegerv(GL_VIEWPORT, _viewPort);
 
     GlCanvas* canvas = view->getCanvas();
     Point3    p(e->x(), view->getCanvas()->height() - e->y(), 0.0);
@@ -134,10 +134,10 @@ void CommandBase::mouseMoveEvent(QMouseEvent* e)
     {
         return;
     }
-    GLfloat wz = 0.0f;
+    float wz = 0.0f;
 
-    glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT,
-                 GL_FLOAT, &wz);
+    //glReadPixels(e->x(), _viewPort[3] - e->y(), 1, 1, GL_DEPTH_COMPONENT,
+    //             GL_FLOAT, &wz);
     Point3 currPoint =
         _currentCamera->eyeToWorld(e->x(), _viewPort[3] - e->y(), wz);
     Point3 currWinPoint = Point3(e->x(), _viewPort[3] - e->y(), wz);

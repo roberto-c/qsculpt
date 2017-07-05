@@ -19,7 +19,6 @@
  ***************************************************************************/
 #include "Stable.h"
 #include "command/orbitcommand.h"
-#include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/Document.h>
 #include <PlastilinaCore/FlatRenderer.h>
@@ -272,7 +271,7 @@ void OrbitCommand::paintGL(GlCanvas* c)
 
     if (_d->draw)
     {
-        glClear(GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_DEPTH_BUFFER_BIT);
         auto ptr = _d->doc.scene().lock();
         if (ptr)
         {

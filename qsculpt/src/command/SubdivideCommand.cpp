@@ -20,9 +20,7 @@
 #include "Stable.h"
 #include "command/SubdivideCommand.h"
 #include <QtCore/QThread>
-#include <QtCore/QtDebug>
 #include <QtWidgets/QProgressDialog>
-//#include <omp.h>
 #include <PlastilinaCore/Face.h>
 #include <PlastilinaCore/HEdge.h>
 #include <PlastilinaCore/IDocument.h>

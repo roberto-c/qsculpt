@@ -18,8 +18,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
+#include <PlastilinaCore/opengl/OpenGL.h>
+
 #include "GlView.h"
 #include <PlastilinaCore/Camera.h>
+#include <PlastilinaCore/Context.h>
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Picking.h>
@@ -27,11 +30,11 @@
 #include <PlastilinaCore/RendererFactory.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SceneNode.h>
-#include <PlastilinaCore/opengl/GlslProgram.h>
-#include <PlastilinaCore/opengl/GlslShader.h>
-#include <PlastilinaCore/opengl/OpenGL.h>
+//#include <PlastilinaCore/opengl/GlslProgram.h>
+//#include <PlastilinaCore/opengl/GlslShader.h>
 #include <PlastilinaCore/subdivision/Box.h>
 #include <PlastilinaCore/subdivision/Sphere.h>
+
 #include <QtCore/QLineF>
 #include <QtCore/QRectF>
 #include <QtCore/QtAlgorithms>
@@ -41,7 +44,12 @@
 #include <QtGui/QPen>
 #include <QtGui/QPolygonF>
 #include <QtGui/QWheelEvent>
+#include <QtGui/QWindow>
+#include <QtGui/QOpenGLContext>
+#include <QtPlatformHeaders/QWGLNativeContext>
+
 #include <iostream>
+
 #include "DocumentView.h"
 #include "ICommand.h"
 #include "QSculptApp.h"
@@ -53,15 +61,15 @@ PickingFacesRenderer  g_pickingVertices;
 #define SELECT_BUFFER_SIZE 512
 #define DEFAULT_HEIGHT 5.0f
 
-GlslProgram*    g_shaderProgram  = NULL;
-VertexShader*   g_shaderVertex   = NULL;
-FragmentShader* g_shaderFragment = NULL;
+//GlslProgram*    g_shaderProgram  = NULL;
+//VertexShader*   g_shaderVertex   = NULL;
+//FragmentShader* g_shaderFragment = NULL;
 
 struct Rect
 {
-    GLfloat x1, y1, x2, y2;
+    float x1, y1, x2, y2;
 
-    Rect(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
+    Rect(float x1, float y1, float x2, float y2)
         : x1(x1)
         , y1(y1)
         , x2(x2)
@@ -76,44 +84,46 @@ typedef QMap<int, std::shared_ptr<Camera>> CameraContainer;
 
 struct GlCanvas::Impl
 {
-    bool            isGridVisible;     /**< Grid visibility flag */
-    bool            areNormalsVisible; /**< Normals visibility flag */
-    GLuint*         selectBuffer;      /**< Selection buffer */
+    bool            isGridVisible;      /**< Grid visibility flag */
+    bool            areNormalsVisible;  /**< Normals visibility flag */
+    uint*           selectBuffer;       /**< Selection buffer */
     double          aspectRatio;
-    PerspectiveType viewType;    /**< Kind of view to display */
-    DrawingMode     drawingMode; /**< Object drawing mode */
-    IRenderer*      renderer;    /**< Rendering engine for the objects */
-    IRenderer*      selectionRenderer; /**< Renderer used for selection. */
-    IRenderer* editVertexRenderer; /**< Renderer used for vertex edition */
-    CameraContainer cameraList; /**< Cameras for the differents view types */
+    PerspectiveType viewType;           /**< Kind of view to display */
+    DrawingMode     drawingMode;        /**< Object drawing mode */
+    IRenderer*      renderer;           /**< Rendering engine for the objects */
+    IRenderer*      selectionRenderer;  /**< Renderer used for selection. */
+    IRenderer*      editVertexRenderer; /**< Renderer used for vertex edition */
+    CameraContainer cameraList;         /**< Cameras for the differents view types */
 
     CursorShapeType cursorShape;
     Point3          cursorPosition;
     Point3          cursorOrientation;
-    GLint           viewport[4];
-    GLfloat         zoomFactor;
-    GLuint          textureId;
+    int             viewport[4];
+    float           zoomFactor;
+    uint            textureId;
     QImage          cursorImage;
     QPen            pen;
     QBrush          brush;
     uint32_t        flags;
+    core::IGraphicsContext* context;
 
     Impl()
         : isGridVisible(false)
         , areNormalsVisible(false)
-        , selectBuffer(NULL)
+        , selectBuffer(nullptr)
         , aspectRatio(1.0)
         , viewType(Front)
         , drawingMode(DrawingMode::Points)
-        , renderer(NULL)
-        , selectionRenderer(NULL)
-        , editVertexRenderer(NULL)
+        , renderer(nullptr)
+        , selectionRenderer(nullptr)
+        , editVertexRenderer(nullptr)
         , cursorShape(None)
         , zoomFactor(1.0)
         , textureId(0)
         , pen(QPen(QColor(Qt::white)))
         , brush(QBrush(Qt::transparent))
         , flags(0)
+        , context(nullptr)
     {
         // Type of renderer used for displaying objects on the screen
         renderer = RendererFactory::getRenderer(drawingMode);
@@ -124,7 +134,7 @@ struct GlCanvas::Impl
         // Type of renderer used for vertex edition mode
         editVertexRenderer = RendererFactory::getRenderer(DrawingMode::Points);
 
-        selectBuffer = new GLuint[SELECT_BUFFER_SIZE];
+        selectBuffer = new uint[SELECT_BUFFER_SIZE];
 
         auto camera = std::make_shared<Camera>();
         camera->transform().translate(Vector3(0, 0, -6));
@@ -175,14 +185,14 @@ struct GlCanvas::Impl
 
     ~Impl()
     {
-        if (selectBuffer)
-            delete[] selectBuffer;
+        delete[] selectBuffer;
+        selectBuffer = nullptr;
 
         delete renderer;
-        renderer = NULL;
+        renderer = nullptr;
 
         delete selectionRenderer;
-        selectionRenderer = NULL;
+        selectionRenderer = nullptr;
     }
 
     void setupShaderCommonParams();
@@ -248,18 +258,31 @@ void GlCanvas::setDrawingMode(DrawingMode mode)
 void GlCanvas::initializeGL()
 {
     // Set up the rendering context, define display lists etc.:
-    PlastilinaSubsystem flags = PlastilinaSubsystem::OPENGL |
-                                PlastilinaSubsystem::OPENCL |
-                                PlastilinaSubsystem::ENABLE_CL_GL_SHARING;
-    if (!PlastilinaEngine::initialize(flags))
+    core::GraphicsContextCreateInfo createInfo;
+    createInfo.contextType = core::ContextType::OpenGL;
+#if WIN32
+    QVariant nativeHandle = context()->nativeHandle();
+    if (!nativeHandle.isNull() && nativeHandle.canConvert<QWGLNativeContext>()) {
+        QWGLNativeContext nativeContext = nativeHandle.value<QWGLNativeContext>();
+        createInfo.osContext = reinterpret_cast<intptr_t>(nativeContext.context());
+    }
+#endif
+    _d->context = core::IGraphicsContext::createGraphicsContext(createInfo);
+    if (_d->context == nullptr)
     {
+        qDebug("Failed to create graphics context");
         return;
     }
+    if (!_d->context->makeCurrent())
+    {
+        qDebug("Failed to make context current");
+    }
+    makeCurrent();
     // glClearColor( 0.4, 0.4, 0.4, 1.0 );
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClearDepth(1.0f);
-    enable(GL_DEPTH_TEST);
-    enable(GL_LINE_SMOOTH);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -267,8 +290,7 @@ void GlCanvas::initializeGL()
         qDebug("Depth buffer not enabled.");
     else
     {
-        qDebug("Depth buffer enabled. Precision: %d",
-               format().depthBufferSize());
+        qDebug("Depth buffer enabled");
     }
 
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -280,8 +302,9 @@ void GlCanvas::initializeGL()
 void GlCanvas::resizeGL(int w, int h)
 {
     if (h > 0)
+    {
         _d->aspectRatio = GLdouble(w) / GLdouble(h);
-
+    }
     // setup viewport, projection etc. for OpenGL:
     glViewport(0, 0, (GLint)w, (GLint)h);
     glGetIntegerv(GL_VIEWPORT, _d->viewport);
@@ -327,8 +350,8 @@ void GlCanvas::paintGL()
 
         glLineWidth(1);
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-        enable(GL_BLEND);
-        enable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glEnable(GL_LINE_SMOOTH);
 
         drawScene(scene);
     }
@@ -490,7 +513,7 @@ void GlCanvas::wheelEvent(QWheelEvent* e)
     update();
 }
 
-ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
+ObjectContainer GlCanvas::getSelectedObjects(int x, int y)
 {
     ObjectContainer l;
     if (_d->renderer == NULL)
@@ -531,8 +554,8 @@ ObjectContainer GlCanvas::getSelectedObjects(GLint x, GLint y)
     return l;
 }
 
-PointIndexList GlCanvas::getSelectedVertices(GLint x, GLint y, GLint width,
-                                             GLint height)
+PointIndexList GlCanvas::getSelectedVertices(int x, int y, int width,
+                                             int height)
 {
     PointIndexList l;
     if (_d->renderer == NULL || width == 0 || height == 0)
@@ -776,7 +799,7 @@ float GlCanvas::depth(int x, int y)
     return d;
 }
 
-void GlCanvas::begin(GLenum mode) { _d->flags |= GLCANVAS_BEGIN; }
+void GlCanvas::begin(int mode) { _d->flags |= GLCANVAS_BEGIN; }
 
 void GlCanvas::end() { _d->flags &= ~GLCANVAS_BEGIN; }
 
@@ -925,8 +948,8 @@ void GlCanvas::drawEllipseWinCoord(const Point3& center, float startAngle,
         calculateEllipse(center.x(), center.y(), innerAxis1, innerAxis2, 0,
                          endAngle, startAngle, NUM_POINTS, innerPoints);
     }
-    int npoints = points.size();
-    for (int i = 0; i < npoints; ++i)
+    size_t npoints = points.size();
+    for (size_t i = 0; i < npoints; ++i)
     {
         screenToWorld(points[i], points[i]);
         if (drawInnerEllipse)

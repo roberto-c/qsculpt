@@ -207,8 +207,7 @@ ObjectContainer DocumentView::getSelectedObjects(int x, int y)
 {
     return _d->_display->getSelectedObjects(x, y);
 };
-PointIndexList DocumentView::getSelectedVertices(GLint x, GLint y,
-                                                 GLint width, GLint height)
+PointIndexList DocumentView::getSelectedVertices(int x, int y, int width, int height)
 {
     return _d->_display->getSelectedVertices(x, y, width, height);
 }

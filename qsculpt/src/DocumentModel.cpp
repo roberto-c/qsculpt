@@ -13,6 +13,9 @@
 #include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SceneNode.h>
+#include <PlastilinaCore/Utilities.h>
+
+using core::utils::convert_to;
 
 #undef TRACEFUNCTION
 #define TRACEFUNCTION()
@@ -182,7 +185,7 @@ QModelIndex DocumentModel::parent(const QModelIndex& index) const
 
     SceneNode::shared_ptr ptr = d->scene->findByIID(index.internalId());
     SceneNode::shared_ptr parent, grandparent;
-    int                   row = -1;
+    size_t                row = std::numeric_limits<size_t>::max();
 
     // we need to obtaing the position of parent below its parent (i.e. the
     // grand parent of index)
@@ -202,9 +205,9 @@ QModelIndex DocumentModel::parent(const QModelIndex& index) const
             }
         }
     }
-    if (parent && row > -1)
+    if (parent && row != std::numeric_limits<size_t>::max())
     {
-        ret = createIndex(row, 0, parent->iid());
+        ret = createIndex(convert_to<int>(row), 0, parent->iid());
     }
     //    qDebug() << ret;
     return ret;
@@ -228,7 +231,7 @@ int DocumentModel::rowCount(const QModelIndex& parent) const
     }
     if (p)
     {
-        ret = p->count();
+        convert_to(p->count(), ret);
     }
     //    qDebug() << ret;
     return ret;

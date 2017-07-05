@@ -68,19 +68,29 @@ void PlastilinaEngineState::config_setup()
         ;
 }
 
-PlastilinaEngineState g_engineState;
+PlastilinaEngineState* g_engineState = nullptr;
+
+static void initializeEngineState()
+{
+    if (!g_engineState)
+    {
+        g_engineState = new PlastilinaEngineState();
+    }
+}
 
 bool PlastilinaEngine::initializeFromCommandLine(int argc, char** argv)
 {
     try
     {
+        initializeEngineState();
+
         po::parsed_options parsed =
-            po::command_line_parser(argc, argv).options(g_engineState.optionsDesc).allow_unregistered().run();
-        po::store(parsed, g_engineState.options);
-        po::notify(g_engineState.options);
+            po::command_line_parser(argc, argv).options(g_engineState->optionsDesc).allow_unregistered().run();
+        po::store(parsed, g_engineState->options);
+        po::notify(g_engineState->options);
 
         // Set Resources search directories
-        for (auto path : (g_engineState.options["PlastilinaCore.ResourcesDir"].as<std::vector<std::string>>()))
+        for (auto path : (g_engineState->options["PlastilinaCore.ResourcesDir"].as<std::vector<std::string>>()))
         {
             ResourcesManager::addResourcesDirectory(path);
         }
@@ -97,12 +107,13 @@ bool PlastilinaEngine::initializeFromConfigFile(const std::string& filepath)
 {
     try
     {
-        po::store(po::parse_config_file<char>(filepath.c_str(), g_engineState.optionsDesc),
-                  g_engineState.options);
-        po::notify(g_engineState.options);
+        initializeEngineState();
+        po::store(po::parse_config_file<char>(filepath.c_str(), g_engineState->optionsDesc),
+                  g_engineState->options);
+        po::notify(g_engineState->options);
         
         // Set Resources search directories
-        for (auto path : (g_engineState.options["PlastilinaCore.ResourcesDir"].as<std::vector<std::string>>()))
+        for (auto path : (g_engineState->options["PlastilinaCore.ResourcesDir"].as<std::vector<std::string>>()))
         {
             ResourcesManager::addResourcesDirectory(path);
         }
@@ -118,24 +129,26 @@ bool PlastilinaEngine::initializeFromConfigFile(const std::string& filepath)
 
 bool PlastilinaEngine::shutdown() 
 { 
+    delete g_engineState;
+    g_engineState = nullptr;
     return true;
 }
 
 void PlastilinaEngine::setCurrentContext(std::shared_ptr<core::Context>& ctx)
 {
-    g_engineState.currentctx = ctx;
+    g_engineState->currentctx = ctx;
 }
 
 core::Context& PlastilinaEngine::currentContext()
 {
-    if (!g_engineState.currentctx)
+    if (!g_engineState->currentctx)
     {
         throw std::runtime_error("No current context set");
     }
-    return *g_engineState.currentctx;
+    return *g_engineState->currentctx;
 }
 
 core::variables_map PlastilinaEngine::options()
 {
-    return g_engineState.options;
+    return g_engineState->options;
 }

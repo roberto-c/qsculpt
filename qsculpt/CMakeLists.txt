@@ -110,6 +110,7 @@ elseif (UNIX)
 	set_property(TARGET QSculpt 
 		PROPERTY COMPILE_FLAGS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h
 	)
+elseif (WIN32)
 endif()
 
 set_property(TARGET QSculpt PROPERTY RESOURCE ${RESOURCES})
@@ -128,13 +129,15 @@ include_directories(include
 	${CMAKE_SOURCE_DIR}/plastilinacore/include
 	${Boost_INCLUDE_DIRS}
 	${OPENCL_INCLUDE_DIRS}
+	${Qt5_INCLUDE_DIRS}
+	${Qt5Widgets_INCLUDE_DIRS}
 	)
 
 target_link_libraries(QSculpt ${OPENGL_LIBRARIES})
 target_link_libraries(QSculpt ${OPENCL_LIBRARIES})
 target_link_libraries(QSculpt ${Boost_LIBRARIES})
 target_link_libraries(QSculpt PlastilinaCore)
-target_link_libraries(QSculpt Qt5::Widgets Qt5::OpenGL)
+target_link_libraries(QSculpt Qt5::Widgets)
 
 
 if (APPLE)	

@@ -28,6 +28,7 @@
 #include <PlastilinaCore/geometry/Aabb.h>
 
 #include <iterator>
+#include <vector>
 
 /*
  * Class forward declaration

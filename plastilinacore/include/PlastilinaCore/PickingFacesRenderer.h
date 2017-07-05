@@ -20,11 +20,12 @@
 #ifndef PICKINGVERTEXRENDERER_H_
 #define PICKINGVERTEXRENDERER_H_
 
-#include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/IRenderer.h>
-#include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 class ISurface;
+class VertexBuffer;
+namespace gl { class VertexArrayObject; };
+typedef gl::VertexArrayObject VAO;
 
 class PickingFacesRenderer
 {

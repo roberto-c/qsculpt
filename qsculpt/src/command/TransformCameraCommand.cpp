@@ -18,7 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "Stable.h"
-#include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/Document.h>
 #include <PlastilinaCore/FlatRenderer.h>
 #include <PlastilinaCore/Scene.h>
@@ -266,7 +265,7 @@ void TransformCameraCommand::paintGL(GlCanvas* c)
 
     if (_d->draw)
     {
-        glClear(GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_DEPTH_BUFFER_BIT);
         auto s = _d->doc.scene().lock();
         c->drawScene(s);
     }

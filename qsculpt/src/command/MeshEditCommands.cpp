@@ -6,7 +6,6 @@
  */
 #include "Stable.h"
 
-#include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/Document.h>
 #include <PlastilinaCore/HEdge.h>
@@ -15,7 +14,7 @@
 #include <PlastilinaCore/Octree.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/SceneNode.h>
-#include <PlastilinaCore/material/PhongMaterial.h>
+//#include <PlastilinaCore/material/PhongMaterial.h>
 #include <PlastilinaCore/subdivision/Box.h>
 
 #include "DocumentModel.h"
@@ -48,6 +47,7 @@ ICommand* AddSurfaceCommand::clone() const
 
 void AddSurfaceCommand::execute()
 {
+#if 0
     IDocument::shared_ptr doc = g_pApp->getMainWindow()->getCurrentDocument();
     DocumentTreeWidget*   treewdt = qobject_cast<DocumentTreeWidget*>(
         g_pApp->getMainWindow()->toolWidget("DocTree"));
@@ -75,6 +75,7 @@ void AddSurfaceCommand::execute()
         }
         qDebug() << "IID=" << _surface->iid();
     }
+#endif
 }
 
 void AddSurfaceCommand::undo()

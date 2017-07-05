@@ -13,17 +13,17 @@
 
 class TestApp
 {
-    struct Impl;
-    std::unique_ptr<Impl> d;
-
-  public:
+public:
     TestApp(int argc, char** argv);
 
     ~TestApp();
 
-    void init(int argc, char** argv);
-
     int run();
+
+private:
+    struct Impl;
+    std::unique_ptr<Impl> d;
+
 };
 
 #endif

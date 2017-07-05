@@ -20,7 +20,7 @@
 #pragma once
 
 #include <GL/glew.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <GL/wglew.h>
 #endif
 #include "GlException.h"

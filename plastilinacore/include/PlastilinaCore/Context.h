@@ -40,11 +40,22 @@ enum class ContextType : uint32_t
 
 struct GraphicsContextCreateInfo
 {
-    ContextType       contextType;
-    intptr_t          osWindowHandle;
-    intptr_t          osHandleEx;
-    CtxAttributeList  attributesList;
-    PixelFormatAttributeList   pixelFormatAttributes;
+    ContextType       contextType;     //!< Type of context to create
+    intptr_t          osWindowHandle;  //!< Native window handle
+    intptr_t          osHandleEx;      //!< Extra OS handle to use (platform dependent)
+    intptr_t          osContext;       //!< Native context (GL context, etc)
+                                       //!< If set then context created is just a wrapper
+                                       //!< around this handle (all other attributes
+                                       //!< are ignored)
+    CtxAttributeList  attributesList;  //!< Attributes that the context should have
+    PixelFormatAttributeList   pixelFormatAttributes; //!< Attributes for the surface format
+
+    GraphicsContextCreateInfo()
+        : contextType(ContextType::OpenGL)
+        , osWindowHandle(0)
+        , osHandleEx(0)
+        , osContext(0)
+    {}
 };
 
 class DLLEXPORT IGraphicsContext

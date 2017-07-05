@@ -20,12 +20,12 @@
 #ifndef BRUSHCOMMAND_H
 #define BRUSHCOMMAND_H
 
+#include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Point3D.h>
 #include <PlastilinaCore/Vertex.h>
 #include <QtCore/QHash>
 #include <QtCore/QMap>
 #include <QtCore/QVector>
-#include "DocumentView.h"
 #include "command/CommandBase.h"
 
 class BrushProperties;

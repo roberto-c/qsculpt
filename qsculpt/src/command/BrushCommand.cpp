@@ -24,7 +24,6 @@
 #include <PlastilinaCore/IDocument.h>
 #include <PlastilinaCore/ISurface.h>
 #include <QtGui/QMouseEvent>
-#include <QtOpenGL/QtOpenGL>
 
 #include "DocumentView.h"
 #include "QSculptApp.h"
@@ -178,8 +177,8 @@ void BrushCommand::mouseMoveEvent(QMouseEvent* e)
 
     if (_selectedObjects.size() > 0)
     {
-        GLdouble x = 0.0, y = 0.0, z = 0.0;
-        GLfloat  wz = 0.0f;
+        double x = 0.0, y = 0.0, z = 0.0;
+        float  wz = 0.0f;
 
         // Use the same z depth to move in the plane parallel to the screen.
         wz = _currentWinPoint.z();
@@ -263,7 +262,7 @@ void BrushCommand::mouseReleaseEvent(QMouseEvent* e)
 void BrushCommand::applyOperation()
 {
     _object->lock();
-    GLdouble winX, winY, winZ;
+    double winX, winY, winZ;
     Point3   wv;
     if (_vertexSelected.size() > 0)
     {

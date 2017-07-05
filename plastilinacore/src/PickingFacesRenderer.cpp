@@ -21,12 +21,14 @@
 #include <PlastilinaCore/PickingFacesRenderer.h>
 
 #include <PlastilinaCore/BOManager.h>
+#include <PlastilinaCore/BufferObject.h>
 #include <PlastilinaCore/Color.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Material.h>
 #include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/opengl/GlslProgram.h>
 #include <PlastilinaCore/opengl/GlslShader.h>
+#include <PlastilinaCore/opengl/VertexArrayObject.h>
 
 #define BO_POOL_NAME "PickingVertexRendererPool"
 #define BO_FLAT_POOL_NAME "PickingVertexRendererPool_Flat"

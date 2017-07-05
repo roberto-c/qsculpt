@@ -92,8 +92,7 @@ class DocumentView : public QWidget
      */
     ObjectContainer getSelectedObjects(int x, int y);
 
-    PointIndexList getSelectedVertices(GLint x, GLint y, GLint width,
-                                       GLint height);
+    PointIndexList getSelectedVertices(int x, int y, int width, int height);
 
     /**
      * getViewType

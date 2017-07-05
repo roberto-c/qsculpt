@@ -20,14 +20,20 @@
 #ifndef STABLE_H_
 #define STABLE_H_
 
-#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
+#if _WIN32
+#if !defined(WINAPI)
 #define NOMINMAX
 #define _USE_MATH_DEFINES
+#  ifndef WIN32_LEAN_AND_MEAN
+#    define WIN32_LEAN_AND_MEAN 1
+#  endif
+#include <windows.h>
+#endif
+#endif
 
 #if defined __cplusplus
 #include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/Plastilina.h>
-#include <PlastilinaCore/opengl/OpenGL.h>
 #include <QtCore/QDebug>
 #include <QtCore/QtGlobal>
 #endif /* defined __cplusplus */
