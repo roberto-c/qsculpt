@@ -100,13 +100,14 @@ kernel void ink_step(
 {
     uint gid_x = get_global_id(0);
     uint gid_y = get_global_id(1);
+    float4 c = (float4)(0,0,0,0);
 
     if (gid_x == 0 || gid_y == 0 || gid_x == 1278 || gid_y == 718)
+	{
+		c = read_imagef(src, (int2)(gid_x, gid_y)) * 0.8f;
+		write_imagef(dst, (int2)(gid_x, gid_y), c);
         return;
-
-    //float mask[9] = { 0.25f, 0.25f, 0.25f
-    //                , 0.00f, 0.25f, 0.00f
-    //                , 0.00f, 0.00f, 0.00f};
+	}
 
     float mask[9] = { 0.00f, 0.00f, 0.00f
         , 0.00f, 0.25f, 0.00f
@@ -115,9 +116,7 @@ kernel void ink_step(
 
     uint x = gid_x - 1;
     uint y = gid_y - 1;
-    
-    float4 c;
-    //float4 data[9];
+
     for(uint j = 0; j < 3; ++j)
     {
         for (uint i = 0; i < 3; ++i)

@@ -245,8 +245,8 @@ void CanvasTest::mouseClick(uint32_t button, uint32_t state, int x, int y)
         d_->y         = y;
     }
 
-    d_->canvas->setPenColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
-    d_->canvas->setFillColor(Color(0.8f, 0.7f, 0.3f, 1.0f));
+    d_->canvas->setPenColor(Color(1.0f, 0.3f, 0.2f, 1.0f));
+    d_->canvas->setFillColor(Color(1.0f, 0.6f, 0.3f, 1.0f));
 }
 
 void CanvasTest::mouseMove(uint32_t state, int x, int y)
