@@ -2,7 +2,6 @@
 set(TESTAPP_SOURCES 
 	./BaseTest.cpp
 	./CanvasTest.cpp
-	./CLRender.cpp
 	./DocumentModelTest.cpp
 	./IteratorTest.cpp
 	./ParticleSystem.cpp
@@ -16,7 +15,6 @@ set(TESTAPP_SOURCES
 set(TESTAPP_PRIVATE_HEADERS 
 	./CameraTest.h
 	./CanvasTest.h
-	./CLRender.h
 	./DeviceSelectionTest.h
 	./DocumentModelTest.h
 	./ParticleSystem.h
@@ -34,7 +32,6 @@ set(RESOURCES
 	./shaders/TestMaterial.fs
 	./shaders/TestMaterial.vs
 	./shaders/ParticleSystem.cl
-	./shaders/Render.cl
 	../images/Texture01.png
 )
 
