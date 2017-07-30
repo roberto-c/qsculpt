@@ -13,10 +13,10 @@ find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(Qt5 REQUIRED Core Widgets OpenGL)
 
-set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_STATIC_LIBS       OFF) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost REQUIRED COMPONENTS filesystem system program_options)
+find_package(Boost REQUIRED COMPONENTS filesystem system program_options thread)
 
 # Sources for the project
 set(QSCULPT_SOURCES 
@@ -39,6 +39,7 @@ set(QSCULPT_SOURCES
 	./src/glitem.cpp
 	./src/GlView.cpp
 	./src/ObjectProperties.cpp
+	./src/QPlastilinaWindow.cpp
 	./src/QSculptApp.cpp
 	./src/QSculptWindow.cpp
 	./src/Stable.cpp
@@ -70,6 +71,7 @@ set(QSCULPT_PRIVATE_HEADERS
 	./include/GlView.h
 	./include/IRenderable.h
 	./include/ObjectProperties.h
+	./include/QPlastilinaWindow.h
 	./include/QSculptApp.h
 	./include/QSculptWindow.h
 	./include/Stable.h
@@ -102,14 +104,7 @@ if (APPLE)
 	set(QSCULTPT_SOURCES_OBJCXX
 		./src/CustomGLContext.mm
 	)
-
-	set_property(TARGET QSculpt 
-		PROPERTY COMPILE_OPTIONS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h
-	)
 elseif (UNIX)
-	set_property(TARGET QSculpt 
-		PROPERTY COMPILE_FLAGS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/Stable.h
-	)
 elseif (WIN32)
 endif()
 
@@ -117,7 +112,7 @@ set_property(TARGET QSculpt PROPERTY RESOURCE ${RESOURCES})
 set_property(TARGET QSculpt PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
 
 find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
-	PATH /usr/local/include/eigen3 /usr/include/eigen3
+	HINTS /usr/local/include/eigen3 /usr/include/eigen3
 	DOC "Include directory Eigen"
 )
 

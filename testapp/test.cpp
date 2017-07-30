@@ -28,7 +28,7 @@ FILE __iob_func[3] = {*stdin, *stdout, *stderr};
 #if defined(__APPLE__)
 extern "C" int SDL_main(int argc, char** argv)
 {
-#elif defined(_WIN32)
+#else
 extern "C" int main(int argc, char** argv)
 {
 #endif

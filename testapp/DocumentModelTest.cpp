@@ -10,7 +10,7 @@
 
 #include <PlastilinaCore/Document.h>
 #include "PlastilinaCore/ISurface.h"
-#include "PlastilinaCore/Subdivision/Subdivision.h"
+#include "PlastilinaCore/subdivision/Subdivision.h"
 
 #include "DocumentModelTest.h"
 #include "PlastilinaCore/Logging.h"

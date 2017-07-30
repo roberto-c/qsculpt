@@ -46,57 +46,52 @@ if (APPLE)
 	)
 endif()
 
-add_executable(PTestApp MACOSX_BUNDLE
+add_executable(TestApp MACOSX_BUNDLE
 	${TESTAPP_SOURCES}
 	${TESTAPP_PRIVATE_HEADERS}
 	${RESOURCES}
 )
 
-if (APPLE)
-	set_property(TARGET PTestApp PROPERTY COMPILE_OPTIONS -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h )
-elseif (UNIX)
-    set_property(TARGET PlastilinaCore
-    	PROPERTY COMPILE_FLAGS -include ${CMAKE_CURRENT_SOURCE_DIR}/stable.h
-    )
-endif()
-
-set_property(TARGET PTestApp PROPERTY RESOURCE ${RESOURCES})
-set_property(TARGET PTestApp PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
+set_property(TARGET TestApp PROPERTY RESOURCE ${RESOURCES})
+set_property(TARGET TestApp PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE BOOST_ALL_DYN_LINK)
 
 find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2Image REQUIRED)
-set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_STATIC_LIBS       OFF) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
 find_package(Boost REQUIRED COMPONENTS filesystem system log date_time thread program_options)
 
 find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
-	PATH /usr/local/include/eigen3 /usr/include/eigen3
+	HINTS /usr/local/include/eigen3 /usr/include/eigen3
 	DOC "Include directory Eigen"
 )
 
-target_include_directories(PTestApp 
+target_include_directories(TestApp 
 	PUBLIC 
-		include 
-		${EIGEN_INCLUDE_DIRS} 
 		../thirdparty/OpenCL
+		${EIGEN_INCLUDE_DIRS} 
 		${CMAKE_SOURCE_DIR}/plastilinacore/include
 		${Boost_INCLUDE_DIRS}
 		${OpenCL_INCLUDE_DIRS}
+		${SDL2_INCLUDE_DIRS}
+		${SDL2IMAGE_INCLUDE_DIRS}
 	)
 
 if (APPLE)	
 	find_library(FOUNDATION_LIBRARIES CoreFoundation )
 	find_library(COCOA_LIBRARIES Cocoa )
-	target_link_libraries(PTestApp ${FOUNDATION_LIBRARIES})
-	target_link_libraries(PTestApp ${COCOA_LIBRARIES})
+	target_link_libraries(TestApp PRIVATE ${FOUNDATION_LIBRARIES})
+	target_link_libraries(TestApp PRIVATE ${COCOA_LIBRARIES})
 elseif(WIN32)
-	target_link_libraries(PTestApp winmm.lib version.lib imm32.lib)
+	target_link_libraries(TestApp PRIVATE winmm.lib version.lib imm32.lib)
 endif(APPLE)
 
-target_link_libraries(PTestApp ${OPENGL_LIBRARIES}
+target_link_libraries(TestApp 
+    PUBLIC
+	${OPENGL_LIBRARIES}
 	${OpenCL_LIBRARIES}
 	${SDL2_LIBRARIES}
 	${SDL2IMAGE_LIBRARIES}
@@ -113,10 +108,10 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_CURRENT_BINARY
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${PROJECT_BINARY_DIR}/share)
 file(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/share)
 file(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${PROJECT_BINARY_DIR}/share)
-get_target_property(RT_OUTPUT PTestApp RUNTIME_OUTPUT_DIRECTORY)
+get_target_property(RT_OUTPUT TestApp RUNTIME_OUTPUT_DIRECTORY)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.cfg DESTINATION ${RT_OUTPUT}/Debug)
 
-set_target_properties(PTestApp PROPERTIES
+set_target_properties(TestApp PROPERTIES
     COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/Stable.h"
 	COTIRE_ADD_UNITY_BUILD False)
-cotire(PTestApp)
+cotire(TestApp)

@@ -10,11 +10,7 @@
 
 #include "SubdivisionTest.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_syswm.h>
-
-#include <PLastilinaCore/subdivision/Subdivision.h>
+#include <PlastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Logging.h>

@@ -5,8 +5,8 @@
 //  Created by Juan Roberto Cabral Flores on 11/25/12.
 //  Copyright (c) 2012 Juan Roberto Cabral Flores. All rights reserved.
 //
+#include "Stable.h"
 #include "Subdivision.h"
-#include "stable.h"
 
 #include <PlastilinaCore/BOManager.h>
 #include <PlastilinaCore/Logging.h>

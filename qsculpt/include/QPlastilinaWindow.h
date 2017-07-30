@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 by Juan R Cabral                                   *
+ *   Copyright (C) 2017 by Juan Roberto Cabral Flores                      *
  *   roberto.cabral@gmail.com                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,34 +17,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include <PlastilinaCore/Stable.h>
-#include <PlastilinaCore/Context.h>
-#include <PlastilinaCore/Plastilina.h>
-#include <PlastilinaCore/opengl/Context.h>
+#pragma once
 
-#ifdef HAS_VULKAN
-#include <PlastilinaCore/vulkan/Context.h>
-#endif
+#include <QtGui/QWindow>
 
-namespace core
+//!
+class QPlastilinaWindow : public QWindow
 {
+    Q_OBJECT
 
-IGraphicsContext * IGraphicsContext::createGraphicsContext(GraphicsContextCreateInfo & createInfo)
-{
-    switch (createInfo.contextType)
-    {
-    case core::ContextType::OpenGL:
-        {
-            gl::Context * ctx = new gl::Context(createInfo);
-            return ctx;
-        }
-    }
-    return nullptr;
-}
+public:
+    QPlastilinaWindow();
+    virtual ~QPlastilinaWindow();
 
-void IGraphicsContext::destroyGraphicsContext(IGraphicsContext * ctx)
-{
-    delete ctx;
-}
 
-}
+};

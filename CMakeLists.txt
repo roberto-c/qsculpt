@@ -13,6 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 project (QSculpt)
 
+if (WIN32)
 if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     set( ENV{BOOST_LIBRARYDIR} "$ENV{BOOST_ROOT}/lib64" )
 	set( ENV{Qt5_DIR} "$ENV{Qt5_DIR}/msvc2015_64")
@@ -22,15 +23,16 @@ else()
 	set( ENV{Qt5_DIR} "$ENV{Qt5_DIR}/msvc2015")
 	set(CMAKE_LIBRARY_ARCHITECTURE x86)
 endif() 
+endif()
 
 option(Vulkan_ENABLED "True if Vulkan support should be enabled." ON)
 
 find_package(Qt5 REQUIRED Core Widgets OpenGL)
-find_package(VULKAN)
+find_package(Vulkan)
 
 set(CMAKE_CXX_STANDARD 14) # C++14...
 set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
-set(CMAKE_CXX_EXTENSIONS OFF) #...without compiler extensions like gnu++11
+set(CMAKE_CXX_EXTENSIONS ON) #...without compiler extensions like gnu++11
 
 add_subdirectory(plastilinacore)
 add_subdirectory(testapp)

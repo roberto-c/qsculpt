@@ -21,8 +21,6 @@
 
 #include "Stable.h"
 #include <PlastilinaCore/IDevice.h>
-#include <PlastilinaCore/opengl/GlDevice.h>
-#include <PlastilinaCore/vulkan/VkDevice.h>
 #include "BaseTest.h"
 
 class DeviceSelectionTest : public BaseTest

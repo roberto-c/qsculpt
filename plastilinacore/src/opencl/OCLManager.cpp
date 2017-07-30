@@ -220,7 +220,9 @@ bool CLManager::initializeWithGraphicsContext(core::IGraphicsContext * ctx)
         // If we have a GL context, check which device is being used and use
         // that one.
         d->glCtxHnd = context->nativeGlContext();
+#ifdef _WIN32
         d->hdc = reinterpret_cast<HDC>(context->nativeDeviceHandle());
+#endif
         if (d->glCtxHnd) 
         {
             d->devices.clear();

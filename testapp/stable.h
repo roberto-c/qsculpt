@@ -34,4 +34,15 @@
 
 #endif /* defined __cplusplus */
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_syswm.h>
+
+// X.h defines None which makes conflict with enums
+#ifdef X_H
+#  ifdef None
+#    undef None
+#  endif
+#endif
+
 #endif /* TESTAPP_STABLE_H_ */

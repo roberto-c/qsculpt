@@ -20,21 +20,17 @@
 #include "Stable.h"
 #include "CanvasTest.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_syswm.h>
-
-#include <PLastilinaCore/subdivision/GpuSubdivision.h>
-#include <PLastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/Camera.h>
 #include <PlastilinaCore/Canvas.h>
 #include <PlastilinaCore/ISurface.h>
 #include <PlastilinaCore/Logging.h>
 #include <PlastilinaCore/ResourcesManager.h>
-#include <PlastilinaCore/Scene.h>
 #include <PlastilinaCore/material/PhongMaterial.h>
 #include <PlastilinaCore/opencl/OCLManager.h>
 #include <PlastilinaCore/opengl/Texture.h>
+#include <PlastilinaCore/Scene.h>
+#include <PlastilinaCore/subdivision/GpuSubdivision.h>
+#include <PlastilinaCore/subdivision/Subdivision.h>
 #include <PlastilinaCore/subdivision/SubdivisionRenderable.h>
 #include "DocumentModelTest.h"
 #include "PrimitiveFactory.h"
@@ -97,7 +93,8 @@ int CanvasTest::Impl::setup()
         material->setDiffuse(Color(0.2f, 0.2f, 0.2f, 1.0f));
         material->setSpecular(Color(1.0f, 1.0f, 1.0f, 1.0f));
         material->setExponent(200);
-        material->setDiffuseTexture(canvas->colorTexture());
+        auto texture = canvas->colorTexture();
+        material->setDiffuseTexture(texture);
         surfacenode->setMaterial(material);
         canvas->setPenColor(Color(0.f, 0.f, 0.f, 1.0f));
         canvas->setFillColor(Color(0.f, 0.f, 0.f, 1.0f));

@@ -114,6 +114,7 @@ if (APPLE)
 #	set_source_files_properties(${PLASTILINACORE_SOURCES_OBJCXX} PROPERTIES 
 #	                            COMPILE_FLAGS "-x objective-c++")
 elseif(UNIX)
+	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/opengl/Context_linux.cpp)
 elseif(WIN32)
 	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/opengl/Context_win32.cpp)
 	set(PLASTILINACORE_SOURCES ${PLASTILINACORE_SOURCES} ./src/Plastilina_win32.cpp)
@@ -259,24 +260,20 @@ find_package(OpenGL REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(ASSIMP REQUIRED)
-find_package(SDL2)
-target_link_libraries(PlastilinaCore ${OPENGL_LIBRARIES})
-target_link_libraries(PlastilinaCore ${OpenCL_LIBRARIES})
-target_link_libraries(PlastilinaCore ${GLEW_LIBRARIES})
-target_link_libraries(PlastilinaCore ${ASSIMP_LIBRARIES})
+target_link_libraries(PlastilinaCore PUBLIC ${OPENGL_LIBRARIES})
+target_link_libraries(PlastilinaCore PUBLIC ${OpenCL_LIBRARIES})
+target_link_libraries(PlastilinaCore PUBLIC ${GLEW_LIBRARIES})
+target_link_libraries(PlastilinaCore PUBLIC ${ASSIMP_LIBRARIES})
 if (Vulkan_FOUND)
 	target_include_directories(PlastilinaCore PUBLIC ${Vulkan_INCLUDE_DIRS})
-	target_link_libraries(PlastilinaCore ${Vulkan_LIBRARIES})
-endif()
-if (SDL2_FOUND)
-	target_link_libraries(PlastilinaCore ${SDL2_LIBRARIES})
+	target_link_libraries(PlastilinaCore PUBLIC ${Vulkan_LIBRARIES})
 endif()
 
-set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_STATIC_LIBS       OFF) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost REQUIRED COMPONENTS filesystem system log date_time thread program_options)
-target_link_libraries(PlastilinaCore ${Boost_LIBRARIES})
+find_package(Boost REQUIRED COMPONENTS filesystem system log date_time program_options)
+target_link_libraries(PlastilinaCore PUBLIC ${Boost_LIBRARIES})
 
 #find_package(Subversion)
 #if(SUBVERSION_FOUND)
@@ -287,26 +284,28 @@ target_link_libraries(PlastilinaCore ${Boost_LIBRARIES})
 #endif()
 
 find_path(EIGEN_INCLUDE_DIRS Eigen/Eigen
-	PATH /usr/local/include/eigen3 /usr/include/eigen3
+	HINTS /usr/local/include/eigen3 /usr/include/eigen3
 	DOC "Include directory Eigen"
 )
 
+message("OpenCL_INCLUDE_DIRS ${OpenCL_INCLUDE_DIRS}")
 
 configure_file(config.h.in ./include/PlastilinaCore/Config.h)
 
 target_include_directories(PlastilinaCore
 	PUBLIC
 		${CMAKE_CURRENT_BINARY_DIR}/include
-		include 
+		${CMAKE_CURRENT_SOURCE_DIR}/include 
 		${EIGEN_INCLUDE_DIRS} 
-		../thirdparty/OpenCL
 		${OPENGL_INCLUDE_DIRS}
+		../thirdparty/OpenCL
 		${OpenCL_INCLUDE_DIRS}
+	PRIVATE
 		${ASSIMP_INCLUDE_DIRS}
 		${Boost_INCLUDE_DIRS}
 	)
 	
-set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE)
+set_property(TARGET PlastilinaCore PROPERTY COMPILE_DEFINITIONS PLASTILINA_GL_EXCEPTON_ENABLE BOOST_ALL_DYN_LINK)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/share/shaders)
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/share/shaders)
@@ -314,8 +313,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_CURRENT_BINARY
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${PROJECT_BINARY_DIR}/share)
 
 if (APPLE)
-	set_property(TARGET PlastilinaCore PROPERTY COMPILE_OPTIONS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
-	)
 	set_property(TARGET PlastilinaCore 
 		PROPERTY MACOSX_FRAMEWORK_IDENTIFIER com.plastilinalabs.PlastilinaCore
 	)
@@ -336,12 +333,9 @@ if (APPLE)
 	
 	find_library(FOUNDATION_LIBRARIES CoreFoundation )
 	find_library(COCOA_LIBRARIES Cocoa )
-	target_link_libraries(PlastilinaCore ${FOUNDATION_LIBRARIES})
-	target_link_libraries(PlastilinaCore ${COCOA_LIBRARIES})
+	target_link_libraries(PlastilinaCore PUBLIC ${FOUNDATION_LIBRARIES})
+	target_link_libraries(PlastilinaCore PUBLIC ${COCOA_LIBRARIES})
 elseif (UNIX)
-	set_property(TARGET PlastilinaCore 
-		PROPERTY COMPILE_FLAGS -include ${CMAKE_CURRENT_SOURCE_DIR}/include/PlastilinaCore/Stable.h
-	)
 elseif (WIN32)
 	set_property(TARGET PlastilinaCore 
 		PROPERTY COMPILE_FLAGS /DPLASTILINACORE_EXPORT

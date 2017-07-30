@@ -21,7 +21,7 @@
 //    return qHash(v.first ^ (v.second << 8));
 //}
 
-THREAD static void* logptr = 0;
+static THREAD void* logptr = 0;
 
 struct Log
 {

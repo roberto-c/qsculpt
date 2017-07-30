@@ -216,9 +216,9 @@ int OctreeNode<D, ToPointFn>::indexOf(const D& data)
             return index;
 
         int size = m_childrenNodes.size();
-        for (int i = 0; i < size; ++i)
+        for (auto n : m_childrenNodes)
         {
-            index = m_childrenNodes[i]->indexOf(data);
+            index = n->indexOf(data);
             if (index)
                 break;
         }
@@ -229,11 +229,11 @@ int OctreeNode<D, ToPointFn>::indexOf(const D& data)
             return index;
 
         int size = m_dataIndices.size();
-        for (int i = 0; i < size; ++i)
+        for (int i : m_dataIndices)
         {
-            if (m_octree->at(m_dataIndices[i]) == data)
+            if (m_octree->at(i) == data)
             {
-                index = m_dataIndices[i];
+                index = i;
                 break;
             }
         }
@@ -256,8 +256,7 @@ bool OctreeNode<D, ToPointFn>::add(const D& data)
 
     if (m_hasChildren)
     {
-        for (auto n = m_childrenNodes.begin(); n != m_childrenNodes.end();
-             ++n)
+        for (auto n : m_childrenNodes)
         {
             if (n->add(data))
                 return true;
@@ -275,8 +274,7 @@ bool OctreeNode<D, ToPointFn>::add(const D& data)
         else
         {
             doPartition();
-            for (auto n = m_childrenNodes.begin(); n != m_childrenNodes.end();
-                 ++n)
+            for (auto n : m_childrenNodes)
             {
                 if (n->add(data))
                     return true;
@@ -354,8 +352,7 @@ void OctreeNode<D, ToPointFn>::doPartition()
     int         dataCount = m_dataIndices.size();
     for (int i = 0; i < dataCount; ++i)
     {
-        for (auto n = m_childrenNodes.begin(); n != m_childrenNodes.end();
-             ++n)
+        for (auto n : m_childrenNodes)
         {
             if (n && n->isInVolume(m_octree->at(m_dataIndices[i])))
             {
@@ -411,8 +408,7 @@ std::string OctreeNode<D, ToPointFn>::toString()
     {
         OctreeNode* n;
         res.str("");
-        for (auto n = m_childrenNodes.begin(); n != m_childrenNodes.end();
-             ++n)
+        for (auto n : m_childrenNodes)
         {
             res += n->toString();
         }
@@ -420,7 +416,7 @@ std::string OctreeNode<D, ToPointFn>::toString()
     else
     {
         res.str("");
-        for (auto it = m_dataIndices.begin(); it != m_dataIndices.end(); ++it)
+        for (auto it : m_dataIndices)
         {
             res.str("");
             res << indent;

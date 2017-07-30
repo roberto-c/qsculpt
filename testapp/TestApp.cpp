@@ -13,9 +13,6 @@
 #include <PlastilinaCore/ResourcesManager.h>
 #include <PlastilinaCore/opencl/OpenCL.h>
 #include <PlastilinaCore/opengl/OpenGL.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_syswm.h>
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h> // for application directory
@@ -48,6 +45,7 @@ struct TestApp::Impl
     TestApp*                app;
     po::options_description optionsDesc;
     po::variables_map       options;
+    bool                    initialized;
     bool                    running;
     SDL_Surface*            surfDisplay;
     SDL_Window*             mainwindow;  /* Our window handle */
@@ -63,6 +61,7 @@ struct TestApp::Impl
     Impl()
         : app(nullptr)
         , optionsDesc("Allowed options")
+        , initialized(false)
         , running(false)
         , surfDisplay(nullptr)
         , mainwindow(nullptr)
@@ -73,7 +72,7 @@ struct TestApp::Impl
     {
     }
 
-    void init(int argc, char** argv);
+    bool init(int argc, char** argv);
 
     void display();
 
@@ -100,10 +99,10 @@ struct TestApp::Impl
 };
 
 TestApp::TestApp(int argc, char** argv)
-    : d(new TestApp::Impl())
+    : d(std::make_unique<TestApp::Impl>())
 {
     d->app = this;
-    d->init(argc, argv);
+    d->initialized = d->init(argc, argv);
 }
 
 TestApp::~TestApp() {}
@@ -115,13 +114,16 @@ int TestApp::run()
         std::cout << d->optionsDesc << "\n";
         return 1;
     }
-
+    if (!d->initialized)
+    {
+        return 2;
+    }
     d->mainLoop();
 
     return 0;
 }
 
-void TestApp::Impl::init(int argc, char** argv)
+bool TestApp::Impl::init(int argc, char** argv)
 {
     using namespace std;
     using namespace core::utils;
@@ -205,13 +207,13 @@ void TestApp::Impl::init(int argc, char** argv)
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         TRACE(error) << "Failed to intialize SDL";
-        return;
+        return false;
     }
 	int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
 	if (IMG_Init(imgFlags) != imgFlags)
 	{
 		TRACE(error) << "Failed to intialize SDL_image";
-		return;
+		return false;
 	}
 
     // Create our window centered at 512x512 resolution
@@ -221,7 +223,7 @@ void TestApp::Impl::init(int argc, char** argv)
     if (!mainwindow)
     {
         TRACE(error) << "Unable to create window";
-        return;
+        return false;
     }
     SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);
@@ -229,7 +231,7 @@ void TestApp::Impl::init(int argc, char** argv)
     if (!SDL_GetWindowWMInfo(mainwindow, &wmInfo))
     {
         TRACE(error) << "Failed to get window system information";
-        return;
+        return false;
     }
     GraphicsContextCreateInfo createInfo;
     createInfo.contextType = ContextType::OpenGL;
@@ -258,7 +260,7 @@ void TestApp::Impl::init(int argc, char** argv)
     if (context == nullptr)
     {
         TRACE(error) << "Failed to create graphics context";
-        return;
+        return false;
     }
     if (!context->makeCurrent())
     {
@@ -267,12 +269,12 @@ void TestApp::Impl::init(int argc, char** argv)
     if (!CLManager::create())
     {
         TRACE(error) << "Failed to initialize OpenCL manager";
-        return;
+        return false;
     }
     if (!CLManager::instance()->initializeWithGraphicsContext(context))
     {
         TRACE(error) << "Failed to initialize OpenCL with OpenGL context";
-        return;
+        return false;
     }
 
     reshape(1280, 720);
@@ -287,6 +289,8 @@ void TestApp::Impl::init(int argc, char** argv)
     myEvent.user.data1 = (void*)(nullptr);
     myEvent.user.data2 = (void*)(this->app);
     SDL_PushEvent(&myEvent);
+
+    return true;
 }
 
 void TestApp::Impl::mainLoop()

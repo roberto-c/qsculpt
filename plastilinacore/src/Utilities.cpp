@@ -17,15 +17,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#pragma once
-
 #include <PlastilinaCore/Stable.h>
 #include <PlastilinaCore/Utilities.h>
 
 #include <boost/filesystem.hpp>
 #include <cstdlib>
 #include <stdexcept>
-#include <strstream>
+#include <sstream>
 
 #if _WIN32
   #ifndef ssize_t
@@ -36,6 +34,12 @@
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h> // for application directory
+#endif
+
+#ifdef __linux__
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #endif
 
 namespace core
@@ -55,19 +59,19 @@ void convert_to(const int& d, std::size_t& to)
     to = (d < 0) ? std::numeric_limits<size_t>::max() : (size_t)((unsigned)d);
 }
 
-std::string to_string(Eigen::Vector2f& v)
+std::string to_string(const Eigen::Vector2f& v)
 {
     std::stringstream strout;
     strout << "(" << v.x() << "," << v.y() << ")";
     return strout.str();
 }
-std::string to_string(Eigen::Vector3f& v)
+std::string to_string(const Eigen::Vector3f& v)
 {
     std::stringstream strout;
     strout << "(" << v.x() << "," << v.y() << "," << v.z() << ")";
     return strout.str();
 }
-std::string to_string(Eigen::Vector4f& v)
+std::string to_string(const Eigen::Vector4f& v)
 {
     std::stringstream strout;
     strout << "(" << v.x() << "," << v.y() << "," << v.z() << "," << v.w()
@@ -90,6 +94,15 @@ std::string get_app_path()
     else
     {
         exepath.push_back('\0');
+    }
+#elif defined(__linux__)
+    struct stat sb;
+    ssize_t r;
+
+    if (lstat("/proc/self/exe", &sb) == 0) {
+        exepath.resize(sb.st_size + 1);
+        r = readlink("/proc/self/exe", exepath.data(), sb.st_size + 1);
+        exepath[sb.st_size] = '\0';
     }
 #elif defined(_WIN32)
     exepath.resize(MAX_PATH);
