@@ -43,6 +43,8 @@ namespace po = boost::program_options;
 struct TestApp::Impl
 {
     TestApp*                app;
+    int                     argc;
+    char**                  argv;
     po::options_description optionsDesc;
     po::variables_map       options;
     bool                    initialized;
@@ -60,6 +62,8 @@ struct TestApp::Impl
 
     Impl()
         : app(nullptr)
+        , argc(0)
+        , argv(nullptr)
         , optionsDesc("Allowed options")
         , initialized(false)
         , running(false)
@@ -71,6 +75,8 @@ struct TestApp::Impl
         , context(nullptr)
     {
     }
+
+    void parseOptions(int argc, char** argv);
 
     bool init(int argc, char** argv);
 
@@ -102,18 +108,23 @@ TestApp::TestApp(int argc, char** argv)
     : d(std::make_unique<TestApp::Impl>())
 {
     d->app = this;
-    d->initialized = d->init(argc, argv);
+    d->argc = argc;
+    d->argv = argv;
 }
 
 TestApp::~TestApp() {}
 
 int TestApp::run()
 {
+    d->parseOptions(d->argc, d->argv);
+
     if (d->options.count("help"))
     {
         std::cout << d->optionsDesc << "\n";
+        PlastilinaEngine::printCommandLineOptionsHelp();
         return 1;
     }
+    d->initialized = d->init(d->argc, d->argv);
     if (!d->initialized)
     {
         return 2;
@@ -123,10 +134,8 @@ int TestApp::run()
     return 0;
 }
 
-bool TestApp::Impl::init(int argc, char** argv)
+void TestApp::Impl::parseOptions(int argc, char** argv)
 {
-    using namespace std;
-    using namespace core::utils;
     // Declare the supported options.
     optionsDesc.add_options()("help", "produce help message")(
         "interactive", po::value<bool>()->default_value(true),
@@ -143,6 +152,12 @@ bool TestApp::Impl::init(int argc, char** argv)
         .run();
     po::store(parsed, options);
     po::notify(options);
+}
+
+bool TestApp::Impl::init(int argc, char** argv)
+{
+    using namespace std;
+    using namespace core::utils;
 
     auto testid = options["testid"].as<int>();
 
@@ -177,7 +192,7 @@ bool TestApp::Impl::init(int argc, char** argv)
             (void*)this->app);
     }
     currentTest = testList.end();
-    
+
     if (options.count("verbosity"))
     {
         auto verbosity =
@@ -209,12 +224,12 @@ bool TestApp::Impl::init(int argc, char** argv)
         TRACE(error) << "Failed to intialize SDL";
         return false;
     }
-	int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
-	if (IMG_Init(imgFlags) != imgFlags)
-	{
-		TRACE(error) << "Failed to intialize SDL_image";
-		return false;
-	}
+    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
+    if (IMG_Init(imgFlags) != imgFlags)
+    {
+        TRACE(error) << "Failed to intialize SDL_image";
+        return false;
+    }
 
     // Create our window centered at 512x512 resolution
     mainwindow = SDL_CreateWindow("TEST", SDL_WINDOWPOS_CENTERED,

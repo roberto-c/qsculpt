@@ -84,7 +84,7 @@ struct hash<pair<S, T>>
 };
 };
 
-#define DECLARE_ENUM_FLAGS_BEGIN(name)  enum class name : unsigned int                                           
+#define DECLARE_ENUM_FLAGS_BEGIN(name)  enum class name : unsigned int                                  
     
 #define DECLARE_ENUM_FLAGS_END(name)                                         \
 inline name operator~(name lhs)                                              \
@@ -171,6 +171,8 @@ class DLLEXPORT PlastilinaEngine
     static bool shutdown();
 
     static core::variables_map options();
+
+    static void printCommandLineOptionsHelp();
 
     static void setCurrentContext(std::shared_ptr<core::Context>& ctx);
 

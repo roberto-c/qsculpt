@@ -127,6 +127,20 @@ bool PlastilinaEngine::initializeFromConfigFile(const std::string& filepath)
     return false;
 }
 
+void PlastilinaEngine::printCommandLineOptionsHelp()
+{
+    try
+    {
+        initializeEngineState();
+        std::cout << g_engineState->optionsDesc << std::endl;
+    }
+    catch (std::exception& e)
+    {
+        TRACE(error) << "Failed to read config file. " << e.what();
+    }
+
+}
+
 bool PlastilinaEngine::shutdown() 
 { 
     delete g_engineState;
